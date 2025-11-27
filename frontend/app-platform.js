@@ -324,7 +324,7 @@ async function loadDashboard() {
     try {
         showLoading("Cargando tus fondos...");
         
-        document.getElementById('dashboardSection').style.display = 'block';
+        document.getElementById('dashboardSection').classList.add('active');
         
         // Cargar fondos del usuario
         await loadUserFunds();
@@ -353,26 +353,42 @@ async function loadUserFunds() {
         const fundMap = new Map();
         
         for (const fund of fundsCreated) {
-            fundMap.set(fund.fundAddress, {
-                ...fund,
+            const fundData = {
+                fundAddress: fund.fundAddress || fund[0],
+                creator: fund.creator || fund[1],
+                fundName: fund.fundName || fund[2] || 'Sin nombre',
+                fundType: fund.fundType !== undefined ? fund.fundType : (fund[3] || 0n),
+                createdAt: fund.createdAt || fund[4],
+                isActive: fund.isActive !== undefined ? fund.isActive : (fund[5] || true),
                 isCreator: true,
                 isParticipant: true
-            });
+            };
+            console.log("Fund creado:", fundData);
+            fundMap.set(fundData.fundAddress, fundData);
         }
         
         for (const fund of fundsParticipating) {
-            if (fundMap.has(fund.fundAddress)) {
-                fundMap.get(fund.fundAddress).isParticipant = true;
+            const fundAddress = fund.fundAddress || fund[0];
+            if (fundMap.has(fundAddress)) {
+                fundMap.get(fundAddress).isParticipant = true;
             } else {
-                fundMap.set(fund.fundAddress, {
-                    ...fund,
+                const fundData = {
+                    fundAddress: fundAddress,
+                    creator: fund.creator || fund[1],
+                    fundName: fund.fundName || fund[2] || 'Sin nombre',
+                    fundType: fund.fundType !== undefined ? fund.fundType : (fund[3] || 0n),
+                    createdAt: fund.createdAt || fund[4],
+                    isActive: fund.isActive !== undefined ? fund.isActive : (fund[5] || true),
                     isCreator: false,
                     isParticipant: true
-                });
+                };
+                console.log("Fund participando:", fundData);
+                fundMap.set(fundData.fundAddress, fundData);
             }
         }
         
         allUserFunds = Array.from(fundMap.values());
+        console.log("Total fondos cargados:", allUserFunds.length, allUserFunds);
         
         // Cargar detalles de cada fondo
         await loadAllFundsDetails();
@@ -524,17 +540,26 @@ let currentFundContract = null;
 
 async function openFund(fundAddress) {
     try {
+        console.log("openFund llamado con:", fundAddress);
+        console.log("allUserFunds:", allUserFunds);
         showLoading("Cargando fondo...");
         
-        if (!fundAddress) {
+        if (!fundAddress || fundAddress === 'undefined') {
             throw new Error("Dirección de fondo inválida");
         }
         
         // Guardar fondo actual
-        currentFund = allUserFunds.find(f => f.fundAddress && f.fundAddress.toLowerCase() === fundAddress.toLowerCase());
+        currentFund = allUserFunds.find(f => {
+            console.log("Buscando:", f.fundAddress, "vs", fundAddress);
+            return f.fundAddress && f.fundAddress.toLowerCase() === fundAddress.toLowerCase();
+        });
+        
         if (!currentFund) {
+            console.error("Fondo no encontrado. Direcciones disponibles:", allUserFunds.map(f => f.fundAddress));
             throw new Error("Fondo no encontrado en tu lista");
         }
+        
+        console.log("Fondo encontrado:", currentFund);
         
         // Crear instancia del contrato del fondo
         currentFundContract = new ethers.Contract(

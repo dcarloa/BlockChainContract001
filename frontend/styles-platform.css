@@ -305,11 +305,11 @@ header {
 }
 
 /* === DASHBOARD SECTION === */
-#dashboardSection {
+.dashboard-section {
   display: none;
 }
 
-#dashboardSection.active {
+.dashboard-section.active {
   display: block;
 }
 
@@ -648,11 +648,11 @@ header {
 }
 
 /* === FUND DETAIL SECTION === */
-#fundDetailSection {
+.fund-detail-section {
   display: none;
 }
 
-#fundDetailSection.active {
+.fund-detail-section.active {
   display: block;
 }
 
