@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
+        style-src 'self' 'unsafe-inline'; 
+        img-src 'self' data: https:; 
+        connect-src 'self' http://127.0.0.1:8545 http://localhost:8545;
+    ">
+    <title>FundHub - Plataforma de Fondos Compartidos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loadingText">Cargando...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>💰 FundHub</h1>
+                    <span class="version-badge">Multi-Fund Platform</span>
+                </div>
+                
+                <div class="header-actions">
+                    <div id="userNickname" class="nickname-badge" style="display: none;">
+                        <span class="nickname-icon">👤</span>
+                        <span id="nicknameDisplay"></span>
+                    </div>
+                    <button id="connectWallet" class="btn btn-primary">
+                        <span class="btn-icon">🦊</span>
+                        <span>Conectar Wallet</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- Nickname Setup Modal (first time users) -->
+            <div id="nicknameModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <h2>👋 ¡Bienvenido a FundHub!</h2>
+                    <p>Para comenzar, necesitas elegir un nickname único. Este nombre te identificará en todos tus fondos.</p>
+                    
+                    <div class="form-group">
+                        <label for="nicknameInput">Tu Nickname</label>
+                        <input 
+                            type="text" 
+                            id="nicknameInput" 
+                            placeholder="Ej: Juan, Maria123, etc."
+                            minlength="3"
+                            maxlength="32"
+                            pattern="[a-zA-Z0-9]+"
+                        >
+                        <small>3-32 caracteres, solo letras y números</small>
+                    </div>
+                    
+                    <button id="setNicknameBtn" class="btn btn-primary btn-block">
+                        Establecer Nickname
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <section id="dashboardSection" class="dashboard-section" style="display: none;">
+                
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-content">
+                            <h3 id="totalFundsCreated">0</h3>
+                            <p>Fondos Creados</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <h3 id="totalFundsParticipating">0</h3>
+                            <p>Fondos Participando</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">💎</div>
+                        <div class="stat-content">
+                            <h3 id="totalValueLocked">0</h3>
+                            <p>ETH Total</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="action-bar">
+                    <h2>Mis Fondos</h2>
+                    <button id="createFundBtn" class="btn btn-primary">
+                        <span class="btn-icon">➕</span>
+                        <span>Crear Nuevo Fondo</span>
+                    </button>
+                </div>
+
+                <!-- Fund Filters -->
+                <div class="fund-filters">
+                    <button class="filter-btn active" data-filter="all">
+                        Todos (<span id="countAll">0</span>)
+                    </button>
+                    <button class="filter-btn" data-filter="created">
+                        Creados (<span id="countCreated">0</span>)
+                    </button>
+                    <button class="filter-btn" data-filter="participating">
+                        Participando (<span id="countParticipating">0</span>)
+                    </button>
+                    <button class="filter-btn" data-filter="travel">
+                        🌴 Viajes (<span id="countTravel">0</span>)
+                    </button>
+                    <button class="filter-btn" data-filter="savings">
+                        💰 Ahorros (<span id="countSavings">0</span>)
+                    </button>
+                    <button class="filter-btn" data-filter="shared">
+                        🤝 Compartidos (<span id="countShared">0</span>)
+                    </button>
+                </div>
+
+                <!-- Funds Grid -->
+                <div id="fundsGrid" class="funds-grid">
+                    <!-- Funds will be loaded here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📦</div>
+                    <h3>No tienes fondos aún</h3>
+                    <p>Crea tu primer fondo para comenzar a organizar tus finanzas grupales</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('createFundBtn').click()">
+                        Crear Mi Primer Fondo
+                    </button>
+                </div>
+
+            </section>
+
+            <!-- Create Fund Modal -->
+            <div id="createFundModal" class="modal" style="display: none;">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2>➕ Crear Nuevo Fondo</h2>
+                        <button class="modal-close" onclick="closeCreateFundModal()">&times;</button>
+                    </div>
+                    
+                    <form id="createFundForm">
+                        <!-- Fund Type Selection -->
+                        <div class="form-group">
+                            <label>Tipo de Fondo</label>
+                            <div class="fund-type-grid">
+                                <label class="fund-type-card">
+                                    <input type="radio" name="fundType" value="0" checked>
+                                    <div class="fund-type-content">
+                                        <div class="fund-type-icon">🌴</div>
+                                        <h4>Viaje</h4>
+                                        <p>Para vacaciones grupales</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="fund-type-card">
+                                    <input type="radio" name="fundType" value="1">
+                                    <div class="fund-type-content">
+                                        <div class="fund-type-icon">💰</div>
+                                        <h4>Ahorro</h4>
+                                        <p>Meta de ahorro compartido</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="fund-type-card">
+                                    <input type="radio" name="fundType" value="2">
+                                    <div class="fund-type-content">
+                                        <div class="fund-type-icon">🤝</div>
+                                        <h4>Cuenta Compartida</h4>
+                                        <p>Gastos recurrentes</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="fund-type-card">
+                                    <input type="radio" name="fundType" value="3">
+                                    <div class="fund-type-content">
+                                        <div class="fund-type-icon">🎯</div>
+                                        <h4>Otro</h4>
+                                        <p>Propósito personalizado</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Fund Details -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fundName">Nombre del Fondo *</label>
+                                <input 
+                                    type="text" 
+                                    id="fundName" 
+                                    placeholder="Ej: Viaje a Cancún 2025"
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="targetAmount">Meta (ETH) *</label>
+                                <input 
+                                    type="number" 
+                                    id="targetAmount" 
+                                    placeholder="10"
+                                    step="0.01"
+                                    min="0.01"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fundDescription">Descripción</label>
+                            <textarea 
+                                id="fundDescription" 
+                                rows="3"
+                                placeholder="Describe el propósito del fondo..."
+                            ></textarea>
+                        </div>
+
+                        <!-- Privacy Settings -->
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="isPrivate" checked>
+                                <span>Fondo Privado (requiere invitación)</span>
+                            </label>
+                            <small>Los fondos privados requieren que invites a cada participante</small>
+                        </div>
+
+                        <!-- Governance Settings -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="approvalPercentage">% de Aprobación *</label>
+                                <input 
+                                    type="number" 
+                                    id="approvalPercentage" 
+                                    value="60"
+                                    min="1"
+                                    max="100"
+                                    required
+                                >
+                                <small>Porcentaje de votos a favor necesario</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="minimumVotes">Mínimo de Votos *</label>
+                                <input 
+                                    type="number" 
+                                    id="minimumVotes" 
+                                    value="2"
+                                    min="1"
+                                    required
+                                >
+                                <small>Votos mínimos para ejecutar propuesta</small>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeCreateFundModal()">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="btn-icon">🚀</span>
+                                <span>Crear Fondo</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="ethers.umd.min.js"></script>
+    <script src="app-platform.js"></script>
+</body>
+</html>
