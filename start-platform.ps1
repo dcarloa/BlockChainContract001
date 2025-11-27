@@ -27,8 +27,7 @@ Write-Host ""
 Write-Host "► Paso 2: Limpiando procesos anteriores..." -ForegroundColor Yellow
 
 # Detener Hardhat Node (puerto 8545)
-$hardhatProcess = Get-NetTCPConnection -LocalPort 8545 -ErrorAction SilentlyContinue | 
-                  Select-Object -ExpandProperty OwningProcess -Unique
+$hardhatProcess = Get-NetTCPConnection -LocalPort 8545 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique
 if ($hardhatProcess) {
     Stop-Process -Id $hardhatProcess -Force -ErrorAction SilentlyContinue
     Write-Host "  ✓ Proceso Hardhat anterior detenido" -ForegroundColor Green
@@ -36,8 +35,7 @@ if ($hardhatProcess) {
 }
 
 # Detener Express Server (puerto 3001)
-$serverProcess = Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue | 
-                 Select-Object -ExpandProperty OwningProcess -Unique
+$serverProcess = Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique
 if ($serverProcess) {
     Stop-Process -Id $serverProcess -Force -ErrorAction SilentlyContinue
     Write-Host "  ✓ Servidor anterior detenido" -ForegroundColor Green
@@ -186,7 +184,7 @@ Write-Host ""
 Write-Host "💡 PRÓXIMOS PASOS:" -ForegroundColor Cyan
 Write-Host "  1. Conecta MetaMask con una cuenta de prueba" -ForegroundColor White
 Write-Host "  2. Establece tu nickname único" -ForegroundColor White
-Write-Host "  3. Crea tu primer fondo (Viaje, Ahorro, Compartido u Otro)" -ForegroundColor White
+Write-Host "  3. Crea tu primer fondo de cualquier tipo" -ForegroundColor White
 Write-Host "  4. Invita a amigos y comienza a gestionar fondos" -ForegroundColor White
 Write-Host ""
 Write-Host "📚 CARACTERÍSTICAS DE LA PLATAFORMA:" -ForegroundColor Cyan
@@ -234,5 +232,5 @@ try {
     
     Write-Host "  ✓ Plataforma detenida" -ForegroundColor Green
     Write-Host ""
-    Write-Host "¡Hasta pronto! 👋" -ForegroundColor Cyan
+    Write-Host "Hasta pronto!" -ForegroundColor Cyan
 }

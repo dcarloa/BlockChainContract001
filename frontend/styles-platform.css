@@ -195,6 +195,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-md);
 }
 
 .logo {
@@ -207,6 +208,7 @@ header {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -229,6 +231,7 @@ header {
   border-radius: var(--radius-full);
   padding: var(--spacing-xs) var(--spacing-md);
   font-size: 0.875rem;
+  white-space: nowrap;
 }
 
 .nickname-badge.active {
@@ -353,7 +356,7 @@ header {
 .stat-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: var(--spacing-sm);
 }
 
@@ -387,6 +390,11 @@ header {
   margin-bottom: var(--spacing-lg);
   flex-wrap: wrap;
   gap: var(--spacing-md);
+}
+
+.action-bar h2 {
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .action-bar h2 {
@@ -440,11 +448,13 @@ header {
   backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   transition: all var(--transition-base);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .fund-card::before {
@@ -478,6 +488,7 @@ header {
   align-items: flex-start;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-md);
+  min-height: 80px;
 }
 
 .fund-icon {
@@ -511,6 +522,7 @@ header {
   flex-wrap: wrap;
   gap: var(--spacing-xs);
   margin-bottom: var(--spacing-md);
+  min-height: 28px;
 }
 
 .badge {

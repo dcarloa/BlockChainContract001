@@ -375,7 +375,7 @@ async function loadUserFunds() {
         allUserFunds = Array.from(fundMap.values());
         
         // Cargar detalles de cada fondo
-        await loadFundDetails();
+        await loadAllFundsDetails();
         
         // Actualizar estadísticas
         updateStats();
@@ -389,10 +389,15 @@ async function loadUserFunds() {
     }
 }
 
-async function loadFundDetails() {
+async function loadAllFundsDetails() {
     // Cargar detalles adicionales de cada fondo (balance, etc.)
     for (let fund of allUserFunds) {
         try {
+            if (!fund.fundAddress) {
+                console.warn("Fund sin dirección, saltando...");
+                continue;
+            }
+            
             const fundContract = new ethers.Contract(
                 fund.fundAddress,
                 TRAVEL_FUND_V2_ABI,
@@ -521,10 +526,14 @@ async function openFund(fundAddress) {
     try {
         showLoading("Cargando fondo...");
         
+        if (!fundAddress) {
+            throw new Error("Dirección de fondo inválida");
+        }
+        
         // Guardar fondo actual
-        currentFund = allUserFunds.find(f => f.fundAddress.toLowerCase() === fundAddress.toLowerCase());
+        currentFund = allUserFunds.find(f => f.fundAddress && f.fundAddress.toLowerCase() === fundAddress.toLowerCase());
         if (!currentFund) {
-            throw new Error("Fondo no encontrado");
+            throw new Error("Fondo no encontrado en tu lista");
         }
         
         // Crear instancia del contrato del fondo
@@ -535,11 +544,11 @@ async function openFund(fundAddress) {
         );
         
         // Ocultar dashboard, mostrar detalle
-        document.getElementById('dashboardSection').style.display = 'none';
-        document.getElementById('fundDetailSection').style.display = 'block';
+        document.getElementById('dashboardSection').classList.remove('active');
+        document.getElementById('fundDetailSection').classList.add('active');
         
         // Cargar detalles del fondo
-        await loadFundDetails();
+        await loadFundDetailView();
         
         hideLoading();
         
@@ -551,8 +560,8 @@ async function openFund(fundAddress) {
 }
 
 function backToDashboard() {
-    document.getElementById('fundDetailSection').style.display = 'none';
-    document.getElementById('dashboardSection').style.display = 'block';
+    document.getElementById('fundDetailSection').classList.remove('active');
+    document.getElementById('dashboardSection').classList.add('active');
     currentFund = null;
     currentFundContract = null;
 }
@@ -662,7 +671,7 @@ function showToast(message, type = 'info') {
 // FUND DETAIL VIEW
 // ============================================
 
-async function loadFundDetails() {
+async function loadFundDetailView() {
     try {
         const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
         const fundTypeNames = ['Viaje', 'Ahorro', 'Compartido', 'Otro'];
@@ -751,7 +760,7 @@ async function depositToFund() {
         showToast(`✅ Depósito de ${amount} ETH exitoso!`, "success");
         
         // Reload fund details
-        await loadFundDetails();
+        await loadFundDetailView();
         
         // Clear input
         document.getElementById('depositAmount').value = '';
@@ -811,7 +820,7 @@ async function acceptInvitation() {
         showToast("✅ Invitación aceptada! Ahora eres miembro activo", "success");
         
         // Reload fund details
-        await loadFundDetails();
+        await loadFundDetailView();
         
         hideLoading();
         
@@ -1045,7 +1054,7 @@ async function executeProposal(proposalId) {
         
         showToast("✅ Propuesta ejecutada! Fondos transferidos.", "success");
         
-        await loadFundDetails();
+        await loadFundDetailView();
         await loadProposals();
         
         hideLoading();
