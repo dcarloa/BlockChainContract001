@@ -13,6 +13,7 @@ const FUND_FACTORY_ABI = [
     "function createFund(string, string, uint256, bool, uint256, uint256, uint8) external returns (address)",
     "function getFundsByCreator(address) view returns (tuple(address fundAddress, address creator, string fundName, uint8 fundType, uint256 createdAt, bool isActive)[])",
     "function getFundsByParticipant(address) view returns (tuple(address fundAddress, address creator, string fundName, uint8 fundType, uint256 createdAt, bool isActive)[])",
+    "function getAllFunds(uint256, uint256) view returns (tuple(address fundAddress, address creator, string fundName, uint8 fundType, uint256 createdAt, bool isActive)[])",
     "function getTotalFunds() view returns (uint256)",
     "function deactivateFund(address) external",
     "event NicknameSet(address indexed user, string nickname)",
@@ -358,43 +359,84 @@ async function loadPendingInvitations() {
         
         let pendingCount = 0;
         
-        // Check each fund where user is participant
-        for (const fund of allUserFunds) {
-            const fundContract = new ethers.Contract(
-                fund.fundAddress,
-                TRAVEL_FUND_V2_ABI_FULL,
-                signer
-            );
-            
-            const memberStatus = await fundContract.memberStatus(userAddress);
-            
-            // Status 1 = Invited (pending)
-            if (memberStatus === 1n) {
-                pendingCount++;
+        // Get total number of funds
+        const totalFunds = await factoryContract.getTotalFunds();
+        console.log(`🔍 Buscando invitaciones en ${totalFunds} fondos totales...`);
+        
+        if (totalFunds === 0n) {
+            pendingSection.style.display = 'none';
+            return;
+        }
+        
+        // Get all funds (in batches if needed)
+        const batchSize = 50;
+        const fundsToCheck = Number(totalFunds) > batchSize ? batchSize : Number(totalFunds);
+        const allFunds = await factoryContract.getAllFunds(0, fundsToCheck);
+        
+        console.log(`📋 Revisando ${allFunds.length} fondos para invitaciones...`);
+        
+        // Check each fund for pending invitations
+        for (const fund of allFunds) {
+            try {
+                const fundAddress = fund.fundAddress || fund[0];
+                const fundContract = new ethers.Contract(
+                    fundAddress,
+                    TRAVEL_FUND_V2_ABI_FULL,
+                    signer
+                );
                 
-                const invitationItem = document.createElement('div');
-                invitationItem.className = 'invitation-item';
-                invitationItem.innerHTML = `
-                    <div class="invitation-item-info">
-                        <h4>
-                            ${getFundTypeIcon(Number(fund.fundType))}
-                            ${fund.fundName}
-                        </h4>
-                        <p>Invitado por: ${fund.creator.slice(0, 6)}...${fund.creator.slice(-4)}</p>
-                    </div>
-                    <div class="invitation-item-actions">
-                        <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fund.fundAddress}', '${fund.fundName}')">
-                            ✅ Aceptar
-                        </button>
-                        <button class="btn btn-secondary btn-sm" onclick="openFund('${fund.fundAddress}')">
-                            👁️ Ver
-                        </button>
-                    </div>
-                `;
+                const memberStatus = await fundContract.memberStatus(userAddress);
                 
-                invitationsList.appendChild(invitationItem);
+                // Status 1 = Invited (pending)
+                if (memberStatus === 1n) {
+                    pendingCount++;
+                    
+                    const fundName = fund.fundName || fund[2] || 'Sin nombre';
+                    const creator = fund.creator || fund[1];
+                    const fundType = fund.fundType !== undefined ? fund.fundType : (fund[3] || 0n);
+                    
+                    console.log(`🎫 Invitación encontrada: ${fundName}`);
+                    
+                    // Try to get creator nickname
+                    let creatorDisplay = `${creator.slice(0, 6)}...${creator.slice(-4)}`;
+                    try {
+                        const creatorNickname = await factoryContract.getNickname(creator);
+                        if (creatorNickname) {
+                            creatorDisplay = creatorNickname;
+                        }
+                    } catch (e) {
+                        // Use address if nickname fails
+                    }
+                    
+                    const invitationItem = document.createElement('div');
+                    invitationItem.className = 'invitation-item';
+                    invitationItem.innerHTML = `
+                        <div class="invitation-item-info">
+                            <h4>
+                                ${getFundTypeIcon(Number(fundType))}
+                                ${fundName}
+                            </h4>
+                            <p>Invitado por: ${creatorDisplay}</p>
+                        </div>
+                        <div class="invitation-item-actions">
+                            <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fundAddress}', '${fundName}')">
+                                ✅ Aceptar
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="openFund('${fundAddress}')">
+                                👁️ Ver
+                            </button>
+                        </div>
+                    `;
+                    
+                    invitationsList.appendChild(invitationItem);
+                }
+            } catch (error) {
+                console.log(`⚠️ Error checking fund ${fund.fundAddress}:`, error.message);
+                // Continue with next fund
             }
         }
+        
+        console.log(`✅ ${pendingCount} invitaciones pendientes encontradas`);
         
         if (pendingCount > 0) {
             pendingSection.style.display = 'block';
@@ -405,6 +447,8 @@ async function loadPendingInvitations() {
         
     } catch (error) {
         console.error("Error loading pending invitations:", error);
+        // Hide section on error
+        document.getElementById('pendingInvitationsSection').style.display = 'none';
     }
 }
 
