@@ -422,7 +422,7 @@ async function loadPendingInvitations() {
                             <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fundAddress}', '${fundName}')">
                                 ✅ Aceptar
                             </button>
-                            <button class="btn btn-secondary btn-sm" onclick="openFund('${fundAddress}')">
+                            <button class="btn btn-secondary btn-sm" onclick="openInvitedFund('${fundAddress}')">
                                 👁️ Ver
                             </button>
                         </div>
@@ -467,8 +467,10 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
         
         showToast(`✅ Invitación aceptada! Ahora eres miembro de ${fundName}`, "success");
         
-        // Reload dashboard
-        await loadDashboard();
+        // Force complete reload: clear state and reload everything
+        allUserFunds = [];
+        await loadUserFunds();
+        await loadPendingInvitations();
         
         hideLoading();
         
@@ -476,6 +478,58 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
         hideLoading();
         console.error("Error accepting invitation:", error);
         showToast("Error al aceptar invitación: " + error.message, "error");
+    }
+}
+
+window.openInvitedFund = async function(fundAddress) {
+    try {
+        showLoading("Cargando detalles del fondo...");
+        
+        // Get fund info from factory
+        const totalFunds = await factoryContract.getTotalFunds();
+        const allFunds = await factoryContract.getAllFunds(0, Number(totalFunds));
+        
+        const fundInfo = allFunds.find(f => {
+            const addr = f.fundAddress || f[0];
+            return addr.toLowerCase() === fundAddress.toLowerCase();
+        });
+        
+        if (!fundInfo) {
+            throw new Error("Fondo no encontrado");
+        }
+        
+        // Create temporary fund object
+        currentFund = {
+            fundAddress: fundInfo.fundAddress || fundInfo[0],
+            creator: fundInfo.creator || fundInfo[1],
+            fundName: fundInfo.fundName || fundInfo[2] || 'Sin nombre',
+            fundType: fundInfo.fundType !== undefined ? fundInfo.fundType : (fundInfo[3] || 0n),
+            createdAt: fundInfo.createdAt || fundInfo[4],
+            isActive: fundInfo.isActive !== undefined ? fundInfo.isActive : (fundInfo[5] || true),
+            isCreator: false,
+            isParticipant: true
+        };
+        
+        // Create contract instance
+        currentFundContract = new ethers.Contract(
+            fundAddress,
+            TRAVEL_FUND_V2_ABI_FULL,
+            signer
+        );
+        
+        // Navigate to fund detail
+        document.getElementById('dashboardSection').classList.remove('active');
+        document.getElementById('fundDetailSection').classList.add('active');
+        
+        // Load fund details
+        await loadFundDetailView();
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error opening invited fund:", error);
+        showToast("Error al abrir el fondo: " + error.message, "error");
     }
 }
 
