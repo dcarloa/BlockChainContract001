@@ -322,6 +322,11 @@ async function setNickname() {
 // DASHBOARD
 // ============================================
 
+function getFundTypeIcon(fundType) {
+    const icons = ['🌴', '💰', '🤝', '🎯'];
+    return icons[fundType] || '🎯';
+}
+
 async function loadDashboard() {
     try {
         showLoading("Cargando tus fondos...");
@@ -331,12 +336,102 @@ async function loadDashboard() {
         // Cargar fondos del usuario
         await loadUserFunds();
         
+        // Cargar invitaciones pendientes
+        await loadPendingInvitations();
+        
         hideLoading();
         
     } catch (error) {
         hideLoading();
         console.error("Error loading dashboard:", error);
         showToast("Error cargando el dashboard", "error");
+    }
+}
+
+async function loadPendingInvitations() {
+    try {
+        const invitationsList = document.getElementById('invitationsList');
+        const pendingSection = document.getElementById('pendingInvitationsSection');
+        const invitationsCountEl = document.getElementById('invitationsCount');
+        
+        invitationsList.innerHTML = '';
+        
+        let pendingCount = 0;
+        
+        // Check each fund where user is participant
+        for (const fund of allUserFunds) {
+            const fundContract = new ethers.Contract(
+                fund.fundAddress,
+                TRAVEL_FUND_V2_ABI_FULL,
+                signer
+            );
+            
+            const memberStatus = await fundContract.memberStatus(userAddress);
+            
+            // Status 1 = Invited (pending)
+            if (memberStatus === 1n) {
+                pendingCount++;
+                
+                const invitationItem = document.createElement('div');
+                invitationItem.className = 'invitation-item';
+                invitationItem.innerHTML = `
+                    <div class="invitation-item-info">
+                        <h4>
+                            ${getFundTypeIcon(Number(fund.fundType))}
+                            ${fund.fundName}
+                        </h4>
+                        <p>Invitado por: ${fund.creator.slice(0, 6)}...${fund.creator.slice(-4)}</p>
+                    </div>
+                    <div class="invitation-item-actions">
+                        <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fund.fundAddress}', '${fund.fundName}')">
+                            ✅ Aceptar
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="openFund('${fund.fundAddress}')">
+                            👁️ Ver
+                        </button>
+                    </div>
+                `;
+                
+                invitationsList.appendChild(invitationItem);
+            }
+        }
+        
+        if (pendingCount > 0) {
+            pendingSection.style.display = 'block';
+            invitationsCountEl.textContent = pendingCount;
+        } else {
+            pendingSection.style.display = 'none';
+        }
+        
+    } catch (error) {
+        console.error("Error loading pending invitations:", error);
+    }
+}
+
+window.acceptFundInvitation = async function(fundAddress, fundName) {
+    try {
+        showLoading(`Aceptando invitación a ${fundName}...`);
+        
+        const fundContract = new ethers.Contract(
+            fundAddress,
+            TRAVEL_FUND_V2_ABI_FULL,
+            signer
+        );
+        
+        const tx = await fundContract.acceptInvitation();
+        await tx.wait();
+        
+        showToast(`✅ Invitación aceptada! Ahora eres miembro de ${fundName}`, "success");
+        
+        // Reload dashboard
+        await loadDashboard();
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error accepting invitation:", error);
+        showToast("Error al aceptar invitación: " + error.message, "error");
     }
 }
 
@@ -819,6 +914,20 @@ async function depositToFund() {
             return;
         }
         
+        // Check authorization before attempting deposit
+        const memberStatus = await currentFundContract.memberStatus(userAddress);
+        const isPrivate = await currentFundContract.isPrivate();
+        
+        if (isPrivate && memberStatus === 0n) {
+            showToast("⚠️ Este es un fondo privado. Necesitas una invitación del creador para participar.", "warning");
+            return;
+        }
+        
+        if (isPrivate && memberStatus === 1n) {
+            showToast("⚠️ Tienes una invitación pendiente. Acéptala primero en la pestaña 'Invitar' antes de depositar.", "warning");
+            return;
+        }
+        
         showLoading("Depositando fondos...");
         
         const amountWei = ethers.parseEther(amount);
@@ -838,7 +947,18 @@ async function depositToFund() {
     } catch (error) {
         hideLoading();
         console.error("Error depositing:", error);
-        showToast("Error al depositar: " + error.message, "error");
+        
+        // Better error messages
+        let errorMsg = "Error al depositar";
+        if (error.message.includes("No estas autorizado")) {
+            errorMsg = "No estás autorizado para participar en este fondo privado. Necesitas ser invitado primero.";
+        } else if (error.message.includes("insufficient funds")) {
+            errorMsg = "Fondos insuficientes en tu cuenta";
+        } else if (error.message.includes("user rejected")) {
+            errorMsg = "Transacción cancelada";
+        }
+        
+        showToast(errorMsg, "error");
     }
 }
 
@@ -848,6 +968,39 @@ async function inviteMember() {
         
         if (!addressOrNickname) {
             showToast("Por favor ingresa un nickname o dirección", "warning");
+            return;
+        }
+        
+        // Validate not inviting yourself
+        let targetAddress = addressOrNickname;
+        if (!addressOrNickname.startsWith('0x')) {
+            // It's a nickname, resolve it
+            try {
+                targetAddress = await factoryContract.getAddressByNickname(addressOrNickname);
+                if (targetAddress === ethers.ZeroAddress) {
+                    showToast(`❌ El nickname "${addressOrNickname}" no existe`, "error");
+                    return;
+                }
+            } catch (e) {
+                showToast(`❌ El nickname "${addressOrNickname}" no existe`, "error");
+                return;
+            }
+        }
+        
+        // Check if inviting yourself
+        if (targetAddress.toLowerCase() === userAddress.toLowerCase()) {
+            showToast("⚠️ No puedes invitarte a ti mismo", "warning");
+            return;
+        }
+        
+        // Check member status
+        const memberStatus = await currentFundContract.memberStatus(targetAddress);
+        if (memberStatus === 1n) {
+            showToast(`⚠️ ${addressOrNickname} ya tiene una invitación pendiente`, "warning");
+            return;
+        }
+        if (memberStatus === 2n) {
+            showToast(`⚠️ ${addressOrNickname} ya es miembro activo del fondo`, "warning");
             return;
         }
         
@@ -874,7 +1027,17 @@ async function inviteMember() {
     } catch (error) {
         hideLoading();
         console.error("Error inviting member:", error);
-        showToast("Error al invitar: " + error.message, "error");
+        
+        let errorMsg = "Error al invitar";
+        if (error.message.includes("Ya esta invitado")) {
+            errorMsg = "Esta persona ya fue invitada o ya es miembro del fondo";
+        } else if (error.message.includes("Nickname not found")) {
+            errorMsg = "Nickname no encontrado";
+        } else if (error.message.includes("Only creator")) {
+            errorMsg = "Solo el creador puede invitar miembros";
+        }
+        
+        showToast(errorMsg, "error");
     }
 }
 

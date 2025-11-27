@@ -105,6 +105,17 @@
                     </div>
                 </div>
 
+                <!-- Pending Invitations Banner -->
+                <div id="pendingInvitationsSection" class="pending-invitations-section" style="display: none;">
+                    <div class="invitations-header">
+                        <h3>🎫 Invitaciones Pendientes</h3>
+                        <span class="invitations-count" id="invitationsCount">0</span>
+                    </div>
+                    <div id="invitationsList" class="invitations-list">
+                        <!-- Invitations will be loaded here -->
+                    </div>
+                </div>
+
                 <!-- Action Bar -->
                 <div class="action-bar">
                     <h2>Mis Fondos</h2>
@@ -273,6 +284,16 @@
                         <div class="tab-card">
                             <h3>🎫 Invitar Miembros</h3>
                             <p>Invita amigos para que se unan al fondo. Ellos deberán aceptar la invitación.</p>
+                            
+                            <div class="invite-info-box">
+                                <p><strong>ℹ️ Información:</strong></p>
+                                <ul>
+                                    <li>Solo el creador del fondo puede invitar</li>
+                                    <li>Los invitados verán la invitación en su dashboard</li>
+                                    <li>Deben aceptar antes de poder depositar</li>
+                                    <li>No puedes invitarte a ti mismo</li>
+                                </ul>
+                            </div>
                             
                             <div class="form-group">
                                 <label for="inviteAddress">Nickname o Dirección</label>
