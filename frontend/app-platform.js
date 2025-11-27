@@ -14,8 +14,10 @@ const FUND_FACTORY_ABI = [
     "function getFundsByCreator(address) view returns (tuple(address fundAddress, address creator, string fundName, uint8 fundType, uint256 createdAt, bool isActive)[])",
     "function getFundsByParticipant(address) view returns (tuple(address fundAddress, address creator, string fundName, uint8 fundType, uint256 createdAt, bool isActive)[])",
     "function getTotalFunds() view returns (uint256)",
+    "function deactivateFund(address) external",
     "event NicknameSet(address indexed user, string nickname)",
-    "event FundCreated(address indexed fundAddress, address indexed creator, string fundName, uint8 fundType, uint256 indexed fundIndex)"
+    "event FundCreated(address indexed fundAddress, address indexed creator, string fundName, uint8 fundType, uint256 indexed fundIndex)",
+    "event FundDeactivated(address indexed fundAddress, address indexed creator, uint256 indexed fundIndex)"
 ];
 
 const TRAVEL_FUND_V2_ABI = [
@@ -498,38 +500,54 @@ function createFundCard(fund) {
     
     const icon = fundTypeIcons[Number(fund.fundType)] || '🎯';
     const typeName = fundTypeNames[Number(fund.fundType)] || 'Otro';
+    const isInactive = !fund.isActive;
     
     return `
-        <div class="fund-card" onclick="openFund('${fund.fundAddress}')">
-            <div class="fund-card-header">
-                <div class="fund-icon">${icon}</div>
-                <div class="fund-type-badge">${typeName}</div>
-            </div>
-            
-            <h3 class="fund-name">${fund.fundName}</h3>
-            
-            <div class="fund-stats">
-                <div class="fund-stat">
-                    <span class="fund-stat-label">Balance</span>
-                    <span class="fund-stat-value">${parseFloat(fund.balance || 0).toFixed(2)} ETH</span>
+        <div class="fund-card ${isInactive ? 'fund-inactive' : ''}" onclick="openFund('${fund.fundAddress}')">
+            <div class="fund-card-content">
+                ${fund.isCreator && fund.isActive ? `
+                <button class="fund-delete-btn" onclick="event.stopPropagation(); deleteFund('${fund.fundAddress}', '${fund.fundName}')" title="Desactivar fondo">
+                    ✕
+                </button>
+                ` : ''}
+                
+                <div class="fund-card-header">
+                    <div class="fund-icon">${icon}</div>
+                    <div class="fund-card-title">
+                        <h3>${fund.fundName}</h3>
+                        <div class="fund-badges">
+                            <span class="badge badge-type type-${typeName.toLowerCase()}">${typeName}</span>
+                            ${isInactive ? '<span class="badge badge-status status-inactive">Inactivo</span>' : ''}
+                            ${fund.isCreator ? '<span class="badge badge-creator">👑 Creador</span>' : ''}
+                        </div>
+                    </div>
                 </div>
-                <div class="fund-stat">
-                    <span class="fund-stat-label">Meta</span>
-                    <span class="fund-stat-value">${parseFloat(fund.target || 0).toFixed(2)} ETH</span>
+                
+                <div class="fund-stats">
+                    <div class="fund-stat">
+                        <span class="fund-stat-label">Balance</span>
+                        <span class="fund-stat-value">${parseFloat(fund.balance || 0).toFixed(2)} ETH</span>
+                    </div>
+                    <div class="fund-stat">
+                        <span class="fund-stat-label">Meta</span>
+                        <span class="fund-stat-value">${parseFloat(fund.target || 0).toFixed(2)} ETH</span>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="fund-progress">
-                <div class="fund-progress-bar">
-                    <div class="fund-progress-fill" style="width: ${Math.min(fund.progress || 0, 100)}%"></div>
+                
+                <div class="fund-progress">
+                    <div class="fund-progress-label">
+                        <span>Progreso</span>
+                        <span>${(fund.progress || 0).toFixed(1)}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${Math.min(fund.progress || 0, 100)}%"></div>
+                    </div>
                 </div>
-                <span class="fund-progress-text">${(fund.progress || 0).toFixed(1)}%</span>
-            </div>
-            
-            <div class="fund-meta">
-                <span>👥 ${fund.contributors || 0} miembros</span>
-                <span>📊 ${fund.proposals || 0} propuestas</span>
-                ${fund.isCreator ? '<span class="creator-badge">👑 Creador</span>' : ''}
+                
+                <div class="fund-meta">
+                    <span>👥 ${fund.contributors || 0} miembros</span>
+                    <span>📊 ${fund.proposals || 0} propuestas</span>
+                </div>
             </div>
         </div>
     `;
@@ -589,6 +607,31 @@ function backToDashboard() {
     document.getElementById('dashboardSection').classList.add('active');
     currentFund = null;
     currentFundContract = null;
+}
+
+async function deleteFund(fundAddress, fundName) {
+    try {
+        const confirmed = confirm(`¿Estás seguro de que deseas desactivar el fondo "${fundName}"?\n\nEsta acción:\n• Marcará el fondo como inactivo\n• No eliminará los fondos del contrato\n• No se puede revertir\n\n¿Continuar?`);
+        
+        if (!confirmed) return;
+        
+        showLoading("Desactivando fondo...");
+        
+        const tx = await factoryContract.deactivateFund(fundAddress);
+        await tx.wait();
+        
+        showToast("✅ Fondo desactivado exitosamente", "success");
+        
+        // Recargar fondos
+        await loadUserFunds();
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error deleting fund:", error);
+        showToast("Error al desactivar el fondo: " + error.message, "error");
+    }
 }
 
 // ============================================

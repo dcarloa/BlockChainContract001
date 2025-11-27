@@ -73,6 +73,7 @@ contract FundFactory {
         uint256 indexed fundIndex
     );
     event FundParticipantAdded(address indexed fundAddress, address indexed participant, uint256 fundIndex);
+    event FundDeactivated(address indexed fundAddress, address indexed creator, uint256 indexed fundIndex);
     
     // ============================================
     // FUNCIONES DE NICKNAME (GLOBAL)
@@ -280,6 +281,32 @@ contract FundFactory {
         fundsByParticipant[_participant].push(_fundIndex);
         
         emit FundParticipantAdded(allFunds[_fundIndex].fundAddress, _participant, _fundIndex);
+    }
+    
+    /**
+     * @dev Desactivar un fondo (solo el creador puede hacerlo)
+     * @param _fundAddress Dirección del fondo a desactivar
+     */
+    function deactivateFund(address _fundAddress) external {
+        require(_fundAddress != address(0), "Direccion invalida");
+        
+        // Buscar el fondo en el array
+        uint256 fundIndex = type(uint256).max;
+        for (uint256 i = 0; i < allFunds.length; i++) {
+            if (allFunds[i].fundAddress == _fundAddress) {
+                fundIndex = i;
+                break;
+            }
+        }
+        
+        require(fundIndex != type(uint256).max, "Fondo no encontrado");
+        require(allFunds[fundIndex].creator == msg.sender, "Solo el creador puede desactivar");
+        require(allFunds[fundIndex].isActive, "Fondo ya desactivado");
+        
+        // Desactivar el fondo
+        allFunds[fundIndex].isActive = false;
+        
+        emit FundDeactivated(_fundAddress, msg.sender, fundIndex);
     }
     
     // ============================================
