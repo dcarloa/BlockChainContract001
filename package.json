@@ -1,0 +1,39 @@
+{
+  "name": "learning-solidity",
+  "version": "1.0.0",
+  "description": "Proyecto para aprender a desarrollar smart contracts en Ethereum con Solidity",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "deploy:travel": "hardhat run scripts/deployTravelFund.js --network localhost",
+    "node": "hardhat node",
+    "clean": "hardhat clean",
+    "frontend": "node scripts/server.js"
+  },
+  "keywords": [
+    "ethereum",
+    "solidity",
+    "smart-contracts",
+    "blockchain",
+    "hardhat"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.27.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "ethers": "^6.15.0",
+    "express": "^4.18.2"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "type": "commonjs"
+}

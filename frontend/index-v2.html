@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 ws://127.0.0.1:8545 ws://localhost:8545 wss://*; img-src 'self' data: https:; font-src 'self' data:; media-src 'self' https:;">
+    <title>TravelFund V2 - Gestión Simplificada de Fondos de Viaje</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Background Video -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="bgVideo">
+            <source src="https://videos.pexels.com/video-files/3129671/3129671-uhd_2560_1440_30fps.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <div class="logo-icon">🧳</div>
+                <div class="logo-text">
+                    <h1>TravelFund<span class="pro-badge">V2</span></h1>
+                    <p>Gestión Simplificada de Fondos de Viaje con Blockchain</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div id="userNickname" class="nickname-badge" style="display: none;">
+                    <span class="nickname-icon">👤</span>
+                    <span id="nicknameDisplay">-</span>
+                </div>
+                <button id="connectWallet" class="btn-primary">
+                    <span class="btn-icon">🔗</span>
+                    <span>Conectar Wallet</span>
+                </button>
+                <button id="diagnosisBtn" class="btn-secondary" style="margin-left: 10px;" title="Diagnóstico de Wallets">
+                    <span class="btn-icon">🔍</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- MetaMask Warning -->
+        <div id="metamaskWarning" class="card warning" style="display: none;">
+            <h3>⚠️ MetaMask Requerido</h3>
+            <p><strong>Esta aplicación requiere MetaMask.</strong> Si tienes múltiples wallets instaladas (Coinbase Wallet, Brave Wallet, etc.), la aplicación automáticamente forzará el uso de MetaMask.</p>
+            <br>
+            <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <strong>🔧 Técnica Aplicada:</strong>
+                <p style="margin: 5px 0;">Esta aplicación reemplaza automáticamente <code>window.ethereum</code> para apuntar directamente a MetaMask, evitando el selector de wallets que causa conflictos.</p>
+            </div>
+            <h4>📥 Instalación de MetaMask:</h4>
+            <ol>
+                <li>Instala la extensión de <a href="https://metamask.io/download/" target="_blank">MetaMask</a></li>
+                <li>Si ya tienes MetaMask, asegúrate de que esté habilitado</li>
+                <li>Si tienes otras wallets, desactívalas temporalmente o selecciona MetaMask como predeterminada</li>
+                <li>Configura la red local de Hardhat:
+                    <ul>
+                        <li><strong>RPC URL:</strong> http://127.0.0.1:8545</li>
+                        <li><strong>Chain ID:</strong> 31337</li>
+                        <li><strong>Nombre:</strong> Hardhat Local</li>
+                    </ul>
+                </li>
+                <li>Importa una cuenta de prueba (ver <code>QUICK_START_V2.md</code>)</li>
+                <li>Recarga esta página</li>
+            </ol>
+            <br>
+            <p><em>💡 Tip: Si tienes Coinbase Wallet u otras extensiones, puedes desactivarlas temporalmente en las extensiones de tu navegador para evitar conflictos.</em></p>
+        </div>
+
+        <!-- Welcome / Setup Nickname -->
+        <div id="welcomeSection" class="card" style="display: none;">
+            <div class="card-header">
+                <h2><span class="icon">👋</span> ¡Bienvenido a TravelFund V2!</h2>
+            </div>
+            <div class="welcome-content">
+                <p class="section-description">
+                    Antes de comenzar, establece tu <strong>nickname</strong> para que tus amigos te reconozcan fácilmente.
+                    Ya no necesitarás usar direcciones largas 😊
+                </p>
+                <div class="form-group">
+                    <label for="nicknameInput">Tu Nickname (3-32 caracteres, solo letras y números)</label>
+                    <input type="text" id="nicknameInput" placeholder="ej: Carlos123" class="input-field" maxlength="32">
+                    <small class="input-hint">💡 Elige algo fácil de recordar. Será único y no se puede duplicar.</small>
+                </div>
+                <button id="setNicknameBtn" class="btn-primary btn-block">
+                    <span class="btn-icon">✓</span>
+                    <span>Establecer Nickname</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Fund Auto-Load Success -->
+        <div id="fundLoadedSection" class="card" style="display: none;">
+            <div class="fund-header">
+                <div class="fund-info">
+                    <h2 id="fundName">-</h2>
+                    <p id="fundDescription">-</p>
+                    <div class="fund-badges">
+                        <span id="fundPrivacyBadge" class="badge">-</span>
+                        <span id="fundStatusBadge" class="badge">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress towards goal -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span class="progress-label">Progreso hacia la meta</span>
+                    <span class="progress-value"><span id="progressPercent">0</span>%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-amounts">
+                    <span><span id="currentAmount">0</span> ETH</span>
+                    <span><span id="targetAmount">0</span> ETH</span>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="contract-summary">
+                <div class="summary-item highlight">
+                    <div class="summary-icon">💰</div>
+                    <div class="summary-content">
+                        <span class="summary-label">Balance Total</span>
+                        <span id="totalBalance" class="summary-value">-</span>
+                        <span class="summary-unit">ETH</span>
+                    </div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-icon">👥</div>
+                    <div class="summary-content">
+                        <span class="summary-label">Contribuyentes</span>
+                        <span id="contributorCount" class="summary-value">-</span>
+                    </div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-icon">📝</div>
+                    <div class="summary-content">
+                        <span class="summary-label">Propuestas</span>
+                        <span id="proposalCount" class="summary-value">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div id="mainContent" style="display: none;">
+            <!-- Navigation Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="invite">🎫 Invitar</button>
+                <button class="tab-btn" data-tab="deposit">💵 Depositar</button>
+                <button class="tab-btn" data-tab="propose">📝 Proponer</button>
+                <button class="tab-btn" data-tab="vote">🗳️ Votar</button>
+                <button class="tab-btn" data-tab="members">👥 Miembros</button>
+            </div>
+
+            <!-- Tab: Invite Friends -->
+            <div id="tab-invite" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><span class="icon">🎫</span> Invitar Amigos</h2>
+                        <span class="badge badge-info">Simplificado</span>
+                    </div>
+                    <p class="section-description">
+                        Invita a tus amigos usando su <strong>nickname</strong> o dirección. 
+                        Ellos recibirán una invitación y podrán unirse al fondo.
+                    </p>
+
+                    <!-- Invitation Form -->
+                    <div class="form-group">
+                        <label>Buscar por Nickname o Dirección</label>
+                        <div class="search-container">
+                            <input type="text" id="inviteSearch" placeholder="ej: Carlos123 o 0x..." class="input-field">
+                            <button id="inviteBtn" class="btn-primary">
+                                <span class="btn-icon">📨</span>
+                                <span>Enviar Invitación</span>
+                            </button>
+                        </div>
+                        <small class="input-hint">💡 Si tu amigo aún no tiene nickname, usa su dirección de wallet</small>
+                    </div>
+
+                    <!-- Pending Invitations -->
+                    <div id="pendingInvitations" style="display: none;">
+                        <h3>Invitaciones Pendientes</h3>
+                        <div id="invitationsList"></div>
+                    </div>
+
+                    <!-- Accept Invitation (if user has one) -->
+                    <div id="acceptInvitationSection" style="display: none;">
+                        <div class="info-banner">
+                            <span class="info-icon">🎉</span>
+                            <span>¡Tienes una invitación pendiente!</span>
+                        </div>
+                        <button id="acceptInvitationBtn" class="btn-primary btn-block">
+                            <span class="btn-icon">✓</span>
+                            <span>Aceptar Invitación</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Deposit Funds -->
+            <div id="tab-deposit" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><span class="icon">💵</span> Depositar Fondos</h2>
+                    </div>
+                    <p class="section-description">
+                        Contribuye al fondo de viaje. Tu aporte será visible para todos los miembros.
+                    </p>
+
+                    <div class="form-group">
+                        <label for="depositAmount">Cantidad (ETH)</label>
+                        <input type="number" id="depositAmount" placeholder="ej: 2.5" step="0.01" min="0.01" class="input-field">
+                    </div>
+
+                    <button id="depositBtn" class="btn-primary btn-block">
+                        <span class="btn-icon">💰</span>
+                        <span>Depositar Fondos</span>
+                    </button>
+
+                    <!-- My Contribution -->
+                    <div class="info-grid" style="margin-top: 20px;">
+                        <div class="info-item">
+                            <span class="label">Tu Contribución Total</span>
+                            <span id="myContribution" class="value">0 ETH</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Create Proposal -->
+            <div id="tab-propose" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><span class="icon">📝</span> Crear Propuesta de Gasto</h2>
+                    </div>
+                    <p class="section-description">
+                        Propón un gasto del fondo. Usa <strong>nicknames</strong> en lugar de direcciones para mayor claridad.
+                    </p>
+
+                    <div class="form-group">
+                        <label for="proposalRecipientSearch">¿Quién recibirá el pago?</label>
+                        <input type="text" id="proposalRecipientSearch" placeholder="Nickname o dirección..." class="input-field">
+                        <small class="input-hint">💡 Puedes usar tu propio nickname para pagos a ti mismo</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="proposalAmount">Monto (ETH)</label>
+                        <input type="number" id="proposalAmount" placeholder="ej: 4.0" step="0.01" min="0.01" class="input-field">
+                        <small class="input-hint">⚠️ Máximo permitido: 80% del balance actual</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="proposalDesc">Descripción</label>
+                        <textarea id="proposalDesc" placeholder="Ej: Hotel en Cancún - 3 noches todo incluido" class="input-field" maxlength="500"></textarea>
+                        <small class="input-hint">Describe claramente el gasto propuesto (max 500 caracteres)</small>
+                    </div>
+
+                    <button id="createProposalBtn" class="btn-primary btn-block">
+                        <span class="btn-icon">📤</span>
+                        <span>Crear Propuesta</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab: Vote on Proposals -->
+            <div id="tab-vote" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><span class="icon">🗳️</span> Propuestas Activas</h2>
+                        <button id="refreshProposals" class="btn-secondary">
+                            <span class="btn-icon">🔄</span>
+                            <span>Actualizar</span>
+                        </button>
+                    </div>
+                    <p class="section-description">
+                        Vota en las propuestas activas. Se necesita <span id="requiredApproval">60%</span> de aprobación 
+                        y mínimo <span id="minVotes">2</span> votos.
+                    </p>
+
+                    <div id="proposalsList">
+                        <!-- Proposals will be loaded here -->
+                        <div class="empty-state">
+                            <span class="empty-icon">📭</span>
+                            <p>No hay propuestas activas</p>
+                            <small>Crea la primera propuesta en la pestaña "Proponer"</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Members -->
+            <div id="tab-members" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><span class="icon">👥</span> Miembros del Fondo</h2>
+                    </div>
+                    <p class="section-description">
+                        Lista de todos los contribuyentes y sus aportes al fondo.
+                    </p>
+
+                    <div id="membersList">
+                        <!-- Members will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>
+                TravelFund V2 - Powered by Ethereum & Hardhat | 
+                <a href="https://github.com" target="_blank">Ver Código</a> |
+                <a href="docs/GuiaDetallada.txt" target="_blank">Documentación</a>
+            </p>
+        </footer>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p id="loadingText">Procesando...</p>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toastContainer"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="ethers.umd.min.js"></script>
+    <script src="app-v2.js"></script>
+</body>
+</html>

@@ -1,0 +1,1450 @@
+================================================================================
+                    GUÍA DETALLADA - TRAVELFUND DAPP
+          Comprende la Solución Completa Paso a Paso
+================================================================================
+
+TABLA DE CONTENIDOS
+-------------------
+1. Introducción al Proyecto
+2. Tecnologías y Librerías Utilizadas
+3. Arquitectura de la Solución
+4. El Smart Contract: TravelFund.sol
+5. Blockchain de Pruebas (Hardhat Network)
+6. Conexión con MetaMask
+7. Frontend y Comunicación Web3
+8. Flujo Completo de Uso
+9. Ejemplos Prácticos
+10. Solución de Problemas Comunes
+
+================================================================================
+1. INTRODUCCIÓN AL PROYECTO
+================================================================================
+
+TravelFund es una aplicación descentralizada (DApp) que permite a un grupo de
+amigos crear un fondo compartido para un viaje, donde:
+
+- Cada persona deposita dinero (ETH - Ethereum)
+- Cualquiera puede proponer gastos (hotel, vuelos, tours)
+- El grupo vota democráticamente si aprobar cada gasto
+- Los fondos se liberan automáticamente cuando hay suficientes votos
+- Todo es transparente e inmutable en la blockchain
+
+ANALOGÍA SIMPLE:
+Imagina una alcancía digital compartida donde TODOS deben estar de acuerdo
+antes de romperla para sacar dinero. Pero en lugar de romperla, el smart
+contract actúa como un "tesorero automático" que sigue reglas programadas.
+
+================================================================================
+2. TECNOLOGÍAS Y LIBRERÍAS UTILIZADAS
+================================================================================
+
+2.1 NODE.JS Y NPM
+-----------------
+Node.js: Entorno de ejecución de JavaScript fuera del navegador
+NPM: Gestor de paquetes (instalador de librerías)
+
+¿Por qué lo necesitamos?
+- Para instalar y ejecutar Hardhat
+- Para correr el servidor web del frontend
+- Para ejecutar scripts de despliegue
+
+Ejemplo de uso:
+    npm install              → Instala todas las dependencias
+    node scripts/deploy.js   → Ejecuta un script de JavaScript
+
+
+2.2 HARDHAT (v2.27.0)
+---------------------
+Framework de desarrollo para Ethereum. Es como un "laboratorio completo" para
+crear, probar y desplegar smart contracts.
+
+Componentes principales:
+- Compilador de Solidity (convierte .sol a bytecode)
+- Red local de pruebas (blockchain simulada)
+- Consola interactiva para probar contratos
+- Framework de testing
+
+Comandos importantes:
+    npx hardhat compile      → Compila contratos
+    npx hardhat test         → Ejecuta pruebas
+    npx hardhat node         → Inicia blockchain local
+    npx hardhat console      → Abre consola interactiva
+
+Estructura de archivos:
+    hardhat.config.js        → Configuración de Hardhat
+    contracts/               → Smart contracts (.sol)
+    test/                    → Pruebas automatizadas
+    scripts/                 → Scripts de despliegue
+
+
+2.3 SOLIDITY (v0.8.27)
+----------------------
+Lenguaje de programación para smart contracts en Ethereum.
+Similar a JavaScript pero con tipos estáticos (como TypeScript).
+
+Características clave:
+- Fuertemente tipado (uint256, address, bool, string, etc.)
+- Orientado a objetos (contratos = clases)
+- Funciones modificadoras (public, private, view, payable)
+- Eventos para notificaciones
+- Modificadores personalizados para validaciones
+
+Ejemplo básico:
+    contract MiContrato {
+        uint256 public numero;              // Variable de estado
+        
+        function setNumero(uint256 _n) public {
+            numero = _n;                    // Modifica el estado
+        }
+        
+        function getNumero() public view returns (uint256) {
+            return numero;                  // Solo lectura
+        }
+    }
+
+
+2.4 ETHERS.JS (v6.15.0)
+-----------------------
+Librería JavaScript para interactuar con Ethereum desde el navegador.
+Es el "traductor" entre tu aplicación web y la blockchain.
+
+Componentes principales:
+
+a) Provider: Conexión con la blockchain
+   Ejemplo:
+       const provider = new ethers.BrowserProvider(window.ethereum);
+       // Se conecta al nodo a través de MetaMask
+
+b) Signer: Representa una cuenta que puede firmar transacciones
+   Ejemplo:
+       const signer = await provider.getSigner();
+       const address = await signer.getAddress();
+       // Obtiene la dirección de la cuenta conectada
+
+c) Contract: Interfaz para interactuar con smart contracts
+   Ejemplo:
+       const contract = new ethers.Contract(
+           contractAddress,  // Dirección del contrato
+           contractABI,      // Interfaz (qué funciones tiene)
+           signer           // Quién firma las transacciones
+       );
+
+d) Formateo de unidades
+   Ejemplo:
+       ethers.parseEther("1.5")      // "1.5" → 1500000000000000000 wei
+       ethers.formatEther(balance)   // 1500000000000000000 → "1.5" ETH
+
+
+2.5 EXPRESS.JS (v4.18.2)
+------------------------
+Framework web para Node.js. Sirve los archivos del frontend (HTML, CSS, JS).
+
+¿Por qué no abrir index.html directamente?
+- Los navegadores bloquean CORS (Cross-Origin Resource Sharing)
+- Necesitamos servir archivos desde un servidor HTTP
+- Permite agregar middleware y headers de seguridad
+
+Configuración básica:
+    const express = require('express');
+    const app = express();
+    
+    // Servir archivos estáticos
+    app.use(express.static('frontend'));
+    
+    // Endpoint para obtener dirección del contrato
+    app.get('/contract-address.json', (req, res) => {
+        res.json({ address: "0x123..." });
+    });
+    
+    app.listen(3001, () => {
+        console.log('Servidor en http://localhost:3001');
+    });
+
+
+2.6 OTRAS DEPENDENCIAS
+----------------------
+
+@nomicfoundation/hardhat-toolbox:
+    Paquete todo-en-uno que incluye herramientas esenciales para Hardhat.
+
+chai (v4.x):
+    Librería de aserciones para testing.
+    Ejemplo:
+        expect(balance).to.equal(expectedValue);
+        expect(await contract.isActive()).to.be.true;
+
+mocha:
+    Framework de testing (viene con Hardhat).
+    Organiza tests en describe() e it() blocks.
+
+================================================================================
+3. ARQUITECTURA DE LA SOLUCIÓN
+================================================================================
+
+La solución tiene 3 capas principales:
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        FRONTEND (Capa 1)                        │
+│  HTML + CSS + JavaScript                                        │
+│  - Interfaz visual para el usuario                              │
+│  - Formularios para depositar, proponer, votar                  │
+│  - Muestra información del contrato                             │
+└──────────────────────┬──────────────────────────────────────────┘
+                       │
+                       │ ethers.js
+                       ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                      METAMASK (Capa 2)                          │
+│  Wallet del navegador                                           │
+│  - Gestiona cuentas y claves privadas                           │
+│  - Firma transacciones                                          │
+│  - Conecta con la red blockchain                                │
+└──────────────────────┬──────────────────────────────────────────┘
+                       │
+                       │ JSON-RPC
+                       ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                   BLOCKCHAIN (Capa 3)                           │
+│  Hardhat Network (localhost:8545)                               │
+│  - Ejecuta el smart contract                                    │
+│  - Almacena el estado (balances, propuestas, votos)             │
+│  - Procesa transacciones                                        │
+│                                                                 │
+│  ┌──────────────────────────────────────────────┐              │
+│  │  SMART CONTRACT: TravelFund.sol              │              │
+│  │  - Lógica de negocio                          │              │
+│  │  - Reglas de votación                         │              │
+│  │  - Gestión de fondos                          │              │
+│  └──────────────────────────────────────────────┘              │
+└─────────────────────────────────────────────────────────────────┘
+
+FLUJO DE UNA TRANSACCIÓN:
+1. Usuario hace click en "Depositar 2 ETH" (Frontend)
+2. Frontend llama a contract.deposit({value: parseEther("2")})
+3. MetaMask muestra popup para confirmar
+4. Usuario confirma y MetaMask firma la transacción
+5. Transacción se envía a Hardhat Network
+6. Smart contract ejecuta la función deposit()
+7. Estado se actualiza en la blockchain
+8. Frontend recibe confirmación y actualiza la UI
+
+================================================================================
+4. EL SMART CONTRACT: TRAVELFUND.SOL
+================================================================================
+
+4.1 ESTRUCTURA DEL CONTRATO
+----------------------------
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract TravelFund {
+    // 1. VARIABLES DE ESTADO (almacenadas en blockchain)
+    // 2. STRUCTS (estructuras de datos personalizadas)
+    // 3. MAPPINGS (diccionarios/hashmaps)
+    // 4. EVENTOS (notificaciones)
+    // 5. MODIFICADORES (validaciones reutilizables)
+    // 6. CONSTRUCTOR (inicialización)
+    // 7. FUNCIONES
+}
+
+
+4.2 VARIABLES DE ESTADO PRINCIPALES
+------------------------------------
+
+string public tripName;                    // Nombre del viaje
+address public creator;                    // Quien creó el fondo
+bool public isActive;                      // ¿El fondo está activo?
+uint256 public totalBalance;               // Balance total (en wei)
+uint256 public approvalPercentage;         // % necesario para aprobar
+uint256 public minimumVotes;               // Votos mínimos requeridos
+uint256 public proposalCount;              // Contador de propuestas
+
+EJEMPLO:
+Si approvalPercentage = 60 y hay 5 contribuyentes:
+- Se necesitan 3 votos para aprobar (60% de 5 = 3)
+- Pero si minimumVotes = 2, al menos deben votar 2 personas
+
+
+4.3 STRUCTS: ESTRUCTURAS DE DATOS
+----------------------------------
+
+struct Contributor {
+    uint256 totalContribution;    // Total depositado
+    bool exists;                  // ¿Existe este contribuyente?
+}
+
+struct Proposal {
+    uint256 id;                   // ID único
+    string description;           // Descripción del gasto
+    uint256 amount;               // Monto solicitado
+    address payable recipient;    // Quien recibirá el dinero
+    uint256 votesFor;             // Votos a favor
+    uint256 votesAgainst;         // Votos en contra
+    bool executed;                // ¿Ya se ejecutó?
+    address proposer;             // Quien propuso
+    uint256 timestamp;            // Cuándo se creó
+}
+
+EJEMPLO DE USO:
+    Proposal memory nuevaPropuesta = Proposal({
+        id: 1,
+        description: "Hotel en Cancún - 3 noches",
+        amount: 4 ether,
+        recipient: payable(0x70997970...),
+        votesFor: 0,
+        votesAgainst: 0,
+        executed: false,
+        proposer: msg.sender,
+        timestamp: block.timestamp
+    });
+
+
+4.4 MAPPINGS: DICCIONARIOS EN SOLIDITY
+---------------------------------------
+
+mapping(address => Contributor) public contributors;
+// Ejemplo: contributors[0x123...] → {totalContribution: 5 ether, exists: true}
+
+mapping(uint256 => Proposal) public proposals;
+// Ejemplo: proposals[1] → {id: 1, description: "Hotel", amount: 4 ether, ...}
+
+mapping(uint256 => mapping(address => bool)) public hasVoted;
+// Ejemplo: hasVoted[1][0x123...] → true (ya votó en propuesta #1)
+
+address[] public contributorsList;
+// Lista de todas las direcciones que contribuyeron
+
+
+4.5 EVENTOS: NOTIFICACIONES EN BLOCKCHAIN
+------------------------------------------
+
+event FundCreated(string tripName, address creator, uint256 timestamp);
+event Deposit(address indexed contributor, uint256 amount);
+event ProposalCreated(uint256 indexed proposalId, string description);
+event Voted(uint256 indexed proposalId, address voter, bool inFavor);
+event ProposalExecuted(uint256 indexed proposalId, uint256 amount);
+
+¿Por qué usar eventos?
+- Son baratos (menos gas que almacenar datos)
+- Frontend puede escucharlos en tiempo real
+- Crean un historial inmutable de acciones
+
+EJEMPLO EN FRONTEND:
+    contract.on("Deposit", (contributor, amount) => {
+        console.log(`${contributor} depositó ${amount} ETH`);
+        actualizarInterfaz();
+    });
+
+
+4.6 MODIFICADORES: VALIDACIONES REUTILIZABLES
+----------------------------------------------
+
+modifier onlyCreator() {
+    require(msg.sender == creator, "Solo el creador");
+    _;  // Aquí se ejecuta la función
+}
+
+modifier onlyActive() {
+    require(isActive, "Fondo cerrado");
+    _;
+}
+
+modifier onlyContributor() {
+    require(contributors[msg.sender].exists, "No eres contribuyente");
+    _;
+}
+
+USO:
+    function closeFund() public onlyCreator onlyActive {
+        isActive = false;
+        // Solo se ejecuta si pasan ambas validaciones
+    }
+
+
+4.7 FUNCIONES PRINCIPALES
+--------------------------
+
+A) DEPOSIT - Depositar Fondos
+    function deposit() public payable onlyActive {
+        require(msg.value > 0, "Debes enviar ETH");
+        
+        if (!contributors[msg.sender].exists) {
+            contributors[msg.sender] = Contributor(msg.value, true);
+            contributorsList.push(msg.sender);
+        } else {
+            contributors[msg.sender].totalContribution += msg.value;
+        }
+        
+        totalBalance += msg.value;
+        emit Deposit(msg.sender, msg.value);
+    }
+
+EXPLICACIÓN:
+- payable: Permite recibir ETH
+- msg.value: Cantidad de ETH enviada (en wei)
+- msg.sender: Dirección de quien llama la función
+- Actualiza el mapping contributors
+- Agrega a la lista si es nuevo
+- Emite evento Deposit
+
+EJEMPLO DE LLAMADA DESDE FRONTEND:
+    await contract.deposit({ value: ethers.parseEther("2.5") });
+    // Deposita 2.5 ETH
+
+
+B) CREATE PROPOSAL - Crear Propuesta
+    function createProposal(
+        string memory _description,
+        uint256 _amount,
+        address payable _recipient
+    ) public onlyActive onlyContributor returns (uint256) {
+        require(_amount <= totalBalance, "Monto excede balance");
+        require(_recipient != address(0), "Destinatario inválido");
+        
+        proposalCount++;
+        proposals[proposalCount] = Proposal({
+            id: proposalCount,
+            description: _description,
+            amount: _amount,
+            recipient: _recipient,
+            votesFor: 0,
+            votesAgainst: 0,
+            executed: false,
+            proposer: msg.sender,
+            timestamp: block.timestamp
+        });
+        
+        emit ProposalCreated(proposalCount, _description);
+        return proposalCount;
+    }
+
+EXPLICACIÓN:
+- memory: La variable vive solo durante la ejecución
+- returns (uint256): Devuelve el ID de la propuesta
+- block.timestamp: Marca de tiempo del bloque actual
+
+EJEMPLO:
+    const proposalId = await contract.createProposal(
+        "Hotel en Cancún - 3 noches",
+        ethers.parseEther("4"),
+        "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+    );
+
+
+C) VOTE - Votar en una Propuesta
+    function vote(uint256 _proposalId, bool _inFavor) 
+        public 
+        onlyActive 
+        onlyContributor 
+    {
+        require(_proposalId > 0 && _proposalId <= proposalCount);
+        require(!proposals[_proposalId].executed, "Ya ejecutada");
+        require(!hasVoted[_proposalId][msg.sender], "Ya votaste");
+        
+        hasVoted[_proposalId][msg.sender] = true;
+        
+        if (_inFavor) {
+            proposals[_proposalId].votesFor++;
+        } else {
+            proposals[_proposalId].votesAgainst++;
+        }
+        
+        emit Voted(_proposalId, msg.sender, _inFavor);
+    }
+
+LÓGICA DE VOTACIÓN:
+1. Verifica que la propuesta existe
+2. Verifica que no se haya ejecutado
+3. Verifica que no hayas votado antes
+4. Registra tu voto
+5. Incrementa contador (a favor o en contra)
+
+EJEMPLO:
+    await contract.vote(1, true);   // Voto a favor en propuesta #1
+    await contract.vote(1, false);  // Voto en contra
+
+
+D) EXECUTE PROPOSAL - Ejecutar Propuesta Aprobada
+    function executeProposal(uint256 _proposalId) public onlyActive {
+        Proposal storage proposal = proposals[_proposalId];
+        
+        require(!proposal.executed, "Ya ejecutada");
+        require(proposal.amount <= totalBalance, "Fondos insuficientes");
+        
+        uint256 totalVotes = proposal.votesFor + proposal.votesAgainst;
+        require(totalVotes >= minimumVotes, "Votos insuficientes");
+        
+        uint256 requiredVotes = (contributorsList.length * approvalPercentage) / 100;
+        require(proposal.votesFor >= requiredVotes, "No aprobada");
+        
+        proposal.executed = true;
+        totalBalance -= proposal.amount;
+        
+        (bool success, ) = proposal.recipient.call{value: proposal.amount}("");
+        require(success, "Transferencia fallida");
+        
+        emit ProposalExecuted(_proposalId, proposal.amount);
+    }
+
+VALIDACIONES:
+1. No ejecutada previamente
+2. Hay suficiente balance
+3. Se alcanzó el mínimo de votos
+4. Se alcanzó el porcentaje requerido
+5. Transferencia exitosa
+
+CÁLCULO DE APROBACIÓN:
+Si hay 5 contribuyentes y approvalPercentage = 60:
+    requiredVotes = (5 * 60) / 100 = 3
+    Se necesitan al menos 3 votos a favor
+
+
+E) CLOSE FUND - Cerrar el Fondo
+    function closeFund() public onlyCreator onlyActive {
+        isActive = false;
+        emit FundClosed(totalBalance, block.timestamp);
+    }
+
+Después de cerrar:
+- No se pueden hacer más depósitos
+- No se pueden crear propuestas
+- Los contribuyentes pueden retirar su parte
+
+
+F) WITHDRAW PROPORTIONAL - Retirar Fondos Proporcionales
+    function withdrawProportional() public {
+        require(!isActive, "Fondo aún activo");
+        require(contributors[msg.sender].exists, "No contribuyente");
+        
+        uint256 contribution = contributors[msg.sender].totalContribution;
+        require(contribution > 0, "Sin contribución");
+        
+        // Cálculo proporcional
+        uint256 share = (totalBalance * contribution) / getTotalContributed();
+        
+        require(share > 0, "Sin fondos");
+        
+        contributors[msg.sender].totalContribution = 0;
+        totalBalance -= share;
+        
+        (bool success, ) = payable(msg.sender).call{value: share}("");
+        require(success, "Transferencia fallida");
+        
+        emit Withdrawal(msg.sender, share);
+    }
+
+EJEMPLO DE CÁLCULO:
+    Total contribuido por todos: 10 ETH
+    Tu contribución: 3 ETH
+    Balance actual del fondo: 6 ETH (después de gastos)
+    
+    Tu parte = (6 ETH * 3 ETH) / 10 ETH = 1.8 ETH
+
+================================================================================
+5. BLOCKCHAIN DE PRUEBAS (HARDHAT NETWORK)
+================================================================================
+
+5.1 ¿QUÉ ES HARDHAT NETWORK?
+-----------------------------
+Es una blockchain de Ethereum simulada que corre en tu computadora.
+Perfecta para desarrollo porque:
+
+- No cuesta dinero real
+- Las transacciones son instantáneas
+- Puedes reiniciarla cuando quieras
+- Viene con 20 cuentas precargadas con 10,000 ETH cada una
+
+ANALOGÍA:
+Es como un "sandbox" de videojuego donde puedes experimentar sin
+consecuencias reales.
+
+
+5.2 CONFIGURACIÓN
+-----------------
+Archivo: hardhat.config.js
+
+module.exports = {
+    solidity: "0.8.27",
+    networks: {
+        hardhat: {
+            chainId: 31337  // ID de la red local
+        },
+        localhost: {
+            url: "http://127.0.0.1:8545"  // Puerto del nodo
+        }
+    }
+};
+
+
+5.3 INICIAR EL NODO
+-------------------
+Comando:
+    npx hardhat node
+
+Esto inicia un nodo local que:
+- Escucha en puerto 8545
+- Muestra logs de cada transacción
+- Persiste el estado mientras está corriendo
+
+Salida típica:
+    Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/
+    
+    Accounts
+    ========
+    Account #0: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 (10000 ETH)
+    Private Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+    ...
+
+
+5.4 CUENTAS DE PRUEBA
+---------------------
+Hardhat genera 20 cuentas automáticamente:
+
+Account #0 (Deployer):
+    Address: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+    Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+Account #1:
+    Address: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+    Key: 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+
+... (18 cuentas más)
+
+IMPORTAR EN METAMASK:
+1. Abre MetaMask
+2. Click en el ícono de cuenta
+3. "Importar cuenta"
+4. Pega la clave privada
+5. ¡Listo! Verás 10,000 ETH
+
+
+5.5 INTERACCIÓN CON LA CONSOLA
+-------------------------------
+Comando:
+    npx hardhat console --network localhost
+
+Ejemplos:
+    // Obtener cuentas
+    const [owner, addr1, addr2] = await ethers.getSigners();
+    
+    // Conectar con el contrato
+    const TravelFund = await ethers.getContractFactory("TravelFund");
+    const fund = await TravelFund.attach("0x5FbDB2...");
+    
+    // Llamar funciones
+    await fund.deposit({ value: ethers.parseEther("2") });
+    const balance = await fund.getBalance();
+    console.log(ethers.formatEther(balance));  // "2.0"
+
+================================================================================
+6. CONEXIÓN CON METAMASK
+================================================================================
+
+6.1 ¿QUÉ ES METAMASK?
+----------------------
+Wallet (billetera) de Ethereum en forma de extensión de navegador.
+Funciona como:
+- Gestor de cuentas y claves privadas
+- Firmador de transacciones
+- Puente entre tu DApp y la blockchain
+
+INSTALACIÓN:
+1. Ve a https://metamask.io/download/
+2. Instala la extensión en Chrome/Firefox/Brave
+3. Crea una wallet o importa una existente
+4. ¡Listo!
+
+
+6.2 CONFIGURAR RED LOCAL
+-------------------------
+Para conectar MetaMask con Hardhat Network:
+
+1. Abre MetaMask
+2. Click en el selector de red (arriba)
+3. "Agregar red" → "Agregar red manualmente"
+4. Completa:
+   - Nombre de red: Hardhat Local
+   - Nueva URL de RPC: http://127.0.0.1:8545
+   - ID de cadena: 31337
+   - Símbolo de moneda: ETH
+5. Guardar
+
+Ahora verás "Hardhat Local" en el selector de redes.
+
+
+6.3 FLUJO DE CONEXIÓN DESDE EL FRONTEND
+----------------------------------------
+
+// 1. Detectar MetaMask
+if (!window.ethereum) {
+    alert("Por favor instala MetaMask");
+    return;
+}
+
+// 2. Solicitar conexión
+const accounts = await window.ethereum.request({ 
+    method: 'eth_requestAccounts' 
+});
+// MetaMask muestra popup: "Conectar cuenta"
+
+// 3. Obtener provider y signer
+const provider = new ethers.BrowserProvider(window.ethereum);
+const signer = await provider.getSigner();
+const address = await signer.getAddress();
+
+console.log("Conectado:", address);
+
+// 4. Verificar red
+const network = await provider.getNetwork();
+if (network.chainId !== 31337n) {
+    alert("Por favor cambia a Hardhat Local");
+    return;
+}
+
+
+6.4 MANEJO DE MÚLTIPLES WALLETS
+--------------------------------
+A veces tienes MetaMask + Coinbase Wallet + otros instalados.
+Para detectar solo MetaMask:
+
+if (window.ethereum) {
+    let providers = window.ethereum.providers || [window.ethereum];
+    
+    // Filtrar solo MetaMask
+    const metamask = providers.find(
+        p => p.isMetaMask && !p.isCoinbaseWallet
+    );
+    
+    if (!metamask) {
+        alert("MetaMask no detectado");
+        return;
+    }
+    
+    // Usar este provider
+    const provider = new ethers.BrowserProvider(metamask);
+}
+
+
+6.5 EVENTOS DE METAMASK
+------------------------
+
+// Detectar cambio de cuenta
+window.ethereum.on('accountsChanged', (accounts) => {
+    console.log("Cuenta cambiada:", accounts[0]);
+    location.reload();  // Recargar la página
+});
+
+// Detectar cambio de red
+window.ethereum.on('chainChanged', (chainId) => {
+    console.log("Red cambiada:", chainId);
+    location.reload();
+});
+
+// Detectar desconexión
+window.ethereum.on('disconnect', () => {
+    console.log("MetaMask desconectado");
+});
+
+================================================================================
+7. FRONTEND Y COMUNICACIÓN WEB3
+================================================================================
+
+7.1 ESTRUCTURA DEL FRONTEND
+----------------------------
+frontend/
+├── index.html          → Estructura HTML
+├── styles.css          → Estilos visuales
+├── app.js              → Lógica JavaScript + Web3
+├── ethers.umd.min.js   → Librería ethers.js
+└── contract-address.json → Dirección del contrato desplegado
+
+
+7.2 INICIALIZACIÓN DE LA DAPP
+------------------------------
+
+// Variables globales
+let provider;
+let signer;
+let contract;
+let userAddress;
+
+// ABI del contrato (definición de funciones)
+const contractABI = [
+    "function deposit() payable",
+    "function createProposal(string,uint256,address) returns (uint256)",
+    "function vote(uint256,bool)",
+    // ... más funciones
+];
+
+// Función de inicialización
+async function init() {
+    // 1. Conectar wallet
+    await connectWallet();
+    
+    // 2. Cargar contrato
+    await loadContract();
+    
+    // 3. Actualizar interfaz
+    await updateUI();
+}
+
+
+7.3 CONECTAR CON EL CONTRATO
+-----------------------------
+
+async function loadContract() {
+    // Obtener dirección del contrato
+    const response = await fetch('/contract-address.json');
+    const data = await response.json();
+    const contractAddress = data.address;
+    
+    // Crear instancia del contrato
+    contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer  // Para transacciones que modifican estado
+    );
+    
+    console.log("Contrato cargado:", contractAddress);
+}
+
+
+7.4 REALIZAR TRANSACCIONES
+---------------------------
+
+A) DEPOSITAR FONDOS
+async function depositFunds() {
+    try {
+        const amount = document.getElementById('depositAmount').value;
+        
+        // Mostrar loading
+        showLoading("Procesando depósito...");
+        
+        // Enviar transacción
+        const tx = await contract.deposit({
+            value: ethers.parseEther(amount)
+        });
+        
+        // Esperar confirmación
+        await tx.wait();
+        
+        showToast("¡Depósito exitoso!", "success");
+        await updateUI();
+        
+    } catch (error) {
+        console.error(error);
+        showToast("Error: " + error.message, "error");
+    } finally {
+        hideLoading();
+    }
+}
+
+B) CREAR PROPUESTA
+async function createProposal() {
+    const description = document.getElementById('proposalDesc').value;
+    const amount = document.getElementById('proposalAmount').value;
+    const recipient = document.getElementById('proposalRecipient').value;
+    
+    try {
+        showLoading("Creando propuesta...");
+        
+        const tx = await contract.createProposal(
+            description,
+            ethers.parseEther(amount),
+            recipient
+        );
+        
+        const receipt = await tx.wait();
+        
+        // Extraer ID de la propuesta del evento
+        const event = receipt.logs.find(
+            log => log.eventName === 'ProposalCreated'
+        );
+        const proposalId = event.args[0];
+        
+        showToast(`Propuesta #${proposalId} creada!`, "success");
+        await loadProposals();
+        
+    } catch (error) {
+        showToast("Error: " + error.message, "error");
+    } finally {
+        hideLoading();
+    }
+}
+
+C) VOTAR
+async function voteProposal(proposalId, inFavor) {
+    try {
+        showLoading("Registrando voto...");
+        
+        const tx = await contract.vote(proposalId, inFavor);
+        await tx.wait();
+        
+        showToast("¡Voto registrado!", "success");
+        await loadProposals();
+        
+    } catch (error) {
+        showToast("Error: " + error.message, "error");
+    } finally {
+        hideLoading();
+    }
+}
+
+
+7.5 LEER INFORMACIÓN DEL CONTRATO
+----------------------------------
+
+async function updateUI() {
+    // Obtener información básica
+    const tripName = await contract.tripName();
+    const totalBalance = await contract.getBalance();
+    const contributorCount = await contract.getContributorCount();
+    const approvalPercentage = await contract.approvalPercentage();
+    const isActive = await contract.isActive();
+    
+    // Actualizar HTML
+    document.getElementById('tripName').textContent = tripName;
+    document.getElementById('totalBalance').textContent = 
+        ethers.formatEther(totalBalance);
+    document.getElementById('contributorCount').textContent = contributorCount;
+    document.getElementById('approvalPercentage').textContent = 
+        approvalPercentage.toString();
+    document.getElementById('fundActive').textContent = 
+        isActive ? 'Activo' : 'Cerrado';
+}
+
+
+7.6 CARGAR PROPUESTAS
+----------------------
+
+async function loadProposals() {
+    const proposalCount = await contract.proposalCount();
+    const proposalsContainer = document.getElementById('proposalsList');
+    proposalsContainer.innerHTML = '';
+    
+    for (let i = 1; i <= proposalCount; i++) {
+        // Obtener datos de la propuesta
+        const proposal = await contract.getProposal(i);
+        
+        // Convertir BigInt a Number
+        const votesFor = Number(proposal.votesFor);
+        const votesAgainst = Number(proposal.votesAgainst);
+        const amount = ethers.formatEther(proposal.amount);
+        
+        // Crear card HTML
+        const card = createProposalCard({
+            id: i,
+            description: proposal.description,
+            amount: amount,
+            recipient: proposal.recipient,
+            votesFor: votesFor,
+            votesAgainst: votesAgainst,
+            executed: proposal.executed
+        });
+        
+        proposalsContainer.appendChild(card);
+    }
+}
+
+
+7.7 MANEJO DE ERRORES COMUNES
+------------------------------
+
+try {
+    await contract.deposit({ value: ethers.parseEther("2") });
+} catch (error) {
+    if (error.code === 'ACTION_REJECTED') {
+        // Usuario rechazó la transacción
+        showToast("Transacción cancelada", "info");
+    } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        // No tiene suficiente ETH
+        showToast("Fondos insuficientes", "error");
+    } else if (error.message.includes("Fondo cerrado")) {
+        // Error del smart contract
+        showToast("El fondo está cerrado", "error");
+    } else {
+        // Error desconocido
+        showToast("Error: " + error.message, "error");
+    }
+}
+
+================================================================================
+8. FLUJO COMPLETO DE USO
+================================================================================
+
+PASO 1: CONFIGURACIÓN INICIAL
+------------------------------
+1. Instalar dependencias:
+   npm install
+
+2. Iniciar nodo Hardhat:
+   npx hardhat node
+   (Dejar corriendo en una terminal)
+
+3. Desplegar contrato:
+   npx hardhat run scripts/deployTravelFund.js --network localhost
+
+4. Iniciar servidor frontend:
+   npm run frontend
+
+5. Configurar MetaMask:
+   - Agregar red Hardhat Local (127.0.0.1:8545, Chain ID: 31337)
+   - Importar cuenta de prueba
+
+
+PASO 2: CONECTAR WALLET
+------------------------
+1. Abrir http://localhost:3001
+2. Click en "Connect Wallet"
+3. MetaMask muestra popup
+4. Seleccionar cuenta
+5. Click en "Conectar"
+6. Ver dirección y balance en la UI
+
+
+PASO 3: CONFIGURAR CONTRATO
+----------------------------
+1. Click en "🔄 Load Latest"
+2. Se carga automáticamente la dirección del último despliegue
+3. Ver información del fondo:
+   - Nombre del viaje
+   - Balance total
+   - Número de contribuyentes
+   - % de aprobación requerido
+
+
+PASO 4: DEPOSITAR FONDOS
+-------------------------
+1. Ir a la tab "Deposit"
+2. Ingresar cantidad (ej: 2.5)
+3. Click en "Deposit Funds"
+4. MetaMask muestra popup con detalles:
+   - To: dirección del contrato
+   - Amount: 2.5 ETH
+   - Gas fee: ~0.001 ETH
+5. Click en "Confirmar"
+6. Esperar confirmación
+7. Ver actualización en "Total Balance"
+
+
+PASO 5: CREAR PROPUESTA
+------------------------
+1. Ir a la tab "Create Proposal"
+2. Completar formulario:
+   - Description: "Hotel en Cancún - 3 noches"
+   - Amount: 4
+   - Recipient: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+3. Click en "Create Proposal"
+4. Confirmar en MetaMask
+5. Ver nueva propuesta en la lista
+
+
+PASO 6: VOTAR
+--------------
+1. Ir a la tab "Vote"
+2. Ver lista de propuestas
+3. Cada propuesta muestra:
+   - Descripción
+   - Monto
+   - Votos a favor / en contra
+   - Botones "Vote For" y "Vote Against"
+4. Click en "Vote For"
+5. Confirmar en MetaMask
+6. Ver contador de votos actualizado
+
+
+PASO 7: EJECUTAR PROPUESTA
+---------------------------
+1. Cuando hay suficientes votos:
+   - Badge cambia a "Approved"
+   - Aparece botón "Execute"
+2. Click en "Execute"
+3. Confirmar en MetaMask
+4. El destinatario recibe los fondos
+5. Badge cambia a "Executed"
+6. Balance total se reduce
+
+
+PASO 8: CERRAR FONDO (Opcional)
+--------------------------------
+1. Solo el creador puede hacer esto
+2. Ir a la tab "Manage"
+3. Click en "Close Fund"
+4. Confirmar en MetaMask
+5. Estado cambia a "Closed"
+6. Ya no se pueden hacer depósitos ni propuestas
+
+
+PASO 9: RETIRAR FONDOS (Después de cerrar)
+-------------------------------------------
+1. Ir a la tab "Manage"
+2. Ver tu contribución y tu parte proporcional
+3. Click en "Withdraw My Share"
+4. Confirmar en MetaMask
+5. Recibes tu parte en tu wallet
+
+================================================================================
+9. EJEMPLOS PRÁCTICOS
+================================================================================
+
+EJEMPLO 1: VIAJE A CANCÚN CON 4 AMIGOS
+---------------------------------------
+
+SETUP:
+- 4 amigos: Alice, Bob, Charlie, Diana
+- Configuración: 60% aprobación, mínimo 2 votos
+- Cada uno deposita:
+  * Alice: 3 ETH
+  * Bob: 2.5 ETH
+  * Charlie: 2 ETH
+  * Diana: 1.5 ETH
+- Total: 9 ETH
+
+PROPUESTA 1: Hotel (4 ETH)
+- Bob crea la propuesta
+- Votos:
+  * Alice: A favor ✓
+  * Bob: A favor ✓
+  * Charlie: A favor ✓
+  * Diana: En contra ✗
+- Resultado: 3/4 = 75% > 60% → APROBADA
+- Charlie ejecuta la propuesta
+- Hotel recibe 4 ETH
+- Balance restante: 5 ETH
+
+PROPUESTA 2: Tours (3 ETH)
+- Diana crea la propuesta
+- Votos:
+  * Alice: A favor ✓
+  * Bob: En contra ✗
+  * Charlie: No vota
+  * Diana: A favor ✓
+- Resultado: 2/4 = 50% < 60% → RECHAZADA
+- Nadie puede ejecutarla
+
+PROPUESTA 3: Comida (1 ETH)
+- Alice crea la propuesta
+- Votos:
+  * Alice: A favor ✓
+  * Bob: A favor ✓
+  * Charlie: A favor ✓
+  * Diana: A favor ✓
+- Resultado: 4/4 = 100% > 60% → APROBADA
+- Balance final: 4 ETH
+
+CERRAR FONDO:
+- Alice (creadora) cierra el fondo
+- Distribución proporcional:
+  * Alice: 3/9 * 4 = 1.33 ETH
+  * Bob: 2.5/9 * 4 = 1.11 ETH
+  * Charlie: 2/9 * 4 = 0.89 ETH
+  * Diana: 1.5/9 * 4 = 0.67 ETH
+
+
+EJEMPLO 2: USANDO LA CONSOLA DE HARDHAT
+----------------------------------------
+
+// 1. Abrir consola
+npx hardhat console --network localhost
+
+// 2. Obtener signers (cuentas)
+const [alice, bob, charlie] = await ethers.getSigners();
+
+// 3. Conectar con el contrato
+const TravelFund = await ethers.getContractFactory("TravelFund");
+const fund = TravelFund.attach("0x5FbDB2315678afecb367f032d93F642f64180aa3");
+
+// 4. Hacer depósitos
+await fund.connect(alice).deposit({ value: ethers.parseEther("3") });
+await fund.connect(bob).deposit({ value: ethers.parseEther("2") });
+
+// 5. Ver balance
+const balance = await fund.getBalance();
+console.log("Balance:", ethers.formatEther(balance), "ETH");
+
+// 6. Crear propuesta
+const tx = await fund.connect(alice).createProposal(
+    "Hotel", 
+    ethers.parseEther("2"),
+    bob.address
+);
+await tx.wait();
+
+// 7. Votar
+await fund.connect(alice).vote(1, true);
+await fund.connect(bob).vote(1, true);
+
+// 8. Ver propuesta
+const proposal = await fund.getProposal(1);
+console.log("Votos a favor:", proposal.votesFor.toString());
+
+// 9. Ejecutar
+await fund.connect(alice).executeProposal(1);
+
+// 10. Verificar balance de Bob
+const bobBalance = await ethers.provider.getBalance(bob.address);
+console.log("Bob tiene:", ethers.formatEther(bobBalance), "ETH");
+
+
+EJEMPLO 3: ESCUCHAR EVENTOS EN TIEMPO REAL
+-------------------------------------------
+
+// Configurar listeners
+contract.on("Deposit", (contributor, amount) => {
+    console.log(`💰 ${contributor} depositó ${ethers.formatEther(amount)} ETH`);
+    updateUI();
+});
+
+contract.on("ProposalCreated", (proposalId, description) => {
+    console.log(`📝 Nueva propuesta #${proposalId}: ${description}`);
+    loadProposals();
+});
+
+contract.on("Voted", (proposalId, voter, inFavor) => {
+    const vote = inFavor ? "a favor" : "en contra";
+    console.log(`🗳️ ${voter} votó ${vote} en propuesta #${proposalId}`);
+    loadProposals();
+});
+
+contract.on("ProposalExecuted", (proposalId, amount) => {
+    console.log(`✅ Propuesta #${proposalId} ejecutada: ${ethers.formatEther(amount)} ETH`);
+    updateUI();
+    loadProposals();
+});
+
+// Ahora cada evento actualiza la UI automáticamente
+
+================================================================================
+10. SOLUCIÓN DE PROBLEMAS COMUNES
+================================================================================
+
+PROBLEMA 1: "MetaMask no detectado"
+------------------------------------
+CAUSAS:
+- MetaMask no instalado
+- Extensión deshabilitada
+- Página no cargada completamente
+
+SOLUCIONES:
+1. Verificar que MetaMask esté instalado
+2. Recargar la página
+3. Revisar la consola del navegador (F12)
+4. Probar con window.ethereum en la consola:
+   console.log(window.ethereum)  // Debe existir
+
+
+PROBLEMA 2: "Wrong network"
+----------------------------
+CAUSAS:
+- MetaMask conectado a red incorrecta (Mainnet, Sepolia, etc.)
+
+SOLUCIONES:
+1. Abrir MetaMask
+2. Click en selector de red (arriba)
+3. Seleccionar "Hardhat Local"
+4. Si no aparece, agregarla manualmente:
+   - RPC: http://127.0.0.1:8545
+   - Chain ID: 31337
+
+
+PROBLEMA 3: "Contract not found"
+---------------------------------
+CAUSAS:
+- Nodo Hardhat reiniciado (pierde el estado)
+- Dirección de contrato incorrecta
+
+SOLUCIONES:
+1. Redesplegar el contrato:
+   npx hardhat run scripts/deployTravelFund.js --network localhost
+2. Click en "🔄 Load Latest" en la UI
+3. O copiar/pegar la nueva dirección manualmente
+
+
+PROBLEMA 4: "Insufficient funds"
+---------------------------------
+CAUSAS:
+- La cuenta no tiene suficiente ETH
+- Intentando gastar más de lo disponible
+
+SOLUCIONES:
+1. Verificar balance en MetaMask
+2. Usar otra cuenta de prueba de Hardhat
+3. Reiniciar nodo para resetear balances:
+   Ctrl+C (detener nodo)
+   npx hardhat node (iniciar de nuevo)
+
+
+PROBLEMA 5: "Transaction failed"
+---------------------------------
+CAUSAS:
+- Validación fallida en el smart contract
+- Gas insuficiente
+- Nonce incorrecto
+
+SOLUCIONES:
+1. Leer el mensaje de error en MetaMask
+2. Verificar que cumples los requisitos:
+   - ¿Eres contribuyente?
+   - ¿El fondo está activo?
+   - ¿Ya votaste en esta propuesta?
+3. Revisar logs del nodo Hardhat
+4. Si el error persiste:
+   - Reiniciar MetaMask
+   - Limpiar caché del navegador
+   - Reiniciar el nodo
+
+
+PROBLEMA 6: "Nonce too high"
+-----------------------------
+CAUSAS:
+- MetaMask desincronizado con la blockchain local
+- Reiniciaste el nodo pero no MetaMask
+
+SOLUCIONES:
+1. Abrir MetaMask
+2. Configuración → Avanzado
+3. Scroll hasta "Restablecer cuenta"
+4. Click en "Restablecer"
+5. Intentar la transacción de nuevo
+
+
+PROBLEMA 7: UI no se actualiza
+-------------------------------
+CAUSAS:
+- Eventos no escuchados correctamente
+- Error en JavaScript
+- Caché del navegador
+
+SOLUCIONES:
+1. Abrir consola del navegador (F12)
+2. Buscar errores en rojo
+3. Recargar la página (Ctrl+Shift+R)
+4. Verificar que el contrato esté cargado:
+   console.log(contract)  // No debe ser undefined
+
+
+PROBLEMA 8: Video de fondo no carga
+------------------------------------
+CAUSAS:
+- Conexión a internet lenta
+- URL del video bloqueada
+
+SOLUCIONES:
+1. Esperar a que cargue
+2. Revisar consola por errores de CORS
+3. Descargar video localmente:
+   - Guardar en frontend/assets/background.mp4
+   - Actualizar src en index.html:
+     <source src="assets/background.mp4" type="video/mp4">
+
+
+PROBLEMA 9: CSS no se aplica
+-----------------------------
+CAUSAS:
+- Archivo CSS no encontrado
+- Caché del navegador
+
+SOLUCIONES:
+1. Verificar que frontend/styles.css existe
+2. Limpiar caché: Ctrl+Shift+R
+3. Revisar consola del navegador por errores 404
+4. Verificar que el servidor esté corriendo
+
+
+PROBLEMA 10: "Gas estimation failed"
+-------------------------------------
+CAUSAS:
+- La transacción va a fallar
+- Validación del smart contract no se cumple
+
+SOLUCIONES:
+1. Leer el mensaje de error completo
+2. Ejemplos comunes:
+   - "Fondo cerrado" → No puedes hacer esa operación
+   - "Solo el creador" → No tienes permiso
+   - "Ya votaste" → No puedes votar dos veces
+3. Verificar el estado del contrato en la UI
+4. Intentar otra operación válida
+
+================================================================================
+COMANDOS ÚTILES DE REFERENCIA RÁPIDA
+================================================================================
+
+INSTALACIÓN:
+    npm install                  → Instalar dependencias
+
+COMPILACIÓN:
+    npx hardhat compile          → Compilar contratos
+
+TESTING:
+    npx hardhat test             → Ejecutar todos los tests
+    npx hardhat test --grep "deposit"  → Ejecutar tests específicos
+
+NODO LOCAL:
+    npx hardhat node             → Iniciar blockchain local
+    Ctrl+C                       → Detener nodo
+
+DESPLIEGUE:
+    npx hardhat run scripts/deployTravelFund.js --network localhost
+
+CONSOLA:
+    npx hardhat console --network localhost
+    const [owner] = await ethers.getSigners();
+    const balance = await ethers.provider.getBalance(owner.address);
+
+FRONTEND:
+    npm run frontend             → Iniciar servidor (http://localhost:3001)
+    Ctrl+C                       → Detener servidor
+
+SCRIPT TODO-EN-UNO:
+    .\start-simple.ps1           → Inicia todo (Windows PowerShell)
+    bash start-dev.sh            → Inicia todo (Linux/Mac)
+
+LIMPIAR:
+    npx hardhat clean            → Elimina artifacts y cache
+    rm -rf node_modules          → Elimina dependencias
+    npm install                  → Reinstala
+
+================================================================================
+RECURSOS ADICIONALES
+================================================================================
+
+DOCUMENTACIÓN OFICIAL:
+- Solidity: https://docs.soliditylang.org/
+- Hardhat: https://hardhat.org/docs
+- Ethers.js: https://docs.ethers.org/v6/
+- MetaMask: https://docs.metamask.io/
+
+TUTORIALES:
+- CryptoZombies: https://cryptozombies.io/ (Aprende Solidity jugando)
+- Ethereum.org: https://ethereum.org/en/developers/tutorials/
+
+COMUNIDAD:
+- Ethereum Stack Exchange: https://ethereum.stackexchange.com/
+- Hardhat Discord: https://hardhat.org/discord
+- Reddit: r/ethdev
+
+HERRAMIENTAS:
+- Remix IDE: https://remix.ethereum.org/ (IDE online para Solidity)
+- Etherscan: https://etherscan.io/ (Explorador de blockchain)
+- OpenZeppelin: https://www.openzeppelin.com/contracts (Contratos auditados)
+
+================================================================================
+FIN DE LA GUÍA
+================================================================================
+
+¡Felicidades por llegar hasta aquí! Ahora tienes un entendimiento profundo de:
+✓ Cómo funcionan los smart contracts
+✓ Cómo interactuar con la blockchain
+✓ Cómo construir DApps completas
+✓ Cómo usar Hardhat, Solidity, Ethers.js y MetaMask
+
+PRÓXIMOS PASOS SUGERIDOS:
+1. Experimenta modificando el contrato
+2. Agrega nuevas funcionalidades
+3. Crea tus propios smart contracts
+4. Explora contratos más avanzados (ERC20, ERC721, etc.)
+5. Despliega en una testnet pública (Sepolia, Goerli)
+
+¡Mucha suerte en tu viaje en el desarrollo blockchain! 🚀
