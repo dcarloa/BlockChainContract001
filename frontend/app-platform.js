@@ -30,6 +30,35 @@ const TRAVEL_FUND_V2_ABI = [
     "function fundActive() view returns (bool)"
 ];
 
+const TRAVEL_FUND_V2_ABI_FULL = [
+    "function getBalance() view returns (uint256)",
+    "function totalContributions() view returns (uint256)",
+    "function proposalCount() view returns (uint256)",
+    "function getContributorCount() view returns (uint256)",
+    "function tripName() view returns (string)",
+    "function description() view returns (string)",
+    "function targetAmount() view returns (uint256)",
+    "function isPrivate() view returns (bool)",
+    "function fundActive() view returns (bool)",
+    "function creator() view returns (address)",
+    "function contributions(address) view returns (uint256)",
+    "function memberStatus(address) view returns (uint8)",
+    "function getNickname(address) view returns (string)",
+    "function getContributorsWithNicknames() view returns (address[], string[], uint256[])",
+    "function getProposal(uint256) view returns (uint256 id, address proposer, address recipient, uint256 amount, string description, uint256 votesFor, uint256 votesAgainst, uint256 createdAt, bool executed, bool approved)",
+    "function hasVoted(uint256, address) view returns (bool)",
+    "function deposit() payable",
+    "function inviteMemberByNickname(string)",
+    "function inviteMemberByAddress(address)",
+    "function acceptInvitation()",
+    "function createProposal(address, uint256, string) returns (uint256)",
+    "function vote(uint256, bool)",
+    "function executeProposal(uint256)",
+    "event ContributionReceived(address indexed contributor, uint256 amount, uint256 totalContributions)",
+    "event ProposalCreated(uint256 indexed proposalId, address indexed proposer, uint256 amount, string description)",
+    "event VoteCast(uint256 indexed proposalId, address indexed voter, bool inFavor)"
+];
+
 // ============================================
 // GLOBAL STATE
 // ============================================
@@ -78,10 +107,18 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 function setupEventListeners() {
+    // Dashboard
     document.getElementById('connectWallet').addEventListener('click', connectWallet);
     document.getElementById('setNicknameBtn').addEventListener('click', setNickname);
     document.getElementById('createFundBtn').addEventListener('click', showCreateFundModal);
     document.getElementById('createFundForm').addEventListener('submit', createFund);
+    document.getElementById('backToDashboard').addEventListener('click', backToDashboard);
+    
+    // Fund Detail Actions
+    document.getElementById('depositBtn').addEventListener('click', depositToFund);
+    document.getElementById('inviteBtn').addEventListener('click', inviteMember);
+    document.getElementById('createProposalBtn').addEventListener('click', createProposal);
+    document.getElementById('acceptInvitationBtn').addEventListener('click', acceptInvitation);
     
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -90,6 +127,14 @@ function setupEventListeners() {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             filterFunds();
+        });
+    });
+    
+    // Fund Tab buttons
+    document.querySelectorAll('.fund-tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tab = e.currentTarget.dataset.tab;
+            switchFundTab(tab);
         });
     });
 }
@@ -469,11 +514,47 @@ function createFundCard(fund) {
     `;
 }
 
-function openFund(fundAddress) {
-    // Guardar la dirección del fondo en localStorage
-    localStorage.setItem('selectedFund', fundAddress);
-    // Redirigir a la página del fondo
-    window.location.href = `/fund.html?address=${fundAddress}`;
+let currentFund = null;
+let currentFundContract = null;
+
+async function openFund(fundAddress) {
+    try {
+        showLoading("Cargando fondo...");
+        
+        // Guardar fondo actual
+        currentFund = allUserFunds.find(f => f.fundAddress.toLowerCase() === fundAddress.toLowerCase());
+        if (!currentFund) {
+            throw new Error("Fondo no encontrado");
+        }
+        
+        // Crear instancia del contrato del fondo
+        currentFundContract = new ethers.Contract(
+            fundAddress,
+            TRAVEL_FUND_V2_ABI_FULL,
+            signer
+        );
+        
+        // Ocultar dashboard, mostrar detalle
+        document.getElementById('dashboardSection').style.display = 'none';
+        document.getElementById('fundDetailSection').style.display = 'block';
+        
+        // Cargar detalles del fondo
+        await loadFundDetails();
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error opening fund:", error);
+        showToast("Error al abrir el fondo: " + error.message, "error");
+    }
+}
+
+function backToDashboard() {
+    document.getElementById('fundDetailSection').style.display = 'none';
+    document.getElementById('dashboardSection').style.display = 'block';
+    currentFund = null;
+    currentFundContract = null;
 }
 
 // ============================================
@@ -575,4 +656,403 @@ function showToast(message, type = 'info') {
             container.removeChild(toast);
         }, 300);
     }, 3000);
+}
+
+// ============================================
+// FUND DETAIL VIEW
+// ============================================
+
+async function loadFundDetails() {
+    try {
+        const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
+        const fundTypeNames = ['Viaje', 'Ahorro', 'Compartido', 'Otro'];
+        
+        // Update header
+        document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '🎯';
+        document.getElementById('fundDetailName').textContent = currentFund.fundName;
+        
+        // Load contract data
+        const description = await currentFundContract.description();
+        const balance = await currentFundContract.getBalance();
+        const target = await currentFundContract.targetAmount();
+        const contributors = await currentFundContract.getContributorCount();
+        const proposals = await currentFundContract.proposalCount();
+        const isActive = await currentFundContract.fundActive();
+        const isPrivate = await currentFundContract.isPrivate();
+        const userContribution = await currentFundContract.contributions(userAddress);
+        const memberStatus = await currentFundContract.memberStatus(userAddress);
+        
+        // Update UI
+        document.getElementById('fundDetailDescription').textContent = description || 'Sin descripción';
+        document.getElementById('fundTypeBadge').textContent = fundTypeNames[Number(currentFund.fundType)];
+        document.getElementById('fundStatusBadge').textContent = isActive ? '🟢 Activo' : '🔴 Cerrado';
+        document.getElementById('fundPrivacyBadge').textContent = isPrivate ? '🔒 Privado' : '🌐 Público';
+        
+        const balanceEth = ethers.formatEther(balance);
+        const targetEth = ethers.formatEther(target);
+        const progress = (parseFloat(balanceEth) / parseFloat(targetEth)) * 100;
+        
+        document.getElementById('fundBalance').textContent = `${parseFloat(balanceEth).toFixed(2)} ETH`;
+        document.getElementById('fundTarget').textContent = `${parseFloat(targetEth).toFixed(2)} ETH`;
+        document.getElementById('fundProgress').textContent = `${progress.toFixed(1)}%`;
+        document.getElementById('fundMembers').textContent = contributors.toString();
+        document.getElementById('fundProposals').textContent = proposals.toString();
+        document.getElementById('fundProgressBar').style.width = `${Math.min(progress, 100)}%`;
+        
+        // User contribution
+        document.getElementById('userContribution').textContent = `${parseFloat(ethers.formatEther(userContribution)).toFixed(2)} ETH`;
+        
+        // Check invitation status (1 = Invited, 2 = Active)
+        if (memberStatus === 1n) {
+            document.getElementById('invitationBanner').style.display = 'flex';
+        } else {
+            document.getElementById('invitationBanner').style.display = 'none';
+        }
+        
+        // Load members and proposals
+        await loadMembers();
+        await loadProposals();
+        
+    } catch (error) {
+        console.error("Error loading fund details:", error);
+        showToast("Error cargando detalles del fondo", "error");
+    }
+}
+
+function switchFundTab(tabName) {
+    // Remove active class from all tabs
+    document.querySelectorAll('.fund-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    
+    // Add active class to selected tab
+    document.querySelector(`.fund-tab-btn[data-tab="${tabName}"]`).classList.add('active');
+    document.getElementById(`${tabName}Tab`).classList.add('active');
+}
+
+// ============================================
+// FUND ACTIONS
+// ============================================
+
+async function depositToFund() {
+    try {
+        const amount = document.getElementById('depositAmount').value;
+        
+        if (!amount || parseFloat(amount) <= 0) {
+            showToast("Por favor ingresa un monto válido", "warning");
+            return;
+        }
+        
+        showLoading("Depositando fondos...");
+        
+        const amountWei = ethers.parseEther(amount);
+        const tx = await currentFundContract.deposit({ value: amountWei });
+        await tx.wait();
+        
+        showToast(`✅ Depósito de ${amount} ETH exitoso!`, "success");
+        
+        // Reload fund details
+        await loadFundDetails();
+        
+        // Clear input
+        document.getElementById('depositAmount').value = '';
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error depositing:", error);
+        showToast("Error al depositar: " + error.message, "error");
+    }
+}
+
+async function inviteMember() {
+    try {
+        const addressOrNickname = document.getElementById('inviteAddress').value.trim();
+        
+        if (!addressOrNickname) {
+            showToast("Por favor ingresa un nickname o dirección", "warning");
+            return;
+        }
+        
+        showLoading("Enviando invitación...");
+        
+        let tx;
+        if (addressOrNickname.startsWith('0x')) {
+            // It's an address
+            tx = await currentFundContract.inviteMemberByAddress(addressOrNickname);
+        } else {
+            // It's a nickname
+            tx = await currentFundContract.inviteMemberByNickname(addressOrNickname);
+        }
+        
+        await tx.wait();
+        
+        showToast(`✅ Invitación enviada a ${addressOrNickname}!`, "success");
+        
+        // Clear input
+        document.getElementById('inviteAddress').value = '';
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error inviting member:", error);
+        showToast("Error al invitar: " + error.message, "error");
+    }
+}
+
+async function acceptInvitation() {
+    try {
+        showLoading("Aceptando invitación...");
+        
+        const tx = await currentFundContract.acceptInvitation();
+        await tx.wait();
+        
+        showToast("✅ Invitación aceptada! Ahora eres miembro activo", "success");
+        
+        // Reload fund details
+        await loadFundDetails();
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error accepting invitation:", error);
+        showToast("Error al aceptar invitación: " + error.message, "error");
+    }
+}
+
+async function createProposal() {
+    try {
+        const recipientInput = document.getElementById('proposalRecipient').value.trim();
+        const amount = document.getElementById('proposalAmount').value;
+        const description = document.getElementById('proposalDescription').value.trim();
+        
+        if (!recipientInput) {
+            showToast("Por favor ingresa el destinatario", "warning");
+            return;
+        }
+        
+        if (!amount || parseFloat(amount) <= 0) {
+            showToast("Por favor ingresa un monto válido", "warning");
+            return;
+        }
+        
+        if (!description) {
+            showToast("Por favor ingresa una descripción", "warning");
+            return;
+        }
+        
+        showLoading("Creando propuesta...");
+        
+        // Resolve recipient address
+        let recipientAddress;
+        if (recipientInput.startsWith('0x')) {
+            recipientAddress = recipientInput;
+        } else {
+            // Get address from nickname via factory
+            recipientAddress = await factoryContract.getAddressByNickname(recipientInput);
+        }
+        
+        const amountWei = ethers.parseEther(amount);
+        const tx = await currentFundContract.createProposal(recipientAddress, amountWei, description);
+        await tx.wait();
+        
+        showToast("✅ Propuesta creada exitosamente!", "success");
+        
+        // Clear inputs
+        document.getElementById('proposalRecipient').value = '';
+        document.getElementById('proposalAmount').value = '';
+        document.getElementById('proposalDescription').value = '';
+        
+        // Reload proposals
+        await loadProposals();
+        
+        // Switch to vote tab
+        switchFundTab('vote');
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error creating proposal:", error);
+        showToast("Error al crear propuesta: " + error.message, "error");
+    }
+}
+
+// ============================================
+// LOAD MEMBERS AND PROPOSALS
+// ============================================
+
+async function loadMembers() {
+    try {
+        const [addresses, nicknames, amounts] = await currentFundContract.getContributorsWithNicknames();
+        
+        const membersList = document.getElementById('membersList');
+        const noMembers = document.getElementById('noMembers');
+        
+        if (addresses.length === 0) {
+            membersList.innerHTML = '';
+            noMembers.style.display = 'flex';
+        } else {
+            noMembers.style.display = 'none';
+            
+            membersList.innerHTML = addresses.map((address, i) => {
+                const nickname = nicknames[i];
+                const amount = ethers.formatEther(amounts[i]);
+                const isCreator = address.toLowerCase() === currentFund.creator.toLowerCase();
+                
+                return `
+                    <div class="member-card">
+                        <div class="member-avatar">${nickname.substring(0, 2).toUpperCase()}</div>
+                        <div class="member-info">
+                            <h4>${nickname} ${isCreator ? '👑' : ''}</h4>
+                            <p>${address}</p>
+                        </div>
+                        <div class="member-contribution">
+                            <span>${parseFloat(amount).toFixed(2)} ETH</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+    } catch (error) {
+        console.error("Error loading members:", error);
+    }
+}
+
+async function loadProposals() {
+    try {
+        const proposalCount = await currentFundContract.proposalCount();
+        
+        const proposalsList = document.getElementById('proposalsList');
+        const noProposals = document.getElementById('noProposals');
+        
+        if (proposalCount === 0n) {
+            proposalsList.innerHTML = '';
+            noProposals.style.display = 'flex';
+        } else {
+            noProposals.style.display = 'none';
+            
+            const proposals = [];
+            for (let i = 0; i < Number(proposalCount); i++) {
+                try {
+                    const proposal = await currentFundContract.getProposal(i);
+                    const hasVoted = await currentFundContract.hasVoted(i, userAddress);
+                    
+                    // Get nicknames
+                    const proposerNickname = await currentFundContract.getNickname(proposal.proposer);
+                    const recipientNickname = await currentFundContract.getNickname(proposal.recipient);
+                    
+                    proposals.push({
+                        id: i,
+                        ...proposal,
+                        proposerNickname,
+                        recipientNickname,
+                        hasVoted
+                    });
+                } catch (err) {
+                    console.error(`Error loading proposal ${i}:`, err);
+                }
+            }
+            
+            proposalsList.innerHTML = proposals.filter(p => !p.executed).map(proposal => {
+                const amount = ethers.formatEther(proposal.amount);
+                const votesFor = Number(proposal.votesFor);
+                const votesAgainst = Number(proposal.votesAgainst);
+                const totalVotes = votesFor + votesAgainst;
+                const percentFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
+                
+                return `
+                    <div class="proposal-card">
+                        <div class="proposal-header">
+                            <h4>Propuesta #${proposal.id}</h4>
+                            <span class="proposal-amount">${parseFloat(amount).toFixed(2)} ETH</span>
+                        </div>
+                        
+                        <p class="proposal-description">${proposal.description}</p>
+                        
+                        <div class="proposal-meta">
+                            <span>👤 Por: ${proposal.proposerNickname}</span>
+                            <span>🎯 Para: ${proposal.recipientNickname}</span>
+                        </div>
+                        
+                        <div class="proposal-votes">
+                            <div class="vote-bar">
+                                <div class="vote-bar-fill" style="width: ${percentFor}%"></div>
+                            </div>
+                            <div class="vote-counts">
+                                <span>✅ ${votesFor} a favor</span>
+                                <span>❌ ${votesAgainst} en contra</span>
+                            </div>
+                        </div>
+                        
+                        ${proposal.hasVoted ? `
+                            <div class="voted-badge">Ya votaste en esta propuesta</div>
+                        ` : `
+                            <div class="proposal-actions">
+                                <button class="btn btn-success" onclick="voteProposal(${proposal.id}, true)">
+                                    Votar a Favor
+                                </button>
+                                <button class="btn btn-danger" onclick="voteProposal(${proposal.id}, false)">
+                                    Votar en Contra
+                                </button>
+                            </div>
+                        `}
+                        
+                        ${proposal.approved && !proposal.executed ? `
+                            <button class="btn btn-primary btn-block" onclick="executeProposal(${proposal.id})">
+                                ⚡ Ejecutar Propuesta
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+    } catch (error) {
+        console.error("Error loading proposals:", error);
+    }
+}
+
+async function voteProposal(proposalId, inFavor) {
+    try {
+        showLoading("Votando...");
+        
+        const tx = await currentFundContract.vote(proposalId, inFavor);
+        await tx.wait();
+        
+        showToast(`✅ Voto ${inFavor ? 'a favor' : 'en contra'} registrado!`, "success");
+        
+        await loadProposals();
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error voting:", error);
+        showToast("Error al votar: " + error.message, "error");
+    }
+}
+
+async function executeProposal(proposalId) {
+    try {
+        showLoading("Ejecutando propuesta...");
+        
+        const tx = await currentFundContract.executeProposal(proposalId);
+        await tx.wait();
+        
+        showToast("✅ Propuesta ejecutada! Fondos transferidos.", "success");
+        
+        await loadFundDetails();
+        await loadProposals();
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error executing proposal:", error);
+        showToast("Error al ejecutar propuesta: " + error.message, "error");
+    }
 }

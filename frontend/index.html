@@ -153,6 +153,196 @@
 
             </section>
 
+            <!-- Fund Detail Section (Single Fund View) -->
+            <section id="fundDetailSection" class="fund-detail-section" style="display: none;">
+                
+                <!-- Back Button -->
+                <div class="back-bar">
+                    <button id="backToDashboard" class="btn btn-secondary">
+                        <span class="btn-icon">←</span>
+                        <span>Volver a Mis Fondos</span>
+                    </button>
+                </div>
+
+                <!-- Fund Header -->
+                <div class="fund-detail-header">
+                    <div class="fund-header-icon" id="fundHeaderIcon">🌴</div>
+                    <div class="fund-header-info">
+                        <h1 id="fundDetailName">Cargando...</h1>
+                        <p id="fundDetailDescription">-</p>
+                        <div class="fund-badges">
+                            <span class="badge" id="fundTypeBadge">Tipo</span>
+                            <span class="badge" id="fundStatusBadge">Estado</span>
+                            <span class="badge" id="fundPrivacyBadge">Privacidad</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fund Stats Bar -->
+                <div class="fund-stats-bar">
+                    <div class="fund-stat-item">
+                        <span class="stat-label">Balance</span>
+                        <span class="stat-value" id="fundBalance">0 ETH</span>
+                    </div>
+                    <div class="fund-stat-item">
+                        <span class="stat-label">Meta</span>
+                        <span class="stat-value" id="fundTarget">0 ETH</span>
+                    </div>
+                    <div class="fund-stat-item">
+                        <span class="stat-label">Progreso</span>
+                        <span class="stat-value" id="fundProgress">0%</span>
+                    </div>
+                    <div class="fund-stat-item">
+                        <span class="stat-label">Miembros</span>
+                        <span class="stat-value" id="fundMembers">0</span>
+                    </div>
+                    <div class="fund-stat-item">
+                        <span class="stat-label">Propuestas</span>
+                        <span class="stat-value" id="fundProposals">0</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="fundProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Invitation Banner (if pending) -->
+                <div id="invitationBanner" class="invitation-banner" style="display: none;">
+                    <div class="invitation-content">
+                        <span class="invitation-icon">🎫</span>
+                        <p>Tienes una invitación pendiente para este fondo</p>
+                    </div>
+                    <button id="acceptInvitationBtn" class="btn btn-primary">
+                        Aceptar Invitación
+                    </button>
+                </div>
+
+                <!-- Fund Tabs -->
+                <div class="fund-tabs">
+                    <button class="fund-tab-btn active" data-tab="deposit">
+                        <span class="tab-icon">💵</span>
+                        <span>Depositar</span>
+                    </button>
+                    <button class="fund-tab-btn" data-tab="invite">
+                        <span class="tab-icon">🎫</span>
+                        <span>Invitar</span>
+                    </button>
+                    <button class="fund-tab-btn" data-tab="propose">
+                        <span class="tab-icon">📝</span>
+                        <span>Proponer</span>
+                    </button>
+                    <button class="fund-tab-btn" data-tab="vote">
+                        <span class="tab-icon">🗳️</span>
+                        <span>Votar</span>
+                    </button>
+                    <button class="fund-tab-btn" data-tab="members">
+                        <span class="tab-icon">👥</span>
+                        <span>Miembros</span>
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="fund-tab-content">
+                    
+                    <!-- Deposit Tab -->
+                    <div id="depositTab" class="tab-pane active">
+                        <div class="tab-card">
+                            <h3>💰 Depositar Fondos</h3>
+                            <p>Contribuye al fondo común. Tu aporte será registrado en la blockchain.</p>
+                            
+                            <div class="form-group">
+                                <label for="depositAmount">Monto a Depositar (ETH)</label>
+                                <input type="number" id="depositAmount" placeholder="0.0" step="0.01" min="0.01">
+                            </div>
+                            
+                            <div class="contribution-info">
+                                <span>Tu contribución actual: <strong id="userContribution">0 ETH</strong></span>
+                            </div>
+                            
+                            <button id="depositBtn" class="btn btn-primary btn-block">
+                                Depositar Fondos
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Invite Tab -->
+                    <div id="inviteTab" class="tab-pane">
+                        <div class="tab-card">
+                            <h3>🎫 Invitar Miembros</h3>
+                            <p>Invita amigos para que se unan al fondo. Ellos deberán aceptar la invitación.</p>
+                            
+                            <div class="form-group">
+                                <label for="inviteAddress">Nickname o Dirección</label>
+                                <input type="text" id="inviteAddress" placeholder="Ej: Bob o 0x123...">
+                                <small>Ingresa el nickname del usuario o su dirección Ethereum</small>
+                            </div>
+                            
+                            <button id="inviteBtn" class="btn btn-primary btn-block">
+                                Enviar Invitación
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Propose Tab -->
+                    <div id="proposeTab" class="tab-pane">
+                        <div class="tab-card">
+                            <h3>📝 Crear Propuesta</h3>
+                            <p>Propón un gasto del fondo. Requiere aprobación por votación.</p>
+                            
+                            <div class="form-group">
+                                <label for="proposalRecipient">Destinatario (Nickname o Dirección)</label>
+                                <input type="text" id="proposalRecipient" placeholder="Ej: Bob o 0x123...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="proposalAmount">Monto (ETH)</label>
+                                <input type="number" id="proposalAmount" placeholder="0.0" step="0.01" min="0.01">
+                                <small>Máximo permitido: 80% del balance actual</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="proposalDescription">Descripción</label>
+                                <textarea id="proposalDescription" rows="3" placeholder="Explica para qué es este gasto..."></textarea>
+                            </div>
+                            
+                            <button id="createProposalBtn" class="btn btn-primary btn-block">
+                                Crear Propuesta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vote Tab -->
+                    <div id="voteTab" class="tab-pane">
+                        <h3>🗳️ Propuestas Activas</h3>
+                        <div id="proposalsList">
+                            <!-- Proposals will be loaded here -->
+                        </div>
+                        <div id="noProposals" class="empty-state" style="display: none;">
+                            <div class="empty-icon">📋</div>
+                            <h4>No hay propuestas activas</h4>
+                            <p>Crea la primera propuesta para este fondo</p>
+                        </div>
+                    </div>
+
+                    <!-- Members Tab -->
+                    <div id="membersTab" class="tab-pane">
+                        <h3>👥 Miembros del Fondo</h3>
+                        <div id="membersList">
+                            <!-- Members will be loaded here -->
+                        </div>
+                        <div id="noMembers" class="empty-state" style="display: none;">
+                            <div class="empty-icon">👤</div>
+                            <h4>No hay miembros aún</h4>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
             <!-- Create Fund Modal -->
             <div id="createFundModal" class="modal" style="display: none;">
                 <div class="modal-content modal-large">
