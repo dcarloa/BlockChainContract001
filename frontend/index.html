@@ -54,10 +54,10 @@
             <div id="nicknameModal" class="modal" style="display: none;">
                 <div class="modal-content">
                     <h2>👋 ¡Bienvenido a FundHub!</h2>
-                    <p>Para comenzar, necesitas elegir un nickname único. Este nombre te identificará en todos tus fondos.</p>
+                    <p>Puedes elegir un <strong>nickname opcional</strong> para que sea más fácil identificarte en los fondos, o continuar usando tu dirección de wallet.</p>
                     
                     <div class="form-group">
-                        <label for="nicknameInput">Tu Nickname</label>
+                        <label for="nicknameInput">Tu Nickname (Opcional)</label>
                         <input 
                             type="text" 
                             id="nicknameInput" 
@@ -66,7 +66,7 @@
                             maxlength="32"
                             pattern="[a-zA-Z0-9]+"
                         >
-                        <small>3-32 caracteres, solo letras y números</small>
+                        <small>3-32 caracteres, solo letras y números. Puedes establecerlo después.</small>
                     </div>
                     
                     <button id="setNicknameBtn" class="btn btn-primary btn-block">
@@ -231,6 +231,17 @@
                     </button>
                 </div>
 
+                <!-- Closed Fund Banner -->
+                <div id="closedFundBanner" class="closed-fund-banner" style="display: none;">
+                    <div class="closed-fund-content">
+                        <span class="closed-fund-icon">🔒</span>
+                        <div>
+                            <h4>Fondo Cerrado</h4>
+                            <p>Este fondo ha sido cerrado permanentemente. Los fondos fueron distribuidos proporcionalmente entre todos los contribuyentes.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Fund Tabs -->
                 <div class="fund-tabs">
                     <button class="fund-tab-btn active" data-tab="deposit">
@@ -249,9 +260,17 @@
                         <span class="tab-icon">🗳️</span>
                         <span>Votar</span>
                     </button>
+                    <button class="fund-tab-btn" data-tab="history">
+                        <span class="tab-icon">📜</span>
+                        <span>Historial</span>
+                    </button>
                     <button class="fund-tab-btn" data-tab="members">
                         <span class="tab-icon">👥</span>
                         <span>Miembros</span>
+                    </button>
+                    <button class="fund-tab-btn" data-tab="manage">
+                        <span class="tab-icon">⚙️</span>
+                        <span>Gestionar</span>
                     </button>
                 </div>
 
@@ -348,6 +367,20 @@
                         </div>
                     </div>
 
+                    <!-- History Tab -->
+                    <div id="historyTab" class="tab-pane">
+                        <h3>📜 Historial de Propuestas</h3>
+                        <p class="tab-description">Todas las propuestas: ejecutadas, canceladas y expiradas</p>
+                        <div id="historyList">
+                            <!-- History will be loaded here -->
+                        </div>
+                        <div id="noHistory" class="empty-state" style="display: none;">
+                            <div class="empty-icon">📋</div>
+                            <h4>No hay historial aún</h4>
+                            <p>El historial de propuestas aparecerá aquí</p>
+                        </div>
+                    </div>
+
                     <!-- Members Tab -->
                     <div id="membersTab" class="tab-pane">
                         <h3>👥 Miembros del Fondo</h3>
@@ -357,6 +390,50 @@
                         <div id="noMembers" class="empty-state" style="display: none;">
                             <div class="empty-icon">👤</div>
                             <h4>No hay miembros aún</h4>
+                        </div>
+                    </div>
+
+                    <!-- Manage Tab -->
+                    <div id="manageTab" class="tab-pane">
+                        <div class="tab-card">
+                            <h3>⚙️ Gestión del Fondo</h3>
+                            <p>Opciones avanzadas para administrar el fondo.</p>
+                            
+                            <div class="manage-section">
+                                <div class="danger-zone">
+                                    <h4>🚨 Zona de Peligro</h4>
+                                    <p><strong>Cerrar y Distribuir Fondo</strong></p>
+                                    <p class="help-text">
+                                        Esta acción cerrará permanentemente el fondo y distribuirá todos los fondos restantes 
+                                        proporcionalmente entre los contribuyentes según su aportación.
+                                    </p>
+                                    
+                                    <div class="info-box warning-box">
+                                        <p><strong>⚠️ Advertencia:</strong></p>
+                                        <ul>
+                                            <li>Esta acción es <strong>irreversible</strong></li>
+                                            <li>Solo el creador del fondo puede ejecutarla</li>
+                                            <li>Cada contribuyente recibirá: (su aportación / total) × balance actual</li>
+                                            <li>El fondo quedará cerrado permanentemente</li>
+                                            <li>No se podrán hacer más depósitos ni propuestas</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div id="closeFundPreview" class="distribution-preview" style="display: none;">
+                                        <h5>📊 Vista Previa de Distribución</h5>
+                                        <div id="distributionList"></div>
+                                    </div>
+                                    
+                                    <div class="button-group">
+                                        <button id="previewCloseFundBtn" class="btn btn-secondary">
+                                            📊 Vista Previa de Distribución
+                                        </button>
+                                        <button id="closeFundBtn" class="btn btn-danger">
+                                            🔒 Cerrar y Distribuir Fondo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

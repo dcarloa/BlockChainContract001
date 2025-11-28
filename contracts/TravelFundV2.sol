@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
+interface IFundFactory {
+    function getNicknameByAddress(address _address) external view returns (string memory);
+}
+
 /**
  * @title TravelFundV2
  * @dev Fondo compartido descentralizado para gastos de viaje - Versión Mejorada
@@ -71,6 +75,7 @@ contract TravelFundV2 {
     string public tripName;            // Nombre del viaje
     string public description;         // Descripción del fondo
     address public creator;            // Creador del fondo
+    IFundFactory public factory;       // Referencia al Factory para nicknames globales
     uint256 public targetAmount;       // Meta de recaudación (opcional)
     bool public isPrivate;             // Si requiere invitación
     bool public fundActive;            // Estado del fondo
@@ -185,6 +190,8 @@ contract TravelFundV2 {
      * @param _minimumVotes Número mínimo de votos requeridos
      */
     constructor(
+        address _creator,
+        address _factory,
         string memory _fundId,
         string memory _tripName,
         string memory _description,
@@ -193,26 +200,29 @@ contract TravelFundV2 {
         uint256 _approvalPercentage,
         uint256 _minimumVotes
     ) {
+        require(_creator != address(0), "Creador no puede ser address(0)");
+        require(_factory != address(0), "Factory no puede ser address(0)");
         require(bytes(_fundId).length > 0, "Fund ID requerido");
         require(bytes(_tripName).length > 0, "Nombre del viaje requerido");
         require(_approvalPercentage > 0 && _approvalPercentage <= 100, "Porcentaje debe estar entre 1 y 100");
         require(_minimumVotes > 0, "Debe haber al menos 1 voto minimo");
         
+        creator = _creator;
+        factory = IFundFactory(_factory);
         fundId = _fundId;
         tripName = _tripName;
         description = _description;
         targetAmount = _targetAmount;
         isPrivate = _isPrivate;
-        creator = msg.sender;
         approvalPercentage = _approvalPercentage;
         minimumVotes = _minimumVotes;
         fundActive = true;
         reentrancyStatus = REENTRANCY_GUARD;
         
         // El creador es automáticamente miembro activo
-        memberStatus[msg.sender] = MemberStatus.Active;
+        memberStatus[_creator] = MemberStatus.Active;
         
-        emit FundCreated(_fundId, _tripName, msg.sender, _isPrivate, _approvalPercentage);
+        emit FundCreated(_fundId, _tripName, _creator, _isPrivate, _approvalPercentage);
     }
     
     // ============================================
@@ -250,10 +260,12 @@ contract TravelFundV2 {
      * @return nickname Nickname del usuario o dirección si no tiene
      */
     function getNickname(address _address) public view returns (string memory) {
-        string memory nickname = nicknames[_address];
+        // Consultar nickname global del Factory
+        string memory nickname = factory.getNicknameByAddress(_address);
         if (bytes(nickname).length > 0) {
             return nickname;
         }
+        // Si no tiene nickname, devolver dirección como string
         return _addressToString(_address);
     }
     
@@ -545,37 +557,7 @@ contract TravelFundV2 {
     // FUNCIONES DE GESTIÓN DEL FONDO
     // ============================================
     
-    /**
-     * @dev Cerrar el fondo (solo creador)
-     */
-    function closeFund() external onlyCreator fundIsActive {
-        fundActive = false;
-        emit FundClosed(address(this).balance);
-    }
-    
-    /**
-     * @dev Retirar fondos proporcionales después de cerrar
-     */
-    function withdrawProportional() external nonReentrant {
-        require(!fundActive, "El fondo aun esta activo");
-        require(isContributor[msg.sender], "No eres contribuyente");
-        
-        uint256 contribution = contributions[msg.sender];
-        require(contribution > 0, "No tienes contribucion registrada");
-        
-        // Calcular proporción
-        uint256 currentBalance = address(this).balance;
-        uint256 refundAmount = (currentBalance * contribution) / totalContributions;
-        
-        require(refundAmount > 0, "No hay fondos para retirar");
-        
-        contributions[msg.sender] = 0;
-        
-        (bool success, ) = payable(msg.sender).call{value: refundAmount}("");
-        require(success, "Transferencia fallida");
-        
-        emit RefundIssued(msg.sender, refundAmount);
-    }
+    // Nota: La función closeFund() está implementada más adelante con distribución automática
     
     // ============================================
     // FUNCIONES DE CONSULTA
@@ -705,6 +687,49 @@ contract TravelFundV2 {
             approvalPercentage,
             minimumVotes
         );
+    }
+    
+    // ============================================
+    // GESTIÓN DEL FONDO
+    // ============================================
+    
+    /**
+     * @dev Cierra el fondo y distribuye el balance proporcionalmente entre contribuyentes
+     * Solo el creador puede ejecutar esta función
+     * Todos los fondos restantes se distribuyen según la proporción de contribución
+     */
+    function closeFund() external onlyCreator nonReentrant {
+        require(fundActive, "El fondo ya esta cerrado");
+        require(contributors.length > 0, "No hay contribuyentes para distribuir");
+        
+        fundActive = false;
+        uint256 currentBalance = address(this).balance;
+        
+        // Si no hay balance, solo cerrar el fondo
+        if (currentBalance == 0) {
+            emit FundClosed(0);
+            return;
+        }
+        
+        // Distribuir proporcionalmente
+        for (uint256 i = 0; i < contributors.length; i++) {
+            address payable contributor = payable(contributors[i]);
+            uint256 contribution = contributions[contributor];
+            
+            if (contribution > 0) {
+                // Calcular proporción: (contribución / total) * balance
+                uint256 refundAmount = (contribution * currentBalance) / totalContributions;
+                
+                if (refundAmount > 0) {
+                    (bool success, ) = contributor.call{value: refundAmount}("");
+                    require(success, "Fallo al enviar fondos");
+                    
+                    emit RefundIssued(contributor, refundAmount);
+                }
+            }
+        }
+        
+        emit FundClosed(currentBalance);
     }
     
     // ============================================

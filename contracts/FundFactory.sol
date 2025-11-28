@@ -118,6 +118,14 @@ contract FundFactory {
     }
     
     /**
+     * @dev Obtener nickname de una dirección (para contratos externos)
+     * Devuelve string vacío si no tiene nickname
+     */
+    function getNicknameByAddress(address _address) external view returns (string memory) {
+        return nicknames[_address];
+    }
+    
+    /**
      * @dev Verificar si un nickname está disponible
      */
     function isNicknameAvailable(string memory _nickname) external view returns (bool) {
@@ -159,6 +167,8 @@ contract FundFactory {
         
         // Crear nuevo contrato TravelFundV2
         TravelFundV2 newFund = new TravelFundV2(
+            msg.sender,      // El creador real es quien llama al Factory
+            address(this),   // Dirección del Factory para consultar nicknames
             fundId,
             _fundName,
             _description,
