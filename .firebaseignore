@@ -1,0 +1,15 @@
+# Firebase ignore file
+firebase.json
+.firebaserc
+**/.*
+**/node_modules/**
+**/.git/**
+**/.vscode/**
+**/artifacts/**
+**/cache/**
+**/coverage/**
+**/test/**
+*.log
+*.md
+hardhat.config.js
+package*.json
