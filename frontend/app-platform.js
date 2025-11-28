@@ -660,7 +660,10 @@ async function loadAllFundsDetails() {
             fund.contributors = Number(contributors);
             fund.proposals = Number(proposals);
             fund.target = ethers.formatEther(target);
-            fund.progress = (parseFloat(fund.balance) / parseFloat(fund.target)) * 100;
+            // Si target es 0, no hay meta (sin límite)
+            fund.progress = parseFloat(fund.target) > 0 
+                ? (parseFloat(fund.balance) / parseFloat(fund.target)) * 100 
+                : 0;
             
         } catch (error) {
             console.error(`Error loading details for fund ${fund.fundAddress}:`, error);
@@ -758,11 +761,12 @@ function createFundCard(fund) {
                         <span class="fund-stat-value">${parseFloat(fund.balance || 0).toFixed(2)} ETH</span>
                     </div>
                     <div class="fund-stat">
-                        <span class="fund-stat-label">Meta</span>
-                        <span class="fund-stat-value">${parseFloat(fund.target || 0).toFixed(2)} ETH</span>
+                        <span class="fund-stat-label">${parseFloat(fund.target || 0) > 0 ? 'Meta' : 'Límite'}</span>
+                        <span class="fund-stat-value">${parseFloat(fund.target || 0) > 0 ? parseFloat(fund.target).toFixed(2) + ' ETH' : 'Sin límite'}</span>
                     </div>
                 </div>
                 
+                ${parseFloat(fund.target || 0) > 0 ? `
                 <div class="fund-progress">
                     <div class="fund-progress-label">
                         <span>Progreso</span>
@@ -772,6 +776,7 @@ function createFundCard(fund) {
                         <div class="progress-fill" style="width: ${Math.min(fund.progress || 0, 100)}%"></div>
                     </div>
                 </div>
+                ` : ''}
                 
                 <div class="fund-meta">
                     <span>👥 ${fund.contributors || 0} miembros</span>
@@ -889,19 +894,17 @@ async function createFund(event) {
         const fundType = document.querySelector('input[name="fundType"]:checked').value;
         
         if (!fundName) {
-            showToast("Por favor ingresa el nombre del fondo", "warning");
+            showToast("Por favor ingresa el nombre del grupo", "warning");
             return;
         }
         
-        if (!targetAmount || parseFloat(targetAmount) <= 0) {
-            showToast("Por favor ingresa una meta válida", "warning");
-            return;
-        }
+        // targetAmount es opcional - 0 significa sin límite
+        const targetAmountValue = targetAmount && parseFloat(targetAmount) > 0 ? parseFloat(targetAmount) : 0;
         
-        showLoading("Creando fondo...");
+        showLoading("Creando grupo...");
         closeCreateFundModal();
         
-        const targetAmountWei = ethers.parseEther(targetAmount.toString());
+        const targetAmountWei = ethers.parseEther(targetAmountValue.toString());
         
         // Crear fondo
         const tx = await factoryContract.createFund(
@@ -1042,14 +1045,28 @@ async function loadFundDetailView() {
         
         const balanceEth = ethers.formatEther(balance);
         const targetEth = ethers.formatEther(target);
-        const progress = (parseFloat(balanceEth) / parseFloat(targetEth)) * 100;
         
         document.getElementById('fundBalance').textContent = `${parseFloat(balanceEth).toFixed(2)} ETH`;
-        document.getElementById('fundTarget').textContent = `${parseFloat(targetEth).toFixed(2)} ETH`;
-        document.getElementById('fundProgress').textContent = `${progress.toFixed(1)}%`;
         document.getElementById('fundMembers').textContent = contributors.toString();
         document.getElementById('fundProposals').textContent = proposals.toString();
-        document.getElementById('fundProgressBar').style.width = `${Math.min(progress, 100)}%`;
+        
+        // Si targetAmount es 0, no hay meta - mostrar "Sin límite"
+        if (parseFloat(targetEth) === 0) {
+            document.getElementById('fundTarget').textContent = 'Sin límite';
+            document.getElementById('fundProgress').textContent = '-';
+            document.getElementById('fundProgressBar').style.width = '0%';
+            // Ocultar la barra de progreso si quieres
+            const progressSection = document.querySelector('.progress-section');
+            if (progressSection) progressSection.style.display = 'none';
+        } else {
+            const progress = (parseFloat(balanceEth) / parseFloat(targetEth)) * 100;
+            document.getElementById('fundTarget').textContent = `${parseFloat(targetEth).toFixed(2)} ETH`;
+            document.getElementById('fundProgress').textContent = `${progress.toFixed(1)}%`;
+            document.getElementById('fundProgressBar').style.width = `${Math.min(progress, 100)}%`;
+            // Mostrar la barra de progreso
+            const progressSection = document.querySelector('.progress-section');
+            if (progressSection) progressSection.style.display = 'block';
+        }
         
         // User contribution
         document.getElementById('userContribution').textContent = `${parseFloat(ethers.formatEther(userContribution)).toFixed(2)} ETH`;

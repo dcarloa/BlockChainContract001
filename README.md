@@ -1,40 +1,77 @@
-# 🚀 Aprende Solidity - Tu Primer Smart Contract en Ethereum
+# 💰 SplitExpense - Gestor de Gastos Compartidos en Blockchain
 
-¡Bienvenido! Este proyecto te guiará paso a paso para crear y desplegar tu primer smart contract en Ethereum.
+¡Bienvenido! **SplitExpense** es una plataforma descentralizada para gestionar gastos compartidos en grupo, similar a Splitwise pero construida sobre Ethereum.
 
-## ⭐ NUEVO: TravelFund V2 - UX Simplificada
+## 🎯 ¿Qué es SplitExpense?
 
-**TravelFund V2** es una versión mejorada con:
-- 👤 **Sistema de Nicknames**: Usa alias en lugar de direcciones 0x...
-- 🎫 **Invitaciones**: Sistema de acceso por invitación para fondos privados
-- 🔒 **Seguridad mejorada**: Protección contra reentrancy, límites de contribuyentes
-- 📊 **Mejor UI**: Auto-carga del contrato, sin configuración manual
-- 📈 **Metas de fundraising**: Tracking de progreso hacia objetivo
+Una plataforma para administrar gastos compartidos de forma transparente y justa:
+- 🌴 **Viajes grupales** - Administra gastos de hoteles, comidas, actividades
+- 🏠 **Roommates** - Comparte gastos de renta, servicios, compras
+- 🎉 **Eventos** - Organiza gastos de fiestas, reuniones, cenas
+- 💼 **Proyectos** - Administra gastos de equipos de trabajo
+- 🤝 **Cualquier gasto compartido** - Mantén todo transparente y justo
 
-### 🚀 Inicio Rápido V2
+## ✨ Características Principales
+
+- 📝 **Registro de Gastos**: Cualquier miembro puede registrar gastos ya realizados
+- 💸 **Balances Automáticos**: Cálculo automático de quién le debe a quién
+- 🔐 **Transparencia Blockchain**: Todos los gastos inmutables y verificables
+- 👥 **Grupos Ilimitados**: Crea grupos para diferentes propósitos
+- 🎯 **Meta Opcional**: Define presupuesto o déjalo libre
+- 💰 **Liquidaciones Directas**: Los miembros pueden liquidar deudas fácilmente
+
+### 🚀 Inicio Rápido
 
 ```powershell
-.\start-v2.ps1
+.\start-platform-clean.ps1
 ```
 
 Este script automáticamente:
-1. Compila el contrato TravelFundV2
-2. Inicia la red local de Hardhat
-3. Despliega el contrato con datos de ejemplo
+1. Compila los contratos
+2. Inicia Hardhat Network local
+3. Despliega el Factory y sistema completo
 4. Inicia el servidor frontend
-5. Abre el navegador en http://localhost:3001/index-v2.html
+5. Abre el navegador en http://localhost:3001
 
-### 📖 Documentación Completa
+### 📖 Documentación
 
-- **Guía detallada**: `docs/GuiaDetallada.txt` (1500+ líneas)
+- **Inicio rápido**: `QUICK_START_V2.md`
+- **Guía detallada**: `docs/GuiaDetallada.txt`
 - **Auditoría de seguridad**: `docs/SecurityAudit.txt`
-- **Contratos**: `contracts/TravelFundV2.sol` (700+ líneas)
+- **Smart contracts**: `contracts/` (FundFactory.sol, TravelFundV2.sol)
 
 ---
 
-## 📋 ¿Qué es un Smart Contract?
+## 💡 Cómo Funciona
 
-Un smart contract es un programa que se ejecuta en la blockchain de Ethereum. Es como un contrato tradicional, pero automático y descentralizado. Una vez desplegado, nadie puede modificarlo ni detenerlo.
+### 1. Crea un Grupo
+```
+Ejemplo: "Viaje Cancún 2025"
+Tipo: Viaje
+Miembros: Privado (con invitaciones)
+Meta: 0 ETH (opcional - sin límite de gastos)
+```
+
+### 2. Registra Gastos
+```
+Bob pagó el hotel: 4 ETH
+Participantes: Todos (Alice, Bob, Charlie, Diana)
+División: 1 ETH por persona
+```
+
+### 3. Ve los Balances
+```
+Sistema calcula automáticamente:
+- Bob debe recibir: 3 ETH
+- Charlie debe pagar: 1 ETH
+- Diana debe pagar: 1 ETH
+```
+
+### 4. Liquida Deudas
+```
+Charlie deposita 1 ETH → Bob recibe 1 ETH
+O registra pago externo (efectivo, transferencia)
+```
 
 ## 🛠️ Requisitos Previos
 

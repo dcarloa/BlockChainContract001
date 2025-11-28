@@ -10,7 +10,7 @@
         img-src 'self' data: https:; 
         connect-src 'self' http://127.0.0.1:8545 http://localhost:8545;
     ">
-    <title>FundHub - Plataforma de Fondos Compartidos</title>
+    <title>SplitExpense - Gestor de Gastos Compartidos</title>
     <link rel="stylesheet" href="styles-platform.css">
 </head>
 <body>
@@ -28,8 +28,8 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1>💰 FundHub</h1>
-                    <span class="version-badge">Multi-Fund Platform</span>
+                    <h1>💰 SplitExpense</h1>
+                    <span class="version-badge">Gestor de Gastos Compartidos</span>
                 </div>
                 
                 <div class="header-actions">
@@ -53,8 +53,8 @@
             <!-- Nickname Setup Modal (first time users) -->
             <div id="nicknameModal" class="modal" style="display: none;">
                 <div class="modal-content">
-                    <h2>👋 ¡Bienvenido a FundHub!</h2>
-                    <p>Puedes elegir un <strong>nickname opcional</strong> para que sea más fácil identificarte en los fondos, o continuar usando tu dirección de wallet.</p>
+                    <h2>👋 ¡Bienvenido a SplitExpense!</h2>
+                    <p>Puedes elegir un <strong>nickname opcional</strong> para que sea más fácil identificarte en los grupos, o continuar usando tu dirección de wallet.</p>
                     
                     <div class="form-group">
                         <label for="nicknameInput">Tu Nickname (Opcional)</label>
@@ -84,7 +84,7 @@
                         <div class="stat-icon">📊</div>
                         <div class="stat-content">
                             <h3 id="totalFundsCreated">0</h3>
-                            <p>Fondos Creados</p>
+                            <p>Grupos Creados</p>
                         </div>
                     </div>
                     
@@ -92,7 +92,7 @@
                         <div class="stat-icon">👥</div>
                         <div class="stat-content">
                             <h3 id="totalFundsParticipating">0</h3>
-                            <p>Fondos Participando</p>
+                            <p>Grupos Activos</p>
                         </div>
                     </div>
                     
@@ -118,10 +118,10 @@
 
                 <!-- Action Bar -->
                 <div class="action-bar">
-                    <h2>Mis Fondos</h2>
+                    <h2>Mis Grupos</h2>
                     <button id="createFundBtn" class="btn btn-primary">
                         <span class="btn-icon">➕</span>
-                        <span>Crear Nuevo Fondo</span>
+                        <span>Crear Nuevo Grupo</span>
                     </button>
                 </div>
 
@@ -155,10 +155,10 @@
                 <!-- Empty State -->
                 <div id="emptyState" class="empty-state" style="display: none;">
                     <div class="empty-icon">📦</div>
-                    <h3>No tienes fondos aún</h3>
-                    <p>Crea tu primer fondo para comenzar a organizar tus finanzas grupales</p>
+                    <h3>No tienes grupos aún</h3>
+                    <p>Crea tu primer grupo para comenzar a gestionar gastos compartidos</p>
                     <button class="btn btn-primary" onclick="document.getElementById('createFundBtn').click()">
-                        Crear Mi Primer Fondo
+                        Crear Mi Primer Grupo
                     </button>
                 </div>
 
@@ -171,7 +171,7 @@
                 <div class="back-bar">
                     <button id="backToDashboard" class="btn btn-secondary">
                         <span class="btn-icon">←</span>
-                        <span>Volver a Mis Fondos</span>
+                        <span>Volver a Mis Grupos</span>
                     </button>
                 </div>
 
@@ -236,8 +236,8 @@
                     <div class="closed-fund-content">
                         <span class="closed-fund-icon">🔒</span>
                         <div>
-                            <h4>Fondo Cerrado</h4>
-                            <p>Este fondo ha sido cerrado permanentemente. Los fondos fueron distribuidos proporcionalmente entre todos los contribuyentes.</p>
+                            <h4>Grupo Cerrado</h4>
+                            <p>Este grupo ha sido cerrado permanentemente. Los fondos fueron distribuidos proporcionalmente entre todos los miembros.</p>
                         </div>
                     </div>
                 </div>
@@ -254,11 +254,11 @@
                     </button>
                     <button class="fund-tab-btn" data-tab="propose">
                         <span class="tab-icon">📝</span>
-                        <span>Proponer</span>
+                        <span>Registrar Gasto</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="vote">
-                        <span class="tab-icon">🗳️</span>
-                        <span>Votar</span>
+                        <span class="tab-icon">💸</span>
+                        <span>Gastos</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="history">
                         <span class="tab-icon">📜</span>
@@ -280,8 +280,8 @@
                     <!-- Deposit Tab -->
                     <div id="depositTab" class="tab-pane active">
                         <div class="tab-card">
-                            <h3>💰 Depositar Fondos</h3>
-                            <p>Contribuye al fondo común. Tu aporte será registrado en la blockchain.</p>
+                            <h3>💰 Aportar al Bote Común</h3>
+                            <p>Deposita dinero al grupo. Útil para gastos futuros o para equilibrar balances.</p>
                             
                             <div class="form-group">
                                 <label for="depositAmount">Monto a Depositar (ETH)</label>
@@ -293,7 +293,7 @@
                             </div>
                             
                             <button id="depositBtn" class="btn btn-primary btn-block">
-                                Depositar Fondos
+                                Aportar al Bote
                             </button>
                         </div>
                     </div>
@@ -302,14 +302,14 @@
                     <div id="inviteTab" class="tab-pane">
                         <div class="tab-card">
                             <h3>🎫 Invitar Miembros</h3>
-                            <p>Invita amigos para que se unan al fondo. Ellos deberán aceptar la invitación.</p>
+                            <p>Invita amigos para que se unan al grupo. Ellos deberán aceptar la invitación.</p>
                             
                             <div class="invite-info-box">
                                 <p><strong>ℹ️ Información:</strong></p>
                                 <ul>
-                                    <li>Solo el creador del fondo puede invitar</li>
+                                    <li>Solo el creador del grupo puede invitar</li>
                                     <li>Los invitados verán la invitación en su dashboard</li>
-                                    <li>Deben aceptar antes de poder depositar</li>
+                                    <li>Deben aceptar antes de poder registrar gastos</li>
                                     <li>No puedes invitarte a ti mismo</li>
                                 </ul>
                             </div>
@@ -329,34 +329,46 @@
                     <!-- Propose Tab -->
                     <div id="proposeTab" class="tab-pane">
                         <div class="tab-card">
-                            <h3>📝 Crear Propuesta</h3>
-                            <p>Propón un gasto del fondo. Requiere aprobación por votación.</p>
+                            <h3>📝 Registrar Gasto</h3>
+                            <p>Registra un gasto que YA realizaste. Otros miembros votarán para aprobarlo.</p>
+                            
+                            <div class="info-box">
+                                <p><strong>💡 Cómo funciona:</strong></p>
+                                <ul>
+                                    <li>Pagaste algo? Regístralo aquí (ej: hotel, comida)</li>
+                                    <li>Indica quién debe recibir el reembolso (generalmente tú)</li>
+                                    <li>Los miembros votan para aprobarlo</li>
+                                    <li>Si se aprueba, recibes el reembolso del bote común</li>
+                                </ul>
+                            </div>
                             
                             <div class="form-group">
-                                <label for="proposalRecipient">Destinatario (Nickname o Dirección)</label>
+                                <label for="proposalRecipient">Quién Pagó (Nickname o Dirección)</label>
                                 <input type="text" id="proposalRecipient" placeholder="Ej: Bob o 0x123...">
+                                <small>Generalmente eres tú, pero puede ser otro miembro</small>
                             </div>
                             
                             <div class="form-group">
-                                <label for="proposalAmount">Monto (ETH)</label>
+                                <label for="proposalAmount">Monto del Gasto (ETH)</label>
                                 <input type="number" id="proposalAmount" placeholder="0.0" step="0.01" min="0.01">
-                                <small>Máximo permitido: 80% del balance actual</small>
+                                <small>Cantidad que se pagó por el gasto</small>
                             </div>
                             
                             <div class="form-group">
-                                <label for="proposalDescription">Descripción</label>
-                                <textarea id="proposalDescription" rows="3" placeholder="Explica para qué es este gasto..."></textarea>
+                                <label for="proposalDescription">Descripción del Gasto</label>
+                                <textarea id="proposalDescription" rows="3" placeholder="Ej: Hotel 3 noches en Cancún, Cena grupal en restaurante, Boletos de avión..."></textarea>
                             </div>
                             
                             <button id="createProposalBtn" class="btn btn-primary btn-block">
-                                Crear Propuesta
+                                Registrar Gasto y Solicitar Aprobación
                             </button>
                         </div>
                     </div>
 
                     <!-- Vote Tab -->
                     <div id="voteTab" class="tab-pane">
-                        <h3>🗳️ Propuestas Activas</h3>
+                        <h3>💸 Gastos Pendientes de Aprobación</h3>
+                        <p class="tab-description">Gastos registrados esperando votación. Vota para aprobar o rechazar.</p>
                         <div id="proposalsList">
                             <!-- Proposals will be loaded here -->
                         </div>
@@ -445,21 +457,21 @@
             <div id="createFundModal" class="modal" style="display: none;">
                 <div class="modal-content modal-large">
                     <div class="modal-header">
-                        <h2>➕ Crear Nuevo Fondo</h2>
+                        <h2>➕ Crear Nuevo Grupo</h2>
                         <button class="modal-close" onclick="closeCreateFundModal()">&times;</button>
                     </div>
                     
                     <form id="createFundForm">
                         <!-- Fund Type Selection -->
                         <div class="form-group">
-                            <label>Tipo de Fondo</label>
+                            <label>Tipo de Grupo</label>
                             <div class="fund-type-grid">
                                 <label class="fund-type-card">
                                     <input type="radio" name="fundType" value="0" checked>
                                     <div class="fund-type-content">
                                         <div class="fund-type-icon">🌴</div>
                                         <h4>Viaje</h4>
-                                        <p>Para vacaciones grupales</p>
+                                        <p>Gastos de vacaciones</p>
                                     </div>
                                 </label>
                                 
@@ -468,7 +480,7 @@
                                     <div class="fund-type-content">
                                         <div class="fund-type-icon">💰</div>
                                         <h4>Ahorro</h4>
-                                        <p>Meta de ahorro compartido</p>
+                                        <p>Ahorrar juntos</p>
                                     </div>
                                 </label>
                                 
@@ -476,8 +488,8 @@
                                     <input type="radio" name="fundType" value="2">
                                     <div class="fund-type-content">
                                         <div class="fund-type-icon">🤝</div>
-                                        <h4>Cuenta Compartida</h4>
-                                        <p>Gastos recurrentes</p>
+                                        <h4>Roommates</h4>
+                                        <p>Gastos del hogar</p>
                                     </div>
                                 </label>
                                 
@@ -495,7 +507,7 @@
                         <!-- Fund Details -->
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="fundName">Nombre del Fondo *</label>
+                                <label for="fundName">Nombre del Grupo *</label>
                                 <input 
                                     type="text" 
                                     id="fundName" 
@@ -505,15 +517,16 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="targetAmount">Meta (ETH) *</label>
+                                <label for="targetAmount">Meta / Presupuesto (ETH) - Opcional</label>
                                 <input 
                                     type="number" 
                                     id="targetAmount" 
-                                    placeholder="10"
+                                    placeholder="0"
                                     step="0.01"
-                                    min="0.01"
-                                    required
+                                    min="0"
+                                    value="0"
                                 >
+                                <small>Deja en 0 para gastos sin límite, o establece un presupuesto</small>
                             </div>
                         </div>
 
@@ -522,7 +535,7 @@
                             <textarea 
                                 id="fundDescription" 
                                 rows="3"
-                                placeholder="Describe el propósito del fondo..."
+                                placeholder="Ej: Viaje a Cancún 2025, Gastos del depa 304, Fiesta de aniversario..."
                             ></textarea>
                         </div>
 
@@ -530,9 +543,9 @@
                         <div class="form-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="isPrivate" checked>
-                                <span>Fondo Privado (requiere invitación)</span>
+                                <span>Grupo Privado (requiere invitación)</span>
                             </label>
-                            <small>Los fondos privados requieren que invites a cada participante</small>
+                            <small>Los grupos privados requieren que invites a cada miembro</small>
                         </div>
 
                         <!-- Governance Settings -->
@@ -547,7 +560,7 @@
                                     max="100"
                                     required
                                 >
-                                <small>Porcentaje de votos a favor necesario</small>
+                                <small>% de votos a favor para aprobar gastos</small>
                             </div>
                             
                             <div class="form-group">
@@ -559,7 +572,7 @@
                                     min="1"
                                     required
                                 >
-                                <small>Votos mínimos para ejecutar propuesta</small>
+                                <small>Votos mínimos para aprobar un gasto</small>
                             </div>
                         </div>
 
