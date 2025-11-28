@@ -133,6 +133,7 @@ contract TravelFundV2 {
     event ProposalCancelled(uint256 indexed proposalId, address indexed proposer);
     event FundClosed(uint256 remainingBalance);
     event RefundIssued(address indexed contributor, uint256 amount);
+    event MemberKicked(address indexed member, uint256 refundAmount, address indexed kickedBy);
     
     // ============================================
     // MODIFICADORES
@@ -692,6 +693,52 @@ contract TravelFundV2 {
     // ============================================
     // GESTIÓN DEL FONDO
     // ============================================
+    
+    /**
+     * @dev Expulsa a un miembro del grupo devolviéndole su parte proporcional
+     * Solo el creador puede ejecutar esta función
+     * El miembro recibe: (su contribución / total contribuciones) * balance actual
+     * @param _member Dirección del miembro a expulsar
+     */
+    function kickMember(address _member) external onlyCreator fundIsActive nonReentrant {
+        require(_member != address(0), "Direccion invalida");
+        require(_member != creator, "No puedes expulsarte a ti mismo");
+        require(isContributor[_member], "No es un miembro del grupo");
+        require(contributions[_member] > 0, "El miembro no ha contribuido");
+        
+        uint256 memberContribution = contributions[_member];
+        uint256 currentBalance = address(this).balance;
+        
+        // Calcular parte proporcional: (contribución del miembro / total) * balance actual
+        uint256 refundAmount = 0;
+        if (currentBalance > 0 && totalContributions > 0) {
+            refundAmount = (memberContribution * currentBalance) / totalContributions;
+        }
+        
+        // Remover al miembro del array de contributors
+        for (uint256 i = 0; i < contributors.length; i++) {
+            if (contributors[i] == _member) {
+                // Mover el último elemento a esta posición y reducir el tamaño
+                contributors[i] = contributors[contributors.length - 1];
+                contributors.pop();
+                break;
+            }
+        }
+        
+        // Actualizar estado del miembro
+        isContributor[_member] = false;
+        memberStatus[_member] = MemberStatus.NotInvited;
+        totalContributions -= memberContribution;
+        contributions[_member] = 0;
+        
+        // Devolver fondos si hay balance
+        if (refundAmount > 0) {
+            (bool success, ) = payable(_member).call{value: refundAmount}("");
+            require(success, "Fallo al enviar reembolso");
+        }
+        
+        emit MemberKicked(_member, refundAmount, msg.sender);
+    }
     
     /**
      * @dev Cierra el fondo y distribuye el balance proporcionalmente entre contribuyentes

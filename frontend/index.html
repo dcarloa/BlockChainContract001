@@ -468,6 +468,35 @@
                             <p>Opciones avanzadas para administrar el fondo.</p>
                             
                             <div class="manage-section">
+                                <!-- Kick Member Section -->
+                                <div class="member-management-section">
+                                    <h4>👥 Gestión de Miembros</h4>
+                                    <p><strong>Expulsar Miembro</strong></p>
+                                    <p class="help-text">
+                                        Expulsa a un miembro del grupo devolviéndole su parte proporcional de los fondos actuales.
+                                    </p>
+                                    
+                                    <div class="info-box">
+                                        <p><strong>💡 Cómo funciona:</strong></p>
+                                        <ul>
+                                            <li>El miembro es removido del grupo permanentemente</li>
+                                            <li>Recibe: (Su aportación / Total aportaciones) × Balance actual</li>
+                                            <li>No podrá participar en votaciones futuras</li>
+                                            <li>Sus votos anteriores quedan registrados</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div id="kickMembersList" class="kick-members-list">
+                                        <!-- Member cards will be loaded here -->
+                                    </div>
+                                    
+                                    <div id="noMembersToKick" class="empty-state" style="display: none;">
+                                        <div class="empty-icon">👥</div>
+                                        <h4>No hay miembros para expulsar</h4>
+                                        <p>Solo hay un miembro en el grupo o no eres el creador</p>
+                                    </div>
+                                </div>
+                                
                                 <div class="danger-zone">
                                     <h4>🚨 Zona de Peligro</h4>
                                     <p><strong>Cerrar y Distribuir Fondo</strong></p>

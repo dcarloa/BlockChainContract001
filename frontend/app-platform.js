@@ -1152,6 +1152,11 @@ function switchFundTab(tabName) {
     if (tabName === 'balances') {
         loadBalances();
     }
+    
+    // Load kick members list when manage tab is selected
+    if (tabName === 'manage') {
+        loadKickMembersList();
+    }
 }
 
 // ============================================
@@ -1946,6 +1951,125 @@ function settleDebt(amount) {
 // ============================================
 // FUND MANAGEMENT
 // ============================================
+
+/**
+ * Load members list for kicking in manage tab
+ */
+async function loadKickMembersList() {
+    try {
+        const kickMembersList = document.getElementById('kickMembersList');
+        const noMembersToKick = document.getElementById('noMembersToKick');
+        
+        if (!currentFundContract || !userAddress) {
+            return;
+        }
+        
+        // Check if user is creator
+        const contractCreator = await currentFundContract.creator();
+        if (contractCreator.toLowerCase() !== userAddress.toLowerCase()) {
+            kickMembersList.style.display = 'none';
+            noMembersToKick.style.display = 'block';
+            return;
+        }
+        
+        // Get all contributors
+        const [addresses, nicknames, contributions] = await currentFundContract.getContributorsWithNicknames();
+        const currentBalance = await currentFundContract.getBalance();
+        const totalContributions = await currentFundContract.totalContributions();
+        
+        // Filter out creator
+        const membersToShow = [];
+        for (let i = 0; i < addresses.length; i++) {
+            if (addresses[i].toLowerCase() !== contractCreator.toLowerCase()) {
+                membersToShow.push({
+                    address: addresses[i],
+                    nickname: nicknames[i],
+                    contribution: contributions[i]
+                });
+            }
+        }
+        
+        if (membersToShow.length === 0) {
+            kickMembersList.style.display = 'none';
+            noMembersToKick.style.display = 'block';
+            return;
+        }
+        
+        // Build member cards
+        let html = '';
+        for (const member of membersToShow) {
+            const contributionEth = parseFloat(ethers.formatEther(member.contribution));
+            const currentBalanceEth = parseFloat(ethers.formatEther(currentBalance));
+            const totalContributionsEth = parseFloat(ethers.formatEther(totalContributions));
+            
+            // Calculate refund amount
+            let refundAmount = 0;
+            if (totalContributionsEth > 0 && currentBalanceEth > 0) {
+                refundAmount = (contributionEth / totalContributionsEth) * currentBalanceEth;
+            }
+            
+            html += `
+                <div class="kick-member-card">
+                    <div class="member-info">
+                        <div class="member-avatar">${member.nickname.charAt(0).toUpperCase()}</div>
+                        <div class="member-details">
+                            <div class="member-name">${formatUserDisplay(member.nickname, member.address)}</div>
+                            <div class="member-stats">
+                                <span>💰 Aportó: ${contributionEth.toFixed(4)} ETH</span>
+                                <span>💸 Recibirá: ${refundAmount.toFixed(4)} ETH</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-danger" onclick="kickMemberConfirm('${member.address}', '${member.nickname}', ${refundAmount})">
+                        👋 Expulsar
+                    </button>
+                </div>
+            `;
+        }
+        
+        kickMembersList.innerHTML = html;
+        kickMembersList.style.display = 'block';
+        noMembersToKick.style.display = 'none';
+        
+    } catch (error) {
+        console.error("Error loading members to kick:", error);
+    }
+}
+
+/**
+ * Confirm and kick a member from the fund
+ */
+async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
+    try {
+        const confirmed = confirm(
+            `⚠️ ¿Expulsar a ${memberNickname}?\n\n` +
+            `Esta acción:\n` +
+            `• Removerá permanentemente al miembro del grupo\n` +
+            `• Le devolverá ${refundAmount.toFixed(4)} ETH\n` +
+            `• No podrá votar ni participar más\n\n` +
+            `¿Continuar?`
+        );
+        
+        if (!confirmed) return;
+        
+        showLoading("Expulsando miembro...");
+        
+        const tx = await currentFundContract.kickMember(memberAddress);
+        await tx.wait();
+        
+        hideLoading();
+        showToast(`✅ ${memberNickname} ha sido expulsado del grupo`, "success");
+        
+        // Reload members list and fund details
+        await loadKickMembersList();
+        await loadFundDetails(currentFund.fundAddress);
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error kicking member:", error);
+        showToast("Error al expulsar miembro: " + error.message, "error");
+    }
+}
 
 async function previewCloseFund() {
     try {
