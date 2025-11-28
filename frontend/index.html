@@ -264,6 +264,10 @@
                         <span class="tab-icon">📜</span>
                         <span>Historial</span>
                     </button>
+                    <button class="fund-tab-btn" data-tab="balances">
+                        <span class="tab-icon">⚖️</span>
+                        <span>Balances</span>
+                    </button>
                     <button class="fund-tab-btn" data-tab="members">
                         <span class="tab-icon">👥</span>
                         <span>Miembros</span>
@@ -390,6 +394,57 @@
                             <div class="empty-icon">📋</div>
                             <h4>No hay historial aún</h4>
                             <p>El historial de propuestas aparecerá aquí</p>
+                        </div>
+                    </div>
+
+                    <!-- Balances Tab -->
+                    <div id="balancesTab" class="tab-pane">
+                        <h3>⚖️ Balances del Grupo</h3>
+                        <p class="tab-description">Cálculo automático de quién debe dinero a quién basado en aportes y gastos ejecutados.</p>
+                        
+                        <div class="balances-summary">
+                            <div class="balance-stat-card positive">
+                                <div class="balance-stat-icon">💰</div>
+                                <div class="balance-stat-content">
+                                    <span class="balance-stat-label">Total Aportado</span>
+                                    <span class="balance-stat-value" id="totalContributed">0 ETH</span>
+                                </div>
+                            </div>
+                            <div class="balance-stat-card negative">
+                                <div class="balance-stat-icon">💸</div>
+                                <div class="balance-stat-content">
+                                    <span class="balance-stat-label">Total Gastado</span>
+                                    <span class="balance-stat-value" id="totalSpent">0 ETH</span>
+                                </div>
+                            </div>
+                            <div class="balance-stat-card neutral">
+                                <div class="balance-stat-icon">📊</div>
+                                <div class="balance-stat-content">
+                                    <span class="balance-stat-label">Balance Disponible</span>
+                                    <span class="balance-stat-value" id="availableBalance">0 ETH</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="margin: 1.5rem 0;">
+                            <p><strong>💡 Cómo se calculan los balances:</strong></p>
+                            <ul>
+                                <li><strong>Parte justa de cada uno</strong> = Total gastado ÷ Número de miembros</li>
+                                <li><strong>Balance personal</strong> = Lo que aportaste - Tu parte justa</li>
+                                <li><strong>Positivo (verde)</strong> = Otros te deben dinero</li>
+                                <li><strong>Negativo (rojo)</strong> = Debes dinero al grupo</li>
+                                <li><strong>Cero (gris)</strong> = Estás equilibrado</li>
+                            </ul>
+                        </div>
+
+                        <div id="balancesList">
+                            <!-- Balances will be loaded here -->
+                        </div>
+                        
+                        <div id="noBalances" class="empty-state" style="display: none;">
+                            <div class="empty-icon">⚖️</div>
+                            <h4>No hay gastos ejecutados aún</h4>
+                            <p>Los balances se calcularán cuando haya gastos aprobados y ejecutados</p>
                         </div>
                     </div>
 

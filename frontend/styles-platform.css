@@ -1956,6 +1956,166 @@ header,
   font-size: 0.9rem;
   margin-bottom: var(--spacing-md);
 }
+
+/* === BALANCES TAB === */
+.balances-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.balance-stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.balance-stat-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.balance-stat-card.positive {
+  border-left: 3px solid #22c55e;
+}
+
+.balance-stat-card.negative {
+  border-left: 3px solid #ef4444;
+}
+
+.balance-stat-card.neutral {
+  border-left: 3px solid #3b82f6;
+}
+
+.balance-stat-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.balance-stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.balance-stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.balance-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.balance-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all var(--transition-fast);
+}
+
+.balance-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(4px);
+}
+
+.balance-item.positive {
+  border-left: 4px solid #22c55e;
+}
+
+.balance-item.negative {
+  border-left: 4px solid #ef4444;
+}
+
+.balance-item.neutral {
+  border-left: 4px solid #64748b;
+  opacity: 0.7;
+}
+
+.balance-item-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1;
+}
+
+.balance-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.balance-details {
+  flex: 1;
+}
+
+.balance-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.balance-breakdown {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.balance-breakdown span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.balance-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+}
+
+.balance-amount.positive {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.balance-amount.negative {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.balance-amount.neutral {
+  color: var(--text-muted);
+  background: rgba(100, 116, 139, 0.1);
+}
+
 .mt-2 { margin-top: var(--spacing-sm) !important; }
 .mt-3 { margin-top: var(--spacing-md) !important; }
 .mt-4 { margin-top: var(--spacing-lg) !important; }

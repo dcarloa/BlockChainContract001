@@ -1147,6 +1147,11 @@ function switchFundTab(tabName) {
     if (tabName === 'history') {
         loadHistory();
     }
+    
+    // Load balances when balances tab is selected
+    if (tabName === 'balances') {
+        loadBalances();
+    }
 }
 
 // ============================================
@@ -1767,6 +1772,139 @@ async function loadHistory() {
         
     } catch (error) {
         console.error("Error loading history:", error);
+    }
+}
+
+async function loadBalances() {
+    try {
+        console.log("📊 Calculating balances...");
+        
+        // Get all members and their contributions
+        const [addresses, nicknames, contributions] = await currentFundContract.getContributorsWithNicknames();
+        
+        if (addresses.length === 0) {
+            document.getElementById('balancesList').innerHTML = '';
+            document.getElementById('noBalances').style.display = 'flex';
+            return;
+        }
+        
+        document.getElementById('noBalances').style.display = 'none';
+        
+        // Get all executed proposals (expenses)
+        const proposalCount = await currentFundContract.proposalCount();
+        const executedExpenses = [];
+        let totalSpent = 0n;
+        
+        for (let i = 1; i <= Number(proposalCount); i++) {
+            try {
+                const proposal = await currentFundContract.getProposal(i);
+                // proposal[11] is 'executed'
+                if (proposal[11]) {
+                    executedExpenses.push({
+                        id: proposal[0],
+                        recipient: proposal[3],
+                        amount: proposal[5]
+                    });
+                    totalSpent += proposal[5];
+                }
+            } catch (err) {
+                console.error(`Error loading proposal ${i}:`, err);
+            }
+        }
+        
+        console.log(`Total executed expenses: ${executedExpenses.length}`);
+        console.log(`Total spent: ${ethers.formatEther(totalSpent)} ETH`);
+        
+        // Calculate total contributions
+        let totalContributed = 0n;
+        for (let contrib of contributions) {
+            totalContributed += contrib;
+        }
+        
+        // Calculate fair share per person (total spent / number of members)
+        const memberCount = BigInt(addresses.length);
+        const fairSharePerPerson = memberCount > 0n ? totalSpent / memberCount : 0n;
+        
+        console.log(`Fair share per person: ${ethers.formatEther(fairSharePerPerson)} ETH`);
+        
+        // Calculate balance for each member
+        const balances = [];
+        for (let i = 0; i < addresses.length; i++) {
+            const contribution = contributions[i];
+            const address = addresses[i];
+            const nickname = nicknames[i] || formatAddress(address);
+            
+            // Balance = What they contributed - Their fair share of expenses
+            const balance = contribution - fairSharePerPerson;
+            
+            balances.push({
+                address,
+                nickname,
+                contribution,
+                fairShare: fairSharePerPerson,
+                balance,
+                contributionEth: parseFloat(ethers.formatEther(contribution)),
+                fairShareEth: parseFloat(ethers.formatEther(fairSharePerPerson)),
+                balanceEth: parseFloat(ethers.formatEther(balance))
+            });
+        }
+        
+        // Sort by balance (most positive first)
+        balances.sort((a, b) => Number(b.balance - a.balance));
+        
+        // Update summary stats
+        const currentBalance = await currentFundContract.getBalance();
+        document.getElementById('totalContributed').textContent = `${parseFloat(ethers.formatEther(totalContributed)).toFixed(4)} ETH`;
+        document.getElementById('totalSpent').textContent = `${parseFloat(ethers.formatEther(totalSpent)).toFixed(4)} ETH`;
+        document.getElementById('availableBalance').textContent = `${parseFloat(ethers.formatEther(currentBalance)).toFixed(4)} ETH`;
+        
+        // Render balances
+        const balancesList = document.getElementById('balancesList');
+        balancesList.innerHTML = balances.map(member => {
+            const isPositive = member.balance > 0n;
+            const isNegative = member.balance < 0n;
+            const statusClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
+            const statusText = isPositive ? 'Debe recibir' : isNegative ? 'Debe pagar' : 'Equilibrado';
+            const statusIcon = isPositive ? '💰' : isNegative ? '💸' : '✅';
+            
+            const avatar = member.nickname && member.nickname !== formatAddress(member.address)
+                ? member.nickname.substring(0, 2).toUpperCase()
+                : member.address.substring(2, 4).toUpperCase();
+            
+            return `
+                <div class="balance-item ${statusClass}">
+                    <div class="balance-item-info">
+                        <div class="balance-avatar">${avatar}</div>
+                        <div class="balance-details">
+                            <div class="balance-name">
+                                ${formatUserDisplay(member.nickname, member.address)}
+                                ${member.address.toLowerCase() === userAddress.toLowerCase() ? ' (Tú)' : ''}
+                            </div>
+                            <div class="balance-breakdown">
+                                <span>💰 Aportó: ${member.contributionEth.toFixed(4)} ETH</span>
+                                <span>📊 Parte justa: ${member.fairShareEth.toFixed(4)} ETH</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="balance-amount ${statusClass}">
+                        ${statusIcon} ${statusText}
+                        <br>
+                        <strong>${Math.abs(member.balanceEth).toFixed(4)} ETH</strong>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        console.log("✅ Balances calculated and displayed");
+        
+    } catch (error) {
+        console.error("Error loading balances:", error);
+        document.getElementById('balancesList').innerHTML = `
+            <div class="info-box warning-box">
+                <p><strong>⚠️ Error al calcular balances:</strong></p>
+                <p>${error.message}</p>
+            </div>
+        `;
     }
 }
 
