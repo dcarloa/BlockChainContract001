@@ -334,45 +334,46 @@
                     <div id="proposeTab" class="tab-pane">
                         <div class="tab-card">
                             <h3>📝 Registrar Gasto</h3>
-                            <p>Registra un gasto que YA realizaste. Otros miembros votarán para aprobarlo.</p>
+                            <p>Registra un gasto que se pagó a un proveedor externo. El grupo votará si aprueba ese uso de fondos.</p>
                             
                             <div class="info-box">
                                 <p><strong>💡 Cómo funciona:</strong></p>
                                 <ul>
-                                    <li>Pagaste algo? Regístralo aquí (ej: hotel, comida)</li>
-                                    <li>Indica quién debe recibir el reembolso (generalmente tú)</li>
-                                    <li>Los miembros votan para aprobarlo</li>
-                                    <li>Si se aprueba, recibes el reembolso del bote común</li>
+                                    <li>Alguien del grupo pagó un gasto compartido (hotel, restaurante, etc.)</li>
+                                    <li>Registra el gasto indicando a quién se le pagó (proveedor externo)</li>
+                                    <li>El grupo vota si aprueba o rechaza ese gasto</li>
+                                    <li>Si se aprueba, quien pagó recibe el reembolso del bote común</li>
                                 </ul>
                             </div>
                             
                             <div class="form-group">
-                                <label for="proposalRecipient">Quién Pagó (Nickname o Dirección)</label>
-                                <input type="text" id="proposalRecipient" placeholder="Ej: Bob o 0x123...">
-                                <small>Generalmente eres tú, pero puede ser otro miembro</small>
+                                <label for="proposalRecipient">A quién se le pagó (Proveedor/Dirección)</label>
+                                <input type="text" id="proposalRecipient" placeholder="Ej: Hotel Marriott, Restaurante, o 0x123...">
+                                <small>El agente externo o proveedor que recibió el pago</small>
                             </div>
                             
                             <div class="form-group">
                                 <label for="proposalAmount">Monto del Gasto (ETH)</label>
                                 <input type="number" id="proposalAmount" placeholder="0.0" step="0.01" min="0.01">
-                                <small>Cantidad que se pagó por el gasto</small>
+                                <small>Cantidad que se pagó al proveedor</small>
                             </div>
                             
                             <div class="form-group">
                                 <label for="proposalDescription">Descripción del Gasto</label>
-                                <textarea id="proposalDescription" rows="3" placeholder="Ej: Hotel 3 noches en Cancún, Cena grupal en restaurante, Boletos de avión..."></textarea>
+                                <textarea id="proposalDescription" rows="3" placeholder="Ej: Hotel 3 noches en Cancún pagado a Marriott. Pagado por: Bob"></textarea>
+                                <small>Incluye quién del grupo pagó y detalles del gasto</small>
                             </div>
                             
                             <button id="createProposalBtn" class="btn btn-primary btn-block">
-                                Registrar Gasto y Solicitar Aprobación
+                                📝 Registrar Gasto para Votación
                             </button>
                         </div>
                     </div>
 
                     <!-- Vote Tab -->
                     <div id="voteTab" class="tab-pane">
-                        <h3>💸 Gastos Pendientes de Aprobación</h3>
-                        <p class="tab-description">Gastos registrados esperando votación. Vota para aprobar o rechazar.</p>
+                        <h3>🗳️ Votar Gastos</h3>
+                        <p class="tab-description">Gastos registrados por miembros del grupo. Vota si apruebas o rechazas cada gasto.</p>
                         <div id="proposalsList">
                             <!-- Proposals will be loaded here -->
                         </div>

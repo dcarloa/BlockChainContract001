@@ -13,12 +13,14 @@ Una plataforma para administrar gastos compartidos de forma transparente y justa
 
 ## ✨ Características Principales
 
-- 📝 **Registro de Gastos**: Cualquier miembro puede registrar gastos ya realizados
+- 💰 **Bote Común**: Todos aportan a un fondo compartido
+- 📝 **Registro de Gastos**: Cualquier miembro registra gastos pagados a proveedores externos
+- 🗳️ **Votación Democrática**: El grupo vota si aprueba o rechaza cada gasto
 - 💸 **Balances Automáticos**: Cálculo automático de quién le debe a quién
 - 🔐 **Transparencia Blockchain**: Todos los gastos inmutables y verificables
 - 👥 **Grupos Ilimitados**: Crea grupos para diferentes propósitos
 - 🎯 **Meta Opcional**: Define presupuesto o déjalo libre
-- 💰 **Liquidaciones Directas**: Los miembros pueden liquidar deudas fácilmente
+- 💳 **Liquidaciones Rápidas**: Botón para saldar deudas en un clic
 
 ### 🚀 Inicio Rápido
 
@@ -52,25 +54,33 @@ Miembros: Privado (con invitaciones)
 Meta: 0 ETH (opcional - sin límite de gastos)
 ```
 
-### 2. Registra Gastos
+### 2. Todos Aportan al Bote Común
 ```
-Bob pagó el hotel: 4 ETH
-Participantes: Todos (Alice, Bob, Charlie, Diana)
-División: 1 ETH por persona
+Alice aporta: 3 ETH
+Bob aporta: 2.5 ETH
+Charlie aporta: 2 ETH
+Diana aporta: 1.5 ETH
+Total en bote: 9 ETH
 ```
 
-### 3. Ve los Balances
+### 3. Registra Gastos a Proveedores
+```
+Bob registra: "Pagado a Hotel Marriott: 4 ETH"
+El grupo vota si aprueba ese gasto
+Si se aprueba → Bob recibe reembolso del bote común
+```
+
+### 4. Ve los Balances
 ```
 Sistema calcula automáticamente:
-- Bob debe recibir: 3 ETH
-- Charlie debe pagar: 1 ETH
-- Diana debe pagar: 1 ETH
+Parte justa = Total gastado / Número de miembros
+Balance = Lo que aportaste - Tu parte justa
 ```
 
-### 4. Liquida Deudas
+### 5. Liquida Deudas
 ```
-Charlie deposita 1 ETH → Bob recibe 1 ETH
-O registra pago externo (efectivo, transferencia)
+Si debes dinero, usa el botón "Liquidar deuda"
+Aporta la cantidad exacta al bote común
 ```
 
 ## 🛠️ Requisitos Previos
