@@ -14,9 +14,10 @@ Una plataforma para administrar gastos compartidos de forma transparente y justa
 ## ✨ Características Principales
 
 - 💰 **Bote Común**: Todos aportan a un fondo compartido
-- 📝 **Registro de Gastos**: Cualquier miembro registra gastos pagados a proveedores externos
-- 🗳️ **Votación Democrática**: El grupo vota si aprueba o rechaza cada gasto
-- 💸 **Balances Automáticos**: Cálculo automático de quién le debe a quién
+- 📝 **Propuestas de Gasto**: Cualquier miembro propone pagar del bote a proveedores externos
+- 🗳️ **Votación Democrática**: El grupo vota si aprueba o rechaza usar el dinero del bote
+- 💸 **Pagos Directos**: Si se aprueba, el dinero se envía del bote directo al proveedor
+- ⚖️ **Balances Automáticos**: Cálculo automático de quién debe aportar más al bote
 - 🔐 **Transparencia Blockchain**: Todos los gastos inmutables y verificables
 - 👥 **Grupos Ilimitados**: Crea grupos para diferentes propósitos
 - 🎯 **Meta Opcional**: Define presupuesto o déjalo libre
@@ -63,11 +64,11 @@ Diana aporta: 1.5 ETH
 Total en bote: 9 ETH
 ```
 
-### 3. Registra Gastos a Proveedores
+### 3. Propón Pagar a Proveedores
 ```
-Bob registra: "Pagado a Hotel Marriott: 4 ETH"
-El grupo vota si aprueba ese gasto
-Si se aprueba → Bob recibe reembolso del bote común
+Bob propone: "Pagar 4 ETH al Hotel Marriott (0x123...)"
+El grupo vota si aprueba usar el dinero del bote
+Si se aprueba → 4 ETH se envían directo del bote al hotel
 ```
 
 ### 4. Ve los Balances
@@ -77,10 +78,11 @@ Parte justa = Total gastado / Número de miembros
 Balance = Lo que aportaste - Tu parte justa
 ```
 
-### 5. Liquida Deudas
+### 5. Liquida Deudas (Si es necesario)
 ```
-Si debes dinero, usa el botón "Liquidar deuda"
-Aporta la cantidad exacta al bote común
+Si tu balance es negativo (gastaste más de tu parte justa)
+Usa el botón "Liquidar deuda"
+Aporta dinero adicional al bote común
 ```
 
 ## 🛠️ Requisitos Previos

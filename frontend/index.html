@@ -254,11 +254,11 @@
                     </button>
                     <button class="fund-tab-btn" data-tab="propose">
                         <span class="tab-icon">📝</span>
-                        <span>Registrar Gasto</span>
+                        <span>Proponer Gasto</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="vote">
-                        <span class="tab-icon">💸</span>
-                        <span>Gastos</span>
+                        <span class="tab-icon">🗳️</span>
+                        <span>Votar</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="history">
                         <span class="tab-icon">📜</span>
@@ -333,47 +333,47 @@
                     <!-- Propose Tab -->
                     <div id="proposeTab" class="tab-pane">
                         <div class="tab-card">
-                            <h3>📝 Registrar Gasto</h3>
-                            <p>Registra un gasto que se pagó a un proveedor externo. El grupo votará si aprueba ese uso de fondos.</p>
+                            <h3>📝 Proponer Gasto</h3>
+                            <p>Propón usar dinero del bote común para pagar a un proveedor externo. El grupo votará si aprueba.</p>
                             
                             <div class="info-box">
                                 <p><strong>💡 Cómo funciona:</strong></p>
                                 <ul>
-                                    <li>Alguien del grupo pagó un gasto compartido (hotel, restaurante, etc.)</li>
-                                    <li>Registra el gasto indicando a quién se le pagó (proveedor externo)</li>
-                                    <li>El grupo vota si aprueba o rechaza ese gasto</li>
-                                    <li>Si se aprueba, quien pagó recibe el reembolso del bote común</li>
+                                    <li>Propón pagar un gasto desde el bote común (hotel, restaurante, etc.)</li>
+                                    <li>Indica a quién se le pagará (proveedor externo con su dirección)</li>
+                                    <li>El grupo vota si aprueba o rechaza usar el dinero del bote</li>
+                                    <li>Si se aprueba, el dinero se envía directo del bote al proveedor</li>
                                 </ul>
                             </div>
                             
                             <div class="form-group">
-                                <label for="proposalRecipient">A quién se le pagó (Proveedor/Dirección)</label>
-                                <input type="text" id="proposalRecipient" placeholder="Ej: Hotel Marriott, Restaurante, o 0x123...">
-                                <small>El agente externo o proveedor que recibió el pago</small>
+                                <label for="proposalRecipient">A quién se le pagará (Dirección del proveedor)</label>
+                                <input type="text" id="proposalRecipient" placeholder="0x123... (dirección del hotel, restaurante, etc.)">
+                                <small>Dirección Ethereum del agente externo que recibirá el pago</small>
                             </div>
                             
                             <div class="form-group">
-                                <label for="proposalAmount">Monto del Gasto (ETH)</label>
+                                <label for="proposalAmount">Monto a Pagar (ETH)</label>
                                 <input type="number" id="proposalAmount" placeholder="0.0" step="0.01" min="0.01">
-                                <small>Cantidad que se pagó al proveedor</small>
+                                <small>Cantidad que se pagará del bote común al proveedor</small>
                             </div>
                             
                             <div class="form-group">
                                 <label for="proposalDescription">Descripción del Gasto</label>
-                                <textarea id="proposalDescription" rows="3" placeholder="Ej: Hotel 3 noches en Cancún pagado a Marriott. Pagado por: Bob"></textarea>
-                                <small>Incluye quién del grupo pagó y detalles del gasto</small>
+                                <textarea id="proposalDescription" rows="3" placeholder="Ej: Hotel 3 noches en Cancún - Pago a Marriott, Cena grupal en Restaurante La Costa..."></textarea>
+                                <small>Explica el motivo del gasto y a quién se le pagará</small>
                             </div>
                             
                             <button id="createProposalBtn" class="btn btn-primary btn-block">
-                                📝 Registrar Gasto para Votación
+                                📝 Proponer Uso de Fondos
                             </button>
                         </div>
                     </div>
 
                     <!-- Vote Tab -->
                     <div id="voteTab" class="tab-pane">
-                        <h3>🗳️ Votar Gastos</h3>
-                        <p class="tab-description">Gastos registrados por miembros del grupo. Vota si apruebas o rechazas cada gasto.</p>
+                        <h3>🗳️ Votar Propuestas</h3>
+                        <p class="tab-description">Propuestas de uso de fondos. Vota si apruebas o rechazas pagar a cada proveedor.</p>
                         <div id="proposalsList">
                             <!-- Proposals will be loaded here -->
                         </div>
