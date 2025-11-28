@@ -1871,6 +1871,14 @@ async function loadBalances() {
                 ? member.nickname.substring(0, 2).toUpperCase()
                 : member.address.substring(2, 4).toUpperCase();
             
+            // Check if this is the current user and they owe money
+            const isCurrentUser = member.address.toLowerCase() === userAddress.toLowerCase();
+            const owesMoneyButton = isCurrentUser && isNegative 
+                ? `<button class="btn btn-sm btn-primary" onclick="settleDebt(${Math.abs(member.balanceEth)})">
+                       💳 Liquidar mi deuda
+                   </button>`
+                : '';
+            
             return `
                 <div class="balance-item ${statusClass}">
                     <div class="balance-item-info">
@@ -1878,12 +1886,13 @@ async function loadBalances() {
                         <div class="balance-details">
                             <div class="balance-name">
                                 ${formatUserDisplay(member.nickname, member.address)}
-                                ${member.address.toLowerCase() === userAddress.toLowerCase() ? ' (Tú)' : ''}
+                                ${isCurrentUser ? ' (Tú)' : ''}
                             </div>
                             <div class="balance-breakdown">
                                 <span>💰 Aportó: ${member.contributionEth.toFixed(4)} ETH</span>
                                 <span>📊 Parte justa: ${member.fairShareEth.toFixed(4)} ETH</span>
                             </div>
+                            ${owesMoneyButton}
                         </div>
                     </div>
                     <div class="balance-amount ${statusClass}">
@@ -1905,6 +1914,32 @@ async function loadBalances() {
                 <p>${error.message}</p>
             </div>
         `;
+    }
+}
+
+/**
+ * Quick debt settlement - switches to deposit tab and pre-fills the amount
+ * @param {number} amount - Amount owed in ETH
+ */
+function settleDebt(amount) {
+    try {
+        // Switch to deposit tab
+        switchFundTab('deposit');
+        
+        // Pre-fill the deposit amount with the exact debt amount
+        const depositInput = document.getElementById('depositAmount');
+        if (depositInput) {
+            depositInput.value = amount.toFixed(4);
+            depositInput.focus();
+        }
+        
+        // Show informative message
+        showToast(`💳 Monto pre-llenado con tu deuda exacta: ${amount.toFixed(4)} ETH`, 'info');
+        
+        console.log(`💸 Debt settlement initiated: ${amount} ETH`);
+    } catch (error) {
+        console.error("Error in settleDebt:", error);
+        showToast("Error al preparar liquidación de deuda", "error");
     }
 }
 
