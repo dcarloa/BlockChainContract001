@@ -153,41 +153,63 @@ function setupEventListeners() {
 
 async function connectWallet() {
     try {
-        showLoading("Conectando con MetaMask...");
-        console.log("🔌 Iniciando conexión de wallet...");
+        showLoading("Selecciona tu wallet...");
+        console.log("🔌 Iniciando conexión multi-wallet...");
         
-        if (!metamaskProviderDirect) {
-            hideLoading();
-            showToast("⚠️ MetaMask no detectado. Por favor instala la extensión.", "error");
-            return;
-        }
+        // Use the wallet connector to show selector and connect
+        const walletResult = await window.walletConnector.showWalletSelector();
         
-        console.log("✅ Usando referencia directa a MetaMask");
+        console.log("✅ Wallet conectada:", walletResult.walletName, walletResult.address);
+        showLoading(`Conectando con ${walletResult.walletName}...`);
         
-        // Request account access
-        await metamaskProviderDirect.request({ method: 'eth_requestAccounts' });
-        
-        // Create provider and signer
-        provider = new ethers.BrowserProvider(metamaskProviderDirect);
+        // Create provider and signer from selected wallet
+        provider = new ethers.BrowserProvider(walletResult.provider);
         signer = await provider.getSigner();
-        userAddress = await signer.getAddress();
-        
-        console.log("✅ Wallet conectada:", userAddress);
+        userAddress = walletResult.address;
         
         // Verify network
         const network = await provider.getNetwork();
+        console.log("🌐 Red detectada:", network.chainId);
+        
+        // Check if on correct network (Hardhat Local for now)
         if (network.chainId !== 31337n) {
             hideLoading();
-            showToast("⚠️ Por favor cambia a la red Hardhat Local (Chain ID: 31337)", "warning");
-            return;
+            
+            // Show network switcher
+            const switchNetwork = confirm(
+                `⚠️ Red incorrecta detectada (Chain ID: ${network.chainId})\n\n` +
+                `Para usar esta app necesitas estar en Hardhat Local (Chain ID: 31337)\n\n` +
+                `¿Quieres cambiar de red automáticamente?`
+            );
+            
+            if (switchNetwork) {
+                try {
+                    showLoading("Cambiando de red...");
+                    await window.walletConnector.switchNetwork(31337);
+                    // Reload after network switch
+                    location.reload();
+                    return;
+                } catch (switchError) {
+                    hideLoading();
+                    showToast("❌ Error al cambiar de red. Por favor cámbiala manualmente.", "error");
+                    return;
+                }
+            } else {
+                showToast("⚠️ Por favor cambia a la red Hardhat Local (Chain ID: 31337)", "warning");
+                return;
+            }
         }
         
-        // Update UI
+        // Update UI with wallet info
+        const walletIcon = walletResult.walletType === 'metamask' ? '🦊' : 
+                          walletResult.walletType === 'coinbase' ? '🔵' : '📱';
+        
         document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">✅</span>
+            <span class="btn-icon">${walletIcon}</span>
             <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
         `;
         document.getElementById('connectWallet').disabled = true;
+        document.getElementById('connectWallet').style.opacity = '0.8';
         
         // Load factory contract
         await loadFactoryContract();
@@ -196,11 +218,17 @@ async function connectWallet() {
         await checkUserNickname();
         
         hideLoading();
+        showToast(`✅ Conectado con ${walletResult.walletName}`, "success");
         
     } catch (error) {
         hideLoading();
         console.error("❌ Error conectando wallet:", error);
-        showToast("Error al conectar wallet: " + error.message, "error");
+        
+        if (error.message.includes('User rejected')) {
+            showToast("❌ Conexión cancelada por el usuario", "warning");
+        } else {
+            showToast("❌ Error al conectar wallet: " + error.message, "error");
+        }
     }
 }
 
