@@ -110,6 +110,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     setupEventListeners();
     await loadFactoryInfo();
+    
+    // Intentar reconectar wallet automáticamente si ya estaba conectada
+    await autoReconnectWallet();
 });
 
 function setupEventListeners() {
@@ -288,6 +291,58 @@ async function disconnectWallet() {
         hideLoading();
         console.error("Error disconnecting wallet:", error);
         showToast("❌ Error al desconectar: " + error.message, "error");
+    }
+}
+
+async function autoReconnectWallet() {
+    try {
+        // Verificar si hay una conexión previa guardada
+        if (!window.ethereum) {
+            console.log("No hay wallet disponible");
+            return;
+        }
+
+        // Intentar obtener cuentas sin solicitar permiso
+        const accounts = await window.ethereum.request({ 
+            method: 'eth_accounts' 
+        });
+
+        if (accounts && accounts.length > 0) {
+            console.log("🔄 Reconectando wallet automáticamente...");
+            
+            // Reconectar silenciosamente
+            provider = new ethers.BrowserProvider(window.ethereum);
+            signer = await provider.getSigner();
+            userAddress = accounts[0];
+
+            // Verificar red
+            const network = await provider.getNetwork();
+            
+            if (network.chainId !== 84532n) {
+                console.log("⚠️ Red incorrecta, no se reconectará automáticamente");
+                return;
+            }
+
+            // Actualizar UI
+            const walletIcon = '🦊'; // Por defecto MetaMask
+            document.getElementById('connectWallet').innerHTML = `
+                <span class="btn-icon">${walletIcon}</span>
+                <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
+            `;
+            document.getElementById('connectWallet').style.display = 'none';
+            document.getElementById('disconnectWallet').style.display = 'inline-flex';
+
+            // Cargar factory contract
+            await loadFactoryContract();
+
+            // Verificar nickname y cargar dashboard
+            await checkUserNickname();
+
+            console.log("✅ Wallet reconectada automáticamente");
+        }
+    } catch (error) {
+        console.log("No se pudo reconectar automáticamente:", error.message);
+        // No mostrar error al usuario, simplemente no reconectar
     }
 }
 
@@ -572,12 +627,12 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
             // Continue anyway - user is still a member of the fund
         }
         
-        showToast(`✅ Invitación aceptada! Ahora eres miembro de ${fundName}`, "success");
-        
-        // Force complete reload: clear state and reload everything
+        // Refresh dashboard to show new fund
         allUserFunds = [];
-        await loadUserFunds();
+        await refreshCurrentView();
         await loadPendingInvitations();
+        
+        showToast(`✅ Invitación aceptada! Ahora eres miembro de ${fundName}`, "success");
         
         hideLoading();
         
@@ -925,10 +980,10 @@ async function deleteFund(fundAddress, fundName) {
         const tx = await factoryContract.deactivateFund(fundAddress);
         await tx.wait();
         
-        showToast("✅ Fondo desactivado exitosamente", "success");
+        // Refresh view to remove deactivated fund
+        await refreshCurrentView();
         
-        // Recargar fondos
-        await loadUserFunds();
+        showToast("✅ Fondo desactivado exitosamente", "success");
         
         hideLoading();
         
@@ -1091,6 +1146,23 @@ function formatUserDisplay(nickname, address) {
         return `${nickname} (${formatAddress(address)})`;
     }
     return formatAddress(address);
+}
+
+// Helper: Refresh current view after transaction
+async function refreshCurrentView() {
+    try {
+        if (currentFundAddress && document.getElementById('fundDetailSection').classList.contains('active')) {
+            // Estamos en la vista de detalle de un fondo
+            console.log("🔄 Refrescando vista de fondo...");
+            await loadFundDetailView();
+        } else if (document.getElementById('dashboardSection').classList.contains('active')) {
+            // Estamos en el dashboard
+            console.log("🔄 Refrescando dashboard...");
+            await loadUserFunds();
+        }
+    } catch (error) {
+        console.error("Error refreshing view:", error);
+    }
 }
 
 // ============================================
@@ -1383,6 +1455,9 @@ async function inviteMember() {
         
         await tx.wait();
         
+        // Refresh view to show updated members
+        await refreshCurrentView();
+        
         showToast(`✅ Invitación enviada a ${addressOrNickname}!`, "success");
         
         // Clear input
@@ -1491,6 +1566,9 @@ async function createProposal() {
         const tx = await currentFundContract.createProposal(recipientAddress, amountWei, description);
         await tx.wait();
         
+        // Refresh view to show new proposal
+        await refreshCurrentView();
+        
         showToast("✅ Propuesta creada exitosamente!", "success");
         
         // Clear inputs
@@ -1498,12 +1576,7 @@ async function createProposal() {
         document.getElementById('proposalAmount').value = '';
         document.getElementById('proposalDescription').value = '';
         
-        // PROBLEM 2 FIX: Reload proposals and ensure they display
-        console.log("🔄 Reloading proposals after creation...");
-        await loadProposals();
-        
-        // Switch to vote tab
-        console.log("📍 Switching to vote tab to show new proposal");
+        // Switch to vote tab to show new proposal
         switchFundTab('vote');
         
         hideLoading();
@@ -1711,9 +1784,10 @@ async function voteProposal(proposalId, inFavor) {
         const tx = await currentFundContract.vote(proposalId, inFavor);
         await tx.wait();
         
-        showToast(`✅ Voto ${inFavor ? 'a favor' : 'en contra'} registrado!`, "success");
+        // Refresh view to show updated votes
+        await refreshCurrentView();
         
-        await loadProposals();
+        showToast(`✅ Voto ${inFavor ? 'a favor' : 'en contra'} registrado!`, "success");
         
         hideLoading();
         
@@ -1731,10 +1805,10 @@ async function executeProposal(proposalId) {
         const tx = await currentFundContract.executeProposal(proposalId);
         await tx.wait();
         
-        showToast("✅ Propuesta ejecutada! Fondos transferidos.", "success");
+        // Refresh view to show executed proposal and updated balance
+        await refreshCurrentView();
         
-        await loadFundDetailView();
-        await loadProposals();
+        showToast("✅ Propuesta ejecutada! Fondos transferidos.", "success");
         
         hideLoading();
         
@@ -2137,12 +2211,11 @@ async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
         const tx = await currentFundContract.kickMember(memberAddress);
         await tx.wait();
         
+        // Refresh view to show updated members and balance
+        await refreshCurrentView();
+        
         hideLoading();
         showToast(`✅ ${memberNickname} ha sido expulsado del grupo`, "success");
-        
-        // Reload members list and fund details
-        await loadKickMembersList();
-        await loadFundDetails(currentFund.fundAddress);
         
     } catch (error) {
         hideLoading();
@@ -2247,12 +2320,12 @@ async function closeFund() {
         const tx = await currentFundContract.closeFund();
         await tx.wait();
         
+        // Refresh view to show closed state
+        await refreshCurrentView();
+        
         hideLoading();
         
         showToast("✅ Fondo cerrado y fondos distribuidos exitosamente!", "success");
-        
-        // Reload fund details to show closed state
-        await loadFundDetailView();
         
     } catch (error) {
         hideLoading();
