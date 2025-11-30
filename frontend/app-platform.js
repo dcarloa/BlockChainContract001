@@ -171,21 +171,21 @@ async function connectWallet() {
         const network = await provider.getNetwork();
         console.log("🌐 Red detectada:", network.chainId);
         
-        // Check if on correct network (Hardhat Local for now)
-        if (network.chainId !== 31337n) {
+        // Check if on correct network (Base Sepolia)
+        if (network.chainId !== 84532n) {
             hideLoading();
             
             // Show network switcher
             const switchNetwork = confirm(
                 `⚠️ Red incorrecta detectada (Chain ID: ${network.chainId})\n\n` +
-                `Para usar esta app necesitas estar en Hardhat Local (Chain ID: 31337)\n\n` +
+                `Para usar esta app necesitas estar en Base Sepolia (Chain ID: 84532)\n\n` +
                 `¿Quieres cambiar de red automáticamente?`
             );
             
             if (switchNetwork) {
                 try {
                     showLoading("Cambiando de red...");
-                    await window.walletConnector.switchNetwork(31337);
+                    await window.walletConnector.switchNetwork(84532);
                     // Reload after network switch
                     location.reload();
                     return;
@@ -195,7 +195,7 @@ async function connectWallet() {
                     return;
                 }
             } else {
-                showToast("⚠️ Por favor cambia a la red Hardhat Local (Chain ID: 31337)", "warning");
+                showToast("⚠️ Por favor cambia a la red Base Sepolia (Chain ID: 84532)", "warning");
                 return;
             }
         }

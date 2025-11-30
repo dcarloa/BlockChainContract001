@@ -26,6 +26,13 @@ module.exports = {
       url: process.env.SEPOLIA_RPC_URL || "",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111
+    },
+    // Base Sepolia Testnet
+    baseSepolia: {
+      url: "https://sepolia.base.org",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 84532,
+      gasPrice: 1000000000 // 1 gwei
     }
   },
   paths: {
@@ -41,7 +48,18 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      sepolia: process.env.ETHERSCAN_API_KEY || ""
-    }
+      sepolia: process.env.ETHERSCAN_API_KEY || "",
+      baseSepolia: process.env.BASESCAN_API_KEY || ""
+    },
+    customChains: [
+      {
+        network: "baseSepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://api-sepolia.basescan.org/api",
+          browserURL: "https://sepolia.basescan.org"
+        }
+      }
+    ]
   }
 };

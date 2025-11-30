@@ -1,7 +1,7 @@
 {
-  "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  "network": "localhost",
-  "chainId": "31337",
-  "deployedAt": "2025-11-30T01:19:49.791Z",
-  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  "address": "0xe97B115Ddad38d7C9FF8Dde8D55D63F151067257",
+  "network": "baseSepolia",
+  "chainId": "84532",
+  "deployedAt": "2025-11-30T04:26:41.391Z",
+  "deployer": "0xb6885b4Ba860142CD9556F09FEeCE61dC385A9B9"
 }

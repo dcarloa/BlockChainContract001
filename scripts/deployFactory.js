@@ -7,11 +7,25 @@ async function main() {
     console.log("=======================================");
     console.log("");
 
-    const [deployer] = await hre.ethers.getSigners();
+    // Get network info
+    const network = await hre.ethers.provider.getNetwork();
+    console.log("🌐 Red:", network.name, "- Chain ID:", network.chainId.toString());
+    console.log("");
+
+    const signers = await hre.ethers.getSigners();
+    if (!signers || signers.length === 0) {
+        throw new Error("❌ No se encontraron signers. Verifica tu PRIVATE_KEY en .env");
+    }
+
+    const deployer = signers[0];
     console.log("📝 Desplegando con la cuenta:", deployer.address);
     
     const balance = await hre.ethers.provider.getBalance(deployer.address);
     console.log("💰 Balance:", hre.ethers.formatEther(balance), "ETH");
+    
+    if (balance === 0n) {
+        throw new Error("❌ La cuenta no tiene fondos. Necesitas ETH en Base Sepolia.");
+    }
     console.log("");
 
     // Desplegar FundFactory
@@ -26,10 +40,13 @@ async function main() {
     console.log("");
 
     // Guardar información del factory
+    const networkName = network.chainId === 84532n ? "baseSepolia" : 
+                       network.chainId === 31337n ? "localhost" : "unknown";
+    
     const factoryInfo = {
         address: factoryAddress,
-        network: "localhost",
-        chainId: "31337",
+        network: networkName,
+        chainId: network.chainId.toString(),
         deployedAt: new Date().toISOString(),
         deployer: deployer.address
     };
