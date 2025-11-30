@@ -6,6 +6,16 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/landing.html"
+      },
+      {
+        "source": "/app",
+        "destination": "/index.html"
+      }
+    ],
     "headers": [
       {
         "source": "**/*.@(js|css|json)",

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SplitExpense - La forma más fácil de gestionar gastos compartidos usando blockchain. Transparente, democrático y seguro.">
+    <meta name="keywords" content="gastos compartidos, blockchain, ethereum, splitwise, viajes, grupos, web3">
+    <title>SplitExpense - Gestión de Gastos Compartidos con Blockchain</title>
+    <link rel="stylesheet" href="landing-styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <span class="logo-icon">💰</span>
+                <span class="logo-text">SplitExpense</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Características</a>
+                <a href="#how-it-works">Cómo Funciona</a>
+                <a href="#benefits">Beneficios</a>
+                <a href="#faq">FAQ</a>
+                <a href="index.html" class="btn btn-primary">Lanzar App</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <div class="hero-shape shape-1"></div>
+            <div class="hero-shape shape-2"></div>
+            <div class="hero-shape shape-3"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Gestiona Gastos Compartidos
+                        <span class="gradient-text">con Blockchain</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        La forma más transparente y democrática de organizar gastos en grupo. 
+                        Sin intermediarios, sin comisiones ocultas, sin problemas.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="index.html" class="btn btn-large btn-primary">
+                            <span>🚀 Empezar Gratis</span>
+                        </a>
+                        <a href="#how-it-works" class="btn btn-large btn-secondary">
+                            <span>📖 Ver Demo</span>
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <div class="stat-value">$0.01</div>
+                            <div class="stat-label">Costo por transacción</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">Transparente</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2 seg</div>
+                            <div class="stat-label">Confirmación</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="app-preview">
+                                <div class="preview-header">
+                                    <div class="preview-avatar">A</div>
+                                    <div class="preview-info">
+                                        <div class="preview-name">Viaje a Cancún 2025</div>
+                                        <div class="preview-meta">4 miembros • $450 balance</div>
+                                    </div>
+                                </div>
+                                <div class="preview-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                    <div class="progress-text">75% de la meta</div>
+                                </div>
+                                <div class="preview-actions">
+                                    <div class="action-card">
+                                        <span class="action-icon">💰</span>
+                                        <span>Depositar</span>
+                                    </div>
+                                    <div class="action-card">
+                                        <span class="action-icon">🗳️</span>
+                                        <span>Votar</span>
+                                    </div>
+                                    <div class="action-card">
+                                        <span class="action-icon">📊</span>
+                                        <span>Balances</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">¿Por qué SplitExpense?</h2>
+                <p class="section-subtitle">La solución definitiva para gastos compartidos</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">100% Transparente</h3>
+                    <p class="feature-description">
+                        Todas las transacciones en blockchain. Sin cuentas ocultas, 
+                        sin sorpresas. Verifica cada movimiento en tiempo real.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗳️</div>
+                    <h3 class="feature-title">Votación Democrática</h3>
+                    <p class="feature-description">
+                        Cada gasto requiere aprobación del grupo. El 60% debe estar 
+                        de acuerdo para ejecutar cualquier pago.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💸</div>
+                    <h3 class="feature-title">Costos Ultra Bajos</h3>
+                    <p class="feature-description">
+                        Solo ~$0.01 por transacción en Base. Sin comisiones ocultas, 
+                        sin subscripciones mensuales.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Rápido y Seguro</h3>
+                    <p class="feature-description">
+                        Confirmaciones en 2 segundos. Smart contracts auditados y 
+                        protegidos contra vulnerabilidades comunes.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Grupos Privados</h3>
+                    <p class="feature-description">
+                        Sistema de invitaciones. Solo los miembros autorizados pueden 
+                        ver y participar en tu grupo.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Balances Automáticos</h3>
+                    <p class="feature-description">
+                        Calcula automáticamente quién debe a quién. Liquida deudas 
+                        con un solo click.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Cómo Funciona</h2>
+                <p class="section-subtitle">Tan fácil como 1, 2, 3, 4</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Crea un Grupo</h3>
+                        <p class="step-description">
+                            Define el nombre, tipo (viaje, evento, proyecto) y opcionalmente 
+                            una meta de ahorro. Hazlo privado para mayor control.
+                        </p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="visual-card">
+                            <div class="visual-icon">✏️</div>
+                            <div class="visual-text">Viaje a Cancún</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step step-reverse">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Invita a tus Amigos</h3>
+                        <p class="step-description">
+                            Invita miembros por su nickname o dirección de wallet. 
+                            Cada uno deposita su aportación al fondo común.
+                        </p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="visual-card">
+                            <div class="visual-icon">👥</div>
+                            <div class="visual-text">Alice, Bob, Charlie</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Propón y Vota Gastos</h3>
+                        <p class="step-description">
+                            Cualquier miembro puede proponer un gasto. El grupo vota 
+                            democráticamente. Se requiere 60% de aprobación.
+                        </p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="visual-card">
+                            <div class="visual-icon">🗳️</div>
+                            <div class="visual-text">3 ✅ / 1 ❌</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step step-reverse">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Ejecuta y Balancea</h3>
+                        <p class="step-description">
+                            Si la propuesta es aprobada, cualquiera puede ejecutarla. 
+                            Al final, revisa balances y liquida deudas fácilmente.
+                        </p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="visual-card">
+                            <div class="visual-icon">✅</div>
+                            <div class="visual-text">Ejecutado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits">
+        <div class="container">
+            <div class="benefits-content">
+                <div class="benefits-text">
+                    <h2 class="section-title">¿Por qué usar Blockchain?</h2>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-text">
+                            <h4>Sin Intermediarios</h4>
+                            <p>Tú controlas tu dinero. No dependes de bancos o plataformas centralizadas.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-text">
+                            <h4>Inmutable y Auditable</h4>
+                            <p>Cada transacción queda registrada permanentemente. Imposible de manipular.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-text">
+                            <h4>Código Abierto</h4>
+                            <p>El contrato inteligente es público. Cualquiera puede verificar su seguridad.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-text">
+                            <h4>Disponible 24/7</h4>
+                            <p>Sin horarios bancarios. Funciona las 24 horas del día, todos los días.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefits-comparison">
+                    <h3>SplitExpense vs Alternativas Tradicionales</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Característica</th>
+                                <th>SplitExpense</th>
+                                <th>Apps Tradicionales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Transparencia</td>
+                                <td><span class="check">✅ Total</span></td>
+                                <td><span class="cross">❌ Limitada</span></td>
+                            </tr>
+                            <tr>
+                                <td>Comisiones</td>
+                                <td><span class="check">✅ ~$0.01</span></td>
+                                <td><span class="cross">❌ 2-5%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Control</td>
+                                <td><span class="check">✅ Tuyo</span></td>
+                                <td><span class="cross">❌ Empresa</span></td>
+                            </tr>
+                            <tr>
+                                <td>Auditoría</td>
+                                <td><span class="check">✅ Pública</span></td>
+                                <td><span class="cross">❌ Privada</span></td>
+                            </tr>
+                            <tr>
+                                <td>Disponibilidad</td>
+                                <td><span class="check">✅ 24/7</span></td>
+                                <td><span class="check">✅ 24/7</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="use-cases">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Casos de Uso</h2>
+                <p class="section-subtitle">Perfecto para cualquier situación de gastos compartidos</p>
+            </div>
+            <div class="use-cases-grid">
+                <div class="use-case-card">
+                    <div class="use-case-icon">✈️</div>
+                    <h3>Viajes en Grupo</h3>
+                    <p>Hoteles, vuelos, comidas, actividades. Todos pagan su parte justa.</p>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon">🏠</div>
+                    <h3>Compañeros de Casa</h3>
+                    <p>Renta, servicios, supermercado. Divide gastos mensuales fácilmente.</p>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon">🎉</div>
+                    <h3>Eventos y Fiestas</h3>
+                    <p>Organiza bodas, cumpleaños, reuniones. Gestiona presupuestos grupales.</p>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon">💼</div>
+                    <h3>Proyectos de Negocio</h3>
+                    <p>Startups, inversiones grupales. Transparencia total para socios.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Preguntas Frecuentes</h2>
+                <p class="section-subtitle">Todo lo que necesitas saber</p>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Necesito conocimientos técnicos para usar SplitExpense?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No. Solo necesitas una wallet como MetaMask o Base Wallet. El proceso es tan simple como usar cualquier app móvil. Te guiamos en cada paso.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Cuánto cuesta usar SplitExpense?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No hay subscripciones ni comisiones. Solo pagas el gas de la blockchain (~$0.01 por transacción en Base). Crear un grupo cuesta ~$1, depositar ~$0.01.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Es seguro? ¿Pueden robar mi dinero?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Los fondos están protegidos por smart contracts auditados. Solo los miembros del grupo pueden votar y ejecutar gastos. Nadie, ni siquiera nosotros, puede acceder a tu dinero sin tu consentimiento.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Qué pasa si un miembro no está de acuerdo con un gasto?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Todos pueden votar en cada propuesta. Se requiere 60% de aprobación. Si la propuesta no alcanza el umbral, no se ejecuta y el dinero permanece en el fondo común.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Puedo sacar mi dinero en cualquier momento?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sí. El creador del grupo puede expulsarte devolviéndote tu parte proporcional. O al final del proyecto, puedes liquidar tu balance positivo. Tu dinero siempre es tuyo.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Qué blockchain usan?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Usamos Base, un Layer 2 de Ethereum. Es ultra rápido (2 segundos), súper económico (~$0.01/tx) y respaldado por Coinbase. Compatible con todas las wallets de Ethereum.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">¿Listo para probar SplitExpense?</h2>
+                <p class="cta-subtitle">
+                    Únete a la revolución de gastos compartidos. Transparente, democrático y seguro.
+                </p>
+                <a href="index.html" class="btn btn-large btn-primary btn-glow">
+                    <span>🚀 Lanzar Aplicación</span>
+                </a>
+                <p class="cta-note">
+                    Sin registro • Sin comisiones • Sin intermediarios
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-logo">
+                        <span class="logo-icon">💰</span>
+                        SplitExpense
+                    </h3>
+                    <p class="footer-description">
+                        La forma más transparente de gestionar gastos compartidos usando blockchain.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Producto</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Características</a></li>
+                        <li><a href="#how-it-works">Cómo Funciona</a></li>
+                        <li><a href="#benefits">Beneficios</a></li>
+                        <li><a href="index.html">Lanzar App</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Recursos</h4>
+                    <ul class="footer-links">
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="https://basescan.org" target="_blank">Explorador</a></li>
+                        <li><a href="https://github.com/dcarloa/BlockChainContract001" target="_blank">GitHub</a></li>
+                        <li><a href="https://base.org" target="_blank">Base Network</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Tecnología</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://ethereum.org" target="_blank">Ethereum</a></li>
+                        <li><a href="https://base.org" target="_blank">Base L2</a></li>
+                        <li><a href="https://soliditylang.org" target="_blank">Solidity</a></li>
+                        <li><a href="https://hardhat.org" target="_blank">Hardhat</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SplitExpense. Hecho con ❤️ usando Ethereum & Base.</p>
+                <p class="footer-note">
+                    Código abierto • Sin custodia • Descentralizado
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="landing-script.js"></script>
+</body>
+</html>
