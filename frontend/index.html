@@ -3,683 +3,494 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self'; 
-        script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
-        style-src 'self' 'unsafe-inline'; 
-        img-src 'self' data: https:; 
-        connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology;
-    ">
-    <title>SplitExpense - Gestor de Gastos Compartidos</title>
-    <meta name="description" content="Plataforma descentralizada para gestionar gastos compartidos en grupo usando blockchain">
-    <link rel="stylesheet" href="styles-platform.css">
+    <meta name="description" content="SplitExpense - La forma más fácil de gestionar gastos compartidos usando blockchain. Transparente, democrático y seguro.">
+    <meta name="keywords" content="gastos compartidos, blockchain, ethereum, splitwise, viajes, grupos, web3">
+    <title>SplitExpense - Gestión de Gastos Compartidos con Blockchain</title>
+    <link rel="stylesheet" href="landing-styles.css">
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner"></div>
-        <p id="loadingText">Cargando...</p>
-    </div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <span class="logo-icon">💰</span>
+                <span class="logo-text">SplitExpense</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Características</a>
+                <a href="#how-it-works">Cómo Funciona</a>
+                <a href="#benefits">Beneficios</a>
+                <a href="#faq">FAQ</a>
+                <a href="app.html" class="btn btn-primary">Lanzar App</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
 
-    <!-- Toast Notifications -->
-    <div id="toastContainer" class="toast-container"></div>
-
-    <!-- Header -->
-    <header class="app-header">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <div class="hero-shape shape-1"></div>
+            <div class="hero-shape shape-2"></div>
+            <div class="hero-shape shape-3"></div>
+        </div>
         <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <h1>💰 SplitExpense</h1>
-                    <span class="version-badge">Gestor de Gastos Compartidos</span>
-                </div>
-                
-                <div class="header-actions">
-                    <div id="userNickname" class="nickname-badge" style="display: none;">
-                        <span class="nickname-icon">👤</span>
-                        <span id="nicknameDisplay"></span>
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Gestiona Gastos Compartidos
+                        <span class="gradient-text">con Blockchain</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        La forma más transparente y democrática de organizar gastos en grupo. 
+                        Sin intermediarios, sin comisiones ocultas, sin problemas.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="app.html" class="btn btn-large btn-primary">
+                            <span>🚀 Empezar Gratis</span>
+                        </a>
+                        <a href="#how-it-works" class="btn btn-large btn-secondary">
+                            <span>📖 Ver Demo</span>
+                        </a>
                     </div>
-                    <button id="connectWallet" class="btn btn-primary">
-                        <span class="btn-icon">🦊</span>
-                        <span>Conectar Wallet</span>
-                    </button>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <div class="stat-value">$0.01</div>
+                            <div class="stat-label">Costo por transacción</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">Transparente</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2 seg</div>
+                            <div class="stat-label">Confirmación</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="app-preview">
+                                <div class="preview-header">
+                                    <div class="preview-avatar">A</div>
+                                    <div class="preview-info">
+                                        <div class="preview-name">Viaje a Cancún 2025</div>
+                                        <div class="preview-meta">4 miembros • $450 balance</div>
+                                    </div>
+                                </div>
+                                <div class="preview-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                    <div class="progress-text">75% de la meta</div>
+                                </div>
+                                <div class="preview-actions">
+                                    <div class="action-card">
+                                        <span class="action-icon">💰</span>
+                                        <span>Depositar</span>
+                                    </div>
+                                    <div class="action-card">
+                                        <span class="action-icon">🗳️</span>
+                                        <span>Votar</span>
+                                    </div>
+                                    <div class="action-card">
+                                        <span class="action-icon">📊</span>
+                                        <span>Balances</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </header>
+    </section>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <!-- Features Section -->
+    <section id="features" class="features">
         <div class="container">
-            
-            <!-- Nickname Setup Modal (first time users) -->
-            <div id="nicknameModal" class="modal" style="display: none;">
-                <div class="modal-content">
-                    <h2>👋 ¡Bienvenido a SplitExpense!</h2>
-                    <p>Puedes elegir un <strong>nickname opcional</strong> para que sea más fácil identificarte en los grupos, o continuar usando tu dirección de wallet.</p>
-                    
-                    <div class="form-group">
-                        <label for="nicknameInput">Tu Nickname (Opcional)</label>
-                        <input 
-                            type="text" 
-                            id="nicknameInput" 
-                            placeholder="Ej: Juan, Maria123, etc."
-                            minlength="3"
-                            maxlength="32"
-                            pattern="[a-zA-Z0-9]+"
-                        >
-                        <small>3-32 caracteres, solo letras y números. Puedes establecerlo después.</small>
-                    </div>
-                    
-                    <button id="setNicknameBtn" class="btn btn-primary btn-block">
-                        Establecer Nickname
-                    </button>
+            <div class="section-header">
+                <h2 class="section-title">¿Por qué SplitExpense?</h2>
+                <p class="section-subtitle">La solución definitiva para gastos compartidos</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">100% Transparente</h3>
+                    <p class="feature-description">
+                        Todas las transacciones en blockchain. Sin cuentas ocultas, 
+                        sin sorpresas. Verifica cada movimiento en tiempo real.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗳️</div>
+                    <h3 class="feature-title">Votación Democrática</h3>
+                    <p class="feature-description">
+                        Cada gasto requiere aprobación del grupo. El 60% debe estar 
+                        de acuerdo para ejecutar cualquier pago.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💸</div>
+                    <h3 class="feature-title">Costos Ultra Bajos</h3>
+                    <p class="feature-description">
+                        Solo ~$0.01 por transacción en Base. Sin comisiones ocultas, 
+                        sin subscripciones mensuales.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Rápido y Seguro</h3>
+                    <p class="feature-description">
+                        Confirmaciones en 2 segundos. Smart contracts auditados y 
+                        protegidos contra vulnerabilidades comunes.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Grupos Privados</h3>
+                    <p class="feature-description">
+                        Sistema de invitaciones. Solo los miembros autorizados pueden 
+                        ver y participar en tu grupo.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Balances Automáticos</h3>
+                    <p class="feature-description">
+                        Calcula automáticamente quién debe a quién. Liquida deudas 
+                        con un solo click.
+                    </p>
                 </div>
             </div>
-
-            <!-- Dashboard Section -->
-            <section id="dashboardSection" class="dashboard-section">
-                
-                <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-content">
-                            <h3 id="totalFundsCreated">0</h3>
-                            <p>Grupos Creados</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-content">
-                            <h3 id="totalFundsParticipating">0</h3>
-                            <p>Grupos Activos</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">💎</div>
-                        <div class="stat-content">
-                            <h3 id="totalValueLocked">0</h3>
-                            <p>ETH Total</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pending Invitations Banner -->
-                <div id="pendingInvitationsSection" class="pending-invitations-section" style="display: none;">
-                    <div class="invitations-header">
-                        <h3>🎫 Invitaciones Pendientes</h3>
-                        <span class="invitations-count" id="invitationsCount">0</span>
-                    </div>
-                    <div id="invitationsList" class="invitations-list">
-                        <!-- Invitations will be loaded here -->
-                    </div>
-                </div>
-
-                <!-- Action Bar -->
-                <div class="action-bar">
-                    <h2>Mis Grupos</h2>
-                    <button id="createFundBtn" class="btn btn-primary">
-                        <span class="btn-icon">➕</span>
-                        <span>Crear Nuevo Grupo</span>
-                    </button>
-                </div>
-
-                <!-- Fund Filters -->
-                <div class="fund-filters">
-                    <button class="filter-btn active" data-filter="all">
-                        Todos (<span id="countAll">0</span>)
-                    </button>
-                    <button class="filter-btn" data-filter="created">
-                        Creados (<span id="countCreated">0</span>)
-                    </button>
-                    <button class="filter-btn" data-filter="participating">
-                        Participando (<span id="countParticipating">0</span>)
-                    </button>
-                    <button class="filter-btn" data-filter="travel">
-                        🌴 Viajes (<span id="countTravel">0</span>)
-                    </button>
-                    <button class="filter-btn" data-filter="savings">
-                        💰 Ahorros (<span id="countSavings">0</span>)
-                    </button>
-                    <button class="filter-btn" data-filter="shared">
-                        🤝 Compartidos (<span id="countShared">0</span>)
-                    </button>
-                </div>
-
-                <!-- Funds Grid -->
-                <div id="fundsGrid" class="funds-grid">
-                    <!-- Funds will be loaded here -->
-                </div>
-
-                <!-- Empty State -->
-                <div id="emptyState" class="empty-state" style="display: none;">
-                    <div class="empty-icon">📦</div>
-                    <h3>No tienes grupos aún</h3>
-                    <p>Crea tu primer grupo para comenzar a gestionar gastos compartidos</p>
-                    <button class="btn btn-primary" onclick="document.getElementById('createFundBtn').click()">
-                        Crear Mi Primer Grupo
-                    </button>
-                </div>
-
-            </section>
-
-            <!-- Fund Detail Section (Single Fund View) -->
-            <section id="fundDetailSection" class="fund-detail-section">
-                
-                <!-- Back Button -->
-                <div class="back-bar">
-                    <button id="backToDashboard" class="btn btn-secondary">
-                        <span class="btn-icon">←</span>
-                        <span>Volver a Mis Grupos</span>
-                    </button>
-                </div>
-
-                <!-- Fund Header -->
-                <div class="fund-detail-header">
-                    <div class="fund-header-icon" id="fundHeaderIcon">🌴</div>
-                    <div class="fund-header-info">
-                        <h1 id="fundDetailName">Cargando...</h1>
-                        <p id="fundDetailDescription">-</p>
-                        <div class="fund-badges">
-                            <span class="badge" id="fundTypeBadge">Tipo</span>
-                            <span class="badge" id="fundStatusBadge">Estado</span>
-                            <span class="badge" id="fundPrivacyBadge">Privacidad</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fund Stats Bar -->
-                <div class="fund-stats-bar">
-                    <div class="fund-stat-item">
-                        <span class="stat-label">Balance</span>
-                        <span class="stat-value" id="fundBalance">0 ETH</span>
-                    </div>
-                    <div class="fund-stat-item">
-                        <span class="stat-label">Meta</span>
-                        <span class="stat-value" id="fundTarget">0 ETH</span>
-                    </div>
-                    <div class="fund-stat-item">
-                        <span class="stat-label">Progreso</span>
-                        <span class="stat-value" id="fundProgress">0%</span>
-                    </div>
-                    <div class="fund-stat-item">
-                        <span class="stat-label">Miembros</span>
-                        <span class="stat-value" id="fundMembers">0</span>
-                    </div>
-                    <div class="fund-stat-item">
-                        <span class="stat-label">Propuestas</span>
-                        <span class="stat-value" id="fundProposals">0</span>
-                    </div>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="fundProgressBar" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- Invitation Banner (if pending) -->
-                <div id="invitationBanner" class="invitation-banner" style="display: none;">
-                    <div class="invitation-content">
-                        <span class="invitation-icon">🎫</span>
-                        <p>Tienes una invitación pendiente para este fondo</p>
-                    </div>
-                    <button id="acceptInvitationBtn" class="btn btn-primary">
-                        Aceptar Invitación
-                    </button>
-                </div>
-
-                <!-- Closed Fund Banner -->
-                <div id="closedFundBanner" class="closed-fund-banner" style="display: none;">
-                    <div class="closed-fund-content">
-                        <span class="closed-fund-icon">🔒</span>
-                        <div>
-                            <h4>Grupo Cerrado</h4>
-                            <p>Este grupo ha sido cerrado permanentemente. Los fondos fueron distribuidos proporcionalmente entre todos los miembros.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fund Tabs -->
-                <div class="fund-tabs">
-                    <button class="fund-tab-btn active" data-tab="deposit">
-                        <span class="tab-icon">💵</span>
-                        <span>Depositar</span>
-                    </button>
-                    <button class="fund-tab-btn" data-tab="invite">
-                        <span class="tab-icon">🎫</span>
-                        <span>Invitar</span>
-                    </button>
-                    <button class="fund-tab-btn" data-tab="propose">
-                        <span class="tab-icon">📝</span>
-                        <span>Proponer Gasto</span>
-                    </button>
-                    <button class="fund-tab-btn" data-tab="vote">
-                        <span class="tab-icon">🗳️</span>
-                        <span>Votar</span>
-                    </button>
-                    <button class="fund-tab-btn" data-tab="history">
-                        <span class="tab-icon">📜</span>
-                        <span>Historial</span>
-                    </button>
-                    <button class="fund-tab-btn" data-tab="balances">
-                        <span class="tab-icon">⚖️</span>
-                        <span>Balances</span>
-                    </button>
-                    <button class="fund-tab-btn" data-tab="members">
-                        <span class="tab-icon">👥</span>
-                        <span>Miembros</span>
-                    </button>
-                    <button class="fund-tab-btn" data-tab="manage">
-                        <span class="tab-icon">⚙️</span>
-                        <span>Gestionar</span>
-                    </button>
-                </div>
-
-                <!-- Tab Content -->
-                <div class="fund-tab-content">
-                    
-                    <!-- Deposit Tab -->
-                    <div id="depositTab" class="tab-pane active">
-                        <div class="tab-card">
-                            <h3>💰 Aportar al Bote Común</h3>
-                            <p>Deposita dinero al grupo. Útil para gastos futuros o para equilibrar balances.</p>
-                            
-                            <div class="form-group">
-                                <label for="depositAmount">Monto a Depositar (ETH)</label>
-                                <input type="number" id="depositAmount" placeholder="0.0" step="0.01" min="0.01">
-                            </div>
-                            
-                            <div class="contribution-info">
-                                <span>Tu contribución actual: <strong id="userContribution">0 ETH</strong></span>
-                            </div>
-                            
-                            <button id="depositBtn" class="btn btn-primary btn-block">
-                                Aportar al Bote
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Invite Tab -->
-                    <div id="inviteTab" class="tab-pane">
-                        <div class="tab-card">
-                            <h3>🎫 Invitar Miembros</h3>
-                            <p>Invita amigos para que se unan al grupo. Ellos deberán aceptar la invitación.</p>
-                            
-                            <div class="invite-info-box">
-                                <p><strong>ℹ️ Información:</strong></p>
-                                <ul>
-                                    <li>Solo el creador del grupo puede invitar</li>
-                                    <li>Los invitados verán la invitación en su dashboard</li>
-                                    <li>Deben aceptar antes de poder registrar gastos</li>
-                                    <li>No puedes invitarte a ti mismo</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="inviteAddress">Nickname o Dirección</label>
-                                <input type="text" id="inviteAddress" placeholder="Ej: Bob o 0x123...">
-                                <small>Ingresa el nickname del usuario o su dirección Ethereum</small>
-                            </div>
-                            
-                            <button id="inviteBtn" class="btn btn-primary btn-block">
-                                Enviar Invitación
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Propose Tab -->
-                    <div id="proposeTab" class="tab-pane">
-                        <div class="tab-card">
-                            <h3>📝 Proponer Gasto</h3>
-                            <p>Propón usar dinero del bote común para pagar a un proveedor externo. El grupo votará si aprueba.</p>
-                            
-                            <div class="info-box">
-                                <p><strong>💡 Cómo funciona:</strong></p>
-                                <ul>
-                                    <li>Propón pagar un gasto desde el bote común (hotel, restaurante, etc.)</li>
-                                    <li>Indica a quién se le pagará (proveedor externo con su dirección)</li>
-                                    <li>El grupo vota si aprueba o rechaza usar el dinero del bote</li>
-                                    <li>Si se aprueba, el dinero se envía directo del bote al proveedor</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="proposalRecipient">A quién se le pagará (Dirección del proveedor)</label>
-                                <input type="text" id="proposalRecipient" placeholder="0x123... (dirección del hotel, restaurante, etc.)">
-                                <small>Dirección Ethereum del agente externo que recibirá el pago</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="proposalAmount">Monto a Pagar (ETH)</label>
-                                <input type="number" id="proposalAmount" placeholder="0.0" step="0.01" min="0.01">
-                                <small>Cantidad que se pagará del bote común al proveedor</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="proposalDescription">Descripción del Gasto</label>
-                                <textarea id="proposalDescription" rows="3" placeholder="Ej: Hotel 3 noches en Cancún - Pago a Marriott, Cena grupal en Restaurante La Costa..."></textarea>
-                                <small>Explica el motivo del gasto y a quién se le pagará</small>
-                            </div>
-                            
-                            <button id="createProposalBtn" class="btn btn-primary btn-block">
-                                📝 Proponer Uso de Fondos
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Vote Tab -->
-                    <div id="voteTab" class="tab-pane">
-                        <h3>🗳️ Votar Propuestas</h3>
-                        <p class="tab-description">Propuestas de uso de fondos. Vota si apruebas o rechazas pagar a cada proveedor.</p>
-                        <div id="proposalsList">
-                            <!-- Proposals will be loaded here -->
-                        </div>
-                        <div id="noProposals" class="empty-state" style="display: none;">
-                            <div class="empty-icon">📋</div>
-                            <h4>No hay propuestas activas</h4>
-                            <p>Crea la primera propuesta para este fondo</p>
-                        </div>
-                    </div>
-
-                    <!-- History Tab -->
-                    <div id="historyTab" class="tab-pane">
-                        <h3>📜 Historial de Propuestas</h3>
-                        <p class="tab-description">Todas las propuestas: ejecutadas, canceladas y expiradas</p>
-                        <div id="historyList">
-                            <!-- History will be loaded here -->
-                        </div>
-                        <div id="noHistory" class="empty-state" style="display: none;">
-                            <div class="empty-icon">📋</div>
-                            <h4>No hay historial aún</h4>
-                            <p>El historial de propuestas aparecerá aquí</p>
-                        </div>
-                    </div>
-
-                    <!-- Balances Tab -->
-                    <div id="balancesTab" class="tab-pane">
-                        <h3>⚖️ Balances del Grupo</h3>
-                        <p class="tab-description">Cálculo automático de quién debe dinero a quién basado en aportes y gastos ejecutados.</p>
-                        
-                        <div class="balances-summary">
-                            <div class="balance-stat-card positive">
-                                <div class="balance-stat-icon">💰</div>
-                                <div class="balance-stat-content">
-                                    <span class="balance-stat-label">Total Aportado</span>
-                                    <span class="balance-stat-value" id="totalContributed">0 ETH</span>
-                                </div>
-                            </div>
-                            <div class="balance-stat-card negative">
-                                <div class="balance-stat-icon">💸</div>
-                                <div class="balance-stat-content">
-                                    <span class="balance-stat-label">Total Gastado</span>
-                                    <span class="balance-stat-value" id="totalSpent">0 ETH</span>
-                                </div>
-                            </div>
-                            <div class="balance-stat-card neutral">
-                                <div class="balance-stat-icon">📊</div>
-                                <div class="balance-stat-content">
-                                    <span class="balance-stat-label">Balance Disponible</span>
-                                    <span class="balance-stat-value" id="availableBalance">0 ETH</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="info-box" style="margin: 1.5rem 0;">
-                            <p><strong>💡 Cómo se calculan los balances:</strong></p>
-                            <ul>
-                                <li><strong>Parte justa de cada uno</strong> = Total gastado ÷ Número de miembros</li>
-                                <li><strong>Balance personal</strong> = Lo que aportaste - Tu parte justa</li>
-                                <li><strong>Positivo (verde)</strong> = Otros te deben dinero</li>
-                                <li><strong>Negativo (rojo)</strong> = Debes dinero al grupo</li>
-                                <li><strong>Cero (gris)</strong> = Estás equilibrado</li>
-                            </ul>
-                        </div>
-
-                        <div id="balancesList">
-                            <!-- Balances will be loaded here -->
-                        </div>
-                        
-                        <div id="noBalances" class="empty-state" style="display: none;">
-                            <div class="empty-icon">⚖️</div>
-                            <h4>No hay gastos ejecutados aún</h4>
-                            <p>Los balances se calcularán cuando haya gastos aprobados y ejecutados</p>
-                        </div>
-                    </div>
-
-                    <!-- Members Tab -->
-                    <div id="membersTab" class="tab-pane">
-                        <h3>👥 Miembros del Fondo</h3>
-                        <div id="membersList">
-                            <!-- Members will be loaded here -->
-                        </div>
-                        <div id="noMembers" class="empty-state" style="display: none;">
-                            <div class="empty-icon">👤</div>
-                            <h4>No hay miembros aún</h4>
-                        </div>
-                    </div>
-
-                    <!-- Manage Tab -->
-                    <div id="manageTab" class="tab-pane">
-                        <div class="tab-card">
-                            <h3>⚙️ Gestión del Fondo</h3>
-                            <p>Opciones avanzadas para administrar el fondo.</p>
-                            
-                            <div class="manage-section">
-                                <!-- Kick Member Section -->
-                                <div class="member-management-section">
-                                    <h4>👥 Gestión de Miembros</h4>
-                                    <p><strong>Expulsar Miembro</strong></p>
-                                    <p class="help-text">
-                                        Expulsa a un miembro del grupo devolviéndole su parte proporcional de los fondos actuales.
-                                    </p>
-                                    
-                                    <div class="info-box">
-                                        <p><strong>💡 Cómo funciona:</strong></p>
-                                        <ul>
-                                            <li>El miembro es removido del grupo permanentemente</li>
-                                            <li>Recibe: (Su aportación / Total aportaciones) × Balance actual</li>
-                                            <li>No podrá participar en votaciones futuras</li>
-                                            <li>Sus votos anteriores quedan registrados</li>
-                                        </ul>
-                                    </div>
-                                    
-                                    <div id="kickMembersList" class="kick-members-list">
-                                        <!-- Member cards will be loaded here -->
-                                    </div>
-                                    
-                                    <div id="noMembersToKick" class="empty-state" style="display: none;">
-                                        <div class="empty-icon">👥</div>
-                                        <h4>No hay miembros para expulsar</h4>
-                                        <p>Solo hay un miembro en el grupo o no eres el creador</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="danger-zone">
-                                    <h4>🚨 Zona de Peligro</h4>
-                                    <p><strong>Cerrar y Distribuir Fondo</strong></p>
-                                    <p class="help-text">
-                                        Esta acción cerrará permanentemente el fondo y distribuirá todos los fondos restantes 
-                                        proporcionalmente entre los contribuyentes según su aportación.
-                                    </p>
-                                    
-                                    <div class="info-box warning-box">
-                                        <p><strong>⚠️ Advertencia:</strong></p>
-                                        <ul>
-                                            <li>Esta acción es <strong>irreversible</strong></li>
-                                            <li>Solo el creador del fondo puede ejecutarla</li>
-                                            <li>Cada contribuyente recibirá: (su aportación / total) × balance actual</li>
-                                            <li>El fondo quedará cerrado permanentemente</li>
-                                            <li>No se podrán hacer más depósitos ni propuestas</li>
-                                        </ul>
-                                    </div>
-                                    
-                                    <div id="closeFundPreview" class="distribution-preview" style="display: none;">
-                                        <h5>📊 Vista Previa de Distribución</h5>
-                                        <div id="distributionList"></div>
-                                    </div>
-                                    
-                                    <div class="button-group">
-                                        <button id="previewCloseFundBtn" class="btn btn-secondary">
-                                            📊 Vista Previa de Distribución
-                                        </button>
-                                        <button id="closeFundBtn" class="btn btn-danger">
-                                            🔒 Cerrar y Distribuir Fondo
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- Create Fund Modal -->
-            <div id="createFundModal" class="modal" style="display: none;">
-                <div class="modal-content modal-large">
-                    <div class="modal-header">
-                        <h2>➕ Crear Nuevo Grupo</h2>
-                        <button class="modal-close" onclick="closeCreateFundModal()">&times;</button>
-                    </div>
-                    
-                    <form id="createFundForm">
-                        <!-- Fund Type Selection -->
-                        <div class="form-group">
-                            <label>Tipo de Grupo</label>
-                            <div class="fund-type-grid">
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="0" checked>
-                                    <div class="fund-type-content">
-                                        <div class="fund-type-icon">🌴</div>
-                                        <h4>Viaje</h4>
-                                        <p>Gastos de vacaciones</p>
-                                    </div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="1">
-                                    <div class="fund-type-content">
-                                        <div class="fund-type-icon">💰</div>
-                                        <h4>Ahorro</h4>
-                                        <p>Ahorrar juntos</p>
-                                    </div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="2">
-                                    <div class="fund-type-content">
-                                        <div class="fund-type-icon">🤝</div>
-                                        <h4>Roommates</h4>
-                                        <p>Gastos del hogar</p>
-                                    </div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="3">
-                                    <div class="fund-type-content">
-                                        <div class="fund-type-icon">🎯</div>
-                                        <h4>Otro</h4>
-                                        <p>Propósito personalizado</p>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Fund Details -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="fundName">Nombre del Grupo *</label>
-                                <input 
-                                    type="text" 
-                                    id="fundName" 
-                                    placeholder="Ej: Viaje a Cancún 2025"
-                                    required
-                                >
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="targetAmount">Meta / Presupuesto (ETH) - Opcional</label>
-                                <input 
-                                    type="number" 
-                                    id="targetAmount" 
-                                    placeholder="0"
-                                    step="0.01"
-                                    min="0"
-                                    value="0"
-                                >
-                                <small>Deja en 0 para gastos sin límite, o establece un presupuesto</small>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="fundDescription">Descripción</label>
-                            <textarea 
-                                id="fundDescription" 
-                                rows="3"
-                                placeholder="Ej: Viaje a Cancún 2025, Gastos del depa 304, Fiesta de aniversario..."
-                            ></textarea>
-                        </div>
-
-                        <!-- Privacy Settings -->
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="isPrivate" checked>
-                                <span>Grupo Privado (requiere invitación)</span>
-                            </label>
-                            <small>Los grupos privados requieren que invites a cada miembro</small>
-                        </div>
-
-                        <!-- Governance Settings -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="approvalPercentage">% de Aprobación *</label>
-                                <input 
-                                    type="number" 
-                                    id="approvalPercentage" 
-                                    value="60"
-                                    min="1"
-                                    max="100"
-                                    required
-                                >
-                                <small>% de votos a favor para aprobar gastos</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="minimumVotes">Mínimo de Votos *</label>
-                                <input 
-                                    type="number" 
-                                    id="minimumVotes" 
-                                    value="2"
-                                    min="1"
-                                    required
-                                >
-                                <small>Votos mínimos para aprobar un gasto</small>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" onclick="closeCreateFundModal()">
-                                Cancelar
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <span class="btn-icon">🚀</span>
-                                <span>Crear Fondo</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
         </div>
-    </main>
+    </section>
 
-    <!-- Scripts -->
-    <script src="ethers.umd.min.js"></script>
-    <script src="app-platform.js"></script>
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Cómo Funciona</h2>
+                <p class="section-subtitle">Tan fácil como 1, 2, 3, 4</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Crea un Grupo</h3>
+                        <p class="step-description">
+                            Define el nombre, tipo (viaje, evento, proyecto) y opcionalmente 
+                            una meta de ahorro. Hazlo privado para mayor control.
+                        </p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="visual-card">
+                            <div class="visual-icon">✏️</div>
+                            <div class="visual-text">Viaje a Cancún</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step step-reverse">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Invita a tus Amigos</h3>
+                        <p class="step-description">
+                            Invita miembros por su nickname o dirección de wallet. 
+                            Cada uno deposita su aportación al fondo común.
+                        </p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="visual-card">
+                            <div class="visual-icon">👥</div>
+                            <div class="visual-text">Alice, Bob, Charlie</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Propón y Vota Gastos</h3>
+                        <p class="step-description">
+                            Cualquier miembro puede proponer un gasto. El grupo vota 
+                            democráticamente. Se requiere 60% de aprobación.
+                        </p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="visual-card">
+                            <div class="visual-icon">🗳️</div>
+                            <div class="visual-text">3 ✅ / 1 ❌</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step step-reverse">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Ejecuta y Balancea</h3>
+                        <p class="step-description">
+                            Si la propuesta es aprobada, cualquiera puede ejecutarla. 
+                            Al final, revisa balances y liquida deudas fácilmente.
+                        </p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="visual-card">
+                            <div class="visual-icon">✅</div>
+                            <div class="visual-text">Ejecutado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits">
+        <div class="container">
+            <div class="benefits-content">
+                <div class="benefits-text">
+                    <h2 class="section-title">¿Por qué usar Blockchain?</h2>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-text">
+                            <h4>Sin Intermediarios</h4>
+                            <p>Tú controlas tu dinero. No dependes de bancos o plataformas centralizadas.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-text">
+                            <h4>Inmutable y Auditable</h4>
+                            <p>Cada transacción queda registrada permanentemente. Imposible de manipular.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-text">
+                            <h4>Código Abierto</h4>
+                            <p>El contrato inteligente es público. Cualquiera puede verificar su seguridad.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-text">
+                            <h4>Disponible 24/7</h4>
+                            <p>Sin horarios bancarios. Funciona las 24 horas del día, todos los días.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefits-comparison">
+                    <h3>SplitExpense vs Alternativas Tradicionales</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Característica</th>
+                                <th>SplitExpense</th>
+                                <th>Apps Tradicionales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Transparencia</td>
+                                <td><span class="check">✅ Total</span></td>
+                                <td><span class="cross">❌ Limitada</span></td>
+                            </tr>
+                            <tr>
+                                <td>Comisiones</td>
+                                <td><span class="check">✅ ~$0.01</span></td>
+                                <td><span class="cross">❌ 2-5%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Control</td>
+                                <td><span class="check">✅ Tuyo</span></td>
+                                <td><span class="cross">❌ Empresa</span></td>
+                            </tr>
+                            <tr>
+                                <td>Auditoría</td>
+                                <td><span class="check">✅ Pública</span></td>
+                                <td><span class="cross">❌ Privada</span></td>
+                            </tr>
+                            <tr>
+                                <td>Disponibilidad</td>
+                                <td><span class="check">✅ 24/7</span></td>
+                                <td><span class="check">✅ 24/7</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="use-cases">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Casos de Uso</h2>
+                <p class="section-subtitle">Perfecto para cualquier situación de gastos compartidos</p>
+            </div>
+            <div class="use-cases-grid">
+                <div class="use-case-card">
+                    <div class="use-case-icon">✈️</div>
+                    <h3>Viajes en Grupo</h3>
+                    <p>Hoteles, vuelos, comidas, actividades. Todos pagan su parte justa.</p>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon">🏠</div>
+                    <h3>Compañeros de Casa</h3>
+                    <p>Renta, servicios, supermercado. Divide gastos mensuales fácilmente.</p>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon">🎉</div>
+                    <h3>Eventos y Fiestas</h3>
+                    <p>Organiza bodas, cumpleaños, reuniones. Gestiona presupuestos grupales.</p>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon">💼</div>
+                    <h3>Proyectos de Negocio</h3>
+                    <p>Startups, inversiones grupales. Transparencia total para socios.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Preguntas Frecuentes</h2>
+                <p class="section-subtitle">Todo lo que necesitas saber</p>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Necesito conocimientos técnicos para usar SplitExpense?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No. Solo necesitas una wallet como MetaMask o Base Wallet. El proceso es tan simple como usar cualquier app móvil. Te guiamos en cada paso.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Cuánto cuesta usar SplitExpense?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No hay subscripciones ni comisiones. Solo pagas el gas de la blockchain (~$0.01 por transacción en Base). Crear un grupo cuesta ~$1, depositar ~$0.01.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Es seguro? ¿Pueden robar mi dinero?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Los fondos están protegidos por smart contracts auditados. Solo los miembros del grupo pueden votar y ejecutar gastos. Nadie, ni siquiera nosotros, puede acceder a tu dinero sin tu consentimiento.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Qué pasa si un miembro no está de acuerdo con un gasto?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Todos pueden votar en cada propuesta. Se requiere 60% de aprobación. Si la propuesta no alcanza el umbral, no se ejecuta y el dinero permanece en el fondo común.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Puedo sacar mi dinero en cualquier momento?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sí. El creador del grupo puede expulsarte devolviéndote tu parte proporcional. O al final del proyecto, puedes liquidar tu balance positivo. Tu dinero siempre es tuyo.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>¿Qué blockchain usan?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Usamos Base, un Layer 2 de Ethereum. Es ultra rápido (2 segundos), súper económico (~$0.01/tx) y respaldado por Coinbase. Compatible con todas las wallets de Ethereum.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">¿Listo para probar SplitExpense?</h2>
+                <p class="cta-subtitle">
+                    Únete a la revolución de gastos compartidos. Transparente, democrático y seguro.
+                </p>
+                <a href="app.html" class="btn btn-large btn-primary btn-glow">
+                    <span>🚀 Lanzar Aplicación</span>
+                </a>
+                <p class="cta-note">
+                    Sin registro • Sin comisiones • Sin intermediarios
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-logo">
+                        <span class="logo-icon">💰</span>
+                        SplitExpense
+                    </h3>
+                    <p class="footer-description">
+                        La forma más transparente de gestionar gastos compartidos usando blockchain.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Producto</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Características</a></li>
+                        <li><a href="#how-it-works">Cómo Funciona</a></li>
+                        <li><a href="#benefits">Beneficios</a></li>
+                        <li><a href="app.html">Lanzar App</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Recursos</h4>
+                    <ul class="footer-links">
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="https://basescan.org" target="_blank">Explorador</a></li>
+                        <li><a href="https://github.com/dcarloa/BlockChainContract001" target="_blank">GitHub</a></li>
+                        <li><a href="https://base.org" target="_blank">Base Network</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Tecnología</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://ethereum.org" target="_blank">Ethereum</a></li>
+                        <li><a href="https://base.org" target="_blank">Base L2</a></li>
+                        <li><a href="https://soliditylang.org" target="_blank">Solidity</a></li>
+                        <li><a href="https://hardhat.org" target="_blank">Hardhat</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SplitExpense. Hecho con ❤️ usando Ethereum & Base.</p>
+                <p class="footer-note">
+                    Código abierto • Sin custodia • Descentralizado
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="landing-script.js"></script>
 </body>
 </html>
