@@ -180,6 +180,29 @@ document.querySelectorAll('.stat-value').forEach(stat => {
     statsObserver.observe(stat);
 });
 
+// Detect mobile and show relevant wallet info
+function detectMobileAndUpdateCTA() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // Add mobile-specific note to CTA
+        const ctaNote = document.querySelector('.cta-note');
+        if (ctaNote) {
+            ctaNote.innerHTML = `
+                📱 En móvil: Usa MetaMask Mobile o Coinbase Wallet<br>
+                Sin registro • Sin comisiones • Sin intermediarios
+            `;
+        }
+        
+        console.log('📱 Dispositivo móvil detectado - Wallets móviles disponibles');
+    }
+}
+
+// Run on load
+document.addEventListener('DOMContentLoaded', () => {
+    detectMobileAndUpdateCTA();
+});
+
 // Log page view
 console.log('🚀 SplitExpense Landing Page loaded');
 console.log('📊 Ready to revolutionize shared expenses with blockchain!');

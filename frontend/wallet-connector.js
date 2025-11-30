@@ -11,10 +11,11 @@ class WalletConnector {
     // Detect available wallets
     detectWallets() {
         const wallets = [];
+        const isMobileDevice = this.isMobile();
 
-        // MetaMask
+        // MetaMask Desktop/Browser Extension
         if (typeof window.ethereum !== 'undefined') {
-            if (window.ethereum.isMetaMask) {
+            if (window.ethereum.isMetaMask && !isMobileDevice) {
                 wallets.push({
                     id: 'metamask',
                     name: 'MetaMask',
@@ -24,7 +25,7 @@ class WalletConnector {
                 });
             }
             
-            // Coinbase Wallet / Base Wallet
+            // Coinbase Wallet (works on desktop and mobile web)
             if (window.ethereum.isCoinbaseWallet) {
                 wallets.push({
                     id: 'coinbase',
@@ -39,7 +40,7 @@ class WalletConnector {
         // Check for multiple providers (when multiple wallets installed)
         if (window.ethereum?.providers?.length > 0) {
             window.ethereum.providers.forEach(provider => {
-                if (provider.isMetaMask && !wallets.find(w => w.id === 'metamask')) {
+                if (provider.isMetaMask && !wallets.find(w => w.id === 'metamask') && !isMobileDevice) {
                     wallets.push({
                         id: 'metamask',
                         name: 'MetaMask',
@@ -57,6 +58,30 @@ class WalletConnector {
                         provider: provider
                     });
                 }
+            });
+        }
+
+        // MetaMask Mobile (deep link option)
+        if (isMobileDevice) {
+            wallets.push({
+                id: 'metamask-mobile',
+                name: 'MetaMask Mobile',
+                icon: '🦊',
+                detected: false,
+                mobile: true,
+                deepLink: true
+            });
+        }
+
+        // Coinbase Wallet Mobile (always available via deep link)
+        if (isMobileDevice && !wallets.find(w => w.id === 'coinbase')) {
+            wallets.push({
+                id: 'coinbase-mobile',
+                name: 'Coinbase Wallet',
+                icon: '🔵',
+                detected: false,
+                mobile: true,
+                deepLink: true
             });
         }
 
@@ -95,14 +120,27 @@ class WalletConnector {
                     <div class="wallet-modal-body">
                         <p class="wallet-modal-subtitle">Elige tu wallet preferida para continuar</p>
                         <div class="wallet-options">
-                            ${wallets.map(wallet => `
-                                <button class="wallet-option" data-wallet="${wallet.id}">
-                                    <span class="wallet-icon">${wallet.icon}</span>
-                                    <span class="wallet-name">${wallet.name}</span>
-                                    ${wallet.mobile ? '<span class="wallet-badge">Móvil</span>' : ''}
-                                    ${!wallet.detected ? '<span class="wallet-badge install">Instalar</span>' : ''}
-                                </button>
-                            `).join('')}
+                            ${wallets.map(wallet => {
+                                let badges = '';
+                                if (wallet.mobile && wallet.deepLink) {
+                                    badges = '<span class="wallet-badge mobile-badge">📱 App Móvil</span>';
+                                } else if (wallet.mobile) {
+                                    badges = '<span class="wallet-badge">Escanear QR</span>';
+                                } else if (!wallet.detected) {
+                                    badges = '<span class="wallet-badge install">Instalar</span>';
+                                }
+                                
+                                return `
+                                    <button class="wallet-option ${wallet.deepLink ? 'wallet-deeplink' : ''}" data-wallet="${wallet.id}">
+                                        <span class="wallet-icon">${wallet.icon}</span>
+                                        <div class="wallet-info">
+                                            <span class="wallet-name">${wallet.name}</span>
+                                            ${wallet.deepLink ? '<span class="wallet-subtitle">Abre la app</span>' : ''}
+                                        </div>
+                                        ${badges}
+                                    </button>
+                                `;
+                            }).join('')}
                         </div>
                         <div class="wallet-modal-footer">
                             <p class="wallet-help">
@@ -167,6 +205,12 @@ class WalletConnector {
                         walletName: wallet.name
                     };
 
+                case 'metamask-mobile':
+                    return await this.connectMetaMaskMobile();
+
+                case 'coinbase-mobile':
+                    return await this.connectCoinbaseMobile();
+
                 case 'walletconnect':
                     return await this.connectWalletConnect();
 
@@ -177,6 +221,26 @@ class WalletConnector {
             console.error('Error connecting wallet:', error);
             throw error;
         }
+    }
+
+    // MetaMask Mobile connection via deep link
+    async connectMetaMaskMobile() {
+        const deepLink = this.getMobileDeepLink();
+        
+        // Open MetaMask app
+        window.location.href = deepLink.metamask;
+        
+        throw new Error('Redirigiendo a MetaMask Mobile... Por favor aprueba la conexión en la app.');
+    }
+
+    // Coinbase Wallet Mobile connection via deep link
+    async connectCoinbaseMobile() {
+        const deepLink = this.getMobileDeepLink();
+        
+        // Open Coinbase Wallet app
+        window.location.href = deepLink.coinbase;
+        
+        throw new Error('Redirigiendo a Coinbase Wallet... Por favor aprueba la conexión en la app.');
     }
 
     // WalletConnect integration (for mobile wallets)

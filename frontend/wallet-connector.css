@@ -139,8 +139,26 @@
     flex-shrink: 0;
 }
 
-.wallet-name {
+.wallet-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+.wallet-name {
+    font-weight: 600;
+}
+
+.wallet-subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.wallet-deeplink .wallet-subtitle {
+    color: #818cf8;
 }
 
 .wallet-badge {
@@ -151,11 +169,17 @@
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .wallet-badge.install {
     background: rgba(245, 158, 11, 0.2);
     color: #fbbf24;
+}
+
+.wallet-badge.mobile-badge {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
 }
 
 .wallet-modal-footer {
