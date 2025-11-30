@@ -13,9 +13,78 @@ class WalletConnector {
         const wallets = [];
         const isMobileDevice = this.isMobile();
 
-        // MetaMask Desktop/Browser Extension
-        if (typeof window.ethereum !== 'undefined') {
-            if (window.ethereum.isMetaMask && !isMobileDevice) {
+        console.log('🔍 Detectando wallets...');
+        console.log('window.ethereum:', typeof window.ethereum);
+        if (window.ethereum) {
+            console.log('  - isMetaMask:', window.ethereum.isMetaMask);
+            console.log('  - isCoinbaseWallet:', window.ethereum.isCoinbaseWallet);
+            console.log('  - providers:', window.ethereum.providers?.length);
+        }
+
+        // Check for multiple providers first (most reliable method)
+        if (window.ethereum?.providers?.length > 0) {
+            console.log('✅ Múltiples proveedores detectados');
+            
+            // Separar providers en dos arrays
+            const metamaskProviders = [];
+            const coinbaseProviders = [];
+            
+            window.ethereum.providers.forEach((provider, index) => {
+                console.log(`  Provider ${index}:`, {
+                    isMetaMask: provider.isMetaMask,
+                    isCoinbaseWallet: provider.isCoinbaseWallet,
+                    isCoinbaseBrowser: provider.isCoinbaseBrowser,
+                    overrideIsMetaMask: provider.overrideIsMetaMask,
+                    isBraveWallet: provider.isBraveWallet,
+                    isRabby: provider.isRabby,
+                    providerConstructor: provider.constructor?.name
+                });
+
+                // MetaMask real tiene overrideIsMetaMask: true
+                const isRealMetaMask = provider.isMetaMask && provider.overrideIsMetaMask === true;
+                
+                // Coinbase Wallet reporta isMetaMask pero NO tiene overrideIsMetaMask
+                const isCoinbase = provider.isCoinbaseWallet || 
+                                 provider.isCoinbaseBrowser ||
+                                 (provider.isMetaMask && provider.overrideIsMetaMask !== true);
+
+                if (isRealMetaMask && !isMobileDevice) {
+                    metamaskProviders.push(provider);
+                } else if (isCoinbase) {
+                    coinbaseProviders.push(provider);
+                }
+            });
+
+            // Agregar en orden: primero Coinbase, luego MetaMask
+            // Esto hace que cada uno use su provider correcto
+            if (coinbaseProviders.length > 0) {
+                wallets.push({
+                    id: 'coinbase',
+                    name: 'Coinbase Wallet',
+                    icon: '🔵',
+                    detected: true,
+                    provider: coinbaseProviders[0]
+                });
+                console.log('  ✅ Coinbase Wallet agregado (Provider específico)');
+            }
+            
+            if (metamaskProviders.length > 0) {
+                wallets.push({
+                    id: 'metamask',
+                    name: 'MetaMask',
+                    icon: '🦊',
+                    detected: true,
+                    provider: metamaskProviders[0]
+                });
+                console.log('  ✅ MetaMask agregado (Provider específico)');
+            }
+        } 
+        // Single provider fallback
+        else if (typeof window.ethereum !== 'undefined') {
+            console.log('⚠️ Proveedor único detectado');
+            
+            // MetaMask Desktop/Browser Extension
+            if (window.ethereum.isMetaMask && !window.ethereum.isCoinbaseWallet && !isMobileDevice) {
                 wallets.push({
                     id: 'metamask',
                     name: 'MetaMask',
@@ -23,10 +92,11 @@ class WalletConnector {
                     detected: true,
                     provider: window.ethereum
                 });
+                console.log('  ✅ MetaMask agregado (único)');
             }
             
             // Coinbase Wallet (works on desktop and mobile web)
-            if (window.ethereum.isCoinbaseWallet) {
+            if (window.ethereum.isCoinbaseWallet || window.ethereum.isCoinbaseBrowser) {
                 wallets.push({
                     id: 'coinbase',
                     name: 'Coinbase Wallet',
@@ -34,31 +104,8 @@ class WalletConnector {
                     detected: true,
                     provider: window.ethereum
                 });
+                console.log('  ✅ Coinbase Wallet agregado (único)');
             }
-        }
-
-        // Check for multiple providers (when multiple wallets installed)
-        if (window.ethereum?.providers?.length > 0) {
-            window.ethereum.providers.forEach(provider => {
-                if (provider.isMetaMask && !wallets.find(w => w.id === 'metamask') && !isMobileDevice) {
-                    wallets.push({
-                        id: 'metamask',
-                        name: 'MetaMask',
-                        icon: '🦊',
-                        detected: true,
-                        provider: provider
-                    });
-                }
-                if (provider.isCoinbaseWallet && !wallets.find(w => w.id === 'coinbase')) {
-                    wallets.push({
-                        id: 'coinbase',
-                        name: 'Coinbase Wallet',
-                        icon: '🔵',
-                        detected: true,
-                        provider: provider
-                    });
-                }
-            });
         }
 
         // MetaMask Mobile (deep link option)
@@ -143,6 +190,12 @@ class WalletConnector {
                             }).join('')}
                         </div>
                         <div class="wallet-modal-footer">
+                            ${wallets.filter(w => w.detected && !w.mobile).length > 1 ? `
+                                <p class="wallet-help" style="color: #ffa500; margin-bottom: 10px;">
+                                    ⚠️ Tienes múltiples wallets instaladas. Si al conectar se abre la wallet incorrecta, 
+                                    cierra las otras extensiones temporalmente.
+                                </p>
+                            ` : ''}
                             <p class="wallet-help">
                                 ¿No tienes una wallet? 
                                 <a href="https://metamask.io/download/" target="_blank">Instalar MetaMask</a>
@@ -176,6 +229,14 @@ class WalletConnector {
     // Connect to selected wallet
     async connect(wallet) {
         try {
+            console.log('🔗 Conectando a:', wallet.name, wallet.id);
+            console.log('Provider recibido:', wallet.provider);
+            console.log('Provider properties:', {
+                isMetaMask: wallet.provider?.isMetaMask,
+                isCoinbaseWallet: wallet.provider?.isCoinbaseWallet,
+                overrideIsMetaMask: wallet.provider?.overrideIsMetaMask
+            });
+            
             let provider;
 
             switch (wallet.id) {
@@ -186,24 +247,44 @@ class WalletConnector {
                     }
                     provider = wallet.provider;
                     
-                    // Request account access
-                    const accounts = await provider.request({ 
-                        method: 'eth_requestAccounts' 
-                    });
+                    console.log('🎯 Usando provider:', provider);
+                    console.log('🔍 Provider index en window.ethereum.providers:', 
+                        window.ethereum.providers?.indexOf(provider));
                     
-                    if (!accounts || accounts.length === 0) {
-                        throw new Error('No se pudo acceder a las cuentas');
+                    // IMPORTANTE: Para múltiples wallets, debemos usar el provider directamente
+                    // NO usar window.ethereum ya que apunta al último activo
+                    
+                    // Forzar que window.ethereum apunte a este provider
+                    // Esto ayuda a que el navegador abra la extensión correcta
+                    const originalProvider = window.ethereum;
+                    window.ethereum = provider;
+                    
+                    try {
+                        // Request account access directamente del provider específico
+                        const accounts = await provider.request({ 
+                            method: 'eth_requestAccounts' 
+                        });
+                        
+                        console.log('✅ Cuentas obtenidas:', accounts);
+                        console.log('✅ Usando wallet correcta:', wallet.name);
+                    
+                        if (!accounts || accounts.length === 0) {
+                            throw new Error('No se pudo acceder a las cuentas');
+                        }
+                        
+                        this.provider = provider;
+                        this.connectedWallet = wallet.id;
+                        
+                        return {
+                            provider: provider,
+                            address: accounts[0],
+                            walletType: wallet.id,
+                            walletName: wallet.name
+                        };
+                    } finally {
+                        // Restaurar window.ethereum original
+                        window.ethereum = originalProvider;
                     }
-                    
-                    this.provider = provider;
-                    this.connectedWallet = wallet.id;
-                    
-                    return {
-                        provider: provider,
-                        address: accounts[0],
-                        walletType: wallet.id,
-                        walletName: wallet.name
-                    };
 
                 case 'metamask-mobile':
                     return await this.connectMetaMaskMobile();
