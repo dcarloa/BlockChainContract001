@@ -268,8 +268,8 @@ async function disconnectWallet() {
         document.getElementById('disconnectWallet').style.display = 'none';
         document.getElementById('userNickname').style.display = 'none';
         
-        // Hide dashboard and show empty state
-        document.getElementById('dashboardSection').style.display = 'none';
+        // Hide dashboard and fund detail sections
+        document.getElementById('dashboardSection').classList.remove('active');
         document.getElementById('fundDetailSection').classList.remove('active');
         
         hideLoading();
@@ -989,12 +989,21 @@ async function createFund(event) {
         );
         
         console.log("Transacción enviada:", tx.hash);
-        await tx.wait();
+        const receipt = await tx.wait();
+        console.log("✅ Transacción confirmada:", receipt.hash);
         
         showToast(`✅ Fondo "${fundName}" creado exitosamente!`, "success");
         
+        // Dar tiempo para que el estado se actualice en blockchain
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         // Recargar fondos
+        showLoading("Cargando tu nuevo grupo...");
         await loadUserFunds();
+        
+        // Asegurarse de que el dashboard esté visible
+        document.getElementById('dashboardSection').classList.add('active');
+        document.getElementById('fundDetailSection').classList.remove('active');
         
         hideLoading();
         
