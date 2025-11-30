@@ -1155,6 +1155,23 @@ async function refreshCurrentView() {
             // Estamos en la vista de detalle de un fondo
             console.log("🔄 Refrescando vista de fondo...");
             await loadFundDetailView();
+            
+            // Recargar también la pestaña activa específica
+            const activeTab = document.querySelector('.tab-pane.active');
+            if (activeTab) {
+                const tabId = activeTab.id;
+                console.log("🔄 Recargando pestaña activa:", tabId);
+                
+                if (tabId === 'voteTab') {
+                    await loadProposals();
+                } else if (tabId === 'historyTab') {
+                    await loadHistory();
+                } else if (tabId === 'balancesTab') {
+                    await loadBalances();
+                } else if (tabId === 'manageTab') {
+                    await loadKickMembersList();
+                }
+            }
         } else if (document.getElementById('dashboardSection').classList.contains('active')) {
             // Estamos en el dashboard
             console.log("🔄 Refrescando dashboard...");
