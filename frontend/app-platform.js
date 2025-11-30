@@ -115,6 +115,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 function setupEventListeners() {
     // Dashboard
     document.getElementById('connectWallet').addEventListener('click', connectWallet);
+    document.getElementById('disconnectWallet').addEventListener('click', disconnectWallet);
     document.getElementById('setNicknameBtn').addEventListener('click', setNickname);
     document.getElementById('createFundBtn').addEventListener('click', showCreateFundModal);
     document.getElementById('createFundForm').addEventListener('submit', createFund);
@@ -208,8 +209,8 @@ async function connectWallet() {
             <span class="btn-icon">${walletIcon}</span>
             <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
         `;
-        document.getElementById('connectWallet').disabled = true;
-        document.getElementById('connectWallet').style.opacity = '0.8';
+        document.getElementById('connectWallet').style.display = 'none';
+        document.getElementById('disconnectWallet').style.display = 'inline-flex';
         
         // Load factory contract
         await loadFactoryContract();
@@ -229,6 +230,64 @@ async function connectWallet() {
         } else {
             showToast("❌ Error al conectar wallet: " + error.message, "error");
         }
+    }
+}
+
+async function disconnectWallet() {
+    try {
+        // Confirm disconnection
+        const confirmed = confirm(
+            "¿Estás seguro que deseas desconectar tu wallet?\n\n" +
+            "Serás redirigido a la página principal."
+        );
+        
+        if (!confirmed) {
+            return;
+        }
+        
+        showLoading("Desconectando wallet...");
+        
+        // Clear all state
+        provider = null;
+        signer = null;
+        userAddress = null;
+        userNickname = null;
+        factoryContract = null;
+        currentFundAddress = null;
+        currentFund = null;
+        allFunds = [];
+        
+        // Reset UI
+        document.getElementById('connectWallet').innerHTML = `
+            <span class="btn-icon">🦊</span>
+            <span>Conectar Wallet</span>
+        `;
+        document.getElementById('connectWallet').style.display = 'inline-flex';
+        document.getElementById('connectWallet').disabled = false;
+        document.getElementById('connectWallet').style.opacity = '1';
+        document.getElementById('disconnectWallet').style.display = 'none';
+        document.getElementById('userNickname').style.display = 'none';
+        
+        // Hide dashboard and show empty state
+        document.getElementById('dashboardSection').style.display = 'none';
+        document.getElementById('fundDetailSection').classList.remove('active');
+        
+        hideLoading();
+        
+        // Show success message and redirect
+        showToast("✅ Wallet desconectada correctamente", "success");
+        
+        setTimeout(() => {
+            showLoading("Redirigiendo a la página principal...");
+            setTimeout(() => {
+                window.location.href = '/index.html';
+            }, 1000);
+        }, 1500);
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error disconnecting wallet:", error);
+        showToast("❌ Error al desconectar: " + error.message, "error");
     }
 }
 

@@ -2532,3 +2532,20 @@ header,
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
 }
+
+/* Disconnect Button */
+#disconnectWallet {
+  margin-left: 0.75rem;
+}
+
+#disconnectWallet:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
