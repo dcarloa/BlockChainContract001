@@ -276,19 +276,10 @@ async function checkUserNickname() {
         
         // Si el nickname es igual a la dirección, no tiene nickname
         if (nickname.toLowerCase() === userAddress.toLowerCase()) {
-            // No tiene nickname - es opcional, mostrar opción pero permitir continuar
+            // No tiene nickname - OBLIGATORIO establecerlo
             userNickname = null;
-            document.getElementById('nicknameModal').style.display = 'flex';
-            // Agregar botón para saltar el nickname
-            const modal = document.getElementById('nicknameModal');
-            if (!modal.querySelector('.skip-nickname-btn')) {
-                const skipBtn = document.createElement('button');
-                skipBtn.className = 'btn btn-secondary skip-nickname-btn';
-                skipBtn.textContent = 'Continuar sin nickname';
-                skipBtn.onclick = skipNickname;
-                modal.querySelector('.modal-content').appendChild(skipBtn);
-            }
             hideLoading();
+            document.getElementById('nicknameModal').style.display = 'flex';
         } else {
             // Usuario tiene nickname
             userNickname = nickname;
@@ -305,13 +296,6 @@ async function checkUserNickname() {
         console.error("Error checking nickname:", error);
         showToast("Error verificando nickname", "error");
     }
-}
-
-async function skipNickname() {
-    // Cerrar el modal y cargar dashboard sin nickname
-    document.getElementById('nicknameModal').style.display = 'none';
-    userNickname = null;
-    await loadDashboard();
 }
 
 async function setNickname() {

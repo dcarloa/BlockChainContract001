@@ -56,10 +56,10 @@
             <div id="nicknameModal" class="modal" style="display: none;">
                 <div class="modal-content">
                     <h2>👋 ¡Bienvenido a SplitExpense!</h2>
-                    <p>Puedes elegir un <strong>nickname opcional</strong> para que sea más fácil identificarte en los grupos, o continuar usando tu dirección de wallet.</p>
+                    <p>Necesitas establecer un <strong>nickname</strong> para identificarte en los grupos y poder crear fondos.</p>
                     
                     <div class="form-group">
-                        <label for="nicknameInput">Tu Nickname (Opcional)</label>
+                        <label for="nicknameInput">Tu Nickname *</label>
                         <input 
                             type="text" 
                             id="nicknameInput" 
@@ -67,12 +67,13 @@
                             minlength="3"
                             maxlength="32"
                             pattern="[a-zA-Z0-9]+"
+                            required
                         >
-                        <small>3-32 caracteres, solo letras y números. Puedes establecerlo después.</small>
+                        <small>3-32 caracteres, solo letras y números. Te identificará en todos tus grupos.</small>
                     </div>
                     
                     <button id="setNicknameBtn" class="btn btn-primary btn-block">
-                        Establecer Nickname
+                        Establecer Nickname y Continuar
                     </button>
                 </div>
             </div>
