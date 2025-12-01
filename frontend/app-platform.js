@@ -306,8 +306,12 @@ async function autoReconnectWallet() {
 
         console.log("🔍 Verificando conexión previa...");
 
+        // Usar el proveedor de MetaMask directamente si está disponible
+        const ethereumProvider = metamaskProviderDirect || window.ethereum;
+        console.log("📱 Usando proveedor:", metamaskProviderDirect ? "MetaMask directo" : "window.ethereum");
+
         // Intentar obtener cuentas sin solicitar permiso
-        const accounts = await window.ethereum.request({ 
+        const accounts = await ethereumProvider.request({ 
             method: 'eth_accounts' 
         });
 
@@ -319,8 +323,8 @@ async function autoReconnectWallet() {
         console.log("🔄 Reconectando wallet automáticamente...");
         console.log("📍 Cuenta encontrada:", accounts[0]);
         
-        // Reconectar silenciosamente
-        provider = new ethers.BrowserProvider(window.ethereum);
+        // Reconectar silenciosamente usando el mismo proveedor
+        provider = new ethers.BrowserProvider(ethereumProvider);
         
         console.log("🔗 Provider creado");
         
