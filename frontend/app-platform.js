@@ -380,10 +380,11 @@ async function autoReconnectWallet() {
             document.getElementById('connectWallet').style.display = 'inline-flex';
             document.getElementById('disconnectWallet').style.display = 'inline-flex';
             
-            // Cambiar el comportamiento del botón para mostrar modal de nickname
+            // Cambiar el comportamiento del botón para verificar nickname
             const connectBtn = document.getElementById('connectWallet');
-            connectBtn.onclick = () => {
-                document.getElementById('nicknameModal').style.display = 'flex';
+            connectBtn.onclick = async () => {
+                // Verificar nickname nuevamente por si cambió la cuenta
+                await checkUserNickname();
             };
             
             console.log("ℹ️ Wallet conectada, esperando que usuario establezca nickname");
