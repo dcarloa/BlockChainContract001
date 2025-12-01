@@ -359,7 +359,7 @@ async function autoReconnectWallet() {
         console.log("📦 Cargando factory contract...");
         await loadFactoryContract();
 
-        // Verificar si tiene nickname y cargar dashboard automáticamente SOLO si tiene nickname
+        // Verificar si tiene nickname - SOLO reconectar si tiene nickname
         console.log("👤 Verificando nickname para cuenta:", userAddress);
         const nickname = await factoryContract.getNickname(userAddress);
         console.log("🏷️  Nickname obtenido:", nickname);
@@ -376,28 +376,29 @@ async function autoReconnectWallet() {
                 console.log("✅ Wallet reconectada y dashboard cargado automáticamente");
             } catch (dashboardError) {
                 console.error("❌ Error cargando dashboard:", dashboardError);
-                // Si falla cargar el dashboard, mostrar el modal de nickname como fallback
-                document.getElementById('nicknameModal').style.display = 'flex';
+                throw dashboardError; // Re-lanzar para que el catch general limpie el estado
             }
         } else {
-            // Usuario NO tiene nickname
-            console.log("ℹ️ Usuario NO tiene nickname, mostrando opción para establecer");
-            // Cambiar el botón "Conectar Wallet" a "Continuar"
+            // Usuario NO tiene nickname - NO reconectar automáticamente
+            console.log("ℹ️ Usuario NO tiene nickname, cancelando auto-reconnect");
+            
+            // Limpiar estado
+            provider = null;
+            signer = null;
+            userAddress = null;
+            factoryContract = null;
+            
+            // Restaurar UI a estado inicial
             document.getElementById('connectWallet').innerHTML = `
-                <span class="btn-icon">👤</span>
-                <span>Establecer Nickname</span>
+                <span class="btn-icon">🦊</span>
+                <span>Conectar Wallet</span>
             `;
             document.getElementById('connectWallet').style.display = 'inline-flex';
-            document.getElementById('disconnectWallet').style.display = 'inline-flex';
+            document.getElementById('disconnectWallet').style.display = 'none';
+            document.getElementById('userNickname').style.display = 'none';
             
-            // Cambiar el comportamiento del botón para verificar nickname
-            const connectBtn = document.getElementById('connectWallet');
-            connectBtn.onclick = async () => {
-                // Verificar nickname nuevamente por si cambió la cuenta
-                await checkUserNickname();
-            };
-            
-            console.log("ℹ️ Wallet conectada, esperando que usuario establezca nickname");
+            console.log("🔄 Auto-reconnect cancelado - usuario debe conectar manualmente y establecer nickname");
+            return; // Salir sin completar el reconnect
         }
 
         console.log("✅ Proceso de auto-reconexión completado");
