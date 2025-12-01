@@ -112,7 +112,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     await loadFactoryInfo();
     
     // Intentar reconectar wallet automáticamente si ya estaba conectada
+    console.log("🔄 Iniciando proceso de auto-reconexión...");
     await autoReconnectWallet();
+    console.log("✅ Proceso de auto-reconexión completado");
 });
 
 function setupEventListeners() {
