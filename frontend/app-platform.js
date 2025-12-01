@@ -951,7 +951,19 @@ function filterFunds() {
         emptyState.style.display = 'flex';
     } else {
         emptyState.style.display = 'none';
-        fundsGrid.innerHTML = filteredFunds.map(fund => createFundCard(fund)).join('');
+        
+        // Filter out hidden funds from localStorage
+        const hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
+        const visibleFunds = filteredFunds.filter(fund => 
+            !hiddenFunds.includes(fund.fundAddress.toLowerCase())
+        );
+        
+        if (visibleFunds.length === 0) {
+            fundsGrid.innerHTML = '';
+            emptyState.style.display = 'flex';
+        } else {
+            fundsGrid.innerHTML = visibleFunds.map(fund => createFundCard(fund)).join('');
+        }
     }
 }
 
@@ -966,10 +978,17 @@ function createFundCard(fund) {
     return `
         <div class="fund-card ${isInactive ? 'fund-inactive' : ''}" onclick="openFund('${fund.fundAddress}')">
             <div class="fund-card-content">
-                ${fund.isCreator && fund.isActive ? `
-                <button class="fund-delete-btn" onclick="event.stopPropagation(); deleteFund('${fund.fundAddress}', '${fund.fundName}')" title="Desactivar fondo">
-                    ✕
-                </button>
+                ${fund.isCreator ? `
+                <div class="fund-actions">
+                    ${fund.isActive ? `
+                    <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Pausar fondo (desactivar transacciones)">
+                        ⏸️
+                    </button>
+                    ` : ''}
+                    <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${fund.fundName}')" title="Ocultar de mi vista">
+                        🚫
+                    </button>
+                </div>
                 ` : ''}
                 
                 <div class="fund-card-header">
@@ -1072,9 +1091,17 @@ function backToDashboard() {
     currentFundContract = null;
 }
 
-async function deleteFund(fundAddress, fundName) {
+async function deactivateFund(fundAddress, fundName) {
     try {
-        const confirmed = confirm(`¿Estás seguro de que deseas desactivar el fondo "${fundName}"?\n\nEsta acción:\n• Marcará el fondo como inactivo\n• No eliminará los fondos del contrato\n• No se puede revertir\n\n¿Continuar?`);
+        const confirmed = confirm(
+            `⏸️ ¿Pausar el fondo "${fundName}"?\n\n` +
+            `Esta acción:\n` +
+            `• Bloqueará todas las transacciones (depósitos, propuestas, votos)\n` +
+            `• El fondo seguirá visible en modo solo lectura\n` +
+            `• Podrás ver el historial y balances\n` +
+            `• Solo el creador puede reactivarlo llamando al contrato\n\n` +
+            `¿Continuar?`
+        );
         
         if (!confirmed) return;
         
@@ -1083,17 +1110,57 @@ async function deleteFund(fundAddress, fundName) {
         const tx = await factoryContract.deactivateFund(fundAddress);
         await tx.wait();
         
-        // Refresh view to remove deactivated fund
+        // Refresh view to show deactivated state
         await refreshCurrentView();
         
-        showToast("✅ Fondo desactivado exitosamente", "success");
+        showToast("✅ Fondo desactivado. Ahora está en modo solo lectura.", "success");
         
         hideLoading();
         
     } catch (error) {
         hideLoading();
-        console.error("Error deleting fund:", error);
+        console.error("Error deactivating fund:", error);
         showToast("Error al desactivar el fondo: " + error.message, "error");
+    }
+}
+
+async function hideFund(fundAddress, fundName) {
+    try {
+        const confirmed = confirm(
+            `🗑️ ¿Ocultar el fondo "${fundName}"?\n\n` +
+            `Esta acción:\n` +
+            `• Ocultará el fondo de tu interfaz\n` +
+            `• El fondo seguirá existiendo en la blockchain\n` +
+            `• Los fondos NO se eliminarán del contrato\n` +
+            `• Solo se guardará tu preferencia localmente\n` +
+            `• Podrás volver a verlo limpiando el storage del navegador\n\n` +
+            `¿Continuar?`
+        );
+        
+        if (!confirmed) return;
+        
+        showLoading("Ocultando fondo...");
+        
+        // Get hidden funds from localStorage
+        let hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
+        
+        // Add this fund to hidden list
+        if (!hiddenFunds.includes(fundAddress.toLowerCase())) {
+            hiddenFunds.push(fundAddress.toLowerCase());
+            localStorage.setItem('hiddenFunds', JSON.stringify(hiddenFunds));
+        }
+        
+        // Refresh view to hide the fund
+        await refreshCurrentView();
+        
+        showToast("✅ Fondo ocultado de tu vista", "success");
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error hiding fund:", error);
+        showToast("Error al ocultar el fondo: " + error.message, "error");
     }
 }
 
