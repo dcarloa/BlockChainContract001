@@ -907,7 +907,7 @@ function updateStats() {
     
     document.getElementById('totalFundsCreated').textContent = createdCount;
     document.getElementById('totalFundsParticipating').textContent = participatingCount;
-    document.getElementById('totalValueLocked').textContent = totalValue.toFixed(2);
+    document.getElementById('totalValueLocked').textContent = formatEth(totalValue);
     
     // Update filter counts
     document.getElementById('countAll').textContent = allUserFunds.length;
@@ -987,11 +987,11 @@ function createFundCard(fund) {
                 <div class="fund-stats">
                     <div class="fund-stat">
                         <span class="fund-stat-label">Balance</span>
-                        <span class="fund-stat-value">${parseFloat(fund.balance || 0).toFixed(2)} ETH</span>
+                        <span class="fund-stat-value">${formatEth(fund.balance || 0)} ETH</span>
                     </div>
                     <div class="fund-stat">
                         <span class="fund-stat-label">${parseFloat(fund.target || 0) > 0 ? 'Meta' : 'Límite'}</span>
-                        <span class="fund-stat-value">${parseFloat(fund.target || 0) > 0 ? parseFloat(fund.target).toFixed(2) + ' ETH' : 'Sin límite'}</span>
+                        <span class="fund-stat-value">${parseFloat(fund.target || 0) > 0 ? formatEth(fund.target) + ' ETH' : 'Sin límite'}</span>
                     </div>
                 </div>
                 
@@ -1251,6 +1251,19 @@ function formatUserDisplay(nickname, address) {
     return formatAddress(address);
 }
 
+// Helper: Format ETH with smart decimals (shows more decimals for small amounts)
+function formatEth(value) {
+    const num = parseFloat(value);
+    
+    if (num === 0) return '0.00';
+    if (num >= 1) return num.toFixed(2); // >= 1 ETH: 2 decimals
+    if (num >= 0.01) return num.toFixed(4); // >= 0.01 ETH: 4 decimals
+    if (num >= 0.0001) return num.toFixed(6); // >= 0.0001 ETH: 6 decimals
+    
+    // For very small amounts, use scientific notation or show all significant digits
+    return num.toFixed(8); // Show up to 8 decimals for tiny amounts
+}
+
 // Helper: Refresh current view after transaction
 async function refreshCurrentView() {
     try {
@@ -1318,7 +1331,7 @@ async function loadFundDetailView() {
         const balanceEth = ethers.formatEther(balance);
         const targetEth = ethers.formatEther(target);
         
-        document.getElementById('fundBalance').textContent = `${parseFloat(balanceEth).toFixed(2)} ETH`;
+        document.getElementById('fundBalance').textContent = `${formatEth(balanceEth)} ETH`;
         document.getElementById('fundMembers').textContent = contributors.toString();
         document.getElementById('fundProposals').textContent = proposals.toString();
         
@@ -1332,7 +1345,7 @@ async function loadFundDetailView() {
             if (progressSection) progressSection.style.display = 'none';
         } else {
             const progress = (parseFloat(balanceEth) / parseFloat(targetEth)) * 100;
-            document.getElementById('fundTarget').textContent = `${parseFloat(targetEth).toFixed(2)} ETH`;
+            document.getElementById('fundTarget').textContent = `${formatEth(targetEth)} ETH`;
             document.getElementById('fundProgress').textContent = `${progress.toFixed(1)}%`;
             document.getElementById('fundProgressBar').style.width = `${Math.min(progress, 100)}%`;
             // Mostrar la barra de progreso
@@ -1341,7 +1354,7 @@ async function loadFundDetailView() {
         }
         
         // User contribution
-        document.getElementById('userContribution').textContent = `${parseFloat(ethers.formatEther(userContribution)).toFixed(2)} ETH`;
+        document.getElementById('userContribution').textContent = `${formatEth(ethers.formatEther(userContribution))} ETH`;
         
         // Check invitation status (1 = Invited, 2 = Active)
         if (memberStatus === 1n) {
@@ -1753,7 +1766,7 @@ async function loadMembers() {
                             <p class="member-address" title="${address}">${formatAddress(address)}</p>
                         </div>
                         <div class="member-contribution">
-                            <span>${parseFloat(amount).toFixed(2)} ETH</span>
+                            <span>${formatEth(amount)} ETH</span>
                         </div>
                     </div>
                 `;
@@ -1849,7 +1862,7 @@ async function loadProposals() {
                     <div class="proposal-card">
                         <div class="proposal-header">
                             <h4>Propuesta #${proposal.id}</h4>
-                            <span class="proposal-amount">${parseFloat(amount).toFixed(2)} ETH</span>
+                            <span class="proposal-amount">${formatEth(amount)} ETH</span>
                         </div>
                         
                         <p class="proposal-description">${proposal.description}</p>
