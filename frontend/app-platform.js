@@ -256,8 +256,8 @@ async function disconnectWallet() {
         userAddress = null;
         userNickname = null;
         factoryContract = null;
-        currentFundAddress = null;
         currentFund = null;
+        currentFundContract = null;
         allFunds = [];
         
         // Reset UI
@@ -1151,7 +1151,7 @@ function formatUserDisplay(nickname, address) {
 // Helper: Refresh current view after transaction
 async function refreshCurrentView() {
     try {
-        if (currentFundAddress && document.getElementById('fundDetailSection').classList.contains('active')) {
+        if (currentFund && document.getElementById('fundDetailSection').classList.contains('active')) {
             // Estamos en la vista de detalle de un fondo
             console.log("🔄 Refrescando vista de fondo...");
             await loadFundDetailView();
