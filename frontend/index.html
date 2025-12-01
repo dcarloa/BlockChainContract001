@@ -77,7 +77,13 @@
                     <div class="phone-mockup">
                         <div class="phone-notch"></div>
                         <div class="phone-screen">
-                            <div class="app-preview">
+                            <!-- Video Demo -->
+                            <div class="app-preview demo-video active">
+                                <img src="assets/demo-video.gif" alt="SplitExpense Demo" class="demo-gif">
+                            </div>
+                            
+                            <!-- Static UI Preview -->
+                            <div class="app-preview static-preview">
                                 <div class="preview-header">
                                     <div class="preview-avatar">🌴</div>
                                     <div class="preview-info">
@@ -532,5 +538,19 @@
     </footer>
 
     <script src="landing-script.js"></script>
+    <script>
+        // Alternar entre video demo y UI estática cada 8 segundos
+        let currentView = 0;
+        const views = document.querySelectorAll('.app-preview');
+        
+        function switchView() {
+            views[currentView].classList.remove('active');
+            currentView = (currentView + 1) % views.length;
+            views[currentView].classList.add('active');
+        }
+        
+        // Cambiar vista cada 8 segundos
+        setInterval(switchView, 8000);
+    </script>
 </body>
 </html>
