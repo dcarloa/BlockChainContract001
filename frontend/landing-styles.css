@@ -361,13 +361,16 @@ body {
     align-items: center;
     justify-content: center;
     background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+    border-radius: 32px;
+    overflow: hidden;
 }
 
 .demo-gif {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    border-radius: 0;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 32px;
 }
 
 .preview-header {
