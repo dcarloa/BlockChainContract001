@@ -355,11 +355,37 @@ async function autoReconnectWallet() {
         console.log("📦 Cargando factory contract...");
         await loadFactoryContract();
 
-        // Verificar nickname y cargar dashboard
+        // Verificar si tiene nickname y cargar dashboard automáticamente SOLO si tiene nickname
         console.log("👤 Verificando nickname...");
-        await checkUserNickname();
+        const nickname = await factoryContract.getNickname(userAddress);
+        
+        if (nickname.toLowerCase() !== userAddress.toLowerCase()) {
+            // Usuario tiene nickname - cargar dashboard automáticamente
+            userNickname = nickname;
+            document.getElementById('nicknameDisplay').textContent = userNickname;
+            document.getElementById('userNickname').style.display = 'flex';
+            await loadDashboard();
+            console.log("✅ Wallet reconectada y dashboard cargado automáticamente");
+        } else {
+            // Usuario NO tiene nickname
+            // Cambiar el botón "Conectar Wallet" a "Continuar"
+            document.getElementById('connectWallet').innerHTML = `
+                <span class="btn-icon">👤</span>
+                <span>Establecer Nickname</span>
+            `;
+            document.getElementById('connectWallet').style.display = 'inline-flex';
+            document.getElementById('disconnectWallet').style.display = 'inline-flex';
+            
+            // Cambiar el comportamiento del botón para mostrar modal de nickname
+            const connectBtn = document.getElementById('connectWallet');
+            connectBtn.onclick = () => {
+                document.getElementById('nicknameModal').style.display = 'flex';
+            };
+            
+            console.log("ℹ️ Wallet conectada, esperando que usuario establezca nickname");
+        }
 
-        console.log("✅ Wallet reconectada automáticamente exitosamente");
+        console.log("✅ Proceso de auto-reconexión completado");
     } catch (error) {
         console.error("❌ Error en auto-reconnect:", error);
         console.error("   Mensaje:", error.message);
