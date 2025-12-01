@@ -393,8 +393,28 @@ async function autoReconnectWallet() {
     } catch (error) {
         console.error("❌ Error en auto-reconnect:", error);
         console.error("   Mensaje:", error.message);
-        console.error("   Stack:", error.stack);
-        // No mostrar error al usuario, simplemente no reconectar
+        
+        // Limpiar estado en caso de error
+        provider = null;
+        signer = null;
+        userAddress = null;
+        userNickname = null;
+        factoryContract = null;
+        
+        // Restaurar UI a estado inicial
+        document.getElementById('connectWallet').innerHTML = `
+            <span class="btn-icon">🦊</span>
+            <span>Conectar Wallet</span>
+        `;
+        document.getElementById('connectWallet').style.display = 'inline-flex';
+        document.getElementById('disconnectWallet').style.display = 'none';
+        document.getElementById('userNickname').style.display = 'none';
+        
+        // Restaurar el evento click original
+        const connectBtn = document.getElementById('connectWallet');
+        connectBtn.onclick = connectWallet;
+        
+        console.log("🔄 Estado restaurado después de error en auto-reconnect");
     }
 }
 
@@ -484,15 +504,34 @@ async function setNickname() {
             return;
         }
         
-        showLoading("Estableciendo nickname...");
+        showLoading("Verificando nickname actual...");
         
-        // Verificar disponibilidad
+        // Verificar si el usuario ya tiene un nickname
+        const currentNickname = await factoryContract.getNickname(userAddress);
+        if (currentNickname.toLowerCase() !== userAddress.toLowerCase()) {
+            hideLoading();
+            showToast(`⚠️ Ya tienes un nickname establecido: "${currentNickname}"`, "warning");
+            // Actualizar UI con el nickname existente
+            userNickname = currentNickname;
+            document.getElementById('nicknameDisplay').textContent = userNickname;
+            document.getElementById('userNickname').style.display = 'flex';
+            document.getElementById('nicknameModal').style.display = 'none';
+            // Cargar dashboard
+            await loadDashboard();
+            return;
+        }
+        
+        showLoading("Verificando disponibilidad...");
+        
+        // Verificar disponibilidad del nickname
         const isAvailable = await factoryContract.isNicknameAvailable(nickname);
         if (!isAvailable) {
             hideLoading();
             showToast("Este nickname ya está en uso. Elige otro.", "warning");
             return;
         }
+        
+        showLoading("Estableciendo nickname...");
         
         // Set nickname
         const tx = await factoryContract.setNickname(nickname);
