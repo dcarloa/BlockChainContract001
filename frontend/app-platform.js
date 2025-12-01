@@ -360,18 +360,28 @@ async function autoReconnectWallet() {
         await loadFactoryContract();
 
         // Verificar si tiene nickname y cargar dashboard automáticamente SOLO si tiene nickname
-        console.log("👤 Verificando nickname...");
+        console.log("👤 Verificando nickname para cuenta:", userAddress);
         const nickname = await factoryContract.getNickname(userAddress);
+        console.log("🏷️  Nickname obtenido:", nickname);
         
         if (nickname.toLowerCase() !== userAddress.toLowerCase()) {
             // Usuario tiene nickname - cargar dashboard automáticamente
             userNickname = nickname;
+            console.log("✅ Usuario tiene nickname:", userNickname);
             document.getElementById('nicknameDisplay').textContent = userNickname;
             document.getElementById('userNickname').style.display = 'flex';
-            await loadDashboard();
-            console.log("✅ Wallet reconectada y dashboard cargado automáticamente");
+            
+            try {
+                await loadDashboard();
+                console.log("✅ Wallet reconectada y dashboard cargado automáticamente");
+            } catch (dashboardError) {
+                console.error("❌ Error cargando dashboard:", dashboardError);
+                // Si falla cargar el dashboard, mostrar el modal de nickname como fallback
+                document.getElementById('nicknameModal').style.display = 'flex';
+            }
         } else {
             // Usuario NO tiene nickname
+            console.log("ℹ️ Usuario NO tiene nickname, mostrando opción para establecer");
             // Cambiar el botón "Conectar Wallet" a "Continuar"
             document.getElementById('connectWallet').innerHTML = `
                 <span class="btn-icon">👤</span>
