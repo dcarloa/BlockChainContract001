@@ -298,50 +298,70 @@ async function autoReconnectWallet() {
     try {
         // Verificar si hay una conexión previa guardada
         if (!window.ethereum) {
-            console.log("No hay wallet disponible");
+            console.log("⚠️ No hay wallet disponible");
             return;
         }
+
+        console.log("🔍 Verificando conexión previa...");
 
         // Intentar obtener cuentas sin solicitar permiso
         const accounts = await window.ethereum.request({ 
             method: 'eth_accounts' 
         });
 
-        if (accounts && accounts.length > 0) {
-            console.log("🔄 Reconectando wallet automáticamente...");
-            
-            // Reconectar silenciosamente
-            provider = new ethers.BrowserProvider(window.ethereum);
-            signer = await provider.getSigner();
-            userAddress = accounts[0];
-
-            // Verificar red
-            const network = await provider.getNetwork();
-            
-            if (network.chainId !== 84532n) {
-                console.log("⚠️ Red incorrecta, no se reconectará automáticamente");
-                return;
-            }
-
-            // Actualizar UI
-            const walletIcon = '🦊'; // Por defecto MetaMask
-            document.getElementById('connectWallet').innerHTML = `
-                <span class="btn-icon">${walletIcon}</span>
-                <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
-            `;
-            document.getElementById('connectWallet').style.display = 'none';
-            document.getElementById('disconnectWallet').style.display = 'inline-flex';
-
-            // Cargar factory contract
-            await loadFactoryContract();
-
-            // Verificar nickname y cargar dashboard
-            await checkUserNickname();
-
-            console.log("✅ Wallet reconectada automáticamente");
+        if (!accounts || accounts.length === 0) {
+            console.log("ℹ️ No hay cuentas conectadas previamente");
+            return;
         }
+
+        console.log("🔄 Reconectando wallet automáticamente...");
+        console.log("📍 Cuenta encontrada:", accounts[0]);
+        
+        // Reconectar silenciosamente
+        provider = new ethers.BrowserProvider(window.ethereum);
+        
+        console.log("🔗 Provider creado");
+        
+        signer = await provider.getSigner();
+        userAddress = accounts[0];
+
+        console.log("✍️ Signer obtenido");
+
+        // Verificar red
+        const network = await provider.getNetwork();
+        console.log("🌐 Red detectada - Chain ID:", network.chainId);
+        
+        if (network.chainId !== 84532n) {
+            console.log("⚠️ Red incorrecta (esperada: 84532), no se reconectará automáticamente");
+            return;
+        }
+
+        console.log("✅ Red correcta (Base Sepolia)");
+
+        // Actualizar UI
+        const walletIcon = '🦊'; // Por defecto MetaMask
+        document.getElementById('connectWallet').innerHTML = `
+            <span class="btn-icon">${walletIcon}</span>
+            <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
+        `;
+        document.getElementById('connectWallet').style.display = 'none';
+        document.getElementById('disconnectWallet').style.display = 'inline-flex';
+
+        console.log("🎨 UI actualizada");
+
+        // Cargar factory contract
+        console.log("📦 Cargando factory contract...");
+        await loadFactoryContract();
+
+        // Verificar nickname y cargar dashboard
+        console.log("👤 Verificando nickname...");
+        await checkUserNickname();
+
+        console.log("✅ Wallet reconectada automáticamente exitosamente");
     } catch (error) {
-        console.log("No se pudo reconectar automáticamente:", error.message);
+        console.error("❌ Error en auto-reconnect:", error);
+        console.error("   Mensaje:", error.message);
+        console.error("   Stack:", error.stack);
         // No mostrar error al usuario, simplemente no reconectar
     }
 }
