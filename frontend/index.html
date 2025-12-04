@@ -39,7 +39,7 @@
     <div id="settingsModal" class="modal-overlay" onclick="closeSettings(event)">
         <div class="settings-modal" onclick="event.stopPropagation()">
             <div class="settings-header">
-                <h2 data-i18n="settings.title">⚙️ Settings</h2>
+                <h2><span class="settings-emoji">⚙️</span> <span class="settings-title-text">Settings</span></h2>
                 <button class="close-btn" onclick="closeSettings()">&times;</button>
             </div>
             <div class="settings-content">
@@ -658,7 +658,7 @@
             // Update document language
             document.documentElement.lang = lang;
             
-            // Navigation
+            // Navigation and Settings Modal
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 const keys = key.split('.');
@@ -666,6 +666,10 @@
                 keys.forEach(k => value = value?.[k]);
                 if (value && el.tagName !== 'INPUT') el.textContent = value;
             });
+            
+            // Settings modal title
+            const settingsTitleText = document.querySelector('.settings-title-text');
+            if (settingsTitleText) settingsTitleText.textContent = settings.title;
             
             // Phone Preview Content
             const phonePreview = document.querySelector('.static-preview');

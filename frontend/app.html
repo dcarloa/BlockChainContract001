@@ -62,7 +62,7 @@
     <div id="appSettingsModal" class="modal-overlay" onclick="closeAppSettings(event)">
         <div class="settings-modal" onclick="event.stopPropagation()">
             <div class="settings-header">
-                <h2>⚙️ Settings</h2>
+                <h2><span class="settings-emoji">⚙️</span> <span class="settings-title-text">Settings</span></h2>
                 <button class="close-btn" onclick="closeAppSettings()">&times;</button>
             </div>
             <div class="settings-content">
@@ -813,6 +813,11 @@
         function updateAppSettingsUI() {
             const currentLang = getCurrentLanguage();
             const currentTheme = getCurrentTheme();
+            const settings = translations[currentLang].settings;
+            
+            // Update settings title
+            const settingsTitleText = document.querySelector('#appSettingsModal .settings-title-text');
+            if (settingsTitleText) settingsTitleText.textContent = settings.title;
             
             // Update language buttons
             document.querySelectorAll('[data-lang]').forEach(btn => {
