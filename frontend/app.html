@@ -489,6 +489,22 @@
                                 <small>Explica el motivo del gasto y a quién se le pagará</small>
                             </div>
                             
+                            <div class="form-group">
+                                <label for="involvedMembers">¿Quiénes están involucrados en este gasto?</label>
+                                <div class="members-selection-actions">
+                                    <button type="button" id="selectAllMembersBtn" class="btn-select-action">
+                                        ✓ Seleccionar Todos
+                                    </button>
+                                    <button type="button" id="deselectAllMembersBtn" class="btn-select-action">
+                                        ✗ Deseleccionar Todos
+                                    </button>
+                                </div>
+                                <div id="involvedMembersList" class="members-checkbox-list">
+                                    <!-- Member checkboxes will be loaded here -->
+                                </div>
+                                <small>Selecciona los miembros que compartirán este gasto. Solo los miembros seleccionados podrán votar en esta propuesta.</small>
+                            </div>
+                            
                             <button id="createProposalBtn" class="btn btn-primary btn-block">
                                 📝 Proponer Uso de Fondos
                             </button>
@@ -1144,6 +1160,19 @@
             
             const proposeBtn = document.querySelector('#createProposalBtn');
             if (proposeBtn) proposeBtn.textContent = `📝 ${t.app.fundDetail.propose.button}`;
+            
+            // Propose Tab - Member Selection
+            const involvedMembersLabel = document.querySelector('label[for="involvedMembers"]');
+            if (involvedMembersLabel) involvedMembersLabel.textContent = t.app.fundDetail.propose.involvedMembersLabel;
+            
+            const selectAllMembersBtn = document.getElementById('selectAllMembersBtn');
+            if (selectAllMembersBtn) selectAllMembersBtn.textContent = `✓ ${t.app.fundDetail.propose.selectAllMembers}`;
+            
+            const deselectAllMembersBtn = document.getElementById('deselectAllMembersBtn');
+            if (deselectAllMembersBtn) deselectAllMembersBtn.textContent = `✗ ${t.app.fundDetail.propose.deselectAllMembers}`;
+            
+            const involvedMembersHelp = document.querySelector('#proposeTab .form-group small:last-of-type');
+            if (involvedMembersHelp) involvedMembersHelp.textContent = t.app.fundDetail.propose.involvedMembersHelp;
             
             // Vote Tab
             const voteTitle = document.querySelector('#voteTab h3');

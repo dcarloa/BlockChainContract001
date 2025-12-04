@@ -56,10 +56,12 @@ const TRAVEL_FUND_V2_ABI_FULL = [
     "function inviteMemberByNickname(string)",
     "function inviteMemberByAddress(address)",
     "function acceptInvitation()",
-    "function createProposal(address, uint256, string) returns (uint256)",
+    "function createProposal(address, uint256, string, address[]) returns (uint256)",
     "function vote(uint256, bool)",
     "function executeProposal(uint256)",
     "function closeFund()",
+    "function getProposalInvolvedMembers(uint256) view returns (address[])",
+    "function isUserInvolved(uint256, address) view returns (bool)",
     "event ContributionReceived(address indexed contributor, uint256 amount, uint256 totalContributions)",
     "event ProposalCreated(uint256 indexed proposalId, address indexed proposer, uint256 amount, string description)",
     "event VoteCast(uint256 indexed proposalId, address indexed voter, bool inFavor)"
@@ -1539,6 +1541,11 @@ function switchFundTab(tabName) {
     if (tabName === 'manage') {
         loadKickMembersList();
     }
+    
+    // Load involved members checkboxes when propose tab is selected
+    if (tabName === 'propose') {
+        loadInvolvedMembersCheckboxes();
+    }
 }
 
 // ============================================
@@ -1756,6 +1763,7 @@ async function acceptInvitation() {
 
 async function createProposal() {
     try {
+        const t = translations[getCurrentLanguage()];
         const recipientInput = document.getElementById('proposalRecipient').value.trim();
         const amount = document.getElementById('proposalAmount').value;
         const description = document.getElementById('proposalDescription').value.trim();
@@ -1775,6 +1783,13 @@ async function createProposal() {
             return;
         }
         
+        // Get selected involved members
+        const selectedMembers = getSelectedInvolvedMembers();
+        if (selectedMembers.length === 0) {
+            showToast(t.app.fundDetail.propose.noMembersSelected, "warning");
+            return;
+        }
+        
         // PROBLEM 2 FIX: Check if user is a contributor before allowing proposal
         const userContribution = await currentFundContract.contributions(userAddress);
         if (userContribution === 0n) {
@@ -1782,7 +1797,7 @@ async function createProposal() {
             return;
         }
         
-        showLoading("Creando propuesta...");
+        showLoading(t.app.fundDetail.propose.creating);
         
         // Resolve recipient address
         let recipientAddress;
@@ -1794,18 +1809,28 @@ async function createProposal() {
         }
         
         const amountWei = ethers.parseEther(amount);
-        const tx = await currentFundContract.createProposal(recipientAddress, amountWei, description);
+        
+        console.log("Creating proposal with involved members:", selectedMembers);
+        const tx = await currentFundContract.createProposal(
+            recipientAddress, 
+            amountWei, 
+            description,
+            selectedMembers
+        );
         await tx.wait();
         
         // Refresh view to show new proposal
         await refreshCurrentView();
         
-        showToast("✅ Propuesta creada exitosamente!", "success");
+        showToast(t.app.fundDetail.propose.success, "success");
         
         // Clear inputs
         document.getElementById('proposalRecipient').value = '';
         document.getElementById('proposalAmount').value = '';
         document.getElementById('proposalDescription').value = '';
+        
+        // Reset member selection
+        loadInvolvedMembersCheckboxes();
         
         // Switch to vote tab to show new proposal
         switchFundTab('vote');
@@ -1824,6 +1849,8 @@ async function createProposal() {
             errorMsg = "⚠️ El monto no puede exceder el 80% del balance del fondo";
         } else if (error.message.includes("Only active members")) {
             errorMsg = "⚠️ Solo miembros activos pueden crear propuestas. Acepta tu invitación primero.";
+        } else if (error.message.includes("Debe seleccionar al menos un miembro")) {
+            errorMsg = "⚠️ Debes seleccionar al menos un miembro involucrado";
         } else {
             errorMsg = "Error al crear propuesta: " + error.message;
         }
@@ -1831,6 +1858,66 @@ async function createProposal() {
         showToast(errorMsg, "error");
     }
 }
+
+// Helper function to get selected involved members
+function getSelectedInvolvedMembers() {
+    const checkboxes = document.querySelectorAll('.member-checkbox-item input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+// Load involved members checkboxes
+async function loadInvolvedMembersCheckboxes() {
+    try {
+        if (!currentFundContract) return;
+        
+        const [addresses, nicknames] = await currentFundContract.getContributorsWithNicknames();
+        const container = document.getElementById('involvedMembersList');
+        
+        if (!container) return;
+        
+        if (addresses.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No hay miembros disponibles</p>';
+            return;
+        }
+        
+        container.innerHTML = addresses.map((address, i) => {
+            const nickname = nicknames[i];
+            const shortAddr = `${address.slice(0, 6)}...${address.slice(-4)}`;
+            
+            return `
+                <label class="member-checkbox-item" for="member-${i}">
+                    <input 
+                        type="checkbox" 
+                        id="member-${i}" 
+                        value="${address}"
+                        checked
+                        onchange="toggleMemberCheckbox(this)"
+                    >
+                    <div class="member-checkbox-label">
+                        <span>${nickname}</span>
+                        <span class="member-checkbox-address">${shortAddr}</span>
+                    </div>
+                </label>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error("Error loading involved members:", error);
+    }
+}
+
+// Toggle member checkbox selection
+function toggleMemberCheckbox(checkbox) {
+    const label = checkbox.closest('.member-checkbox-item');
+    if (checkbox.checked) {
+        label.classList.add('selected');
+    } else {
+        label.classList.remove('selected');
+    }
+}
+
+// Make functions globally accessible
+window.toggleMemberCheckbox = toggleMemberCheckbox;
 
 // ============================================
 // LOAD MEMBERS AND PROPOSALS
@@ -2794,6 +2881,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (confirmButton) {
                 confirmButton.disabled = !this.checked;
             }
+        });
+    }
+    
+    // Select/Deselect all members buttons
+    const selectAllBtn = document.getElementById('selectAllMembersBtn');
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', () => {
+            const checkboxes = document.querySelectorAll('.member-checkbox-item input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = true;
+                toggleMemberCheckbox(cb);
+            });
+        });
+    }
+    
+    const deselectAllBtn = document.getElementById('deselectAllMembersBtn');
+    if (deselectAllBtn) {
+        deselectAllBtn.addEventListener('click', () => {
+            const checkboxes = document.querySelectorAll('.member-checkbox-item input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                toggleMemberCheckbox(cb);
+            });
         });
     }
 });

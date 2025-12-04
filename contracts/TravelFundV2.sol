@@ -63,7 +63,9 @@ contract TravelFundV2 {
         bool executed;
         bool cancelled;
         bool approved;
+        address[] involvedMembers;     // Miembros involucrados en esta propuesta
         mapping(address => bool) hasVoted;
+        mapping(address => bool) isInvolved;  // Para verificación rápida
     }
     
     // ============================================
@@ -403,19 +405,32 @@ contract TravelFundV2 {
      * @param _recipient Dirección que recibirá el pago
      * @param _amount Monto a solicitar
      * @param _description Descripción del gasto
+     * @param _involvedMembers Lista de direcciones de miembros involucrados en este gasto
      */
     function createProposal(
         address payable _recipient,
         uint256 _amount,
-        string calldata _description
+        string calldata _description,
+        address[] calldata _involvedMembers
     ) external onlyContributor fundIsActive returns (uint256) {
         require(_recipient != address(0), "Destinatario invalido");
         require(_amount > 0, "El monto debe ser mayor a 0");
         require(bytes(_description).length > 0, "Debe incluir descripcion");
         require(bytes(_description).length <= 500, "Descripcion muy larga");
+        require(_involvedMembers.length > 0, "Debe seleccionar al menos un miembro involucrado");
+        require(_involvedMembers.length <= contributors.length, "Numero de miembros invalido");
         
         uint256 maxAllowed = (address(this).balance * MAX_PROPOSAL_PERCENTAGE) / 100;
         require(_amount <= maxAllowed, "Monto excede limite permitido (80% del balance)");
+        
+        // Validar que todos los miembros involucrados sean contribuyentes activos
+        for (uint256 i = 0; i < _involvedMembers.length; i++) {
+            require(isContributor[_involvedMembers[i]], "Miembro no es contribuyente activo");
+            // Verificar que no haya duplicados
+            for (uint256 j = i + 1; j < _involvedMembers.length; j++) {
+                require(_involvedMembers[i] != _involvedMembers[j], "Miembros duplicados");
+            }
+        }
         
         proposalCount++;
         
@@ -430,6 +445,12 @@ contract TravelFundV2 {
         newProposal.executed = false;
         newProposal.cancelled = false;
         newProposal.approved = false;
+        
+        // Guardar miembros involucrados
+        for (uint256 i = 0; i < _involvedMembers.length; i++) {
+            newProposal.involvedMembers.push(_involvedMembers[i]);
+            newProposal.isInvolved[_involvedMembers[i]] = true;
+        }
         
         emit ProposalCreated(
             proposalCount, 
@@ -479,6 +500,7 @@ contract TravelFundV2 {
         require(!proposal.cancelled, "La propuesta fue cancelada");
         require(!isProposalExpired(_proposalId), "La propuesta expiro");
         require(!proposal.hasVoted[msg.sender], "Ya votaste en esta propuesta");
+        require(proposal.isInvolved[msg.sender], "No estas involucrado en esta propuesta");
         
         proposal.hasVoted[msg.sender] = true;
         
@@ -502,15 +524,17 @@ contract TravelFundV2 {
         Proposal storage proposal = proposals[_proposalId];
         
         uint256 totalVotes = proposal.votesFor + proposal.votesAgainst;
-        uint256 contributorCount = contributors.length;
+        uint256 involvedCount = proposal.involvedMembers.length;
         
         // Verificar si se alcanzó el mínimo de votos
-        if (totalVotes < minimumVotes) {
+        // Usar el menor entre minimumVotes y el número de miembros involucrados
+        uint256 effectiveMinimumVotes = minimumVotes < involvedCount ? minimumVotes : involvedCount;
+        if (totalVotes < effectiveMinimumVotes) {
             return;
         }
         
-        // Calcular el porcentaje de votos a favor
-        uint256 approvalRate = (proposal.votesFor * 100) / contributorCount;
+        // Calcular el porcentaje de votos a favor basado en miembros involucrados
+        uint256 approvalRate = (proposal.votesFor * 100) / involvedCount;
         
         if (approvalRate >= approvalPercentage) {
             proposal.approved = true;
@@ -651,6 +675,30 @@ contract TravelFundV2 {
         returns (bool) 
     {
         return proposals[_proposalId].hasVoted[_user];
+    }
+    
+    /**
+     * @dev Obtiene los miembros involucrados en una propuesta
+     */
+    function getProposalInvolvedMembers(uint256 _proposalId) 
+        external 
+        view 
+        proposalExists(_proposalId) 
+        returns (address[] memory) 
+    {
+        return proposals[_proposalId].involvedMembers;
+    }
+    
+    /**
+     * @dev Verifica si un usuario está involucrado en una propuesta
+     */
+    function isUserInvolved(uint256 _proposalId, address _user) 
+        external 
+        view 
+        proposalExists(_proposalId) 
+        returns (bool) 
+    {
+        return proposals[_proposalId].isInvolved[_user];
     }
     
     /**

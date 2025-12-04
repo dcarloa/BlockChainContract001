@@ -364,6 +364,11 @@ const translations = {
                     descriptionLabel: "Expense Description",
                     descriptionPlaceholder: "e.g.: 3 nights hotel in Cancun - Payment to Marriott, Group dinner at La Costa Restaurant...",
                     descriptionHelp: "Explain the reason for the expense and who will be paid",
+                    involvedMembersLabel: "Who is involved in this expense?",
+                    involvedMembersHelp: "Select the members who will share this expense. Only selected members can vote on this proposal.",
+                    selectAllMembers: "Select All",
+                    deselectAllMembers: "Deselect All",
+                    noMembersSelected: "You must select at least one member",
                     button: "Propose Use of Funds",
                     creating: "Creating...",
                     success: "Proposal created!"
@@ -885,6 +890,11 @@ const translations = {
                     descriptionLabel: "Descripción del Gasto",
                     descriptionPlaceholder: "Ej: 3 noches hotel en Cancún - Pago a Marriott, Cena grupal en Restaurante La Costa...",
                     descriptionHelp: "Explica el motivo del gasto y quién será pagado",
+                    involvedMembersLabel: "¿Quiénes están involucrados en este gasto?",
+                    involvedMembersHelp: "Selecciona los miembros que compartirán este gasto. Solo los miembros seleccionados podrán votar en esta propuesta.",
+                    selectAllMembers: "Seleccionar Todos",
+                    deselectAllMembers: "Deseleccionar Todos",
+                    noMembersSelected: "Debes seleccionar al menos un miembro",
                     button: "Proponer Uso de Fondos",
                     creating: "Creando...",
                     success: "¡Propuesta creada!"
