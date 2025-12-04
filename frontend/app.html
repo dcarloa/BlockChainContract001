@@ -810,6 +810,113 @@
             }
         }
 
+        function applyAppTranslations() {
+            const currentLang = getCurrentLanguage();
+            const t = translations[currentLang];
+            
+            // Update document title
+            document.title = `SplitExpense - ${t.app.header.subtitle}`;
+            
+            // Header
+            const versionBadge = document.querySelector('.version-badge');
+            if (versionBadge) versionBadge.textContent = t.app.header.subtitle;
+            
+            // Connect/Disconnect buttons
+            const connectBtn = document.querySelector('#connectWallet span:last-child');
+            if (connectBtn) connectBtn.textContent = t.app.header.connect;
+            
+            const disconnectBtn = document.querySelector('#disconnectWallet span:last-child');
+            if (disconnectBtn) disconnectBtn.textContent = t.app.header.disconnect;
+            
+            // Nickname Modal
+            const nicknameTitle = document.querySelector('#nicknameModal h2');
+            if (nicknameTitle) nicknameTitle.textContent = `👋 ${t.app.nickname.title}`;
+            
+            const nicknameParagraph = document.querySelector('#nicknameModal p');
+            if (nicknameParagraph) nicknameParagraph.innerHTML = t.app.nickname.subtitle;
+            
+            const nicknameLabel = document.querySelector('#nicknameModal label');
+            if (nicknameLabel) nicknameLabel.textContent = t.app.nickname.label;
+            
+            const nicknameInput = document.querySelector('#nicknameInput');
+            if (nicknameInput) nicknameInput.placeholder = t.app.nickname.placeholder;
+            
+            const nicknameSmall = document.querySelector('#nicknameModal small');
+            if (nicknameSmall) nicknameSmall.textContent = t.app.nickname.help;
+            
+            const nicknameBtn = document.querySelector('#setNicknameBtn');
+            if (nicknameBtn) nicknameBtn.textContent = t.app.nickname.button;
+            
+            // Stats
+            const statCards = document.querySelectorAll('.stat-card p');
+            if (statCards[0]) statCards[0].textContent = t.app.stats.fundsCreated;
+            if (statCards[1]) statCards[1].textContent = t.app.stats.activeFunds;
+            if (statCards[2]) statCards[2].textContent = t.app.stats.totalETH;
+            
+            // Invitations
+            const invitationsTitle = document.querySelector('.invitations-header h3');
+            if (invitationsTitle) invitationsTitle.textContent = `🎫 ${t.app.invitations.title}`;
+            
+            // Dashboard
+            const dashboardTitle = document.querySelector('.action-bar h2');
+            if (dashboardTitle) dashboardTitle.textContent = t.app.dashboard.title;
+            
+            const createBtn = document.querySelector('#createFundBtn span:last-child');
+            if (createBtn) createBtn.textContent = t.app.dashboard.createNew;
+            
+            // Filters
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            if (filterBtns[0]) filterBtns[0].childNodes[0].textContent = `${t.app.dashboard.filters.all} (`;
+            if (filterBtns[1]) filterBtns[1].childNodes[0].textContent = `${t.app.dashboard.filters.created} (`;
+            if (filterBtns[2]) filterBtns[2].childNodes[0].textContent = `${t.app.dashboard.filters.participating} (`;
+            if (filterBtns[3]) filterBtns[3].childNodes[0].textContent = `🌴 ${t.app.dashboard.filters.travel} (`;
+            if (filterBtns[4]) filterBtns[4].childNodes[0].textContent = `💰 ${t.app.dashboard.filters.savings} (`;
+            if (filterBtns[5]) filterBtns[5].childNodes[0].textContent = `🤝 ${t.app.dashboard.filters.shared} (`;
+            
+            // Empty State
+            const emptyTitle = document.querySelector('#emptyState h3');
+            if (emptyTitle) emptyTitle.textContent = t.app.dashboard.empty.title;
+            
+            const emptySubtitle = document.querySelector('#emptyState p');
+            if (emptySubtitle) emptySubtitle.textContent = t.app.dashboard.empty.subtitle;
+            
+            const emptyBtn = document.querySelector('#emptyState button span:last-child');
+            if (emptyBtn) emptyBtn.textContent = t.app.dashboard.empty.button;
+            
+            // Back button
+            const backBtn = document.querySelector('#backToDashboard span:last-child');
+            if (backBtn) backBtn.textContent = t.app.fundDetail.info.backToDashboard;
+            
+            // Fund Detail Stats
+            const statLabels = document.querySelectorAll('.stat-label');
+            if (statLabels[0]) statLabels[0].textContent = t.app.fundDetail.info.balance;
+            if (statLabels[1]) statLabels[1].textContent = t.app.fundDetail.info.target;
+            if (statLabels[2]) statLabels[2].textContent = t.app.fundDetail.info.progress;
+            if (statLabels[3]) statLabels[3].textContent = t.app.fundDetail.info.members;
+            if (statLabels[4]) statLabels[4].textContent = t.app.fundDetail.info.proposals;
+            
+            // Fund Detail Loading and Badges
+            const fundDetailName = document.querySelector('#fundDetailName');
+            if (fundDetailName && fundDetailName.textContent === 'Cargando...') {
+                fundDetailName.textContent = t.app.fundDetail.info.loading;
+            }
+            
+            const fundTypeBadge = document.querySelector('#fundTypeBadge');
+            if (fundTypeBadge && fundTypeBadge.textContent === 'Tipo') {
+                fundTypeBadge.textContent = t.app.fundDetail.info.type;
+            }
+            
+            const fundStatusBadge = document.querySelector('#fundStatusBadge');
+            if (fundStatusBadge && fundStatusBadge.textContent === 'Estado') {
+                fundStatusBadge.textContent = t.app.fundDetail.info.status;
+            }
+            
+            const fundPrivacyBadge = document.querySelector('#fundPrivacyBadge');
+            if (fundPrivacyBadge && fundPrivacyBadge.textContent === 'Privacidad') {
+                fundPrivacyBadge.textContent = t.app.fundDetail.info.privacy;
+            }
+        }
+
         function updateAppSettingsUI() {
             const currentLang = getCurrentLanguage();
             const currentTheme = getCurrentTheme();
@@ -832,6 +939,7 @@
 
         // Initialize settings UI on load
         document.addEventListener('DOMContentLoaded', () => {
+            applyAppTranslations();
             updateAppSettingsUI();
         });
     </script>

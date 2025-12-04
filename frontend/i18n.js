@@ -184,6 +184,11 @@ const translations = {
         },
         // App Platform
         app: {
+            header: {
+                subtitle: "Shared Expense Manager",
+                connect: "Connect Wallet",
+                disconnect: "Disconnect"
+            },
             nav: {
                 dashboard: "Dashboard",
                 createFund: "Create Fund",
@@ -197,25 +202,38 @@ const translations = {
                 setNickname: "Set Nickname"
             },
             nickname: {
-                title: "Choose Your Nickname",
-                subtitle: "This is how other members will see you",
-                placeholder: "Enter your nickname",
+                title: "Welcome to SplitExpense!",
+                subtitle: "You need to set a nickname to identify yourself in groups and create funds.",
+                label: "Your Nickname *",
+                placeholder: "e.g.: John, Maria123, etc.",
+                help: "3-32 characters, letters and numbers only. It will identify you in all your groups.",
+                button: "Set Nickname and Continue",
                 save: "Save Nickname",
                 success: "Nickname saved successfully!"
             },
+            stats: {
+                fundsCreated: "Funds Created",
+                activeFunds: "Active Funds",
+                totalETH: "Total ETH"
+            },
+            invitations: {
+                title: "Pending Invitations"
+            },
             dashboard: {
-                title: "My Funds",
+                title: "My Groups",
+                createNew: "Create New Group",
                 empty: {
-                    title: "No funds yet",
-                    subtitle: "Create your first fund to start managing shared expenses",
-                    button: "Create First Fund"
+                    title: "Start your first adventure!",
+                    subtitle: "Create your first group to manage shared expenses with friends, family or colleagues. It's fast, secure and transparent.",
+                    button: "Create My First Group"
                 },
                 filters: {
                     all: "All",
-                    creator: "Created",
-                    member: "Member",
-                    active: "Active",
-                    inactive: "Inactive"
+                    created: "Created",
+                    participating: "Participating",
+                    travel: "Travel",
+                    savings: "Savings",
+                    shared: "Shared"
                 },
                 card: {
                     members: "members",
@@ -259,13 +277,18 @@ const translations = {
                     manage: "Manage"
                 },
                 info: {
-                    balance: "Total Balance",
+                    balance: "Balance",
                     members: "Members",
                     proposals: "Proposals",
                     target: "Target",
                     noLimit: "No Limit",
                     progress: "Progress",
-                    yourContribution: "Your Contribution"
+                    yourContribution: "Your Contribution",
+                    backToDashboard: "Back to My Groups",
+                    loading: "Loading...",
+                    type: "Type",
+                    status: "Status",
+                    privacy: "Privacy"
                 },
                 banners: {
                     invitation: "You have a pending invitation to this fund",
@@ -530,6 +553,11 @@ const translations = {
         },
         // App Platform
         app: {
+            header: {
+                subtitle: "Gestor de Gastos Compartidos",
+                connect: "Conectar Wallet",
+                disconnect: "Desconectar"
+            },
             nav: {
                 dashboard: "Panel",
                 createFund: "Crear Fondo",
@@ -543,25 +571,38 @@ const translations = {
                 setNickname: "Establecer Apodo"
             },
             nickname: {
-                title: "Elige Tu Apodo",
-                subtitle: "Así te verán los demás miembros",
-                placeholder: "Ingresa tu apodo",
+                title: "¡Bienvenido a SplitExpense!",
+                subtitle: "Necesitas establecer un nickname para identificarte en los grupos y poder crear fondos.",
+                label: "Tu Nickname *",
+                placeholder: "Ej: Juan, Maria123, etc.",
+                help: "3-32 caracteres, solo letras y números. Te identificará en todos tus grupos.",
+                button: "Establecer Nickname y Continuar",
                 save: "Guardar Apodo",
                 success: "¡Apodo guardado exitosamente!"
             },
+            stats: {
+                fundsCreated: "Grupos Creados",
+                activeFunds: "Grupos Activos",
+                totalETH: "ETH Total"
+            },
+            invitations: {
+                title: "Invitaciones Pendientes"
+            },
             dashboard: {
-                title: "Mis Fondos",
+                title: "Mis Grupos",
+                createNew: "Crear Nuevo Grupo",
                 empty: {
-                    title: "Aún no tienes fondos",
-                    subtitle: "Crea tu primer fondo para empezar a gestionar gastos compartidos",
-                    button: "Crear Primer Fondo"
+                    title: "¡Comienza tu primera aventura!",
+                    subtitle: "Crea tu primer grupo para gestionar gastos compartidos con amigos, familia o compañeros. Es rápido, seguro y transparente.",
+                    button: "Crear Mi Primer Grupo"
                 },
                 filters: {
                     all: "Todos",
-                    creator: "Creados",
-                    member: "Miembro",
-                    active: "Activos",
-                    inactive: "Inactivos"
+                    created: "Creados",
+                    participating: "Participando",
+                    travel: "Viajes",
+                    savings: "Ahorros",
+                    shared: "Compartidos"
                 },
                 card: {
                     members: "miembros",
@@ -605,13 +646,18 @@ const translations = {
                     manage: "Gestionar"
                 },
                 info: {
-                    balance: "Balance Total",
+                    balance: "Balance",
                     members: "Miembros",
                     proposals: "Propuestas",
                     target: "Meta",
                     noLimit: "Sin Límite",
                     progress: "Progreso",
-                    yourContribution: "Tu Aportación"
+                    yourContribution: "Tu Aportación",
+                    backToDashboard: "Volver a Mis Grupos",
+                    loading: "Cargando...",
+                    type: "Tipo",
+                    status: "Estado",
+                    privacy: "Privacidad"
                 },
                 banners: {
                     invitation: "Tienes una invitación pendiente a este fondo",
