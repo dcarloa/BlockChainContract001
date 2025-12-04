@@ -915,6 +915,37 @@
             if (fundPrivacyBadge && fundPrivacyBadge.textContent === 'Privacidad') {
                 fundPrivacyBadge.textContent = t.app.fundDetail.info.privacy;
             }
+            
+            // Fund Tabs
+            const tabButtons = document.querySelectorAll('.fund-tab-btn');
+            tabButtons.forEach(btn => {
+                const tabId = btn.dataset.tab;
+                const span = btn.querySelector('span:last-child');
+                if (span && t.app.fundDetail.tabs[tabId]) {
+                    span.textContent = t.app.fundDetail.tabs[tabId];
+                }
+            });
+            
+            // Deposit Tab
+            const depositTitle = document.querySelector('#depositTab h3');
+            if (depositTitle) depositTitle.textContent = `💰 ${t.app.fundDetail.deposit.title}`;
+            
+            const depositSubtitle = document.querySelector('#depositTab p');
+            if (depositSubtitle) depositSubtitle.textContent = t.app.fundDetail.deposit.subtitle;
+            
+            const depositLabel = document.querySelector('label[for="depositAmount"]');
+            if (depositLabel) depositLabel.textContent = t.app.fundDetail.deposit.amount;
+            
+            const depositInput = document.querySelector('#depositAmount');
+            if (depositInput) depositInput.placeholder = t.app.fundDetail.deposit.amountPlaceholder;
+            
+            const depositContribution = document.querySelector('.contribution-info span');
+            if (depositContribution && depositContribution.textContent.includes('contribución')) {
+                depositContribution.innerHTML = `${t.app.fundDetail.deposit.currentContribution}: <strong id="userContribution">0 ETH</strong>`;
+            }
+            
+            const depositBtn = document.querySelector('#depositBtn');
+            if (depositBtn) depositBtn.textContent = t.app.fundDetail.deposit.button;
         }
 
         function updateAppSettingsUI() {

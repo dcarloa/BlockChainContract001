@@ -981,11 +981,15 @@ function filterFunds() {
 }
 
 function createFundCard(fund) {
+    const currentLang = getCurrentLanguage();
+    const t = translations[currentLang];
+    
     const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
-    const fundTypeNames = ['Viaje', 'Ahorro', 'Compartido', 'Otro'];
+    const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
     
     const icon = fundTypeIcons[Number(fund.fundType)] || '🎯';
-    const typeName = fundTypeNames[Number(fund.fundType)] || 'Otro';
+    const typeKey = fundTypeKeys[Number(fund.fundType)] || 'other';
+    const typeName = t.app.fundDetail.badges[typeKey];
     const isInactive = !fund.isActive;
     
     return `
@@ -1009,28 +1013,28 @@ function createFundCard(fund) {
                     <div class="fund-card-title">
                         <h3>${fund.fundName}</h3>
                         <div class="fund-badges">
-                            <span class="badge badge-type type-${typeName.toLowerCase()}">${typeName}</span>
-                            ${isInactive ? '<span class="badge badge-status status-inactive">Inactivo</span>' : ''}
-                            ${fund.isCreator ? '<span class="badge badge-creator">👑 Creador</span>' : ''}
+                            <span class="badge badge-type type-${typeKey}">${typeName}</span>
+                            ${isInactive ? `<span class="badge badge-status status-inactive">${t.app.dashboard.card.inactive}</span>` : ''}
+                            ${fund.isCreator ? `<span class="badge badge-creator">👑 ${t.app.fundDetail.badges.creator}</span>` : ''}
                         </div>
                     </div>
                 </div>
                 
                 <div class="fund-stats">
                     <div class="fund-stat">
-                        <span class="fund-stat-label">Balance</span>
+                        <span class="fund-stat-label">${t.app.fundDetail.info.balance}</span>
                         <span class="fund-stat-value">${formatEth(fund.balance || 0)} ETH</span>
                     </div>
                     <div class="fund-stat">
-                        <span class="fund-stat-label">${parseFloat(fund.target || 0) > 0 ? 'Meta' : 'Límite'}</span>
-                        <span class="fund-stat-value">${parseFloat(fund.target || 0) > 0 ? formatEth(fund.target) + ' ETH' : 'Sin límite'}</span>
+                        <span class="fund-stat-label">${parseFloat(fund.target || 0) > 0 ? t.app.fundDetail.info.target : t.app.fundDetail.info.target}</span>
+                        <span class="fund-stat-value">${parseFloat(fund.target || 0) > 0 ? formatEth(fund.target) + ' ETH' : t.app.fundDetail.info.noLimit}</span>
                     </div>
                 </div>
                 
                 ${parseFloat(fund.target || 0) > 0 ? `
                 <div class="fund-progress">
                     <div class="fund-progress-label">
-                        <span>Progreso</span>
+                        <span>${t.app.fundDetail.info.progress}</span>
                         <span>${(fund.progress || 0).toFixed(1)}%</span>
                     </div>
                     <div class="progress-bar">
@@ -1040,8 +1044,8 @@ function createFundCard(fund) {
                 ` : ''}
                 
                 <div class="fund-meta">
-                    <span>👥 ${fund.contributors || 0} miembros</span>
-                    <span>📊 ${fund.proposals || 0} propuestas</span>
+                    <span>👥 ${fund.contributors || 0} ${t.app.dashboard.card.members}</span>
+                    <span>📊 ${fund.proposals || 0} ${t.app.fundDetail.info.proposals.toLowerCase()}</span>
                 </div>
             </div>
         </div>
@@ -1384,8 +1388,11 @@ async function refreshCurrentView() {
 
 async function loadFundDetailView() {
     try {
+        const currentLang = getCurrentLanguage();
+        const t = translations[currentLang];
+        
         const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
-        const fundTypeNames = ['Viaje', 'Ahorro', 'Compartido', 'Otro'];
+        const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
         
         // Update header
         document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '🎯';
@@ -1403,10 +1410,11 @@ async function loadFundDetailView() {
         const memberStatus = await currentFundContract.memberStatus(userAddress);
         
         // Update UI
-        document.getElementById('fundDetailDescription').textContent = description || 'Sin descripción';
-        document.getElementById('fundTypeBadge').textContent = fundTypeNames[Number(currentFund.fundType)];
-        document.getElementById('fundStatusBadge').textContent = isActive ? '🟢 Activo' : '🔴 Cerrado';
-        document.getElementById('fundPrivacyBadge').textContent = isPrivate ? '🔒 Privado' : '🌐 Público';
+        const typeKey = fundTypeKeys[Number(currentFund.fundType)] || 'other';
+        document.getElementById('fundDetailDescription').textContent = description || t.app.fundDetail.info.loading;
+        document.getElementById('fundTypeBadge').textContent = t.app.fundDetail.badges[typeKey];
+        document.getElementById('fundStatusBadge').textContent = isActive ? `🟢 ${t.app.fundDetail.info.active}` : `🔴 ${t.app.fundDetail.info.inactive}`;
+        document.getElementById('fundPrivacyBadge').textContent = isPrivate ? `🔒 ${t.app.fundDetail.info.private}` : `🌐 ${t.app.fundDetail.info.public}`;
         
         const balanceEth = ethers.formatEther(balance);
         const targetEth = ethers.formatEther(target);
@@ -1417,7 +1425,7 @@ async function loadFundDetailView() {
         
         // Si targetAmount es 0, no hay meta - mostrar "Sin límite"
         if (parseFloat(targetEth) === 0) {
-            document.getElementById('fundTarget').textContent = 'Sin límite';
+            document.getElementById('fundTarget').textContent = t.app.fundDetail.info.noLimit;
             document.getElementById('fundProgress').textContent = '-';
             document.getElementById('fundProgressBar').style.width = '0%';
             // Ocultar la barra de progreso si quieres

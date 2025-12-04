@@ -270,10 +270,12 @@ const translations = {
             fundDetail: {
                 tabs: {
                     deposit: "Deposit",
-                    members: "Members",
                     invite: "Invite",
-                    propose: "Propose",
+                    propose: "Propose Expense",
                     vote: "Vote",
+                    history: "History",
+                    balances: "Balances",
+                    members: "Members",
                     manage: "Manage"
                 },
                 info: {
@@ -288,7 +290,19 @@ const translations = {
                     loading: "Loading...",
                     type: "Type",
                     status: "Status",
-                    privacy: "Privacy"
+                    privacy: "Privacy",
+                    active: "Active",
+                    inactive: "Inactive",
+                    public: "Public",
+                    private: "Private"
+                },
+                badges: {
+                    travel: "Travel",
+                    savings: "Savings",
+                    shared: "Shared",
+                    other: "Other",
+                    creator: "Creator",
+                    member: "Member"
                 },
                 banners: {
                     invitation: "You have a pending invitation to this fund",
@@ -296,9 +310,12 @@ const translations = {
                     closed: "This fund is closed. No more actions allowed."
                 },
                 deposit: {
-                    title: "Deposit to Fund",
-                    amount: "Amount (ETH)",
-                    button: "Deposit",
+                    title: "Contribute to Common Pot",
+                    subtitle: "Deposit money to the group. Useful for future expenses or to balance accounts.",
+                    amount: "Amount to Deposit (ETH)",
+                    amountPlaceholder: "0.0",
+                    currentContribution: "Your current contribution",
+                    button: "Contribute to Pot",
                     depositing: "Depositing...",
                     success: "Deposit successful!"
                 },
@@ -639,10 +656,12 @@ const translations = {
             fundDetail: {
                 tabs: {
                     deposit: "Depositar",
-                    members: "Miembros",
                     invite: "Invitar",
-                    propose: "Proponer",
+                    propose: "Proponer Gasto",
                     vote: "Votar",
+                    history: "Historial",
+                    balances: "Balances",
+                    members: "Miembros",
                     manage: "Gestionar"
                 },
                 info: {
@@ -650,14 +669,26 @@ const translations = {
                     members: "Miembros",
                     proposals: "Propuestas",
                     target: "Meta",
-                    noLimit: "Sin Límite",
+                    noLimit: "Sin límite",
                     progress: "Progreso",
                     yourContribution: "Tu Aportación",
                     backToDashboard: "Volver a Mis Grupos",
                     loading: "Cargando...",
                     type: "Tipo",
                     status: "Estado",
-                    privacy: "Privacidad"
+                    privacy: "Privacidad",
+                    active: "Activo",
+                    inactive: "Inactivo",
+                    public: "Público",
+                    private: "Privado"
+                },
+                badges: {
+                    travel: "Viaje",
+                    savings: "Ahorro",
+                    shared: "Compartido",
+                    other: "Otro",
+                    creator: "Creador",
+                    member: "Miembro"
                 },
                 banners: {
                     invitation: "Tienes una invitación pendiente a este fondo",
@@ -665,9 +696,12 @@ const translations = {
                     closed: "Este fondo está cerrado. No se permiten más acciones."
                 },
                 deposit: {
-                    title: "Depositar al Fondo",
-                    amount: "Monto (ETH)",
-                    button: "Depositar",
+                    title: "Aportar al Bote Común",
+                    subtitle: "Deposita dinero al grupo. Útil para gastos futuros o para equilibrar balances.",
+                    amount: "Monto a Depositar (ETH)",
+                    amountPlaceholder: "0.0",
+                    currentContribution: "Tu contribución actual",
+                    button: "Aportar al Bote",
                     depositing: "Depositando...",
                     success: "¡Depósito exitoso!"
                 },
