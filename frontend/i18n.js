@@ -243,25 +243,44 @@ const translations = {
                 }
             },
             createFund: {
-                title: "Create New Fund",
-                form: {
-                    name: "Fund Name",
-                    namePlaceholder: "Trip to Cancun 2025",
-                    description: "Description",
-                    descriptionPlaceholder: "Shared fund for trip expenses...",
-                    target: "Target Amount (ETH)",
-                    targetPlaceholder: "0.5",
-                    targetHelp: "Leave at 0 for unlimited",
-                    type: "Fund Type",
-                    types: {
-                        travel: "Travel",
-                        savings: "Savings",
-                        shared: "Shared",
-                        other: "Other"
-                    },
+                title: "Create New Group",
+                sections: {
+                    type: "Group Type",
+                    typeDesc: "Select the main purpose",
+                    basic: "Basic Information",
+                    basicDesc: "Define name, budget and description",
                     privacy: "Privacy",
-                    public: "Public (Anyone can join)",
-                    private: "Private (Invitation only)",
+                    privacyDesc: "Control who can join",
+                    voting: "Voting Rules",
+                    votingDesc: "Define how expenses are approved"
+                },
+                types: {
+                    travel: "Travel",
+                    travelDesc: "Vacations and adventures",
+                    savings: "Savings",
+                    savingsDesc: "Group financial goal",
+                    roommates: "Roommates",
+                    roommatesDesc: "Shared expenses",
+                    other: "Other",
+                    otherDesc: "Custom purpose"
+                },
+                fields: {
+                    name: "Group Name",
+                    namePlaceholder: "E.g.: Trip to Cancun 2025",
+                    description: "Description",
+                    descriptionPlaceholder: "Describe the group's purpose and what type of expenses will be managed...",
+                    budget: "Budget or Goal",
+                    budgetBadge: "Optional",
+                    budgetHint: "Leave at 0 for unlimited expenses",
+                    privateToggle: "Private Group",
+                    privateDesc: "Only accessible with invitation",
+                    approvalPercentage: "Approval Percentage",
+                    approvalHint: "% of votes in favor to approve",
+                    minimumVotes: "Minimum Votes",
+                    minimumVotesHint: "Minimum quantity required"
+                },
+                buttons: {
+                    cancel: "Cancel",
                     create: "Create Fund",
                     creating: "Creating..."
                 },
@@ -774,25 +793,44 @@ const translations = {
                 }
             },
             createFund: {
-                title: "Crear Nuevo Fondo",
-                form: {
-                    name: "Nombre del Fondo",
-                    namePlaceholder: "Viaje a Cancún 2025",
-                    description: "Descripción",
-                    descriptionPlaceholder: "Fondo compartido para gastos del viaje...",
-                    target: "Monto Meta (ETH)",
-                    targetPlaceholder: "0.5",
-                    targetHelp: "Dejar en 0 para ilimitado",
-                    type: "Tipo de Fondo",
-                    types: {
-                        travel: "Viaje",
-                        savings: "Ahorro",
-                        shared: "Compartido",
-                        other: "Otro"
-                    },
+                title: "Crear Nuevo Grupo",
+                sections: {
+                    type: "Tipo de Grupo",
+                    typeDesc: "Selecciona el propósito principal",
+                    basic: "Información Básica",
+                    basicDesc: "Define nombre, presupuesto y descripción",
                     privacy: "Privacidad",
-                    public: "Público (Cualquiera puede unirse)",
-                    private: "Privado (Solo por invitación)",
+                    privacyDesc: "Controla quién puede unirse",
+                    voting: "Reglas de Votación",
+                    votingDesc: "Define cómo se aprueban los gastos"
+                },
+                types: {
+                    travel: "Viaje",
+                    travelDesc: "Vacaciones y aventuras",
+                    savings: "Ahorro",
+                    savingsDesc: "Meta financiera grupal",
+                    roommates: "Roommates",
+                    roommatesDesc: "Gastos compartidos",
+                    other: "Otro",
+                    otherDesc: "Propósito personalizado"
+                },
+                fields: {
+                    name: "Nombre del Grupo",
+                    namePlaceholder: "Ej: Viaje a Cancún 2025",
+                    description: "Descripción",
+                    descriptionPlaceholder: "Describe el propósito del grupo y qué tipo de gastos se manejarán...",
+                    budget: "Presupuesto o Meta",
+                    budgetBadge: "Opcional",
+                    budgetHint: "Deja en 0 para gastos sin límite",
+                    privateToggle: "Grupo Privado",
+                    privateDesc: "Solo pueden unirse con invitación",
+                    approvalPercentage: "Porcentaje de Aprobación",
+                    approvalHint: "% de votos a favor para aprobar",
+                    minimumVotes: "Votos Mínimos",
+                    minimumVotesHint: "Cantidad mínima requerida"
+                },
+                buttons: {
+                    cancel: "Cancelar",
                     create: "Crear Fondo",
                     creating: "Creando..."
                 },

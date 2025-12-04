@@ -1284,6 +1284,99 @@
             
             const cancelScanBtn = document.querySelector('#cancelScanBtn');
             if (cancelScanBtn) cancelScanBtn.textContent = t.app.fundDetail.qrScanner.cancelScan;
+            
+            // Create Fund Modal
+            const createFundTitle = document.querySelector('#createFundModal h2');
+            if (createFundTitle) createFundTitle.textContent = `✨ ${t.app.createFund.title}`;
+            
+            // Section headers
+            const sectionHeaders = document.querySelectorAll('#createFundModal .section-header');
+            if (sectionHeaders[0]) {
+                sectionHeaders[0].querySelector('h3').textContent = `🎯 ${t.app.createFund.sections.type}`;
+                sectionHeaders[0].querySelector('p').textContent = t.app.createFund.sections.typeDesc;
+            }
+            if (sectionHeaders[1]) {
+                sectionHeaders[1].querySelector('h3').textContent = `📝 ${t.app.createFund.sections.basic}`;
+                sectionHeaders[1].querySelector('p').textContent = t.app.createFund.sections.basicDesc;
+            }
+            if (sectionHeaders[2]) {
+                sectionHeaders[2].querySelector('h3').textContent = `🔒 ${t.app.createFund.sections.privacy}`;
+                sectionHeaders[2].querySelector('p').textContent = t.app.createFund.sections.privacyDesc;
+            }
+            if (sectionHeaders[3]) {
+                sectionHeaders[3].querySelector('h3').textContent = `🗳️ ${t.app.createFund.sections.voting}`;
+                sectionHeaders[3].querySelector('p').textContent = t.app.createFund.sections.votingDesc;
+            }
+            
+            // Fund type cards
+            const fundTypeCards = document.querySelectorAll('.fund-type-card');
+            if (fundTypeCards[0]) {
+                fundTypeCards[0].querySelector('h4').textContent = t.app.createFund.types.travel;
+                fundTypeCards[0].querySelector('p').textContent = t.app.createFund.types.travelDesc;
+            }
+            if (fundTypeCards[1]) {
+                fundTypeCards[1].querySelector('h4').textContent = t.app.createFund.types.savings;
+                fundTypeCards[1].querySelector('p').textContent = t.app.createFund.types.savingsDesc;
+            }
+            if (fundTypeCards[2]) {
+                fundTypeCards[2].querySelector('h4').textContent = t.app.createFund.types.roommates;
+                fundTypeCards[2].querySelector('p').textContent = t.app.createFund.types.roommatesDesc;
+            }
+            if (fundTypeCards[3]) {
+                fundTypeCards[3].querySelector('h4').textContent = t.app.createFund.types.other;
+                fundTypeCards[3].querySelector('p').textContent = t.app.createFund.types.otherDesc;
+            }
+            
+            // Form fields
+            const fundNameLabel = document.querySelector('label[for="fundName"] .label-text');
+            if (fundNameLabel) fundNameLabel.textContent = t.app.createFund.fields.name;
+            
+            const fundNameInput = document.querySelector('#fundName');
+            if (fundNameInput) fundNameInput.placeholder = t.app.createFund.fields.namePlaceholder;
+            
+            const fundDescLabel = document.querySelector('label[for="fundDescription"] .label-text');
+            if (fundDescLabel) fundDescLabel.textContent = t.app.createFund.fields.description;
+            
+            const fundDescInput = document.querySelector('#fundDescription');
+            if (fundDescInput) fundDescInput.placeholder = t.app.createFund.fields.descriptionPlaceholder;
+            
+            const targetLabel = document.querySelector('label[for="targetAmount"] .label-text');
+            if (targetLabel) targetLabel.textContent = t.app.createFund.fields.budget;
+            
+            const targetBadge = document.querySelector('label[for="targetAmount"] .label-badge');
+            if (targetBadge) targetBadge.textContent = t.app.createFund.fields.budgetBadge;
+            
+            const targetHint = document.querySelector('label[for="targetAmount"]').nextElementSibling?.nextElementSibling;
+            if (targetHint && targetHint.tagName === 'SMALL') {
+                targetHint.textContent = `💡 ${t.app.createFund.fields.budgetHint}`;
+            }
+            
+            // Privacy toggle
+            const privateToggleTitle = document.querySelector('.toggle-option-title');
+            if (privateToggleTitle) privateToggleTitle.textContent = t.app.createFund.fields.privateToggle;
+            
+            const privateToggleDesc = document.querySelector('.toggle-option-desc');
+            if (privateToggleDesc) privateToggleDesc.textContent = t.app.createFund.fields.privateDesc;
+            
+            // Voting fields
+            const approvalLabel = document.querySelector('label[for="approvalPercentage"] .label-text');
+            if (approvalLabel) approvalLabel.textContent = t.app.createFund.fields.approvalPercentage;
+            
+            const approvalHint = document.querySelector('label[for="approvalPercentage"]').parentElement.querySelector('.form-hint');
+            if (approvalHint) approvalHint.textContent = t.app.createFund.fields.approvalHint;
+            
+            const minimumVotesLabel = document.querySelector('label[for="minimumVotes"] .label-text');
+            if (minimumVotesLabel) minimumVotesLabel.textContent = t.app.createFund.fields.minimumVotes;
+            
+            const minimumVotesHint = document.querySelector('label[for="minimumVotes"]').parentElement.querySelector('.form-hint');
+            if (minimumVotesHint) minimumVotesHint.textContent = t.app.createFund.fields.minimumVotesHint;
+            
+            // Buttons
+            const cancelCreateBtn = document.querySelector('#createFundModal .btn-secondary');
+            if (cancelCreateBtn) cancelCreateBtn.textContent = t.app.createFund.buttons.cancel;
+            
+            const createSubmitBtn = document.querySelector('#createFundModal .btn-primary[type="submit"]');
+            if (createSubmitBtn) createSubmitBtn.innerHTML = `🚀 ${t.app.createFund.buttons.create}`;
         }
 
         function updateAppSettingsUI() {
