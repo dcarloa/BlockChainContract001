@@ -3,12 +3,49 @@
 
 const translations = {
     en: {
+        // Navigation
+        nav: {
+            features: "Features",
+            howItWorks: "How It Works",
+            benefits: "Benefits",
+            faq: "FAQ",
+            launchApp: "Launch App"
+        },
+        // Settings
+        settings: {
+            title: "Settings",
+            language: "Language",
+            theme: "Theme",
+            lightMode: "Light Mode",
+            darkMode: "Dark Mode"
+        },
+        // Phone Preview
+        phone: {
+            title: "Trip to Cancun 2025",
+            members: "members",
+            active: "Active",
+            balance: "Total Balance",
+            target: "Target",
+            progress: "Progress",
+            deposit: "Deposit",
+            vote: "Vote",
+            viewMembers: "Members",
+            recentActivity: "Recent Activity",
+            deposited: "deposited",
+            hoursAgo: "hours ago",
+            proposalApproved: "Proposal approved",
+            dayAgo: "day ago",
+            transactionCost: "Cost per transaction",
+            transparent: "Transparent",
+            confirmation: "Confirmation",
+            seeDemo: "See Demo"
+        },
         // Landing Page
         landing: {
             hero: {
                 title: "Shared Expenses on Blockchain",
                 subtitle: "Create funds, manage expenses and vote on proposals with total transparency. No intermediaries, no hidden fees.",
-                cta: "Launch App",
+                cta: "Start Free",
                 stats: {
                     users: "Active Users",
                     funds: "Total Funds",
@@ -84,19 +121,65 @@ const translations = {
                     }
                 }
             },
+            benefits: {
+                title: "Why use Blockchain?",
+                noIntermediaries: {
+                    title: "No Intermediaries",
+                    desc: "You control your money. No dependence on banks or centralized platforms."
+                },
+                immutable: {
+                    title: "Immutable & Auditable",
+                    desc: "Every transaction is permanently recorded. Impossible to manipulate."
+                },
+                openSource: {
+                    title: "Open Source",
+                    desc: "The smart contract is public. Anyone can verify its security."
+                },
+                available: {
+                    title: "Available 24/7",
+                    desc: "No banking hours. Works 24 hours a day, every day."
+                },
+                comparisonTitle: "SplitExpense vs Traditional Alternatives",
+                comparisonFeature: "Feature",
+                comparisonSE: "SplitExpense",
+                comparisonTraditional: "Traditional Apps",
+                transparency: "Transparency",
+                total: "Total",
+                limited: "Limited",
+                fees: "Fees",
+                control: "Control",
+                yours: "Yours",
+                company: "Company",
+                audit: "Audit",
+                public: "Public",
+                private: "Private",
+                availability: "Availability"
+            },
             cta: {
                 title: "Ready to transform your shared expenses?",
                 subtitle: "Join thousands of users already using SplitExpense",
-                button: "Start for Free"
+                button: "Start for Free",
+                noRegistration: "No registration • No fees • No intermediaries"
             },
             footer: {
                 tagline: "Made with ❤️ using Ethereum & Base.",
                 subtitle: "Open source • Non-custodial • Decentralized",
-                links: {
-                    product: "Product",
-                    resources: "Resources",
-                    legal: "Legal"
-                }
+                description: "The most transparent way to manage shared expenses using blockchain.",
+                product: "Product",
+                features: "Features",
+                howItWorks: "How It Works",
+                benefits: "Benefits",
+                launchApp: "Launch App",
+                resources: "Resources",
+                faq: "FAQ",
+                explorer: "Explorer",
+                github: "GitHub",
+                baseNetwork: "Base Network",
+                technology: "Technology",
+                ethereum: "Ethereum",
+                baseL2: "Base L2",
+                solidity: "Solidity",
+                hardhat: "Hardhat"
             }
         },
         // App Platform
@@ -266,12 +349,49 @@ const translations = {
         }
     },
     es: {
+        // Navigation
+        nav: {
+            features: "Características",
+            howItWorks: "Cómo Funciona",
+            benefits: "Beneficios",
+            faq: "FAQ",
+            launchApp: "Abrir App"
+        },
+        // Settings
+        settings: {
+            title: "Configuración",
+            language: "Idioma",
+            theme: "Tema",
+            lightMode: "Modo Claro",
+            darkMode: "Modo Oscuro"
+        },
+        // Phone Preview
+        phone: {
+            title: "Viaje a Cancún 2025",
+            members: "miembros",
+            active: "Activo",
+            balance: "Balance Total",
+            target: "Meta",
+            progress: "Progreso",
+            deposit: "Depositar",
+            vote: "Votar",
+            viewMembers: "Miembros",
+            recentActivity: "Actividad Reciente",
+            deposited: "depositó",
+            hoursAgo: "Hace 2 horas",
+            proposalApproved: "Propuesta aprobada",
+            dayAgo: "Hace 1 día",
+            transactionCost: "Costo por transacción",
+            transparent: "Transparente",
+            confirmation: "Confirmación",
+            seeDemo: "Ver Demo"
+        },
         // Landing Page
         landing: {
             hero: {
                 title: "Gastos Compartidos en Blockchain",
                 subtitle: "Crea fondos, administra gastos y vota propuestas con total transparencia. Sin intermediarios, sin comisiones ocultas.",
-                cta: "Abrir App",
+                cta: "Comenzar Gratis",
                 stats: {
                     users: "Usuarios Activos",
                     funds: "Fondos Totales",
@@ -347,19 +467,65 @@ const translations = {
                     }
                 }
             },
+            benefits: {
+                title: "¿Por qué usar Blockchain?",
+                noIntermediaries: {
+                    title: "Sin Intermediarios",
+                    desc: "Tú controlas tu dinero. No dependes de bancos o plataformas centralizadas."
+                },
+                immutable: {
+                    title: "Inmutable y Auditable",
+                    desc: "Cada transacción queda registrada permanentemente. Imposible de manipular."
+                },
+                openSource: {
+                    title: "Código Abierto",
+                    desc: "El contrato inteligente es público. Cualquiera puede verificar su seguridad."
+                },
+                available: {
+                    title: "Disponible 24/7",
+                    desc: "Sin horarios bancarios. Funciona las 24 horas del día, todos los días."
+                },
+                comparisonTitle: "SplitExpense vs Alternativas Tradicionales",
+                comparisonFeature: "Característica",
+                comparisonSE: "SplitExpense",
+                comparisonTraditional: "Apps Tradicionales",
+                transparency: "Transparencia",
+                total: "Total",
+                limited: "Limitada",
+                fees: "Comisiones",
+                control: "Control",
+                yours: "Tuyo",
+                company: "Empresa",
+                audit: "Auditoría",
+                public: "Pública",
+                private: "Privada",
+                availability: "Disponibilidad"
+            },
             cta: {
                 title: "¿Listo para transformar tus gastos compartidos?",
                 subtitle: "Únete a miles de usuarios que ya usan SplitExpense",
-                button: "Comenzar Gratis"
+                button: "Comenzar Gratis",
+                noRegistration: "Sin registro • Sin comisiones • Sin intermediarios"
             },
             footer: {
                 tagline: "Hecho con ❤️ usando Ethereum & Base.",
                 subtitle: "Código abierto • Sin custodia • Descentralizado",
-                links: {
-                    product: "Producto",
-                    resources: "Recursos",
-                    legal: "Legal"
-                }
+                description: "La forma más transparente de gestionar gastos compartidos usando blockchain.",
+                product: "Producto",
+                features: "Características",
+                howItWorks: "Cómo Funciona",
+                benefits: "Beneficios",
+                launchApp: "Lanzar App",
+                resources: "Recursos",
+                faq: "FAQ",
+                explorer: "Explorador",
+                github: "GitHub",
+                baseNetwork: "Base Network",
+                technology: "Tecnología",
+                ethereum: "Ethereum",
+                baseL2: "Base L2",
+                solidity: "Solidity",
+                hardhat: "Hardhat"
             }
         },
         // App Platform
