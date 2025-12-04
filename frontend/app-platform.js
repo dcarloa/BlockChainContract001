@@ -2582,6 +2582,11 @@ async function closeFund() {
 let html5QrCode = null;
 let scannedAddressValue = null;
 
+// Make functions globally accessible
+window.openQRScanner = openQRScanner;
+window.closeQRScanner = closeQRScanner;
+window.confirmScannedAddress = confirmScannedAddress;
+
 function openQRScanner() {
     const modal = document.getElementById('qrScannerModal');
     modal.style.display = 'flex';
@@ -2657,13 +2662,11 @@ function displayScannedAddress(address) {
     document.getElementById('qrScanResult').style.display = 'block';
     document.getElementById('cancelScanBtn').style.display = 'none';
     
-    // Setup checkbox listener
+    // Reset checkbox and button state
     const checkbox = document.getElementById('qrConfirmCheckbox');
     const confirmBtn = document.getElementById('confirmQRBtn');
-    
-    checkbox.onchange = function() {
-        confirmBtn.disabled = !this.checked;
-    };
+    if (checkbox) checkbox.checked = false;
+    if (confirmBtn) confirmBtn.disabled = true;
 }
 
 function confirmScannedAddress() {
@@ -2706,4 +2709,46 @@ function closeQRScanner() {
     // Reset state
     scannedAddressValue = null;
 }
+
+// Setup QR scanner event listeners when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Open QR scanner button
+    const openQRBtn = document.getElementById('openQRScannerBtn');
+    if (openQRBtn) {
+        openQRBtn.addEventListener('click', openQRScanner);
+    }
+    
+    // Close QR scanner buttons
+    const closeBtn1 = document.getElementById('closeQRScannerBtn1');
+    if (closeBtn1) {
+        closeBtn1.addEventListener('click', closeQRScanner);
+    }
+    
+    const cancelBtn = document.getElementById('cancelScanBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeQRScanner);
+    }
+    
+    const cancelBtn2 = document.getElementById('qrCancelBtn2');
+    if (cancelBtn2) {
+        cancelBtn2.addEventListener('click', closeQRScanner);
+    }
+    
+    // Confirm button
+    const confirmBtn = document.getElementById('confirmQRBtn');
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', confirmScannedAddress);
+    }
+    
+    // Checkbox for enabling confirm button
+    const checkbox = document.getElementById('qrConfirmCheckbox');
+    if (checkbox) {
+        checkbox.addEventListener('change', function() {
+            const confirmButton = document.getElementById('confirmQRBtn');
+            if (confirmButton) {
+                confirmButton.disabled = !this.checked;
+            }
+        });
+    }
+});
 

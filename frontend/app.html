@@ -111,7 +111,7 @@
         <div class="modal-content qr-scanner-modal">
             <div class="modal-header">
                 <h3 id="qrScannerTitle">📷 Scan QR Code</h3>
-                <button class="modal-close" onclick="closeQRScanner()">&times;</button>
+                <button class="modal-close" id="closeQRScannerBtn1">&times;</button>
             </div>
             
             <div class="warning-box qr-warning">
@@ -151,14 +151,14 @@
                 </div>
                 
                 <div class="modal-actions">
-                    <button class="btn btn-secondary" onclick="closeQRScanner()" id="qrCancelBtn2">Cancel</button>
-                    <button id="confirmQRBtn" class="btn btn-primary" disabled onclick="confirmScannedAddress()">
+                    <button class="btn btn-secondary" id="qrCancelBtn2">Cancel</button>
+                    <button id="confirmQRBtn" class="btn btn-primary" disabled>
                         ✓ Confirm and Use Address
                     </button>
                 </div>
             </div>
             
-            <button id="cancelScanBtn" class="btn btn-secondary btn-block" onclick="closeQRScanner()">
+            <button id="cancelScanBtn" class="btn btn-secondary btn-block">
                 Cancel Scan
             </button>
         </div>
@@ -470,7 +470,7 @@
                                 <label for="proposalRecipient">A quién se le pagará (Dirección del proveedor)</label>
                                 <div class="input-with-button">
                                     <input type="text" id="proposalRecipient" placeholder="0x123... (dirección del hotel, restaurante, etc.)">
-                                    <button type="button" class="btn-qr-scan" onclick="openQRScanner()" title="Scan QR Code">
+                                    <button type="button" id="openQRScannerBtn" class="btn-qr-scan" title="Scan QR Code">
                                         📷
                                     </button>
                                 </div>
