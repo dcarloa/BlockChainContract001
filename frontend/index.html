@@ -644,8 +644,103 @@
         // Apply translations on load
         document.addEventListener('DOMContentLoaded', () => {
             updateSettingsUI();
-            // Future: Apply translations to page content
+            applyLandingTranslations();
         });
+        
+        // Apply translations to landing page
+        function applyLandingTranslations() {
+            const lang = getCurrentLanguage();
+            const tr = translations[lang].landing;
+            
+            // Update document language
+            document.documentElement.lang = lang;
+            
+            // Hero section
+            document.querySelector('.hero-title').innerHTML = `${tr.hero.title.split('on')[0]}<span class="gradient-text">${tr.hero.title.split('on')[1] || 'on Blockchain'}</span>`;
+            document.querySelector('.hero-subtitle').textContent = tr.hero.subtitle;
+            document.querySelector('.hero-buttons .btn-primary span').textContent = '🚀 ' + tr.hero.cta;
+            
+            // Stats
+            const stats = document.querySelectorAll('.hero-stats .stat-label');
+            if (stats[1]) stats[1].textContent = tr.hero.stats.users;
+            if (stats[2]) stats[2].textContent = tr.hero.stats.confirmation;
+            
+            // Features section
+            document.querySelector('.features .section-title').textContent = tr.features.title;
+            document.querySelector('.features .section-subtitle').textContent = tr.features.subtitle;
+            
+            const featureCards = document.querySelectorAll('.feature-card');
+            const featureKeys = ['transparent', 'secure', 'voting', 'fast', 'nocustody', 'flexible'];
+            featureCards.forEach((card, i) => {
+                const key = featureKeys[i];
+                if (tr.features.items[key]) {
+                    const title = card.querySelector('.feature-title');
+                    const desc = card.querySelector('.feature-description');
+                    if (title) title.textContent = tr.features.items[key].title;
+                    if (desc) desc.textContent = tr.features.items[key].desc;
+                }
+            });
+            
+            // How it works
+            const howItWorks = document.querySelector('#how-it-works');
+            if (howItWorks) {
+                const title = howItWorks.querySelector('.section-title');
+                const subtitle = howItWorks.querySelector('.section-subtitle');
+                if (title) title.textContent = tr.howItWorks.title;
+                if (subtitle) subtitle.textContent = tr.howItWorks.subtitle;
+                
+                const steps = howItWorks.querySelectorAll('.step');
+                const stepKeys = ['create', 'deposit', 'vote'];
+                steps.forEach((step, i) => {
+                    const key = stepKeys[i];
+                    if (tr.howItWorks.steps[key]) {
+                        const stepTitle = step.querySelector('.step-title');
+                        const stepDesc = step.querySelector('.step-description');
+                        if (stepTitle) stepTitle.textContent = tr.howItWorks.steps[key].title;
+                        if (stepDesc) stepDesc.textContent = tr.howItWorks.steps[key].desc;
+                    }
+                });
+            }
+            
+            // Use cases
+            const useCases = document.querySelector('.use-cases');
+            if (useCases) {
+                const title = useCases.querySelector('.section-title');
+                if (title) title.textContent = tr.useCases.title;
+                
+                const cards = useCases.querySelectorAll('.use-case-card');
+                const caseKeys = ['travel', 'family', 'roommates', 'events'];
+                cards.forEach((card, i) => {
+                    const key = caseKeys[i];
+                    if (tr.useCases.items[key]) {
+                        const cardTitle = card.querySelector('.use-case-title');
+                        const cardDesc = card.querySelector('.use-case-description');
+                        if (cardTitle) cardTitle.textContent = tr.useCases.items[key].title;
+                        if (cardDesc) cardDesc.textContent = tr.useCases.items[key].desc;
+                    }
+                });
+            }
+            
+            // CTA section
+            const cta = document.querySelector('.cta');
+            if (cta) {
+                const title = cta.querySelector('.cta-title');
+                const subtitle = cta.querySelector('.cta-subtitle');
+                const button = cta.querySelector('.btn span');
+                if (title) title.textContent = tr.cta.title;
+                if (subtitle) subtitle.textContent = tr.cta.subtitle;
+                if (button) button.textContent = '🚀 ' + tr.cta.button;
+            }
+            
+            // Footer
+            const footer = document.querySelector('.footer');
+            if (footer) {
+                const footerBottom = footer.querySelector('.footer-bottom p');
+                const footerNote = footer.querySelector('.footer-note');
+                if (footerBottom) footerBottom.textContent = `© 2025 SplitExpense. ${tr.footer.tagline}`;
+                if (footerNote) footerNote.textContent = tr.footer.subtitle;
+            }
+        }
     </script>
 </body>
 </html>

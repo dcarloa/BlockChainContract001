@@ -1,8 +1,8 @@
 // 🎨 Theme System - Dark Mode Support
 
-// Get current theme from localStorage or default to light
+// Get current theme from localStorage or default to dark
 function getCurrentTheme() {
-    return localStorage.getItem('theme') || 'light';
+    return localStorage.getItem('theme') || 'dark';
 }
 
 // Set theme
@@ -16,10 +16,13 @@ function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     
     // Update meta theme-color for mobile browsers
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (!metaThemeColor) {
+        metaThemeColor = document.createElement('meta');
+        metaThemeColor.name = 'theme-color';
+        document.head.appendChild(metaThemeColor);
     }
+    metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
 }
 
 // Toggle theme
@@ -38,8 +41,8 @@ function initTheme() {
 // Auto-detect system preference if no theme is set
 function autoDetectTheme() {
     if (!localStorage.getItem('theme')) {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setTheme(prefersDark ? 'dark' : 'light');
+        // Default to dark mode
+        setTheme('dark');
     }
 }
 
