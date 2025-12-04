@@ -159,7 +159,8 @@ function setupEventListeners() {
 
 async function connectWallet() {
     try {
-        showLoading("Selecciona tu wallet...");
+        const t = translations[getCurrentLanguage()];
+        showLoading(t.app.loading.selectWallet);
         console.log("🔌 Iniciando conexión multi-wallet...");
         
         // Clear disconnect flag when manually connecting
@@ -169,7 +170,7 @@ async function connectWallet() {
         const walletResult = await window.walletConnector.showWalletSelector();
         
         console.log("✅ Wallet conectada:", walletResult.walletName, walletResult.address);
-        showLoading(`Conectando con ${walletResult.walletName}...`);
+        showLoading(`${t.app.loading.connecting} ${walletResult.walletName}...`);
         
         // Create provider and signer from selected wallet
         provider = new ethers.BrowserProvider(walletResult.provider);
@@ -193,7 +194,7 @@ async function connectWallet() {
             
             if (switchNetwork) {
                 try {
-                    showLoading("Cambiando de red...");
+                    showLoading(t.app.loading.switchingNetwork);
                     await window.walletConnector.switchNetwork(84532);
                     // Reload after network switch
                     location.reload();
@@ -253,7 +254,8 @@ async function disconnectWallet() {
             return;
         }
         
-        showLoading("Desconectando wallet...");
+        const t = translations[getCurrentLanguage()];
+        showLoading(t.app.loading.disconnecting);
         
         // Set flag to prevent auto-reconnect
         localStorage.setItem('walletDisconnected', 'true');
@@ -289,7 +291,7 @@ async function disconnectWallet() {
         showToast("✅ Wallet desconectada correctamente", "success");
         
         setTimeout(() => {
-            showLoading("Redirigiendo a la página principal...");
+            showLoading(t.app.loading.redirecting);
             setTimeout(() => {
                 window.location.href = '/index.html';
             }, 1000);
@@ -481,7 +483,8 @@ async function loadFactoryContract() {
 
 async function checkUserNickname() {
     try {
-        showLoading("Verificando nickname...");
+        const t = translations[getCurrentLanguage()];
+        showLoading(t.app.loading.verifyingNickname);
         
         const nickname = await factoryContract.getNickname(userAddress);
         
@@ -546,7 +549,7 @@ async function setNickname() {
             return;
         }
         
-        showLoading("Verificando disponibilidad...");
+        showLoading(t.app.loading.checkingAvailability);
         
         // Verificar disponibilidad del nickname
         const isAvailable = await factoryContract.isNicknameAvailable(nickname);
@@ -556,7 +559,7 @@ async function setNickname() {
             return;
         }
         
-        showLoading("Estableciendo nickname...");
+        showLoading(t.app.loading.settingNickname);
         
         // Set nickname
         const tx = await factoryContract.setNickname(nickname);
@@ -594,7 +597,8 @@ function getFundTypeIcon(fundType) {
 
 async function loadDashboard() {
     try {
-        showLoading("Cargando tus fondos...");
+        const t = translations[getCurrentLanguage()];
+        showLoading(t.app.loading.loadingFunds);
         
         document.getElementById('dashboardSection').classList.add('active');
         
@@ -1057,9 +1061,10 @@ let currentFundContract = null;
 
 async function openFund(fundAddress) {
     try {
+        const t = translations[getCurrentLanguage()];
         console.log("openFund llamado con:", fundAddress);
         console.log("allUserFunds:", allUserFunds);
-        showLoading("Cargando fondo...");
+        showLoading(t.app.loading.loadingFund);
         
         if (!fundAddress || fundAddress === 'undefined') {
             throw new Error("Dirección de fondo inválida");
@@ -1292,7 +1297,11 @@ async function findFundIndex(fundAddress) {
     }
 }
 
-function showLoading(text = "Cargando...") {
+function showLoading(text) {
+    if (!text) {
+        const t = translations[getCurrentLanguage()];
+        text = t.app.loading.default;
+    }
     document.getElementById('loadingText').textContent = text;
     document.getElementById('loadingOverlay').style.display = 'flex';
 }
@@ -1705,7 +1714,8 @@ async function inviteMember() {
 
 async function acceptInvitation() {
     try {
-        showLoading("Aceptando invitación...");
+        const t = translations[getCurrentLanguage()];
+        showLoading(t.app.loading.acceptingInvitation);
         
         const tx = await currentFundContract.acceptInvitation();
         await tx.wait();
