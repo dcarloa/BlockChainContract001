@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self'; 
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; 
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; 
         style-src 'self' 'unsafe-inline'; 
         img-src 'self' data: https:; 
+        media-src 'self' blob:;
         connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org;
     ">
     <title>SplitExpense - Gestor de Gastos Compartidos</title>
@@ -15,6 +16,8 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="styles-platform.css">
     <link rel="stylesheet" href="wallet-connector.css">
+    <!-- QR Code Scanner -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
     <!-- Loading Overlay -->
@@ -100,6 +103,64 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div id="qrScannerModal" class="modal" style="display: none;">
+        <div class="modal-content qr-scanner-modal">
+            <div class="modal-header">
+                <h3 id="qrScannerTitle">📷 Scan QR Code</h3>
+                <button class="modal-close" onclick="closeQRScanner()">&times;</button>
+            </div>
+            
+            <div class="warning-box qr-warning">
+                <p><strong id="qrWarningTitle">⚠️ IMPORTANT - Read carefully:</strong></p>
+                <ul id="qrWarningList">
+                    <li><strong>Base Network Only:</strong> The address MUST be a valid address on the <strong>Base blockchain</strong></li>
+                    <li><strong>Verify carefully:</strong> If you send funds to an incorrect address, <strong>they will be lost forever</strong></li>
+                    <li><strong>No refunds:</strong> Blockchain transactions are irreversible</li>
+                    <li><strong>Your responsibility:</strong> Double-check that the address belongs to the intended recipient</li>
+                </ul>
+            </div>
+            
+            <div id="qrReader" class="qr-reader"></div>
+            
+            <div id="qrScanResult" style="display: none;">
+                <div class="scan-result-box">
+                    <p><strong id="qrDetectedLabel">✅ Address detected:</strong></p>
+                    <div class="address-display">
+                        <code id="scannedAddress"></code>
+                    </div>
+                </div>
+                
+                <div class="warning-box critical-warning">
+                    <p><strong id="qrFinalConfirmTitle">🚨 FINAL CONFIRMATION</strong></p>
+                    <p id="qrConfirmationText">By clicking "Confirm", you declare that:</p>
+                    <ul id="qrConfirmationList">
+                        <li>This address is correct and belongs to the intended recipient</li>
+                        <li>This address is on the <strong>Base blockchain</strong></li>
+                        <li>You understand that funds sent to an incorrect address <strong>cannot be recovered</strong></li>
+                        <li>You assume full responsibility for this address</li>
+                    </ul>
+                    
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="qrConfirmCheckbox">
+                        <span id="qrCheckboxLabel">I have verified the address and accept full responsibility</span>
+                    </label>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeQRScanner()" id="qrCancelBtn2">Cancel</button>
+                    <button id="confirmQRBtn" class="btn btn-primary" disabled onclick="confirmScannedAddress()">
+                        ✓ Confirm and Use Address
+                    </button>
+                </div>
+            </div>
+            
+            <button id="cancelScanBtn" class="btn btn-secondary btn-block" onclick="closeQRScanner()">
+                Cancel Scan
+            </button>
         </div>
     </div>
 
@@ -407,7 +468,12 @@
                             
                             <div class="form-group">
                                 <label for="proposalRecipient">A quién se le pagará (Dirección del proveedor)</label>
-                                <input type="text" id="proposalRecipient" placeholder="0x123... (dirección del hotel, restaurante, etc.)">
+                                <div class="input-with-button">
+                                    <input type="text" id="proposalRecipient" placeholder="0x123... (dirección del hotel, restaurante, etc.)">
+                                    <button type="button" class="btn-qr-scan" onclick="openQRScanner()" title="Scan QR Code">
+                                        📷
+                                    </button>
+                                </div>
                                 <small>Dirección Ethereum del agente externo que recibirá el pago</small>
                             </div>
                             
@@ -1134,6 +1200,61 @@
             
             const noBalancesSubtitle = document.querySelector('#noBalances p');
             if (noBalancesSubtitle) noBalancesSubtitle.textContent = t.app.fundDetail.balances.emptySubtitle;
+            
+            // QR Scanner Modal
+            const qrScannerTitle = document.querySelector('#qrScannerTitle');
+            if (qrScannerTitle) qrScannerTitle.textContent = `📷 ${t.app.fundDetail.qrScanner.title}`;
+            
+            const qrWarningTitle = document.querySelector('#qrWarningTitle');
+            if (qrWarningTitle) qrWarningTitle.textContent = `⚠️ ${t.app.fundDetail.qrScanner.warning}`;
+            
+            const qrWarningList = document.querySelector('#qrWarningList');
+            if (qrWarningList) {
+                qrWarningList.innerHTML = t.app.fundDetail.qrScanner.warningPoints.map(point => {
+                    const parts = point.split(':');
+                    if (parts.length > 1) {
+                        return `<li><strong>${parts[0]}:</strong>${parts[1]}</li>`;
+                    }
+                    return `<li>${point}</li>`;
+                }).join('');
+            }
+            
+            const qrDetectedLabel = document.querySelector('#qrDetectedLabel');
+            if (qrDetectedLabel) qrDetectedLabel.textContent = `✅ ${t.app.fundDetail.qrScanner.detected}`;
+            
+            const qrFinalConfirmTitle = document.querySelector('#qrFinalConfirmTitle');
+            if (qrFinalConfirmTitle) qrFinalConfirmTitle.textContent = `🚨 ${t.app.fundDetail.qrScanner.finalConfirmation}`;
+            
+            const qrConfirmationText = document.querySelector('#qrConfirmationText');
+            if (qrConfirmationText) qrConfirmationText.textContent = t.app.fundDetail.qrScanner.confirmationText;
+            
+            const qrConfirmationList = document.querySelector('#qrConfirmationList');
+            if (qrConfirmationList) {
+                qrConfirmationList.innerHTML = t.app.fundDetail.qrScanner.confirmationPoints.map(point => {
+                    if (point.includes('Base blockchain')) {
+                        return `<li>${point.replace('Base blockchain', '<strong>Base blockchain</strong>')}</li>`;
+                    }
+                    if (point.includes('blockchain de Base')) {
+                        return `<li>${point.replace('blockchain de Base', '<strong>blockchain de Base</strong>')}</li>`;
+                    }
+                    if (point.includes('cannot be recovered') || point.includes('no pueden recuperarse')) {
+                        return `<li>${point.replace('cannot be recovered', '<strong>cannot be recovered</strong>').replace('no pueden recuperarse', '<strong>no pueden recuperarse</strong>')}</li>`;
+                    }
+                    return `<li>${point}</li>`;
+                }).join('');
+            }
+            
+            const qrCheckboxLabel = document.querySelector('#qrCheckboxLabel');
+            if (qrCheckboxLabel) qrCheckboxLabel.textContent = t.app.fundDetail.qrScanner.checkboxLabel;
+            
+            const confirmQRBtn = document.querySelector('#confirmQRBtn');
+            if (confirmQRBtn) confirmQRBtn.innerHTML = `✓ ${t.app.fundDetail.qrScanner.confirmButton}`;
+            
+            const qrCancelBtn2 = document.querySelector('#qrCancelBtn2');
+            if (qrCancelBtn2) qrCancelBtn2.textContent = t.app.fundDetail.qrScanner.cancelButton;
+            
+            const cancelScanBtn = document.querySelector('#cancelScanBtn');
+            if (cancelScanBtn) cancelScanBtn.textContent = t.app.fundDetail.qrScanner.cancelScan;
         }
 
         function updateAppSettingsUI() {

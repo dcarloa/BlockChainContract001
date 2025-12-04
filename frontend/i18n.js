@@ -412,6 +412,34 @@ const translations = {
                     empty: "No members",
                     emptySubtitle: "Balances will appear when members start contributing"
                 },
+                qrScanner: {
+                    title: "Scan QR Code",
+                    warning: "IMPORTANT - Read carefully:",
+                    warningPoints: [
+                        "Base Network Only: The address MUST be a valid address on the Base blockchain",
+                        "Verify carefully: If you send funds to an incorrect address, they will be lost forever",
+                        "No refunds: Blockchain transactions are irreversible",
+                        "Your responsibility: Double-check that the address belongs to the intended recipient"
+                    ],
+                    detected: "Address detected:",
+                    finalConfirmation: "FINAL CONFIRMATION",
+                    confirmationText: "By clicking 'Confirm', you declare that:",
+                    confirmationPoints: [
+                        "This address is correct and belongs to the intended recipient",
+                        "This address is on the Base blockchain",
+                        "You understand that funds sent to an incorrect address cannot be recovered",
+                        "You assume full responsibility for this address"
+                    ],
+                    checkboxLabel: "I have verified the address and accept full responsibility",
+                    confirmButton: "Confirm and Use Address",
+                    cancelButton: "Cancel",
+                    cancelScan: "Cancel Scan",
+                    invalidQR: "The QR code does not contain a valid Ethereum address",
+                    noAddress: "No scanned address",
+                    mustConfirm: "You must confirm that you verified the address",
+                    scanSuccess: "Address scanned and confirmed",
+                    cameraError: "Error starting camera. Check permissions."
+                },
                 manage: {
                     title: "Fund Management",
                     subtitle: "Advanced options to manage the fund.",
@@ -904,6 +932,34 @@ const translations = {
                     ],
                     empty: "Sin miembros",
                     emptySubtitle: "Los balances aparecerán cuando los miembros empiecen a aportar"
+                },
+                qrScanner: {
+                    title: "Escanear Código QR",
+                    warning: "IMPORTANTE - Lee con atención:",
+                    warningPoints: [
+                        "Solo Red Base: La dirección DEBE ser una dirección válida en la blockchain de Base",
+                        "Verifica cuidadosamente: Si envías fondos a una dirección incorrecta, se perderán para siempre",
+                        "Sin reembolsos: Las transacciones en blockchain son irreversibles",
+                        "Tu responsabilidad: Verifica dos veces que la dirección pertenece al destinatario correcto"
+                    ],
+                    detected: "Dirección detectada:",
+                    finalConfirmation: "CONFIRMACIÓN FINAL",
+                    confirmationText: "Al hacer clic en 'Confirmar', declaras que:",
+                    confirmationPoints: [
+                        "Esta dirección es correcta y pertenece al destinatario previsto",
+                        "Esta dirección está en la blockchain de Base",
+                        "Entiendes que los fondos enviados a una dirección incorrecta no pueden recuperarse",
+                        "Asumes toda la responsabilidad por esta dirección"
+                    ],
+                    checkboxLabel: "He verificado la dirección y acepto toda la responsabilidad",
+                    confirmButton: "Confirmar y Usar Dirección",
+                    cancelButton: "Cancelar",
+                    cancelScan: "Cancelar Escaneo",
+                    invalidQR: "El código QR no contiene una dirección Ethereum válida",
+                    noAddress: "No hay dirección escaneada",
+                    mustConfirm: "Debes confirmar que verificaste la dirección",
+                    scanSuccess: "Dirección escaneada y confirmada",
+                    cameraError: "Error al iniciar la cámara. Verifica los permisos."
                 },
                 manage: {
                     title: "Gestión del Fondo",

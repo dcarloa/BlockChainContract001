@@ -2575,3 +2575,135 @@ async function closeFund() {
     }
 }
 
+// ============================================
+// QR SCANNER FUNCTIONALITY
+// ============================================
+
+let html5QrCode = null;
+let scannedAddressValue = null;
+
+function openQRScanner() {
+    const modal = document.getElementById('qrScannerModal');
+    modal.style.display = 'flex';
+    
+    // Reset state
+    document.getElementById('qrScanResult').style.display = 'none';
+    document.getElementById('cancelScanBtn').style.display = 'block';
+    document.getElementById('qrConfirmCheckbox').checked = false;
+    document.getElementById('confirmQRBtn').disabled = true;
+    scannedAddressValue = null;
+    
+    // Initialize QR scanner
+    html5QrCode = new Html5Qrcode("qrReader");
+    
+    const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0
+    };
+    
+    html5QrCode.start(
+        { facingMode: "environment" }, // Use back camera
+        config,
+        onScanSuccess,
+        onScanError
+    ).catch(err => {
+        console.error("Error starting QR scanner:", err);
+        const t = translations[getCurrentLanguage()];
+        showToast(t.app.fundDetail.qrScanner.cameraError, "error");
+        closeQRScanner();
+    });
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+    console.log("QR Code detected:", decodedText);
+    
+    // Extract ethereum address from QR code
+    let address = decodedText.trim();
+    
+    // Handle ethereum: URI format
+    if (address.startsWith('ethereum:')) {
+        address = address.replace('ethereum:', '').split('?')[0].split('@')[0];
+    }
+    
+    // Validate Ethereum address format
+    if (!isValidEthereumAddress(address)) {
+        const t = translations[getCurrentLanguage()];
+        showToast(`⚠️ ${t.app.fundDetail.qrScanner.invalidQR}`, "error");
+        return;
+    }
+    
+    // Stop scanner
+    html5QrCode.stop().then(() => {
+        scannedAddressValue = address;
+        displayScannedAddress(address);
+    }).catch(err => {
+        console.error("Error stopping scanner:", err);
+    });
+}
+
+function onScanError(errorMessage) {
+    // Ignore scan errors (happens continuously while scanning)
+    // console.warn("QR Scan error:", errorMessage);
+}
+
+function isValidEthereumAddress(address) {
+    // Check if it's a valid Ethereum address format (0x + 40 hex characters)
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+
+function displayScannedAddress(address) {
+    document.getElementById('scannedAddress').textContent = address;
+    document.getElementById('qrScanResult').style.display = 'block';
+    document.getElementById('cancelScanBtn').style.display = 'none';
+    
+    // Setup checkbox listener
+    const checkbox = document.getElementById('qrConfirmCheckbox');
+    const confirmBtn = document.getElementById('confirmQRBtn');
+    
+    checkbox.onchange = function() {
+        confirmBtn.disabled = !this.checked;
+    };
+}
+
+function confirmScannedAddress() {
+    const t = translations[getCurrentLanguage()];
+    
+    if (!scannedAddressValue) {
+        showToast(`⚠️ ${t.app.fundDetail.qrScanner.noAddress}`, "error");
+        return;
+    }
+    
+    if (!document.getElementById('qrConfirmCheckbox').checked) {
+        showToast(`⚠️ ${t.app.fundDetail.qrScanner.mustConfirm}`, "warning");
+        return;
+    }
+    
+    // Set the address in the input field
+    document.getElementById('proposalRecipient').value = scannedAddressValue;
+    
+    // Show success message
+    showToast(`✅ ${t.app.fundDetail.qrScanner.scanSuccess}`, "success");
+    
+    // Close modal
+    closeQRScanner();
+}
+
+function closeQRScanner() {
+    // Stop scanner if running
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+            html5QrCode.clear();
+            html5QrCode = null;
+        }).catch(err => {
+            console.error("Error stopping QR scanner:", err);
+        });
+    }
+    
+    // Hide modal
+    document.getElementById('qrScannerModal').style.display = 'none';
+    
+    // Reset state
+    scannedAddressValue = null;
+}
+
