@@ -2581,6 +2581,7 @@ async function closeFund() {
 
 let html5QrCode = null;
 let scannedAddressValue = null;
+let isScannerRunning = false;
 
 // Make functions globally accessible
 window.openQRScanner = openQRScanner;
@@ -2591,7 +2592,10 @@ function openQRScanner() {
     const modal = document.getElementById('qrScannerModal');
     modal.style.display = 'flex';
     
-    // Reset state
+    // Reset state and UI
+    const qrReader = document.getElementById('qrReader');
+    if (qrReader) qrReader.style.display = 'block';
+    
     document.getElementById('qrScanResult').style.display = 'none';
     document.getElementById('cancelScanBtn').style.display = 'block';
     document.getElementById('qrConfirmCheckbox').checked = false;
@@ -2612,8 +2616,12 @@ function openQRScanner() {
         config,
         onScanSuccess,
         onScanError
-    ).catch(err => {
+    ).then(() => {
+        isScannerRunning = true;
+        console.log("QR Scanner started successfully");
+    }).catch(err => {
         console.error("Error starting QR scanner:", err);
+        isScannerRunning = false;
         const t = translations[getCurrentLanguage()];
         showToast(t.app.fundDetail.qrScanner.cameraError, "error");
         closeQRScanner();
@@ -2638,13 +2646,23 @@ function onScanSuccess(decodedText, decodedResult) {
         return;
     }
     
-    // Stop scanner
-    html5QrCode.stop().then(() => {
+    // Stop scanner if it's running
+    if (html5QrCode && isScannerRunning) {
+        html5QrCode.stop().then(() => {
+            console.log("QR Scanner stopped after successful scan");
+            isScannerRunning = false;
+            scannedAddressValue = address;
+            displayScannedAddress(address);
+        }).catch(err => {
+            console.error("Error stopping scanner:", err);
+            isScannerRunning = false;
+            scannedAddressValue = address;
+            displayScannedAddress(address);
+        });
+    } else {
         scannedAddressValue = address;
         displayScannedAddress(address);
-    }).catch(err => {
-        console.error("Error stopping scanner:", err);
-    });
+    }
 }
 
 function onScanError(errorMessage) {
@@ -2659,6 +2677,11 @@ function isValidEthereumAddress(address) {
 
 function displayScannedAddress(address) {
     document.getElementById('scannedAddress').textContent = address;
+    
+    // Hide the QR reader and show results
+    const qrReader = document.getElementById('qrReader');
+    if (qrReader) qrReader.style.display = 'none';
+    
     document.getElementById('qrScanResult').style.display = 'block';
     document.getElementById('cancelScanBtn').style.display = 'none';
     
@@ -2694,13 +2717,22 @@ function confirmScannedAddress() {
 
 function closeQRScanner() {
     // Stop scanner if running
-    if (html5QrCode) {
+    if (html5QrCode && isScannerRunning) {
         html5QrCode.stop().then(() => {
+            console.log("QR Scanner stopped on close");
             html5QrCode.clear();
             html5QrCode = null;
+            isScannerRunning = false;
         }).catch(err => {
             console.error("Error stopping QR scanner:", err);
+            html5QrCode = null;
+            isScannerRunning = false;
         });
+    } else if (html5QrCode) {
+        // Scanner already stopped, just clear it
+        html5QrCode.clear();
+        html5QrCode = null;
+        isScannerRunning = false;
     }
     
     // Hide modal
