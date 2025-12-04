@@ -2582,6 +2582,7 @@ async function closeFund() {
 let html5QrCode = null;
 let scannedAddressValue = null;
 let isScannerRunning = false;
+let isProcessingScan = false; // Flag to prevent multiple scan processing
 
 // Make functions globally accessible
 window.openQRScanner = openQRScanner;
@@ -2601,6 +2602,7 @@ function openQRScanner() {
     document.getElementById('qrConfirmCheckbox').checked = false;
     document.getElementById('confirmQRBtn').disabled = true;
     scannedAddressValue = null;
+    isProcessingScan = false; // Reset processing flag
     
     // Initialize QR scanner
     html5QrCode = new Html5Qrcode("qrReader");
@@ -2629,6 +2631,13 @@ function openQRScanner() {
 }
 
 function onScanSuccess(decodedText, decodedResult) {
+    // Prevent multiple scan processing
+    if (isProcessingScan) {
+        console.log("Already processing a scan, ignoring...");
+        return;
+    }
+    
+    isProcessingScan = true;
     console.log("QR Code detected:", decodedText);
     
     // Extract ethereum address from QR code
@@ -2643,6 +2652,7 @@ function onScanSuccess(decodedText, decodedResult) {
     if (!isValidEthereumAddress(address)) {
         const t = translations[getCurrentLanguage()];
         showToast(`⚠️ ${t.app.fundDetail.qrScanner.invalidQR}`, "error");
+        isProcessingScan = false;
         return;
     }
     
@@ -2723,16 +2733,19 @@ function closeQRScanner() {
             html5QrCode.clear();
             html5QrCode = null;
             isScannerRunning = false;
+            isProcessingScan = false;
         }).catch(err => {
             console.error("Error stopping QR scanner:", err);
             html5QrCode = null;
             isScannerRunning = false;
+            isProcessingScan = false;
         });
     } else if (html5QrCode) {
         // Scanner already stopped, just clear it
         html5QrCode.clear();
         html5QrCode = null;
         isScannerRunning = false;
+        isProcessingScan = false;
     }
     
     // Hide modal
@@ -2740,6 +2753,7 @@ function closeQRScanner() {
     
     // Reset state
     scannedAddressValue = null;
+    isProcessingScan = false;
 }
 
 // Setup QR scanner event listeners when DOM is ready
