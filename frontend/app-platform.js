@@ -162,6 +162,9 @@ async function connectWallet() {
         showLoading("Selecciona tu wallet...");
         console.log("🔌 Iniciando conexión multi-wallet...");
         
+        // Clear disconnect flag when manually connecting
+        localStorage.removeItem('walletDisconnected');
+        
         // Use the wallet connector to show selector and connect
         const walletResult = await window.walletConnector.showWalletSelector();
         
@@ -252,6 +255,9 @@ async function disconnectWallet() {
         
         showLoading("Desconectando wallet...");
         
+        // Set flag to prevent auto-reconnect
+        localStorage.setItem('walletDisconnected', 'true');
+        
         // Clear all state
         provider = null;
         signer = null;
@@ -298,6 +304,13 @@ async function disconnectWallet() {
 
 async function autoReconnectWallet() {
     try {
+        // Check if user manually disconnected
+        const wasDisconnected = localStorage.getItem('walletDisconnected');
+        if (wasDisconnected === 'true') {
+            console.log("🚫 Usuario desconectó manualmente - no auto-reconectar");
+            return;
+        }
+        
         // Verificar si hay una conexión previa guardada
         if (!window.ethereum) {
             console.log("⚠️ No hay wallet disponible");
