@@ -946,6 +946,66 @@
             
             const depositBtn = document.querySelector('#depositBtn');
             if (depositBtn) depositBtn.textContent = t.app.fundDetail.deposit.button;
+            
+            // Manage Tab
+            const manageTitle = document.querySelector('#manageTab h3');
+            if (manageTitle) manageTitle.textContent = `⚙️ ${t.app.fundDetail.manage.title}`;
+            
+            const manageSubtitle = document.querySelector('#manageTab > .tab-card > p');
+            if (manageSubtitle) manageSubtitle.textContent = t.app.fundDetail.manage.subtitle;
+            
+            const memberManagementTitle = document.querySelector('.member-management-section h4');
+            if (memberManagementTitle) memberManagementTitle.textContent = `👥 ${t.app.fundDetail.manage.memberManagement}`;
+            
+            const kickMemberTitle = document.querySelector('.member-management-section p strong');
+            if (kickMemberTitle) kickMemberTitle.textContent = t.app.fundDetail.manage.kickMember;
+            
+            const kickDescription = document.querySelector('.member-management-section .help-text');
+            if (kickDescription) kickDescription.textContent = t.app.fundDetail.manage.kickDescription;
+            
+            const howItWorksTitle = document.querySelector('.member-management-section .info-box p strong');
+            if (howItWorksTitle) howItWorksTitle.textContent = `💡 ${t.app.fundDetail.manage.howItWorks}`;
+            
+            const kickPointsList = document.querySelector('.member-management-section .info-box ul');
+            if (kickPointsList) {
+                kickPointsList.innerHTML = t.app.fundDetail.manage.kickPoints.map(point => `<li>${point}</li>`).join('');
+            }
+            
+            const noMembersTitle = document.querySelector('#noMembersToKick h4');
+            if (noMembersTitle) noMembersTitle.textContent = t.app.fundDetail.manage.noMembersToKick;
+            
+            const noMembersSubtitle = document.querySelector('#noMembersToKick p');
+            if (noMembersSubtitle) noMembersSubtitle.textContent = t.app.fundDetail.manage.noMembersSubtitle;
+            
+            const dangerZoneTitle = document.querySelector('.danger-zone h4');
+            if (dangerZoneTitle) dangerZoneTitle.textContent = `🚨 ${t.app.fundDetail.manage.dangerZone}`;
+            
+            const closeDistributeTitle = document.querySelector('.danger-zone > p strong');
+            if (closeDistributeTitle) closeDistributeTitle.textContent = t.app.fundDetail.manage.closeAndDistribute;
+            
+            const closeDescription = document.querySelector('.danger-zone > .help-text');
+            if (closeDescription) closeDescription.textContent = t.app.fundDetail.manage.closeDescription;
+            
+            const warningTitle = document.querySelector('.warning-box p strong');
+            if (warningTitle) warningTitle.textContent = `⚠️ ${t.app.fundDetail.manage.warning}`;
+            
+            const warningPointsList = document.querySelector('.warning-box ul');
+            if (warningPointsList) {
+                warningPointsList.innerHTML = t.app.fundDetail.manage.warningPoints.map(point => 
+                    point.includes('irreversible') || point.includes('irreversible') 
+                        ? `<li>${point.replace('irreversible', '<strong>irreversible</strong>').replace('irreversible', '<strong>irreversible</strong>')}</li>`
+                        : `<li>${point}</li>`
+                ).join('');
+            }
+            
+            const distributionPreviewTitle = document.querySelector('#closeFundPreview h5');
+            if (distributionPreviewTitle) distributionPreviewTitle.textContent = `📊 ${t.app.fundDetail.manage.distributionPreview}`;
+            
+            const previewButton = document.querySelector('#previewCloseFundBtn');
+            if (previewButton) previewButton.textContent = `📊 ${t.app.fundDetail.manage.previewButton}`;
+            
+            const closeButton = document.querySelector('#closeFundBtn');
+            if (closeButton) closeButton.textContent = `🔒 ${t.app.fundDetail.manage.closeButton}`;
         }
 
         function updateAppSettingsUI() {
