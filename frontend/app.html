@@ -42,6 +42,9 @@
                         <span class="nickname-icon">👤</span>
                         <span id="nicknameDisplay"></span>
                     </div>
+                    <button class="settings-btn-app" onclick="openAppSettings()" title="Settings">
+                        ⚙️
+                    </button>
                     <button id="connectWallet" class="btn btn-primary">
                         <span class="btn-icon">🦊</span>
                         <span>Conectar Wallet</span>
@@ -54,6 +57,51 @@
             </div>
         </div>
     </header>
+
+    <!-- Settings Modal -->
+    <div id="appSettingsModal" class="modal-overlay" onclick="closeAppSettings(event)">
+        <div class="settings-modal" onclick="event.stopPropagation()">
+            <div class="settings-header">
+                <h2>⚙️ Settings</h2>
+                <button class="close-btn" onclick="closeAppSettings()">&times;</button>
+            </div>
+            <div class="settings-content">
+                <!-- Language Selection -->
+                <div class="setting-group">
+                    <label>🌍 Language</label>
+                    <div class="setting-options">
+                        <button class="setting-option" data-lang="en" onclick="changeLanguage('en')">
+                            <span class="option-flag">🇺🇸</span>
+                            <span>English</span>
+                            <span class="option-check">✓</span>
+                        </button>
+                        <button class="setting-option" data-lang="es" onclick="changeLanguage('es')">
+                            <span class="option-flag">🇪🇸</span>
+                            <span>Español</span>
+                            <span class="option-check">✓</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Theme Selection -->
+                <div class="setting-group">
+                    <label>🎨 Theme</label>
+                    <div class="setting-options">
+                        <button class="setting-option" data-theme="light" onclick="changeTheme('light')">
+                            <span class="option-icon">☀️</span>
+                            <span>Light Mode</span>
+                            <span class="option-check">✓</span>
+                        </button>
+                        <button class="setting-option" data-theme="dark" onclick="changeTheme('dark')">
+                            <span class="option-icon">🌙</span>
+                            <span>Dark Mode</span>
+                            <span class="option-check">✓</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -741,8 +789,46 @@
     </main>
 
     <!-- Scripts -->
+    <script src="i18n.js"></script>
+    <script src="theme.js"></script>
     <script src="ethers.umd.min.js"></script>
     <script src="wallet-connector.js"></script>
     <script src="app-platform.js"></script>
+    
+    <script>
+        // Settings Modal Functions for App
+        function openAppSettings() {
+            const modal = document.getElementById('appSettingsModal');
+            modal.classList.add('active');
+            updateAppSettingsUI();
+        }
+
+        function closeAppSettings(event) {
+            if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
+                const modal = document.getElementById('appSettingsModal');
+                modal.classList.remove('active');
+            }
+        }
+
+        function updateAppSettingsUI() {
+            const currentLang = getCurrentLanguage();
+            const currentTheme = getCurrentTheme();
+            
+            // Update language buttons
+            document.querySelectorAll('[data-lang]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === currentLang);
+            });
+            
+            // Update theme buttons
+            document.querySelectorAll('[data-theme]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+            });
+        }
+
+        // Initialize settings UI on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAppSettingsUI();
+        });
+    </script>
 </body>
 </html>

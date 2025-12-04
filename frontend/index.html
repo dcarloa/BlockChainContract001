@@ -18,11 +18,14 @@
                 <span class="logo-text">SplitExpense</span>
             </div>
             <div class="nav-links">
-                <a href="#features">Características</a>
-                <a href="#how-it-works">Cómo Funciona</a>
-                <a href="#benefits">Beneficios</a>
-                <a href="#faq">FAQ</a>
-                <a href="app.html" class="btn btn-primary">Lanzar App</a>
+                <a href="#features" data-i18n="nav.features">Características</a>
+                <a href="#how-it-works" data-i18n="nav.howItWorks">Cómo Funciona</a>
+                <a href="#benefits" data-i18n="nav.benefits">Beneficios</a>
+                <a href="#faq" data-i18n="nav.faq">FAQ</a>
+                <button class="settings-btn" onclick="openSettings()" title="Settings">
+                    ⚙️
+                </button>
+                <a href="app.html" class="btn btn-primary" data-i18n="nav.launchApp">Lanzar App</a>
             </div>
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                 <span></span>
@@ -31,6 +34,51 @@
             </button>
         </div>
     </nav>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay" onclick="closeSettings(event)">
+        <div class="settings-modal" onclick="event.stopPropagation()">
+            <div class="settings-header">
+                <h2 data-i18n="settings.title">⚙️ Settings</h2>
+                <button class="close-btn" onclick="closeSettings()">&times;</button>
+            </div>
+            <div class="settings-content">
+                <!-- Language Selection -->
+                <div class="setting-group">
+                    <label data-i18n="settings.language">🌍 Language</label>
+                    <div class="setting-options">
+                        <button class="setting-option" data-lang="en" onclick="changeLanguage('en')">
+                            <span class="option-flag">🇺🇸</span>
+                            <span>English</span>
+                            <span class="option-check">✓</span>
+                        </button>
+                        <button class="setting-option" data-lang="es" onclick="changeLanguage('es')">
+                            <span class="option-flag">🇪🇸</span>
+                            <span>Español</span>
+                            <span class="option-check">✓</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Theme Selection -->
+                <div class="setting-group">
+                    <label data-i18n="settings.theme">🎨 Theme</label>
+                    <div class="setting-options">
+                        <button class="setting-option" data-theme="light" onclick="changeTheme('light')">
+                            <span class="option-icon">☀️</span>
+                            <span data-i18n="settings.lightMode">Light Mode</span>
+                            <span class="option-check">✓</span>
+                        </button>
+                        <button class="setting-option" data-theme="dark" onclick="changeTheme('dark')">
+                            <span class="option-icon">🌙</span>
+                            <span data-i18n="settings.darkMode">Dark Mode</span>
+                            <span class="option-check">✓</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -537,6 +585,9 @@
         </div>
     </footer>
 
+    <!-- i18n and theme system -->
+    <script src="i18n.js"></script>
+    <script src="theme.js"></script>
     <script src="landing-script.js"></script>
     <script>
         // Alternar entre video demo y UI estática cada 8 segundos
@@ -551,6 +602,50 @@
         
         // Cambiar vista cada 8 segundos
         setInterval(switchView, 8000);
+
+        // Settings Modal Functions
+        function openSettings() {
+            const modal = document.getElementById('settingsModal');
+            modal.classList.add('active');
+            updateSettingsUI();
+        }
+
+        function closeSettings(event) {
+            if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
+                const modal = document.getElementById('settingsModal');
+                modal.classList.remove('active');
+            }
+        }
+
+        function changeLanguage(lang) {
+            setLanguage(lang);
+        }
+
+        function changeTheme(theme) {
+            setTheme(theme);
+            updateSettingsUI();
+        }
+
+        function updateSettingsUI() {
+            const currentLang = getCurrentLanguage();
+            const currentTheme = getCurrentTheme();
+            
+            // Update language buttons
+            document.querySelectorAll('[data-lang]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === currentLang);
+            });
+            
+            // Update theme buttons
+            document.querySelectorAll('[data-theme]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+            });
+        }
+
+        // Apply translations on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSettingsUI();
+            // Future: Apply translations to page content
+        });
     </script>
 </body>
 </html>
