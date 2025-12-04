@@ -551,6 +551,7 @@ async function setNickname() {
             return;
         }
         
+        const t = translations[getCurrentLanguage()];
         showLoading(t.app.loading.checkingAvailability);
         
         // Verificar disponibilidad del nickname
