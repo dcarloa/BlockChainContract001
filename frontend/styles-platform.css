@@ -3204,3 +3204,120 @@ header,
     gap: 0.25rem;
   }
 }
+
+/* ============================================
+   BORROWED FUNDS ALERT (Full Consent Warning)
+   ============================================ */
+
+.borrowed-funds-alert {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 87, 34, 0.1) 100%);
+  border: 2px solid rgba(255, 152, 0, 0.5);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  animation: pulse-warning 2s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 152, 0, 0);
+  }
+}
+
+.borrowed-funds-alert .alert-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  color: var(--warning-color, #ff9800);
+}
+
+.borrowed-funds-alert .alert-icon {
+  font-size: 1.5rem;
+  animation: shake 1s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: rotate(-5deg); }
+  20%, 40%, 60%, 80% { transform: rotate(5deg); }
+}
+
+.borrowed-funds-alert .alert-header strong {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.borrowed-funds-alert .alert-text {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.borrowed-details {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.borrowed-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+.borrowed-item:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.borrowed-item span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.borrowed-item strong {
+  color: var(--warning-color, #ff9800);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.borrowed-funds-alert .alert-footer {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.proposal-card.requires-full-consent {
+  border: 2px solid rgba(255, 152, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 152, 0, 0.2);
+}
+
+@media (max-width: 640px) {
+  .borrowed-funds-alert {
+    padding: 1rem;
+  }
+  
+  .borrowed-funds-alert .alert-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .borrowed-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}

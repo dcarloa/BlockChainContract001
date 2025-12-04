@@ -50,7 +50,7 @@ const TRAVEL_FUND_V2_ABI_FULL = [
     "function memberStatus(address) view returns (uint8)",
     "function getNickname(address) view returns (string)",
     "function getContributorsWithNicknames() view returns (address[], string[], uint256[])",
-    "function getProposal(uint256) view returns (uint256 id, address proposer, string proposerNickname, address recipient, string recipientNickname, uint256 amount, string proposalDescription, uint256 votesFor, uint256 votesAgainst, uint256 createdAt, uint256 expiresAt, bool executed, bool cancelled, bool approved, bool expired)",
+    "function getProposal(uint256) view returns (uint256 id, address proposer, string proposerNickname, address recipient, string recipientNickname, uint256 amount, string proposalDescription, uint256 votesFor, uint256 votesAgainst, uint256 createdAt, uint256 expiresAt, bool executed, bool cancelled, bool approved, bool expired, bool requiresFullConsent, uint256 borrowedAmount, uint256 borrowedPerPerson)",
     "function hasUserVoted(uint256, address) view returns (bool)",
     "function deposit() payable",
     "function inviteMemberByNickname(string)",
@@ -1994,7 +1994,8 @@ async function loadProposals() {
                     // PROBLEM 2 FIX: Access proposal data by index (Proxy returns array)
                     // getProposal returns: id, proposer, proposerNickname, recipient, recipientNickname,
                     //                      amount, proposalDescription, votesFor, votesAgainst, createdAt,
-                    //                      expiresAt, executed, cancelled, approved, expired
+                    //                      expiresAt, executed, cancelled, approved, expired,
+                    //                      requiresFullConsent, borrowedAmount, borrowedPerPerson
                     const proposalData = {
                         id: proposal[0],
                         proposer: proposal[1],
@@ -2011,6 +2012,9 @@ async function loadProposals() {
                         cancelled: proposal[12],
                         approved: proposal[13],
                         expired: proposal[14],
+                        requiresFullConsent: proposal[15],
+                        borrowedAmount: proposal[16],
+                        borrowedPerPerson: proposal[17],
                         hasVoted
                     };
                     
@@ -2043,12 +2047,36 @@ async function loadProposals() {
                 const totalVotes = votesFor + votesAgainst;
                 const percentFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
                 
+                // Preparar alerta de dinero prestado si aplica
+                const borrowedAlert = proposal.requiresFullConsent ? `
+                    <div class="borrowed-funds-alert">
+                        <div class="alert-header">
+                            <span class="alert-icon">⚠️</span>
+                            <strong>${t.app.fundDetail.vote.borrowedWarning}</strong>
+                        </div>
+                        <p class="alert-text">${t.app.fundDetail.vote.borrowedWarningText}</p>
+                        <div class="borrowed-details">
+                            <div class="borrowed-item">
+                                <span>${t.app.fundDetail.vote.totalBorrowed}</span>
+                                <strong>${formatEth(ethers.formatEther(proposal.borrowedAmount))} ETH</strong>
+                            </div>
+                            <div class="borrowed-item">
+                                <span>${t.app.fundDetail.vote.borrowedPerPerson}</span>
+                                <strong>${formatEth(ethers.formatEther(proposal.borrowedPerPerson))} ETH</strong>
+                            </div>
+                        </div>
+                        <p class="alert-footer">${t.app.fundDetail.vote.allMustVote}</p>
+                    </div>
+                ` : '';
+                
                 return `
-                    <div class="proposal-card">
+                    <div class="proposal-card ${proposal.requiresFullConsent ? 'requires-full-consent' : ''}">
                         <div class="proposal-header">
                             <h4>Propuesta #${proposal.id}</h4>
                             <span class="proposal-amount">${formatEth(amount)} ETH</span>
                         </div>
+                        
+                        ${borrowedAlert}
                         
                         <p class="proposal-description">${proposal.description}</p>
                         

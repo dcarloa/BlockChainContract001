@@ -392,7 +392,12 @@ const translations = {
                     voting: "Voting...",
                     executing: "Executing...",
                     success: "Vote recorded!",
-                    executeSuccess: "Proposal executed!"
+                    executeSuccess: "Proposal executed!",
+                    borrowedWarning: "⚠️ BORROWED FUNDS ALERT",
+                    borrowedWarningText: "This expense exceeds the contributions of the involved members. ALL members must vote.",
+                    totalBorrowed: "Total borrowed from non-involved members:",
+                    borrowedPerPerson: "Borrowed per non-involved member:",
+                    allMustVote: "All fund members can vote on this proposal"
                 },
                 history: {
                     title: "Proposal History",
@@ -918,7 +923,12 @@ const translations = {
                     voting: "Votando...",
                     executing: "Ejecutando...",
                     success: "¡Voto registrado!",
-                    executeSuccess: "¡Propuesta ejecutada!"
+                    executeSuccess: "¡Propuesta ejecutada!",
+                    borrowedWarning: "⚠️ ALERTA DE FONDOS PRESTADOS",
+                    borrowedWarningText: "Este gasto excede las contribuciones de los miembros involucrados. TODOS los miembros deben votar.",
+                    totalBorrowed: "Total prestado de miembros no involucrados:",
+                    borrowedPerPerson: "Prestado por cada miembro no involucrado:",
+                    allMustVote: "Todos los miembros del fondo pueden votar en esta propuesta"
                 },
                 history: {
                     title: "Historial de Propuestas",

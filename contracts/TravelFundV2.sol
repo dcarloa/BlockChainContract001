@@ -64,6 +64,9 @@ contract TravelFundV2 {
         bool cancelled;
         bool approved;
         address[] involvedMembers;     // Miembros involucrados en esta propuesta
+        bool requiresFullConsent;      // Si necesita aprobación de todos (usa dinero de no-involucrados)
+        uint256 borrowedAmount;        // Cantidad total que se pide prestada de no-involucrados
+        uint256 borrowedPerPerson;     // Cantidad prestada por cada no-involucrado
         mapping(address => bool) hasVoted;
         mapping(address => bool) isInvolved;  // Para verificación rápida
     }
@@ -452,6 +455,28 @@ contract TravelFundV2 {
             newProposal.isInvolved[_involvedMembers[i]] = true;
         }
         
+        // Calcular si se necesita dinero de miembros no involucrados
+        uint256 totalFromInvolved = 0;
+        for (uint256 i = 0; i < _involvedMembers.length; i++) {
+            totalFromInvolved += contributions[_involvedMembers[i]];
+        }
+        
+        if (_amount > totalFromInvolved) {
+            // Se necesita dinero de no-involucrados
+            newProposal.requiresFullConsent = true;
+            newProposal.borrowedAmount = _amount - totalFromInvolved;
+            
+            // Calcular cuánto se pide prestado por cada no-involucrado
+            uint256 nonInvolvedCount = contributors.length - _involvedMembers.length;
+            if (nonInvolvedCount > 0) {
+                newProposal.borrowedPerPerson = newProposal.borrowedAmount / nonInvolvedCount;
+            }
+        } else {
+            newProposal.requiresFullConsent = false;
+            newProposal.borrowedAmount = 0;
+            newProposal.borrowedPerPerson = 0;
+        }
+        
         emit ProposalCreated(
             proposalCount, 
             msg.sender, 
@@ -500,7 +525,12 @@ contract TravelFundV2 {
         require(!proposal.cancelled, "La propuesta fue cancelada");
         require(!isProposalExpired(_proposalId), "La propuesta expiro");
         require(!proposal.hasVoted[msg.sender], "Ya votaste en esta propuesta");
-        require(proposal.isInvolved[msg.sender], "No estas involucrado en esta propuesta");
+        
+        // Si requiere consentimiento completo, cualquier contribuidor puede votar
+        // Si no, solo los involucrados pueden votar
+        if (!proposal.requiresFullConsent) {
+            require(proposal.isInvolved[msg.sender], "No estas involucrado en esta propuesta");
+        }
         
         proposal.hasVoted[msg.sender] = true;
         
@@ -524,17 +554,19 @@ contract TravelFundV2 {
         Proposal storage proposal = proposals[_proposalId];
         
         uint256 totalVotes = proposal.votesFor + proposal.votesAgainst;
-        uint256 involvedCount = proposal.involvedMembers.length;
+        
+        // Si requiere consentimiento completo, usar todos los contribuidores
+        // Si no, usar solo los involucrados
+        uint256 voterBase = proposal.requiresFullConsent ? contributors.length : proposal.involvedMembers.length;
         
         // Verificar si se alcanzó el mínimo de votos
-        // Usar el menor entre minimumVotes y el número de miembros involucrados
-        uint256 effectiveMinimumVotes = minimumVotes < involvedCount ? minimumVotes : involvedCount;
+        uint256 effectiveMinimumVotes = minimumVotes < voterBase ? minimumVotes : voterBase;
         if (totalVotes < effectiveMinimumVotes) {
             return;
         }
         
-        // Calcular el porcentaje de votos a favor basado en miembros involucrados
-        uint256 approvalRate = (proposal.votesFor * 100) / involvedCount;
+        // Calcular el porcentaje de votos a favor basado en la base de votantes
+        uint256 approvalRate = (proposal.votesFor * 100) / voterBase;
         
         if (approvalRate >= approvalPercentage) {
             proposal.approved = true;
@@ -643,7 +675,10 @@ contract TravelFundV2 {
         bool executed,
         bool cancelled,
         bool approved,
-        bool expired
+        bool expired,
+        bool requiresFullConsent,
+        uint256 borrowedAmount,
+        uint256 borrowedPerPerson
     ) {
         Proposal storage p = proposals[_proposalId];
         return (
@@ -661,7 +696,10 @@ contract TravelFundV2 {
             p.executed,
             p.cancelled,
             p.approved,
-            isProposalExpired(_proposalId)
+            isProposalExpired(_proposalId),
+            p.requiresFullConsent,
+            p.borrowedAmount,
+            p.borrowedPerPerson
         );
     }
     
