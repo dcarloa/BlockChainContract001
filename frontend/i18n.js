@@ -330,23 +330,49 @@ const translations = {
                 },
                 invite: {
                     title: "Invite Members",
-                    address: "Member Address",
+                    subtitle: "Invite friends to join the group. They must accept the invitation.",
+                    infoTitle: "Information:",
+                    infoPoints: [
+                        "Only the group creator can invite",
+                        "Invitees will see the invitation in their dashboard",
+                        "They must accept before recording expenses",
+                        "You cannot invite yourself"
+                    ],
+                    addressLabel: "Nickname or Address",
+                    addressPlaceholder: "e.g.: Bob or 0x123...",
+                    addressHelp: "Enter the user's nickname or their Ethereum address",
                     button: "Send Invitation",
                     sending: "Sending...",
                     success: "Invitation sent!"
                 },
                 propose: {
-                    title: "Create Proposal",
-                    recipient: "Recipient Address",
-                    amount: "Amount (ETH)",
-                    description: "Description",
-                    descriptionPlaceholder: "Describe the expense...",
-                    button: "Create Proposal",
+                    title: "Propose Expense",
+                    subtitle: "Propose using money from the common pot to pay an external provider. The group will vote on approval.",
+                    howItWorks: "How it works:",
+                    howItWorksPoints: [
+                        "Propose paying an expense from the common pot (hotel, restaurant, etc.)",
+                        "Indicate who will be paid (external provider with their address)",
+                        "The group votes whether to approve or reject using the pot money",
+                        "If approved, money is sent directly from the pot to the provider"
+                    ],
+                    recipientLabel: "Who will be paid (Provider address)",
+                    recipientPlaceholder: "0x123... (hotel address, restaurant, etc.)",
+                    recipientHelp: "Ethereum address of the external agent who will receive payment",
+                    amountLabel: "Amount to Pay (ETH)",
+                    amountPlaceholder: "0.0",
+                    amountHelp: "Amount that will be paid from the common pot to the provider",
+                    descriptionLabel: "Expense Description",
+                    descriptionPlaceholder: "e.g.: 3 nights hotel in Cancun - Payment to Marriott, Group dinner at La Costa Restaurant...",
+                    descriptionHelp: "Explain the reason for the expense and who will be paid",
+                    button: "Propose Use of Funds",
                     creating: "Creating...",
                     success: "Proposal created!"
                 },
                 vote: {
                     title: "Vote on Proposals",
+                    description: "Here you will see all pending proposals that need your vote.",
+                    noProposals: "No pending proposals",
+                    noProposalsSubtitle: "When a member creates a proposal, it will appear here for you to vote",
                     empty: "No proposals to vote",
                     status: {
                         pending: "Pending",
@@ -362,6 +388,29 @@ const translations = {
                     executing: "Executing...",
                     success: "Vote recorded!",
                     executeSuccess: "Proposal executed!"
+                },
+                history: {
+                    title: "Proposal History",
+                    description: "View all proposals that have been approved, rejected, or executed.",
+                    empty: "No history",
+                    emptySubtitle: "When proposals are approved or rejected, they will appear here"
+                },
+                balances: {
+                    title: "Group Balances",
+                    description: "View how much each member owes or is owed based on their contributions and share of approved expenses.",
+                    currentBalance: "Current Balance",
+                    totalContributions: "Total Contributions",
+                    totalExpenses: "Total Expenses",
+                    howItWorks: "How balances are calculated:",
+                    howItWorksPoints: [
+                        "Total Contributions: Sum of all deposits made by members",
+                        "Total Expenses: Sum of all approved and executed proposals",
+                        "Fair Share: Total expenses ÷ Number of active members",
+                        "Individual Balance: Member's contribution - Fair share",
+                        "Green (+): You contributed more, others owe you. Red (-): You owe to the group"
+                    ],
+                    empty: "No members",
+                    emptySubtitle: "Balances will appear when members start contributing"
                 },
                 manage: {
                     title: "Fund Management",
@@ -774,23 +823,49 @@ const translations = {
                 },
                 invite: {
                     title: "Invitar Miembros",
-                    address: "Dirección del Miembro",
+                    subtitle: "Invita a amigos a unirse al grupo. Deben aceptar la invitación.",
+                    infoTitle: "Información:",
+                    infoPoints: [
+                        "Solo el creador del grupo puede invitar",
+                        "Los invitados verán la invitación en su panel",
+                        "Deben aceptar antes de registrar gastos",
+                        "No puedes invitarte a ti mismo"
+                    ],
+                    addressLabel: "Nickname o Dirección",
+                    addressPlaceholder: "Ej: Bob o 0x123...",
+                    addressHelp: "Ingresa el nickname del usuario o su dirección Ethereum",
                     button: "Enviar Invitación",
                     sending: "Enviando...",
                     success: "¡Invitación enviada!"
                 },
                 propose: {
-                    title: "Crear Propuesta",
-                    recipient: "Dirección del Destinatario",
-                    amount: "Monto (ETH)",
-                    description: "Descripción",
-                    descriptionPlaceholder: "Describe el gasto...",
-                    button: "Crear Propuesta",
+                    title: "Proponer Gasto",
+                    subtitle: "Propón usar dinero del bote común para pagar a un proveedor externo. El grupo votará la aprobación.",
+                    howItWorks: "Cómo funciona:",
+                    howItWorksPoints: [
+                        "Propones pagar un gasto del bote común (hotel, restaurante, etc.)",
+                        "Indicas quién será pagado (proveedor externo con su dirección)",
+                        "El grupo vota si aprueba o rechaza usar el dinero del bote",
+                        "Si se aprueba, el dinero se envía directamente del bote al proveedor"
+                    ],
+                    recipientLabel: "Quién será pagado (Dirección del proveedor)",
+                    recipientPlaceholder: "0x123... (dirección hotel, restaurante, etc.)",
+                    recipientHelp: "Dirección Ethereum del agente externo que recibirá el pago",
+                    amountLabel: "Monto a Pagar (ETH)",
+                    amountPlaceholder: "0.0",
+                    amountHelp: "Cantidad que se pagará del bote común al proveedor",
+                    descriptionLabel: "Descripción del Gasto",
+                    descriptionPlaceholder: "Ej: 3 noches hotel en Cancún - Pago a Marriott, Cena grupal en Restaurante La Costa...",
+                    descriptionHelp: "Explica el motivo del gasto y quién será pagado",
+                    button: "Proponer Uso de Fondos",
                     creating: "Creando...",
                     success: "¡Propuesta creada!"
                 },
                 vote: {
                     title: "Votar Propuestas",
+                    description: "Aquí verás todas las propuestas pendientes que necesitan tu voto.",
+                    noProposals: "No hay propuestas pendientes",
+                    noProposalsSubtitle: "Cuando un miembro cree una propuesta, aparecerá aquí para que votes",
                     empty: "No hay propuestas para votar",
                     status: {
                         pending: "Pendiente",
@@ -806,6 +881,29 @@ const translations = {
                     executing: "Ejecutando...",
                     success: "¡Voto registrado!",
                     executeSuccess: "¡Propuesta ejecutada!"
+                },
+                history: {
+                    title: "Historial de Propuestas",
+                    description: "Visualiza todas las propuestas que han sido aprobadas, rechazadas o ejecutadas.",
+                    empty: "Sin historial",
+                    emptySubtitle: "Cuando se aprueben o rechacen propuestas, aparecerán aquí"
+                },
+                balances: {
+                    title: "Balances del Grupo",
+                    description: "Visualiza cuánto debe o le deben a cada miembro según sus aportaciones y su parte de los gastos aprobados.",
+                    currentBalance: "Balance Actual",
+                    totalContributions: "Total Aportaciones",
+                    totalExpenses: "Total Gastos",
+                    howItWorks: "Cómo se calculan los balances:",
+                    howItWorksPoints: [
+                        "Total Aportaciones: Suma de todos los depósitos realizados por los miembros",
+                        "Total Gastos: Suma de todas las propuestas aprobadas y ejecutadas",
+                        "Parte Justa: Total gastos ÷ Número de miembros activos",
+                        "Balance Individual: Aportación del miembro - Parte justa",
+                        "Verde (+): Aportaste más, otros te deben. Rojo (-): Debes al grupo"
+                    ],
+                    empty: "Sin miembros",
+                    emptySubtitle: "Los balances aparecerán cuando los miembros empiecen a aportar"
                 },
                 manage: {
                     title: "Gestión del Fondo",

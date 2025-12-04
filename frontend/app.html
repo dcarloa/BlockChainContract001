@@ -1006,6 +1006,134 @@
             
             const closeButton = document.querySelector('#closeFundBtn');
             if (closeButton) closeButton.textContent = `🔒 ${t.app.fundDetail.manage.closeButton}`;
+            
+            // Invite Tab
+            const inviteTitle = document.querySelector('#inviteTab h3');
+            if (inviteTitle) inviteTitle.textContent = `🎫 ${t.app.fundDetail.invite.title}`;
+            
+            const inviteSubtitle = document.querySelector('#inviteTab > .tab-card > p');
+            if (inviteSubtitle) inviteSubtitle.textContent = t.app.fundDetail.invite.subtitle;
+            
+            const inviteInfoTitle = document.querySelector('.invite-info-box p strong');
+            if (inviteInfoTitle) inviteInfoTitle.textContent = `ℹ️ ${t.app.fundDetail.invite.infoTitle}`;
+            
+            const inviteInfoList = document.querySelector('.invite-info-box ul');
+            if (inviteInfoList) {
+                inviteInfoList.innerHTML = t.app.fundDetail.invite.infoPoints.map(point => `<li>${point}</li>`).join('');
+            }
+            
+            const inviteLabel = document.querySelector('label[for="inviteAddress"]');
+            if (inviteLabel) inviteLabel.textContent = t.app.fundDetail.invite.addressLabel;
+            
+            const inviteInput = document.querySelector('#inviteAddress');
+            if (inviteInput) inviteInput.placeholder = t.app.fundDetail.invite.addressPlaceholder;
+            
+            const inviteHelp = document.querySelector('#inviteTab small');
+            if (inviteHelp) inviteHelp.textContent = t.app.fundDetail.invite.addressHelp;
+            
+            const inviteBtn = document.querySelector('#inviteBtn');
+            if (inviteBtn) inviteBtn.textContent = t.app.fundDetail.invite.button;
+            
+            // Propose Tab
+            const proposeTitle = document.querySelector('#proposeTab h3');
+            if (proposeTitle) proposeTitle.textContent = `📝 ${t.app.fundDetail.propose.title}`;
+            
+            const proposeSubtitle = document.querySelector('#proposeTab > .tab-card > p');
+            if (proposeSubtitle) proposeSubtitle.textContent = t.app.fundDetail.propose.subtitle;
+            
+            const proposeHowItWorks = document.querySelector('#proposeTab .info-box p strong');
+            if (proposeHowItWorks) proposeHowItWorks.textContent = `💡 ${t.app.fundDetail.propose.howItWorks}`;
+            
+            const proposeHowItWorksList = document.querySelector('#proposeTab .info-box ul');
+            if (proposeHowItWorksList) {
+                proposeHowItWorksList.innerHTML = t.app.fundDetail.propose.howItWorksPoints.map(point => `<li>${point}</li>`).join('');
+            }
+            
+            const proposeRecipientLabel = document.querySelector('label[for="proposalRecipient"]');
+            if (proposeRecipientLabel) proposeRecipientLabel.textContent = t.app.fundDetail.propose.recipientLabel;
+            
+            const proposeRecipientInput = document.querySelector('#proposalRecipient');
+            if (proposeRecipientInput) proposeRecipientInput.placeholder = t.app.fundDetail.propose.recipientPlaceholder;
+            
+            const proposeRecipientHelp = document.querySelector('label[for="proposalRecipient"] + input + small');
+            if (proposeRecipientHelp) proposeRecipientHelp.textContent = t.app.fundDetail.propose.recipientHelp;
+            
+            const proposeAmountLabel = document.querySelector('label[for="proposalAmount"]');
+            if (proposeAmountLabel) proposeAmountLabel.textContent = t.app.fundDetail.propose.amountLabel;
+            
+            const proposeAmountInput = document.querySelector('#proposalAmount');
+            if (proposeAmountInput) proposeAmountInput.placeholder = t.app.fundDetail.propose.amountPlaceholder;
+            
+            const proposeAmountHelp = document.querySelector('label[for="proposalAmount"] + input + small');
+            if (proposeAmountHelp) proposeAmountHelp.textContent = t.app.fundDetail.propose.amountHelp;
+            
+            const proposeDescLabel = document.querySelector('label[for="proposalDescription"]');
+            if (proposeDescLabel) proposeDescLabel.textContent = t.app.fundDetail.propose.descriptionLabel;
+            
+            const proposeDescInput = document.querySelector('#proposalDescription');
+            if (proposeDescInput) proposeDescInput.placeholder = t.app.fundDetail.propose.descriptionPlaceholder;
+            
+            const proposeDescHelp = document.querySelector('label[for="proposalDescription"] + textarea + small');
+            if (proposeDescHelp) proposeDescHelp.textContent = t.app.fundDetail.propose.descriptionHelp;
+            
+            const proposeBtn = document.querySelector('#createProposalBtn');
+            if (proposeBtn) proposeBtn.textContent = `📝 ${t.app.fundDetail.propose.button}`;
+            
+            // Vote Tab
+            const voteTitle = document.querySelector('#voteTab h3');
+            if (voteTitle) voteTitle.textContent = `🗳️ ${t.app.fundDetail.vote.title}`;
+            
+            const voteDescription = document.querySelector('#voteTab .tab-description');
+            if (voteDescription) voteDescription.textContent = t.app.fundDetail.vote.description;
+            
+            const noProposalsTitle = document.querySelector('#noProposals h4');
+            if (noProposalsTitle) noProposalsTitle.textContent = t.app.fundDetail.vote.noProposals;
+            
+            const noProposalsSubtitle = document.querySelector('#noProposals p');
+            if (noProposalsSubtitle) noProposalsSubtitle.textContent = t.app.fundDetail.vote.noProposalsSubtitle;
+            
+            // History Tab
+            const historyTitle = document.querySelector('#historyTab h3');
+            if (historyTitle) historyTitle.textContent = `📜 ${t.app.fundDetail.history.title}`;
+            
+            const historyDescription = document.querySelector('#historyTab .tab-description');
+            if (historyDescription) historyDescription.textContent = t.app.fundDetail.history.description;
+            
+            const noHistoryTitle = document.querySelector('#noHistory h4');
+            if (noHistoryTitle) noHistoryTitle.textContent = t.app.fundDetail.history.empty;
+            
+            const noHistorySubtitle = document.querySelector('#noHistory p');
+            if (noHistorySubtitle) noHistorySubtitle.textContent = t.app.fundDetail.history.emptySubtitle;
+            
+            // Balances Tab
+            const balancesTitle = document.querySelector('#balancesTab h3');
+            if (balancesTitle) balancesTitle.textContent = `⚖️ ${t.app.fundDetail.balances.title}`;
+            
+            const balancesDescription = document.querySelector('#balancesTab .tab-description');
+            if (balancesDescription) balancesDescription.textContent = t.app.fundDetail.balances.description;
+            
+            const totalContributedLabel = document.querySelectorAll('.balance-stat-label')[0];
+            if (totalContributedLabel) totalContributedLabel.textContent = t.app.fundDetail.balances.totalContributions;
+            
+            const totalSpentLabel = document.querySelectorAll('.balance-stat-label')[1];
+            if (totalSpentLabel) totalSpentLabel.textContent = t.app.fundDetail.balances.totalExpenses;
+            
+            const availableBalanceLabel = document.querySelectorAll('.balance-stat-label')[2];
+            if (availableBalanceLabel) availableBalanceLabel.textContent = t.app.fundDetail.balances.currentBalance;
+            
+            const balancesHowItWorks = document.querySelector('#balancesTab .info-box p strong');
+            if (balancesHowItWorks) balancesHowItWorks.textContent = `💡 ${t.app.fundDetail.balances.howItWorks}`;
+            
+            const balancesHowItWorksList = document.querySelector('#balancesTab .info-box ul');
+            if (balancesHowItWorksList) {
+                balancesHowItWorksList.innerHTML = t.app.fundDetail.balances.howItWorksPoints.map(point => `<li>${point}</li>`).join('');
+            }
+            
+            const noBalancesTitle = document.querySelector('#noBalances h4');
+            if (noBalancesTitle) noBalancesTitle.textContent = t.app.fundDetail.balances.empty;
+            
+            const noBalancesSubtitle = document.querySelector('#noBalances p');
+            if (noBalancesSubtitle) noBalancesSubtitle.textContent = t.app.fundDetail.balances.emptySubtitle;
         }
 
         function updateAppSettingsUI() {
