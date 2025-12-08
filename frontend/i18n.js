@@ -5,11 +5,11 @@ const translations = {
     en: {
         // Navigation
         nav: {
-            features: "Features",
-            howItWorks: "How It Works",
-            benefits: "Benefits",
+            features: "The Colony",
+            howItWorks: "How Ants Work",
+            benefits: "Ant Power",
             faq: "FAQ",
-            launchApp: "Launch App"
+            launchApp: "Join Colony"
         },
         // Settings
         settings: {
@@ -555,11 +555,11 @@ const translations = {
     es: {
         // Navigation
         nav: {
-            features: "Características",
-            howItWorks: "Cómo Funciona",
-            benefits: "Beneficios",
+            features: "La Colonia",
+            howItWorks: "Cómo Trabajan las Hormigas",
+            benefits: "Poder Hormiga",
             faq: "FAQ",
-            launchApp: "Abrir App"
+            launchApp: "Unirse a la Colonia"
         },
         // Settings
         settings: {
