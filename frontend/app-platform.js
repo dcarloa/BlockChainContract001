@@ -189,9 +189,9 @@ async function connectWallet() {
             
             // Show network switcher
             const switchNetwork = confirm(
-                `⚠️ Red incorrecta detectada (Chain ID: ${network.chainId})\n\n` +
-                `Para usar esta app necesitas estar en Base Sepolia (Chain ID: 84532)\n\n` +
-                `¿Quieres cambiar de red automáticamente?`
+                `⚠️ Wrong network detected (Chain ID: ${network.chainId})\n\n` +
+                `To use this app you need to be on Base Sepolia (Chain ID: 84532)\n\n` +
+                `Do you want to switch network automatically?`
             );
             
             if (switchNetwork) {
@@ -203,11 +203,11 @@ async function connectWallet() {
                     return;
                 } catch (switchError) {
                     hideLoading();
-                    showToast("❌ Error al cambiar de red. Por favor cámbiala manualmente.", "error");
+                    showToast("❌ Error switching network. Please change it manually.", "error");
                     return;
                 }
             } else {
-                showToast("⚠️ Por favor cambia a la red Base Sepolia (Chain ID: 84532)", "warning");
+                showToast("⚠️ Please switch to Base Sepolia network (Chain ID: 84532)", "warning");
                 return;
             }
         }
@@ -234,12 +234,12 @@ async function connectWallet() {
         
     } catch (error) {
         hideLoading();
-        console.error("❌ Error conectando wallet:", error);
+        console.error("❌ Error connecting wallet:", error);
         
         if (error.message.includes('User rejected')) {
-            showToast("❌ Conexión cancelada por el usuario", "warning");
+            showToast("❌ Connection cancelled by user", "warning");
         } else {
-            showToast("❌ Error al conectar wallet: " + error.message, "error");
+            showToast("❌ Error connecting wallet: " + error.message, "error");
         }
     }
 }
@@ -248,8 +248,8 @@ async function disconnectWallet() {
     try {
         // Confirm disconnection
         const confirmed = confirm(
-            "¿Estás seguro que deseas desconectar tu wallet?\n\n" +
-            "Serás redirigido a la página principal."
+            "Are you sure you want to disconnect your wallet?\n\n" +
+            "You will be redirected to the home page."
         );
         
         if (!confirmed) {
@@ -290,7 +290,7 @@ async function disconnectWallet() {
         hideLoading();
         
         // Show success message and redirect
-        showToast("✅ Wallet desconectada correctamente", "success");
+        showToast("✅ Wallet disconnected successfully", "success");
         
         setTimeout(() => {
             showLoading(t.app.loading.redirecting);
@@ -302,7 +302,7 @@ async function disconnectWallet() {
     } catch (error) {
         hideLoading();
         console.error("Error disconnecting wallet:", error);
-        showToast("❌ Error al desconectar: " + error.message, "error");
+        showToast("❌ Error disconnecting: " + error.message, "error");
     }
 }
 
@@ -519,18 +519,18 @@ async function setNickname() {
         const nickname = document.getElementById('nicknameInput').value.trim();
         
         if (!nickname) {
-            showToast("Por favor ingresa un nickname", "warning");
+            showToast("Please enter a nickname", "warning");
             return;
         }
         
         if (nickname.length < 3 || nickname.length > 32) {
-            showToast("El nickname debe tener entre 3 y 32 caracteres", "warning");
+            showToast("Nickname must be between 3 and 32 characters", "warning");
             return;
         }
         
-        // Validar que solo contenga letras y números
+        // Validate that it only contains letters and numbers
         if (!/^[a-zA-Z0-9]+$/.test(nickname)) {
-            showToast("Solo se permiten letras y números", "warning");
+            showToast("Only letters and numbers are allowed", "warning");
             return;
         }
         
@@ -540,8 +540,8 @@ async function setNickname() {
         const currentNickname = await factoryContract.getNickname(userAddress);
         if (currentNickname.toLowerCase() !== userAddress.toLowerCase()) {
             hideLoading();
-            showToast(`⚠️ Ya tienes un nickname establecido: "${currentNickname}"`, "warning");
-            // Actualizar UI con el nickname existente
+            showToast(`⚠️ You already have a nickname set: "${currentNickname}"`, "warning");
+            // Update UI with existing nickname
             userNickname = currentNickname;
             document.getElementById('nicknameDisplay').textContent = userNickname;
             document.getElementById('userNickname').style.display = 'flex';
@@ -558,7 +558,7 @@ async function setNickname() {
         const isAvailable = await factoryContract.isNicknameAvailable(nickname);
         if (!isAvailable) {
             hideLoading();
-            showToast("Este nickname ya está en uso. Elige otro.", "warning");
+            showToast("This nickname is already in use. Choose another.", "warning");
             return;
         }
         
@@ -575,9 +575,9 @@ async function setNickname() {
         // Cerrar modal
         document.getElementById('nicknameModal').style.display = 'none';
         
-        showToast(`✅ Nickname "${userNickname}" establecido correctamente!`, "success");
+        showToast(`✅ Nickname "${userNickname}" set successfully!`, "success");
         
-        // Cargar dashboard
+        // Load dashboard
         await loadDashboard();
         
         hideLoading();
@@ -585,7 +585,7 @@ async function setNickname() {
     } catch (error) {
         hideLoading();
         console.error("Error setting nickname:", error);
-        showToast("Error al establecer nickname: " + error.message, "error");
+        showToast("Error setting nickname: " + error.message, "error");
     }
 }
 
@@ -616,7 +616,7 @@ async function loadDashboard() {
     } catch (error) {
         hideLoading();
         console.error("Error loading dashboard:", error);
-        showToast("Error cargando el dashboard", "error");
+        showToast("Error loading dashboard", "error");
     }
 }
 
@@ -687,7 +687,7 @@ async function loadPendingInvitations() {
                                 ${getFundTypeIcon(Number(fundType))}
                                 ${fundName}
                             </h4>
-                            <p>Invitado por: ${creatorDisplay}</p>
+                            <p>Invited by: ${creatorDisplay}</p>
                         </div>
                         <div class="invitation-item-actions">
                             <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fundAddress}', '${fundName}')">
@@ -725,7 +725,7 @@ async function loadPendingInvitations() {
 
 window.acceptFundInvitation = async function(fundAddress, fundName) {
     try {
-        showLoading(`Aceptando invitación a ${fundName}...`);
+        showLoading(`Accepting invitation to ${fundName}...`);
         
         const fundContract = new ethers.Contract(
             fundAddress,
@@ -755,20 +755,20 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
         await refreshCurrentView();
         await loadPendingInvitations();
         
-        showToast(`✅ Invitación aceptada! Ahora eres miembro de ${fundName}`, "success");
+        showToast(`✅ Invitation accepted! You are now a member of ${fundName}`, "success");
         
         hideLoading();
         
     } catch (error) {
         hideLoading();
         console.error("Error accepting invitation:", error);
-        showToast("Error al aceptar invitación: " + error.message, "error");
+        showToast("Error accepting invitation: " + error.message, "error");
     }
 }
 
 window.openInvitedFund = async function(fundAddress) {
     try {
-        showLoading("Cargando detalles del fondo...");
+        showLoading("Loading fund details...");
         
         // Get fund info from factory
         const totalFunds = await factoryContract.getTotalFunds();
@@ -814,7 +814,7 @@ window.openInvitedFund = async function(fundAddress) {
     } catch (error) {
         hideLoading();
         console.error("Error opening invited fund:", error);
-        showToast("Error al abrir el fondo: " + error.message, "error");
+        showToast("Error opening fund: " + error.message, "error");
     }
 }
 
@@ -881,7 +881,7 @@ async function loadUserFunds() {
         
     } catch (error) {
         console.error("Error loading user funds:", error);
-        showToast("Error cargando tus fondos", "error");
+        showToast("Error loading your funds", "error");
     }
 }
 
@@ -1138,7 +1138,7 @@ async function deactivateFund(fundAddress, fundName) {
         // Refresh view to show deactivated state
         await refreshCurrentView();
         
-        showToast("✅ Fondo desactivado. Ahora está en modo solo lectura.", "success");
+        showToast("✅ Fund deactivated. Now in read-only mode.", "success");
         
         hideLoading();
         
@@ -1215,14 +1215,14 @@ async function createFund(event) {
         const fundType = document.querySelector('input[name="fundType"]:checked').value;
         
         if (!fundName) {
-            showToast("Por favor ingresa el nombre del grupo", "warning");
+            showToast("Please enter the fund name", "warning");
             return;
         }
         
-        // targetAmount es opcional - 0 significa sin límite
+        // targetAmount is optional - 0 means no limit
         const targetAmountValue = targetAmount && parseFloat(targetAmount) > 0 ? parseFloat(targetAmount) : 0;
         
-        showLoading("Creando grupo...");
+        showLoading("Creating fund...");
         closeCreateFundModal();
         
         const targetAmountWei = ethers.parseEther(targetAmountValue.toString());
@@ -1240,16 +1240,16 @@ async function createFund(event) {
         
         console.log("Transacción enviada:", tx.hash);
         const receipt = await tx.wait();
-        console.log("✅ Transacción confirmada:", receipt.hash);
+        console.log("✅ Transaction confirmed:", receipt.hash);
         
-        showToast(`✅ Fondo "${fundName}" creado exitosamente!`, "success");
+        showToast(`✅ Fund "${fundName}" created successfully!`, "success");
         
-        // Dar tiempo para que el estado se actualice en blockchain
-        showLoading("🐜 Esperando confirmación de la colonia...");
+        // Give time for blockchain state to update
+        showLoading("🐜 Waiting for colony confirmation...");
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Recargar fondos
-        showLoading("Cargando tu nuevo grupo...");
+        // Reload funds
+        showLoading("Loading your new fund...");
         await loadUserFunds();
         
         // Asegurarse de que el dashboard esté visible
@@ -1496,7 +1496,7 @@ async function loadFundDetailView() {
             switchFundTab('members');
             
             // Show closed fund message
-            showToast("⚠️ Este fondo está cerrado. No se permiten más acciones.", "warning");
+            showToast("⚠️ This fund is closed. No more actions allowed.", "warning");
         } else {
             // Show all tabs if fund is active
             const depositTabBtn = document.querySelector('.fund-tab-btn[data-tab="deposit"]');
@@ -1516,7 +1516,7 @@ async function loadFundDetailView() {
         
     } catch (error) {
         console.error("Error loading fund details:", error);
-        showToast("Error cargando detalles del fondo", "error");
+        showToast("Error loading fund details", "error");
     }
 }
 
@@ -1559,7 +1559,7 @@ async function depositToFund() {
         const amount = document.getElementById('depositAmount').value;
         
         if (!amount || parseFloat(amount) <= 0) {
-            showToast("Por favor ingresa un monto válido", "warning");
+            showToast("Please enter a valid amount", "warning");
             return;
         }
         
@@ -1578,13 +1578,13 @@ async function depositToFund() {
         
         if (isPrivate && memberStatus === 0n) {
             console.log("❌ BLOCKED: User has no invitation");
-            showToast("⚠️ Este es un fondo privado. Necesitas una invitación del creador para participar.", "warning");
+            showToast("⚠️ This is a private fund. You need an invitation from the creator to participate.", "warning");
             return;
         }
         
         if (isPrivate && memberStatus === 1n) {
             console.log("❌ BLOCKED: User has pending invitation");
-            showToast("⚠️ Tienes una invitación pendiente. Acéptala primero en la pestaña 'Invitar' antes de depositar.", "warning");
+            showToast("⚠️ You have a pending invitation. Accept it first in the 'Invite' tab before depositing.", "warning");
             return;
         }
         
@@ -1599,11 +1599,11 @@ async function depositToFund() {
         // Now show loading after user confirmed
         showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
-        console.log("✅ Depósito confirmado - tx:", receipt.hash);
+        console.log("✅ Deposit confirmed - tx:", receipt.hash);
         
-        showToast(`✅ Depósito de ${amount} ETH exitoso!`, "success");
+        showToast(`✅ Deposit of ${amount} ETH successful!`, "success");
         
-        // Dar tiempo para que el estado se actualice
+        // Give time for state to update
         showLoading("🐜 Syncing balances...");
         await new Promise(resolve => setTimeout(resolve, 2000));
         
@@ -1620,13 +1620,13 @@ async function depositToFund() {
         console.error("Error depositing:", error);
         
         // Better error messages
-        let errorMsg = "Error al depositar";
+        let errorMsg = "Error depositing";
         if (error.message.includes("No estas autorizado")) {
-            errorMsg = "No estás autorizado para participar en este fondo privado. Necesitas ser invitado primero.";
+            errorMsg = "You are not authorized to participate in this private fund. You need to be invited first.";
         } else if (error.message.includes("insufficient funds")) {
-            errorMsg = "Fondos insuficientes en tu cuenta";
+            errorMsg = "Insufficient funds in your account";
         } else if (error.message.includes("user rejected")) {
-            errorMsg = "Transacción cancelada";
+            errorMsg = "Transaction cancelled";
         }
         
         showToast(errorMsg, "error");
@@ -1638,7 +1638,7 @@ async function inviteMember() {
         const addressOrNickname = document.getElementById('inviteAddress').value.trim();
         
         if (!addressOrNickname) {
-            showToast("Por favor ingresa un nickname o dirección", "warning");
+            showToast("Please enter a nickname or address", "warning");
             return;
         }
         
@@ -1660,7 +1660,7 @@ async function inviteMember() {
         
         // Check if inviting yourself
         if (targetAddress.toLowerCase() === userAddress.toLowerCase()) {
-            showToast("⚠️ No puedes invitarte a ti mismo", "warning");
+            showToast("⚠️ You cannot invite yourself", "warning");
             return;
         }
         
@@ -1675,11 +1675,11 @@ async function inviteMember() {
         console.log("  memberStatus del destinatario:", memberStatus, "(0=NotInvited, 1=Invited, 2=Active)");
         
         if (memberStatus === 1n) {
-            showToast(`⚠️ ${addressOrNickname} ya tiene una invitación pendiente`, "warning");
+            showToast(`⚠️ ${addressOrNickname} already has a pending invitation`, "warning");
             return;
         }
         if (memberStatus === 2n) {
-            showToast(`⚠️ ${addressOrNickname} ya es miembro activo del fondo`, "warning");
+            showToast(`⚠️ ${addressOrNickname} is already an active member of the fund`, "warning");
             return;
         }
         try {
@@ -1691,7 +1691,7 @@ async function inviteMember() {
             console.error("  Error verificando isContributor:", e);
         }
         
-        showLoading("Enviando invitación...");
+        showLoading("Sending invitation...");
         
         let tx;
         if (addressOrNickname.startsWith('0x')) {
@@ -1703,12 +1703,12 @@ async function inviteMember() {
         }
         
         const receipt = await tx.wait();
-        console.log("✅ Invitación enviada - tx:", receipt.hash);
+        console.log("✅ Invitation sent - tx:", receipt.hash);
         
-        showToast(`✅ Invitación enviada a ${addressOrNickname}!`, "success");
+        showToast(`✅ Invitation sent to ${addressOrNickname}!`, "success");
         
-        // Dar tiempo para que el estado se actualice
-        showLoading("🐜 Actualizando miembros...");
+        // Give time for state to update
+        showLoading("🐜 Updating members...");
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Refresh view to show updated members
@@ -1723,11 +1723,11 @@ async function inviteMember() {
         hideLoading();
         console.error("Error inviting member:", error);
         
-        let errorMsg = "Error al invitar";
+        let errorMsg = "Error sending invitation";
         if (error.message.includes("Ya esta invitado")) {
-            errorMsg = "Esta persona ya fue invitada o ya es miembro del fondo";
+            errorMsg = "This person has already been invited or is already a member of the fund";
         } else if (error.message.includes("Nickname not found")) {
-            errorMsg = "Nickname no encontrado";
+            errorMsg = "Nickname not found";
         } else if (error.message.includes("Only creator")) {
             errorMsg = "Solo el creador puede invitar miembros";
         }
@@ -1758,10 +1758,10 @@ async function acceptInvitation() {
             // Continue anyway - user is still a member of the fund
         }
         
-        showToast("✅ Invitación aceptada! Ahora eres miembro activo", "success");
+        showToast("✅ Invitation accepted! You are now an active member", "success");
         
-        // Dar tiempo para que el estado se actualice
-        showLoading("🐜 Actualizando colonias...");
+        // Give time for state to update
+        showLoading("🐜 Updating colonies...");
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         // BUG 2 FIX: Force complete dashboard reload
@@ -1778,7 +1778,7 @@ async function acceptInvitation() {
     } catch (error) {
         hideLoading();
         console.error("Error accepting invitation:", error);
-        showToast("Error al aceptar invitación: " + error.message, "error");
+        showToast("Error accepting invitation: " + error.message, "error");
     }
 }
 
@@ -1790,17 +1790,17 @@ async function createProposal() {
         const description = document.getElementById('proposalDescription').value.trim();
         
         if (!recipientInput) {
-            showToast("Por favor ingresa el destinatario", "warning");
+            showToast("Please enter the recipient", "warning");
             return;
         }
         
         if (!amount || parseFloat(amount) <= 0) {
-            showToast("Por favor ingresa un monto válido", "warning");
+            showToast("Please enter a valid amount", "warning");
             return;
         }
         
         if (!description) {
-            showToast("Por favor ingresa una descripción", "warning");
+            showToast("Please enter a description", "warning");
             return;
         }
         
@@ -1821,7 +1821,7 @@ async function createProposal() {
         // PROBLEM 2 FIX: Check if user is a contributor before allowing proposal
         const userContribution = await currentFundContract.contributions(userAddress);
         if (userContribution === 0n) {
-            showToast("⚠️ Debes depositar fondos antes de crear propuestas. Ve a la pestaña 'Depositar' primero.", "warning");
+            showToast("⚠️ You must deposit funds before creating proposals. Go to the 'Deposit' tab first.", "warning");
             return;
         }
         
@@ -1880,17 +1880,17 @@ async function createProposal() {
         console.error("Error creating proposal:", error);
         
         // PROBLEM 2 FIX: Better error messages for common issues
-        let errorMsg = "Error al crear propuesta";
+        let errorMsg = "Error creating proposal";
         if (error.message.includes("No eres contribuyente")) {
-            errorMsg = "⚠️ Debes depositar fondos antes de crear propuestas. Ve a la pestaña 'Depositar' primero.";
+            errorMsg = "⚠️ You must deposit funds before creating proposals. Go to the 'Deposit' tab first.";
         } else if (error.message.includes("Monto excede limite")) {
-            errorMsg = "⚠️ El monto no puede exceder el 80% del balance del fondo";
+            errorMsg = "⚠️ Amount cannot exceed 80% of fund balance";
         } else if (error.message.includes("Only active members")) {
-            errorMsg = "⚠️ Solo miembros activos pueden crear propuestas. Acepta tu invitación primero.";
+            errorMsg = "⚠️ Only active members can create proposals. Accept your invitation first.";
         } else if (error.message.includes("Debe seleccionar al menos un miembro")) {
-            errorMsg = "⚠️ Debes seleccionar al menos un miembro involucrado";
+            errorMsg = "⚠️ You must select at least one involved member";
         } else {
-            errorMsg = "Error al crear propuesta: " + error.message;
+            errorMsg = "Error creating proposal: " + error.message;
         }
         
         showToast(errorMsg, "error");
@@ -2110,7 +2110,7 @@ async function loadProposals() {
                 return `
                     <div class="proposal-card ${proposal.requiresFullConsent ? 'requires-full-consent' : ''}">
                         <div class="proposal-header">
-                            <h4>Propuesta #${proposal.id}</h4>
+                            <h4>Proposal #${proposal.id}</h4>
                             <span class="proposal-amount">${formatEth(amount)} ETH</span>
                         </div>
                         
@@ -2125,8 +2125,8 @@ async function loadProposals() {
                         <p class="proposal-description">${proposal.description}</p>
                         
                         <div class="proposal-meta">
-                            <span title="${proposal.proposer}">👤 Por: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
-                            <span title="${proposal.recipient}">🎯 Para: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
+                            <span title="${proposal.proposer}">👤 From: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
+                            <span title="${proposal.recipient}">🎯 To: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
                         </div>
                         
                         <div class="proposal-votes">
@@ -2134,27 +2134,27 @@ async function loadProposals() {
                                 <div class="vote-bar-fill" style="width: ${percentFor}%"></div>
                             </div>
                             <div class="vote-counts">
-                                <span>✅ ${votesFor} a favor</span>
-                                <span>❌ ${votesAgainst} en contra</span>
+                                <span>✅ ${votesFor} for</span>
+                                <span>❌ ${votesAgainst} against</span>
                             </div>
                         </div>
                         
                         ${proposal.hasVoted ? `
-                            <div class="voted-badge">Ya votaste en esta propuesta</div>
+                            <div class="voted-badge">You already voted on this proposal</div>
                         ` : `
                             <div class="proposal-actions">
                                 <button class="btn btn-success" onclick="voteProposal(${proposal.id}, true)">
-                                    Votar a Favor
+                                    Vote For
                                 </button>
                                 <button class="btn btn-danger" onclick="voteProposal(${proposal.id}, false)">
-                                    Votar en Contra
+                                    Vote Against
                                 </button>
                             </div>
                         `}
                         
                         ${proposal.approved && !proposal.executed ? `
                             <button class="btn btn-primary btn-block" onclick="executeProposal(${proposal.id})">
-                                ⚡ Ejecutar Propuesta
+                                ⚡ Execute Proposal
                             </button>
                         ` : ''}
                     </div>
@@ -2179,7 +2179,7 @@ async function voteProposal(proposalId, inFavor) {
         const receipt = await tx.wait();
         console.log("✅ Voto registrado - tx:", receipt.hash);
         
-        showToast(`✅ Voto ${inFavor ? 'a favor' : 'en contra'} registrado!`, "success");
+        showToast(`✅ Vote ${inFavor ? 'for' : 'against'} registered!`, "success");
         
         // Dar tiempo para que el estado se actualice
         showLoading("🐜 Syncing vote count... (this may take a few seconds)");
@@ -2224,9 +2224,9 @@ async function executeProposal(proposalId) {
         // Now show loading after user confirmed
         showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
-        console.log("✅ Propuesta ejecutada - tx:", receipt.hash);
+        console.log("✅ Proposal executed - tx:", receipt.hash);
         
-        showToast("✅ Propuesta ejecutada! Fondos transferidos.", "success");
+        showToast("✅ Proposal executed! Funds transferred.", "success");
         
         // Dar tiempo para que el estado se actualice
         showLoading("🐜 Actualizando balances...");
@@ -2240,7 +2240,7 @@ async function executeProposal(proposalId) {
     } catch (error) {
         hideLoading();
         console.error("Error executing proposal:", error);
-        showToast("Error al ejecutar propuesta: " + error.message, "error");
+        showToast("Error executing proposal: " + error.message, "error");
     }
 }
 
@@ -2308,19 +2308,19 @@ async function loadHistory() {
             let statusBadge = '';
             let statusClass = '';
             if (proposal.executed) {
-                statusBadge = '<span class="status-badge status-executed">✅ Ejecutada</span>';
+                statusBadge = '<span class="status-badge status-executed">✅ Executed</span>';
                 statusClass = 'proposal-executed';
             } else if (proposal.cancelled) {
-                statusBadge = '<span class="status-badge status-cancelled">❌ Cancelada</span>';
+                statusBadge = '<span class="status-badge status-cancelled">❌ Cancelled</span>';
                 statusClass = 'proposal-cancelled';
             } else if (proposal.expired) {
-                statusBadge = '<span class="status-badge status-expired">⏱️ Expirada</span>';
+                statusBadge = '<span class="status-badge status-expired">⏱️ Expired</span>';
                 statusClass = 'proposal-expired';
             } else if (proposal.approved) {
-                statusBadge = '<span class="status-badge status-approved">👍 Aprobada</span>';
+                statusBadge = '<span class="status-badge status-approved">👍 Approved</span>';
                 statusClass = 'proposal-approved';
             } else {
-                statusBadge = '<span class="status-badge status-active">🕒 Activa</span>';
+                statusBadge = '<span class="status-badge status-active">🕒 Active</span>';
                 statusClass = 'proposal-active';
             }
             
@@ -2334,11 +2334,11 @@ async function loadHistory() {
                     </div>
                     <p class="proposal-description">${proposal.description}</p>
                     <div class="proposal-meta">
-                        <span title="${proposal.proposer}">👤 Por: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
-                        <span title="${proposal.recipient}">🎯 Para: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
+                        <span title="${proposal.proposer}">👤 From: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
+                        <span title="${proposal.recipient}">🎯 To: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
                     </div>
                     <div class="proposal-meta">
-                        <span>📅 Creada: ${createdDate}</span>
+                        <span>📅 Created: ${createdDate}</span>
                     </div>
                     <div class="proposal-votes">
                         <div class="vote-bar">
@@ -2448,7 +2448,7 @@ async function loadBalances() {
             const isPositive = member.balance > 0n;
             const isNegative = member.balance < 0n;
             const statusClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
-            const statusText = isPositive ? 'Debe recibir' : isNegative ? 'Debe pagar' : 'Equilibrado';
+            const statusText = isPositive ? 'Should receive' : isNegative ? 'Should pay' : 'Balanced';
             const statusIcon = isPositive ? '💰' : isNegative ? '💸' : '✅';
             
             const avatar = member.nickname && member.nickname !== formatAddress(member.address)
@@ -2523,7 +2523,7 @@ function settleDebt(amount) {
         console.log(`💸 Debt settlement initiated: ${amount} ETH`);
     } catch (error) {
         console.error("Error in settleDebt:", error);
-        showToast("Error al preparar liquidación de deuda", "error");
+        showToast("Error preparing debt settlement", "error");
     }
 }
 
@@ -2702,7 +2702,7 @@ async function previewCloseFund() {
     } catch (error) {
         hideLoading();
         console.error("Error calculating distribution:", error);
-        showToast("Error al calcular distribución: " + error.message, "error");
+        showToast("Error calculating distribution: " + error.message, "error");
     }
 }
 
@@ -2750,7 +2750,7 @@ async function closeFund() {
         
         hideLoading();
         
-        showToast("✅ Fondo cerrado y fondos distribuidos exitosamente!", "success");
+        showToast("✅ Fund closed and funds distributed successfully!", "success");
         
     } catch (error) {
         hideLoading();
@@ -2758,11 +2758,11 @@ async function closeFund() {
         
         let errorMsg = "Error al cerrar el fondo";
         if (error.message.includes("Only creator")) {
-            errorMsg = "⚠️ Solo el creador del fondo puede cerrarlo";
+            errorMsg = "⚠️ Only the fund creator can close it";
         } else if (error.message.includes("ya esta cerrado")) {
-            errorMsg = "⚠️ El fondo ya está cerrado";
+            errorMsg = "⚠️ The fund is already closed";
         } else {
-            errorMsg = "Error al cerrar el fondo: " + error.message;
+            errorMsg = "Error closing fund: " + error.message;
         }
         
         showToast(errorMsg, "error");
