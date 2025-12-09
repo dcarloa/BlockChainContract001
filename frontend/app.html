@@ -521,8 +521,15 @@
 
                     <!-- Vote Tab -->
                     <div id="voteTab" class="tab-pane">
-                        <h3>🗳️ Votar Propuestas</h3>
-                        <p class="tab-description">Propuestas de uso de fondos. Vota si apruebas o rechazas pagar a cada proveedor.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div>
+                                <h3>🗳️ Votar Propuestas</h3>
+                                <p class="tab-description">Propuestas de uso de fondos. Vota si apruebas o rechazas pagar a cada proveedor.</p>
+                            </div>
+                            <button onclick="refreshCurrentView()" class="btn btn-secondary" style="height: fit-content;" title="Refresh proposals from blockchain">
+                                🔄 Refresh
+                            </button>
+                        </div>
                         <div id="proposalsList">
                             <!-- Proposals will be loaded here -->
                         </div>

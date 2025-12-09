@@ -1589,18 +1589,23 @@ async function depositToFund() {
         }
         
         console.log("✅ ALLOWED: User can deposit");
-        showLoading("Depositando fondos...");
+        
+        // Show message BEFORE MetaMask popup
+        showToast("🐜 Confirm the deposit in your wallet...", "info");
         
         const amountWei = ethers.parseEther(amount);
         const tx = await currentFundContract.deposit({ value: amountWei });
+        
+        // Now show loading after user confirmed
+        showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
         console.log("✅ Depósito confirmado - tx:", receipt.hash);
         
         showToast(`✅ Depósito de ${amount} ETH exitoso!`, "success");
         
         // Dar tiempo para que el estado se actualice
-        showLoading("🐜 Actualizando balances...");
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        showLoading("🐜 Syncing balances...");
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Reload fund details
         await loadFundDetailView();
@@ -1820,8 +1825,6 @@ async function createProposal() {
             return;
         }
         
-        showLoading(t.app.fundDetail.propose.creating);
-        
         // Resolve recipient address
         let recipientAddress;
         if (recipientInput.startsWith('0x')) {
@@ -1834,20 +1837,27 @@ async function createProposal() {
         const amountWei = ethers.parseEther(amount);
         
         console.log("Creating proposal with involved members:", selectedMembers);
+        
+        // Show message BEFORE MetaMask popup
+        showToast("🐜 Confirm the transaction in your wallet...", "info");
+        
         const tx = await currentFundContract.createProposal(
             recipientAddress, 
             amountWei, 
             description,
             selectedMembers
         );
+        
+        // Now show loading after user confirmed
+        showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
         console.log("✅ Propuesta creada - tx:", receipt.hash);
         
         showToast(t.app.fundDetail.propose.success, "success");
         
         // Dar tiempo para que el estado se actualice en blockchain
-        showLoading("🐜 Actualizando propuestas...");
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        showLoading("🐜 Syncing with the colony... (this may take a few seconds)");
+        await new Promise(resolve => setTimeout(resolve, 3000));
         
         // Refresh view to show new proposal
         await refreshCurrentView();
@@ -2159,20 +2169,27 @@ async function loadProposals() {
 
 async function voteProposal(proposalId, inFavor) {
     try {
-        showLoading("Votando...");
+        // Show message BEFORE MetaMask popup
+        showToast("🐜 Confirm the vote in your wallet...", "info");
         
         const tx = await currentFundContract.vote(proposalId, inFavor);
+        
+        // Now show loading after user confirmed
+        showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
         console.log("✅ Voto registrado - tx:", receipt.hash);
         
         showToast(`✅ Voto ${inFavor ? 'a favor' : 'en contra'} registrado!`, "success");
         
         // Dar tiempo para que el estado se actualice
-        showLoading("🐜 Actualizando votos...");
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        showLoading("🐜 Syncing vote count... (this may take a few seconds)");
+        await new Promise(resolve => setTimeout(resolve, 2500));
         
         // Refresh view to show updated votes
         await refreshCurrentView();
+        
+        // Show manual refresh option if needed
+        showToast("🔄 If vote doesn't appear, refresh the page (F5)", "info");
         
         hideLoading();
         
@@ -2199,9 +2216,13 @@ async function voteProposal(proposalId, inFavor) {
 
 async function executeProposal(proposalId) {
     try {
-        showLoading("Ejecutando propuesta...");
+        // Show message BEFORE MetaMask popup
+        showToast("🐜 Confirm the execution in your wallet...", "info");
         
         const tx = await currentFundContract.executeProposal(proposalId);
+        
+        // Now show loading after user confirmed
+        showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
         console.log("✅ Propuesta ejecutada - tx:", receipt.hash);
         
