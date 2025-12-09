@@ -1791,6 +1791,13 @@ async function createProposal() {
             return;
         }
         
+        // IMPORTANT: Verify the creator is included in involved members
+        const userIsInvolved = selectedMembers.some(addr => addr.toLowerCase() === userAddress.toLowerCase());
+        if (!userIsInvolved) {
+            showToast("⚠️ You must include yourself in the involved members to vote on this proposal. Check your own checkbox!", "warning");
+            return;
+        }
+        
         // PROBLEM 2 FIX: Check if user is a contributor before allowing proposal
         const userContribution = await currentFundContract.contributions(userAddress);
         if (userContribution === 0n) {
@@ -2077,6 +2084,12 @@ async function loadProposals() {
                             <span class="proposal-amount">${formatEth(amount)} ETH</span>
                         </div>
                         
+                        ${!proposal.requiresFullConsent ? `
+                            <div class="proposal-info-badge" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); padding: 8px 12px; border-radius: 8px; margin: 8px 0; font-size: 0.85rem;">
+                                👥 Only involved members can vote on this proposal
+                            </div>
+                        ` : ''}
+                        
                         ${borrowedAlert}
                         
                         <p class="proposal-description">${proposal.description}</p>
@@ -2141,7 +2154,21 @@ async function voteProposal(proposalId, inFavor) {
     } catch (error) {
         hideLoading();
         console.error("Error voting:", error);
-        showToast("Error al votar: " + error.message, "error");
+        
+        // Better error message for common case
+        let errorMsg = "Error voting";
+        if (error.message.includes("No estas involucrado") || error.message.includes("not involved")) {
+            errorMsg = "⚠️ You cannot vote on this proposal!\n\n" +
+                      "Reason: You were not selected as an 'involved member' when this proposal was created.\n\n" +
+                      "Only members checked in the 'Involved Members' section during proposal creation can vote.\n\n" +
+                      "Tip: When creating proposals, make sure to check YOUR OWN checkbox if you want to vote!";
+        } else if (error.message.includes("Ya votaste")) {
+            errorMsg = "⚠️ You already voted on this proposal";
+        } else {
+            errorMsg = "Error voting: " + error.message;
+        }
+        
+        showToast(errorMsg, "error");
     }
 }
 
