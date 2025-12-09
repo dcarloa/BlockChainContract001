@@ -1245,7 +1245,8 @@ async function createFund(event) {
         showToast(`✅ Fondo "${fundName}" creado exitosamente!`, "success");
         
         // Dar tiempo para que el estado se actualice en blockchain
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        showLoading("🐜 Esperando confirmación de la colonia...");
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Recargar fondos
         showLoading("Cargando tu nuevo grupo...");
@@ -1592,9 +1593,14 @@ async function depositToFund() {
         
         const amountWei = ethers.parseEther(amount);
         const tx = await currentFundContract.deposit({ value: amountWei });
-        await tx.wait();
+        const receipt = await tx.wait();
+        console.log("✅ Depósito confirmado - tx:", receipt.hash);
         
         showToast(`✅ Depósito de ${amount} ETH exitoso!`, "success");
+        
+        // Dar tiempo para que el estado se actualice
+        showLoading("🐜 Actualizando balances...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Reload fund details
         await loadFundDetailView();
@@ -1691,12 +1697,17 @@ async function inviteMember() {
             tx = await currentFundContract.inviteMemberByNickname(addressOrNickname);
         }
         
-        await tx.wait();
+        const receipt = await tx.wait();
+        console.log("✅ Invitación enviada - tx:", receipt.hash);
+        
+        showToast(`✅ Invitación enviada a ${addressOrNickname}!`, "success");
+        
+        // Dar tiempo para que el estado se actualice
+        showLoading("🐜 Actualizando miembros...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Refresh view to show updated members
         await refreshCurrentView();
-        
-        showToast(`✅ Invitación enviada a ${addressOrNickname}!`, "success");
         
         // Clear input
         document.getElementById('inviteAddress').value = '';
@@ -1743,6 +1754,10 @@ async function acceptInvitation() {
         }
         
         showToast("✅ Invitación aceptada! Ahora eres miembro activo", "success");
+        
+        // Dar tiempo para que el estado se actualice
+        showLoading("🐜 Actualizando colonias...");
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
         // BUG 2 FIX: Force complete dashboard reload
         console.log("🔄 Reloading dashboard after accepting invitation...");
@@ -1825,12 +1840,17 @@ async function createProposal() {
             description,
             selectedMembers
         );
-        await tx.wait();
+        const receipt = await tx.wait();
+        console.log("✅ Propuesta creada - tx:", receipt.hash);
+        
+        showToast(t.app.fundDetail.propose.success, "success");
+        
+        // Dar tiempo para que el estado se actualice en blockchain
+        showLoading("🐜 Actualizando propuestas...");
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
         // Refresh view to show new proposal
         await refreshCurrentView();
-        
-        showToast(t.app.fundDetail.propose.success, "success");
         
         // Clear inputs
         document.getElementById('proposalRecipient').value = '';
@@ -2142,12 +2162,17 @@ async function voteProposal(proposalId, inFavor) {
         showLoading("Votando...");
         
         const tx = await currentFundContract.vote(proposalId, inFavor);
-        await tx.wait();
+        const receipt = await tx.wait();
+        console.log("✅ Voto registrado - tx:", receipt.hash);
+        
+        showToast(`✅ Voto ${inFavor ? 'a favor' : 'en contra'} registrado!`, "success");
+        
+        // Dar tiempo para que el estado se actualice
+        showLoading("🐜 Actualizando votos...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Refresh view to show updated votes
         await refreshCurrentView();
-        
-        showToast(`✅ Voto ${inFavor ? 'a favor' : 'en contra'} registrado!`, "success");
         
         hideLoading();
         
@@ -2177,12 +2202,17 @@ async function executeProposal(proposalId) {
         showLoading("Ejecutando propuesta...");
         
         const tx = await currentFundContract.executeProposal(proposalId);
-        await tx.wait();
+        const receipt = await tx.wait();
+        console.log("✅ Propuesta ejecutada - tx:", receipt.hash);
+        
+        showToast("✅ Propuesta ejecutada! Fondos transferidos.", "success");
+        
+        // Dar tiempo para que el estado se actualice
+        showLoading("🐜 Actualizando balances...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Refresh view to show executed proposal and updated balance
         await refreshCurrentView();
-        
-        showToast("✅ Propuesta ejecutada! Fondos transferidos.", "success");
         
         hideLoading();
         
