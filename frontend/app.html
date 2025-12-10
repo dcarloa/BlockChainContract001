@@ -12,7 +12,7 @@
         connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org;
     ">
     <title>Ant Pool - Cooperative Finance Colony</title>
-    <meta name="description" content="Work together like ants. Decentralized platform for pooling resources and managing shared wealth on blockchain">
+    <meta name="description" content="Work together like ants. Share expenses the simple way or use blockchain for automatic payments. Your choice.">
     <link rel="icon" type="image/x-icon" href="/assets/ant_pool_icon.ico">
     <link rel="stylesheet" href="styles-platform.css">
     <link rel="stylesheet" href="wallet-connector.css">
@@ -35,12 +35,12 @@
     <div id="signInModal" class="modal" style="display: none;">
         <div class="modal-content modal-medium">
             <div class="modal-header">
-                <h2>🔐 Choose How to Sign In</h2>
+                <h2>🔐 Get Started - No Wallet Needed!</h2>
                 <button class="modal-close" onclick="closeSignInModal()">&times;</button>
             </div>
             
             <div class="sign-in-content">
-                <p class="sign-in-message">Select your preferred sign-in method to start managing your groups.</p>
+                <p class="sign-in-message">Start with Google/Email for <strong>Simple Mode</strong> (expense tracking). Connect wallet later if you want blockchain features.</p>
                 
                 <div class="sign-in-buttons">
                     <button class="btn btn-wallet" onclick="signInWithWallet()">
@@ -138,7 +138,7 @@
             <div class="header-content">
                 <div class="logo">
                     <h1><img src="/assets/LogoAntPool.png" alt="Ant Pool" style="height: 36px; vertical-align: middle; margin-right: 10px;">Ant Pool</h1>
-                    <span class="version-badge">🐜 Cooperative Finance Colony</span>
+                    <span class="version-badge">🐜 Simple Mode or Blockchain - You Choose</span>
                 </div>
                 
                 <div class="header-actions">
@@ -280,8 +280,9 @@
             <!-- Nickname Setup Modal (first time users) -->
             <div id="nicknameModal" class="modal" style="display: none;">
                 <div class="modal-content">
-                    <h2>👋 ¡Bienvenido a SplitExpense!</h2>
-                    <p>Necesitas establecer un <strong>nickname</strong> para identificarte en los grupos y poder crear fondos.</p>
+                    <h2>👋 ¡Bienvenido a Ant Pool!</h2>
+                    <p>Comparte gastos de forma simple o usa blockchain para pagos automáticos. <strong>No necesitas wallet para empezar.</strong></p>
+                    <p>Primero, establece un <strong>nickname</strong> para identificarte en los grupos.</p>
                     
                     <div class="form-group">
                         <label for="nicknameInput">Tu Nickname *</label>
@@ -384,7 +385,7 @@
                 <div id="emptyState" class="empty-state" style="display: none;">
                     <div class="empty-icon">🚀</div>
                     <h3>¡Comienza tu primera aventura!</h3>
-                    <p>Crea tu primer grupo para gestionar gastos compartidos con amigos, familia o compañeros. Es rápido, seguro y transparente.</p>
+                    <p>Crea tu primer grupo para gestionar gastos compartidos. <strong>Sin wallet necesaria</strong> - empieza con Simple Mode o usa blockchain para pagos automáticos.</p>
                     <button class="btn btn-primary" onclick="document.getElementById('createFundBtn').click()">
                         <span class="btn-icon">✨</span>
                         <span>Crear Mi Primer Grupo</span>
