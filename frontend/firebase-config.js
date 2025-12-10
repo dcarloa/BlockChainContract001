@@ -8,16 +8,26 @@
 // FIREBASE CONFIGURATION
 // ============================================
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA_EJRI7BIyHxSgMg5V8sQqndp_-v-t_C0",
+// NOTE: Firebase config is loaded from firebase-credentials.js
+// This file is in .gitignore and contains the actual API keys
+// See firebase-credentials.example.js for the template
+
+// Fallback config for development (will be overridden by firebase-credentials.js)
+let firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
   authDomain: "blockchaincontract001.firebaseapp.com",
   databaseURL: "https://blockchaincontract001-default-rtdb.firebaseio.com",
   projectId: "blockchaincontract001",
   storageBucket: "blockchaincontract001.firebasestorage.app",
-  messagingSenderId: "949285642052",
-  appId: "1:949285642052:web:7b0f7c0106ffd59f39c111",
-  measurementId: "G-Z9T21SPHQ2"
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
 };
+
+// Override with actual credentials if available
+if (typeof FIREBASE_CREDENTIALS !== 'undefined') {
+  firebaseConfig = FIREBASE_CREDENTIALS;
+}
 
 // ============================================
 // FIREBASE INITIALIZATION

@@ -16,3 +16,6 @@ logs
 # OS
 .DS_Store
 Thumbs.db
+
+# Firebase credentials (contains API keys)
+frontend/firebase-credentials.js
