@@ -112,14 +112,23 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     setupEventListeners();
     
-    // Initialize Firebase (always)
+    // Initialize Firebase (always) with retry
+    let firebaseInitialized = false;
     if (window.FirebaseConfig) {
-        await window.FirebaseConfig.initialize();
+        firebaseInitialized = await window.FirebaseConfig.initialize();
         
-        // Setup Firebase auth state listener
-        window.FirebaseConfig.onAuthStateChanged = (user) => {
-            updateUIForFirebaseUser(user);
-        };
+        if (firebaseInitialized) {
+            // Setup Firebase auth state listener
+            window.FirebaseConfig.onAuthStateChanged = (user) => {
+                updateUIForFirebaseUser(user);
+            };
+        } else {
+            console.error("❌ Firebase initialization failed");
+            showToast("Firebase initialization failed. Some features may not work.", "error");
+        }
+    } else {
+        console.error("❌ FirebaseConfig not available");
+        showToast("Firebase not loaded. Please refresh the page.", "error");
     }
     
     // Load factory info for blockchain mode (only if wallet available)

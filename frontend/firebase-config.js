@@ -46,6 +46,18 @@ async function initializeFirebase() {
     try {
         console.log("🔥 Initializing Firebase...");
         
+        // Check if Firebase SDK is loaded
+        if (typeof firebase === 'undefined') {
+            console.error("❌ Firebase SDK not loaded!");
+            throw new Error("Firebase SDK not loaded. Please refresh the page.");
+        }
+        
+        // Check if already initialized
+        if (firebaseApp) {
+            console.log("ℹ️ Firebase already initialized");
+            return true;
+        }
+        
         // Initialize Firebase app
         firebaseApp = firebase.initializeApp(firebaseConfig);
         firebaseAuth = firebase.auth();
@@ -77,6 +89,17 @@ async function initializeFirebase() {
  */
 async function signInWithGoogle() {
     try {
+        // Check if Firebase is available
+        if (typeof firebase === 'undefined') {
+            throw new Error("Firebase SDK not loaded. Please refresh the page.");
+        }
+        
+        // Check if Firebase is initialized
+        if (!firebaseAuth) {
+            console.log("⚠️ Firebase not initialized, initializing now...");
+            await initializeFirebase();
+        }
+        
         const provider = new firebase.auth.GoogleAuthProvider();
         const result = await firebaseAuth.signInWithPopup(provider);
         console.log("✅ Google sign-in successful:", result.user.email);
@@ -95,6 +118,12 @@ async function signInWithGoogle() {
  */
 async function signInWithEmail(email, password) {
     try {
+        // Check if Firebase is initialized
+        if (!firebaseAuth) {
+            console.log("⚠️ Firebase not initialized, initializing now...");
+            await initializeFirebase();
+        }
+        
         const result = await firebaseAuth.signInWithEmailAndPassword(email, password);
         console.log("✅ Email sign-in successful:", result.user.email);
         return result.user;
@@ -113,6 +142,12 @@ async function signInWithEmail(email, password) {
  */
 async function createAccount(email, password, displayName) {
     try {
+        // Check if Firebase is initialized
+        if (!firebaseAuth) {
+            console.log("⚠️ Firebase not initialized, initializing now...");
+            await initializeFirebase();
+        }
+        
         const result = await firebaseAuth.createUserWithEmailAndPassword(email, password);
         
         // Update profile with display name
