@@ -3526,6 +3526,29 @@ header,
 }
 
 /* ===================================
+   MODE BADGES IN FUND CARDS
+   =================================== */
+
+.badge-mode {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mode-simple {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+}
+
+.mode-blockchain {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+/* ===================================
    SIGN IN MODAL STYLES
    =================================== */
 

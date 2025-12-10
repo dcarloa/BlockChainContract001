@@ -820,55 +820,104 @@ window.openInvitedFund = async function(fundAddress) {
 
 async function loadUserFunds() {
     try {
-        // Obtener fondos creados por el usuario
-        const fundsCreated = await factoryContract.getFundsByCreator(userAddress);
-        
-        // Obtener fondos donde participa
-        const fundsParticipating = await factoryContract.getFundsByParticipant(userAddress);
-        
-        console.log("Fondos creados:", fundsCreated.length);
-        console.log("Fondos participando:", fundsParticipating.length);
-        
-        // Combinar y eliminar duplicados
         const fundMap = new Map();
         
-        for (const fund of fundsCreated) {
-            const fundData = {
-                fundAddress: fund.fundAddress || fund[0],
-                creator: fund.creator || fund[1],
-                fundName: fund.fundName || fund[2] || 'Sin nombre',
-                fundType: fund.fundType !== undefined ? fund.fundType : (fund[3] || 0n),
-                createdAt: fund.createdAt || fund[4],
-                isActive: fund.isActive !== undefined ? fund.isActive : (fund[5] || true),
-                isCreator: true,
-                isParticipant: true
-            };
-            console.log("Fund creado:", fundData);
-            fundMap.set(fundData.fundAddress, fundData);
-        }
-        
-        for (const fund of fundsParticipating) {
-            const fundAddress = fund.fundAddress || fund[0];
-            if (fundMap.has(fundAddress)) {
-                fundMap.get(fundAddress).isParticipant = true;
-            } else {
+        // Load Blockchain Mode funds (if wallet connected)
+        if (factoryContract && userAddress) {
+            // Obtener fondos creados por el usuario
+            const fundsCreated = await factoryContract.getFundsByCreator(userAddress);
+            
+            // Obtener fondos donde participa
+            const fundsParticipating = await factoryContract.getFundsByParticipant(userAddress);
+            
+            console.log("Blockchain funds created:", fundsCreated.length);
+            console.log("Blockchain funds participating:", fundsParticipating.length);
+            
+            // Add created funds
+            for (const fund of fundsCreated) {
                 const fundData = {
-                    fundAddress: fundAddress,
+                    fundAddress: fund.fundAddress || fund[0],
                     creator: fund.creator || fund[1],
                     fundName: fund.fundName || fund[2] || 'Sin nombre',
                     fundType: fund.fundType !== undefined ? fund.fundType : (fund[3] || 0n),
                     createdAt: fund.createdAt || fund[4],
                     isActive: fund.isActive !== undefined ? fund.isActive : (fund[5] || true),
-                    isCreator: false,
-                    isParticipant: true
+                    isCreator: true,
+                    isParticipant: true,
+                    mode: 'blockchain'
                 };
-                console.log("Fund participando:", fundData);
+                console.log("Blockchain fund created:", fundData);
                 fundMap.set(fundData.fundAddress, fundData);
+            }
+            
+            // Add participating funds
+            for (const fund of fundsParticipating) {
+                const fundAddress = fund.fundAddress || fund[0];
+                if (fundMap.has(fundAddress)) {
+                    fundMap.get(fundAddress).isParticipant = true;
+                } else {
+                    const fundData = {
+                        fundAddress: fundAddress,
+                        creator: fund.creator || fund[1],
+                        fundName: fund.fundName || fund[2] || 'Sin nombre',
+                        fundType: fund.fundType !== undefined ? fund.fundType : (fund[3] || 0n),
+                        createdAt: fund.createdAt || fund[4],
+                        isActive: fund.isActive !== undefined ? fund.isActive : (fund[5] || true),
+                        isCreator: false,
+                        isParticipant: true,
+                        mode: 'blockchain'
+                    };
+                    console.log("Blockchain fund participating:", fundData);
+                    fundMap.set(fundData.fundAddress, fundData);
+                }
             }
         }
         
+        // Load Simple Mode funds (if Firebase authenticated)
+        if (window.FirebaseConfig && window.FirebaseConfig.isAuthenticated()) {
+            try {
+                const currentUser = window.FirebaseConfig.getCurrentUser();
+                const userGroups = await window.FirebaseConfig.readDb(`users/${currentUser.uid}/groups`);
+                
+                if (userGroups) {
+                    console.log("Simple mode groups found:", Object.keys(userGroups).length);
+                    
+                    for (const [groupId, groupInfo] of Object.entries(userGroups)) {
+                        const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+                        
+                        if (groupData && groupData.isActive) {
+                            const fundData = {
+                                fundAddress: groupId, // Use groupId as identifier
+                                creator: groupData.createdByEmail,
+                                fundName: groupData.name,
+                                fundType: 3, // Other type for Simple Mode
+                                createdAt: groupData.createdAt,
+                                isActive: true,
+                                isCreator: groupInfo.role === 'creator',
+                                isParticipant: true,
+                                mode: 'simple',
+                                // Simple mode specific data
+                                description: groupData.description,
+                                targetAmount: groupData.targetAmount,
+                                currency: groupData.currency || 'USD',
+                                memberCount: Object.keys(groupData.members || {}).length
+                            };
+                            
+                            console.log("Simple mode group:", fundData);
+                            fundMap.set(groupId, fundData);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading Simple Mode groups:", error);
+            }
+        }
+        
+        // Combinar y eliminar duplicados
+        const totalFunds = fundMap.size;
+        
         allUserFunds = Array.from(fundMap.values());
-        console.log("Total fondos cargados:", allUserFunds.length, allUserFunds);
+        console.log("Total funds loaded (both modes):", allUserFunds.length, allUserFunds);
         
         // Cargar detalles de cada fondo
         await loadAllFundsDetails();
@@ -890,29 +939,58 @@ async function loadAllFundsDetails() {
     for (let fund of allUserFunds) {
         try {
             if (!fund.fundAddress) {
-                console.warn("Fund sin dirección, saltando...");
+                console.warn("Fund without address, skipping...");
                 continue;
             }
             
-            const fundContract = new ethers.Contract(
-                fund.fundAddress,
-                TRAVEL_FUND_V2_ABI,
-                provider
-            );
-            
-            const balance = await fundContract.getBalance();
-            const contributors = await fundContract.getContributorCount();
-            const proposals = await fundContract.proposalCount();
-            const target = await fundContract.targetAmount();
-            
-            fund.balance = ethers.formatEther(balance);
-            fund.contributors = Number(contributors);
-            fund.proposals = Number(proposals);
-            fund.target = ethers.formatEther(target);
-            // Si target es 0, no hay meta (sin límite)
-            fund.progress = parseFloat(fund.target) > 0 
-                ? (parseFloat(fund.balance) / parseFloat(fund.target)) * 100 
-                : 0;
+            if (fund.mode === 'simple') {
+                // Load Simple Mode details from Firebase
+                const groupData = await window.FirebaseConfig.readDb(`groups/${fund.fundAddress}`);
+                
+                if (groupData) {
+                    // Calculate total balance from approved expenses
+                    const expenses = groupData.expenses || {};
+                    let totalExpenses = 0;
+                    let expenseCount = 0;
+                    
+                    for (const expense of Object.values(expenses)) {
+                        if (expense.status === 'approved') {
+                            totalExpenses += expense.amount;
+                            expenseCount++;
+                        }
+                    }
+                    
+                    fund.balance = totalExpenses.toFixed(2);
+                    fund.contributors = fund.memberCount || 0;
+                    fund.proposals = expenseCount;
+                    fund.target = fund.targetAmount || 0;
+                    fund.progress = fund.target > 0 
+                        ? (totalExpenses / fund.target) * 100 
+                        : 0;
+                }
+                
+            } else {
+                // Load Blockchain Mode details from smart contract
+                const fundContract = new ethers.Contract(
+                    fund.fundAddress,
+                    TRAVEL_FUND_V2_ABI,
+                    provider
+                );
+                
+                const balance = await fundContract.getBalance();
+                const contributors = await fundContract.getContributorCount();
+                const proposals = await fundContract.proposalCount();
+                const target = await fundContract.targetAmount();
+                
+                fund.balance = ethers.formatEther(balance);
+                fund.contributors = Number(contributors);
+                fund.proposals = Number(proposals);
+                fund.target = ethers.formatEther(target);
+                // Si target es 0, no hay meta (sin límite)
+                fund.progress = parseFloat(fund.target) > 0 
+                    ? (parseFloat(fund.balance) / parseFloat(fund.target)) * 100 
+                    : 0;
+            }
             
         } catch (error) {
             console.error(`Error loading details for fund ${fund.fundAddress}:`, error);
@@ -1020,6 +1098,7 @@ function createFundCard(fund) {
                     <div class="fund-card-title">
                         <h3>${fund.fundName}</h3>
                         <div class="fund-badges">
+                            ${fund.mode === 'simple' ? `<span class="badge badge-mode mode-simple">📝 Simple</span>` : `<span class="badge badge-mode mode-blockchain">⛓️ Blockchain</span>`}
                             <span class="badge badge-type type-${typeKey}">${typeName}</span>
                             ${isInactive ? `<span class="badge badge-status status-inactive">${t.app.dashboard.card.inactive}</span>` : ''}
                             ${fund.isCreator ? `<span class="badge badge-creator">👑 ${t.app.fundDetail.badges.creator}</span>` : ''}
@@ -1030,11 +1109,11 @@ function createFundCard(fund) {
                 <div class="fund-stats">
                     <div class="fund-stat">
                         <span class="fund-stat-label">${t.app.fundDetail.info.balance}</span>
-                        <span class="fund-stat-value">${formatEth(fund.balance || 0)} ETH</span>
+                        <span class="fund-stat-value">${fund.mode === 'simple' ? `$${fund.balance || 0}` : `${formatEth(fund.balance || 0)} ETH`}</span>
                     </div>
                     <div class="fund-stat">
                         <span class="fund-stat-label">${parseFloat(fund.target || 0) > 0 ? t.app.fundDetail.info.target : t.app.fundDetail.info.target}</span>
-                        <span class="fund-stat-value">${parseFloat(fund.target || 0) > 0 ? formatEth(fund.target) + ' ETH' : t.app.fundDetail.info.noLimit}</span>
+                        <span class="fund-stat-value">${parseFloat(fund.target || 0) > 0 ? (fund.mode === 'simple' ? `$${fund.target}` : formatEth(fund.target) + ' ETH') : t.app.fundDetail.info.noLimit}</span>
                     </div>
                 </div>
                 
@@ -1065,39 +1144,46 @@ let currentFundContract = null;
 async function openFund(fundAddress) {
     try {
         const t = translations[getCurrentLanguage()];
-        console.log("openFund llamado con:", fundAddress);
+        console.log("openFund called with:", fundAddress);
         console.log("allUserFunds:", allUserFunds);
         showLoading(t.app.loading.loadingFund);
         
         if (!fundAddress || fundAddress === 'undefined') {
-            throw new Error("Dirección de fondo inválida");
+            throw new Error("Invalid fund address");
         }
         
-        // Guardar fondo actual
+        // Find current fund
         currentFund = allUserFunds.find(f => {
-            console.log("Buscando:", f.fundAddress, "vs", fundAddress);
+            console.log("Searching:", f.fundAddress, "vs", fundAddress);
             return f.fundAddress && f.fundAddress.toLowerCase() === fundAddress.toLowerCase();
         });
         
         if (!currentFund) {
-            console.error("Fondo no encontrado. Direcciones disponibles:", allUserFunds.map(f => f.fundAddress));
-            throw new Error("Fondo no encontrado en tu lista");
+            console.error("Fund not found. Available addresses:", allUserFunds.map(f => f.fundAddress));
+            throw new Error("Fund not found in your list");
         }
         
-        console.log("Fondo encontrado:", currentFund);
+        console.log("Fund found:", currentFund);
         
-        // Crear instancia del contrato del fondo
-        currentFundContract = new ethers.Contract(
-            fundAddress,
-            TRAVEL_FUND_V2_ABI_FULL,
-            signer
-        );
+        // Initialize based on mode
+        if (currentFund.mode === 'simple') {
+            // Simple Mode - Initialize mode manager with this group
+            await window.modeManager.initializeMode(fundAddress);
+            currentFundContract = null; // No smart contract for Simple Mode
+        } else {
+            // Blockchain Mode - Create contract instance
+            currentFundContract = new ethers.Contract(
+                fundAddress,
+                TRAVEL_FUND_V2_ABI_FULL,
+                signer
+            );
+        }
         
-        // Ocultar dashboard, mostrar detalle
+        // Hide dashboard, show detail
         document.getElementById('dashboardSection').classList.remove('active');
         document.getElementById('fundDetailSection').classList.add('active');
         
-        // Cargar detalles del fondo
+        // Load fund detail view
         await loadFundDetailView();
         
         hideLoading();
