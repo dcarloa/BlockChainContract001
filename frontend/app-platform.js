@@ -1818,6 +1818,56 @@ async function createProposal() {
             return;
         }
         
+        // NEW: Validate involved members have sufficient contributions
+        const amountWei = ethers.parseEther(amount);
+        let totalFromInvolved = 0n;
+        const insufficientMembers = [];
+        
+        for (const memberAddr of selectedMembers) {
+            const contribution = await currentFundContract.contributions(memberAddr);
+            totalFromInvolved += contribution;
+            
+            // Check if member hasn't contributed
+            if (contribution === 0n) {
+                const memberNickname = await factoryContract.getNickname(memberAddr);
+                insufficientMembers.push(formatUserDisplay(memberNickname, memberAddr));
+            }
+        }
+        
+        // Warn if involved members have insufficient funds
+        if (insufficientMembers.length > 0) {
+            const memberList = insufficientMembers.join(', ');
+            showToast(`⚠️ Warning: ${memberList} ha${insufficientMembers.length > 1 ? 've' : 's'} not contributed yet. They won't be able to cover their share.`, "warning");
+        }
+        
+        // Calculate if we need to borrow from non-involved members
+        const willBorrowFromOthers = amountWei > totalFromInvolved;
+        
+        if (willBorrowFromOthers) {
+            const borrowedAmount = amountWei - totalFromInvolved;
+            const [allAddresses] = await currentFundContract.getContributorsWithNicknames();
+            const nonInvolvedCount = allAddresses.length - selectedMembers.length;
+            
+            if (nonInvolvedCount > 0) {
+                const borrowedPerPerson = borrowedAmount / BigInt(nonInvolvedCount);
+                
+                const confirmBorrow = confirm(
+                    `⚠️ IMPORTANT NOTICE:\n\n` +
+                    `The involved members' contributions (${ethers.formatEther(totalFromInvolved)} ETH) ` +
+                    `are not enough to cover ${amount} ETH.\n\n` +
+                    `This proposal will BORROW ${ethers.formatEther(borrowedAmount)} ETH ` +
+                    `from non-involved members (~${ethers.formatEther(borrowedPerPerson)} ETH each).\n\n` +
+                    `✅ All members will be notified and included in the vote.\n` +
+                    `✅ 100% approval required when borrowing funds.\n\n` +
+                    `Do you want to continue?`
+                );
+                
+                if (!confirmBorrow) {
+                    return;
+                }
+            }
+        }
+        
         // PROBLEM 2 FIX: Check if user is a contributor before allowing proposal
         const userContribution = await currentFundContract.contributions(userAddress);
         if (userContribution === 0n) {
@@ -1833,8 +1883,6 @@ async function createProposal() {
             // Get address from nickname via factory
             recipientAddress = await factoryContract.getAddressByNickname(recipientInput);
         }
-        
-        const amountWei = ethers.parseEther(amount);
         
         console.log("Creating proposal with involved members:", selectedMembers);
         
@@ -2029,6 +2077,9 @@ async function loadProposals() {
                     // PROBLEM 2 FIX: Use hasUserVoted instead of hasVoted
                     const hasVoted = await currentFundContract.hasUserVoted(i, userAddress);
                     
+                    // NEW: Check if current user is involved in this proposal
+                    const isUserInvolved = await currentFundContract.isUserInvolved(i, userAddress);
+                    
                     // PROBLEM 2 FIX: Access proposal data by index (Proxy returns array)
                     // getProposal returns: id, proposer, proposerNickname, recipient, recipientNickname,
                     //                      amount, proposalDescription, votesFor, votesAgainst, createdAt,
@@ -2053,7 +2104,8 @@ async function loadProposals() {
                         requiresFullConsent: proposal[15],
                         borrowedAmount: proposal[16],
                         borrowedPerPerson: proposal[17],
-                        hasVoted
+                        hasVoted,
+                        isInvolved: isUserInvolved
                     };
                     
                     console.log(`    Proposer: ${proposalData.proposerNickname}, Recipient: ${proposalData.recipientNickname}`);
@@ -2139,7 +2191,12 @@ async function loadProposals() {
                             </div>
                         </div>
                         
-                        ${proposal.hasVoted ? `
+                        ${!proposal.isInvolved ? `
+                            <div class="info-box" style="background: rgba(100, 116, 139, 0.1); border: 1px solid rgba(100, 116, 139, 0.3); padding: 12px; margin-top: 12px; border-radius: 8px; text-align: center;">
+                                👁️ <strong>You are not included in this proposal</strong><br>
+                                <small>Only involved members can vote on this expense</small>
+                            </div>
+                        ` : proposal.hasVoted ? `
                             <div class="voted-badge">You already voted on this proposal</div>
                         ` : `
                             <div class="proposal-actions">
@@ -2264,6 +2321,7 @@ async function loadHistory() {
             try {
                 const proposal = await currentFundContract.getProposal(i);
                 const hasVoted = await currentFundContract.hasUserVoted(i, userAddress);
+                const isUserInvolved = await currentFundContract.isUserInvolved(i, userAddress);
                 
                 allProposals.push({
                     id: proposal[0],
@@ -2281,7 +2339,8 @@ async function loadHistory() {
                     cancelled: proposal[12],
                     approved: proposal[13],
                     expired: proposal[14],
-                    hasVoted
+                    hasVoted,
+                    isInvolved: isUserInvolved
                 });
             } catch (err) {
                 console.error(`Error loading proposal ${i}:`, err);
