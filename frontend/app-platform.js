@@ -1597,8 +1597,37 @@ function closeSignInModal() {
     }
 }
 
-async function signInWithGoogle() {
+async function signInWithWallet() {
     try {
+        closeSignInModal();
+        await connectWallet();
+    } catch (error) {
+        console.error("❌ Wallet connection error:", error);
+        showToast("Wallet connection failed: " + error.message, "error");
+    }
+}
+
+async function signInWithGoogleOnly() {
+    try {
+        // Show warning first
+        const confirmGoogle = confirm(
+            "⚠️ Sign in with Google (Limited Access)\n\n" +
+            "You will ONLY have access to Simple Mode features:\n" +
+            "✅ Track expenses\n" +
+            "✅ Split bills with friends\n" +
+            "✅ View balances\n\n" +
+            "You will NOT be able to:\n" +
+            "❌ Use Blockchain Mode\n" +
+            "❌ Create automatic payments\n" +
+            "❌ Use smart contracts\n\n" +
+            "You can connect a wallet later to unlock blockchain features.\n\n" +
+            "Continue with Google Sign-In?"
+        );
+        
+        if (!confirmGoogle) {
+            return;
+        }
+        
         showLoading("Signing in with Google...");
         const user = await window.FirebaseConfig.signInWithGoogle();
         console.log("✅ Signed in:", user.email);
@@ -1618,6 +1647,12 @@ function showEmailSignIn() {
     document.getElementById('emailSignInForm').style.display = 'block';
 }
 
+function closeEmailSignIn() {
+    document.querySelector('.sign-in-buttons').style.display = 'flex';
+    document.getElementById('emailSignInForm').style.display = 'none';
+    document.getElementById('createAccountForm').style.display = 'none';
+}
+
 function showCreateAccount() {
     document.getElementById('emailSignInForm').style.display = 'none';
     document.getElementById('createAccountForm').style.display = 'block';
@@ -1629,6 +1664,23 @@ async function handleEmailSignIn(event) {
     try {
         const email = document.getElementById('signInEmail').value;
         const password = document.getElementById('signInPassword').value;
+        
+        // Check if user is trying to sign in for the first time
+        if (!window.ethereum) {
+            const confirmEmail = confirm(
+                "⚠️ Sign in with Email (Limited Access)\n\n" +
+                "Without a crypto wallet, you will ONLY have Simple Mode:\n" +
+                "✅ Track expenses\n" +
+                "✅ Split bills\n\n" +
+                "You will NOT have blockchain features.\n" +
+                "Connect a wallet later to unlock full access.\n\n" +
+                "Continue?"
+            );
+            
+            if (!confirmEmail) {
+                return;
+            }
+        }
         
         showLoading("Signing in...");
         const user = await window.FirebaseConfig.signInWithEmail(email, password);
@@ -1650,6 +1702,27 @@ async function handleCreateAccount(event) {
         const name = document.getElementById('createName').value;
         const email = document.getElementById('createEmail').value;
         const password = document.getElementById('createPassword').value;
+        
+        // Warn about limited access without wallet
+        if (!window.ethereum) {
+            const confirmCreate = confirm(
+                "⚠️ Creating Account (Limited Access)\n\n" +
+                "Without a crypto wallet (MetaMask), you will ONLY have access to:\n" +
+                "✅ Simple Mode - Expense tracking\n" +
+                "✅ Split bills with friends\n" +
+                "✅ View who owes what\n\n" +
+                "You will NOT be able to use:\n" +
+                "❌ Blockchain Mode\n" +
+                "❌ Automatic smart contract payments\n" +
+                "❌ On-chain transactions\n\n" +
+                "You can connect a wallet anytime later to unlock blockchain features.\n\n" +
+                "Create account with limited access?"
+            );
+            
+            if (!confirmCreate) {
+                return;
+            }
+        }
         
         showLoading("Creating account...");
         const user = await window.FirebaseConfig.createAccount(email, password, name);
