@@ -277,6 +277,12 @@ header,
   flex-direction: column;
   gap: 0;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
 }
 
 .logo h1 {

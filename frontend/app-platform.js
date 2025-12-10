@@ -1282,6 +1282,23 @@ function backToDashboard() {
     currentFundContract = null;
 }
 
+/**
+ * Navigate to home/dashboard when clicking logo
+ */
+function goToHome() {
+    // Close any open modals
+    closeCreateFundModal();
+    closeSignInModal();
+    
+    // Go back to dashboard if in detail view
+    if (document.getElementById('fundDetailSection').classList.contains('active')) {
+        backToDashboard();
+    }
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 async function deactivateFund(fundAddress, fundName) {
     try {
         const confirmed = confirm(
