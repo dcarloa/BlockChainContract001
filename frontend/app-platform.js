@@ -1603,9 +1603,9 @@ async function depositToFund() {
         
         showToast(`✅ Deposit of ${amount} ETH successful!`, "success");
         
-        // Give time for state to update
-        showLoading("🐜 Syncing balances...");
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Give time for state to update - longer delay for balance recalculation
+        showLoading("🐜 Recalculating balances...");
+        await new Promise(resolve => setTimeout(resolve, 3000));
         
         // Reload fund details
         await loadFundDetailView();
@@ -2436,6 +2436,9 @@ async function loadBalances() {
         // Sort by balance (most positive first)
         balances.sort((a, b) => Number(b.balance - a.balance));
         
+        // Filter out members with exactly zero balance (fully settled)
+        const displayBalances = balances.filter(m => m.balance !== 0n);
+        
         // Update summary stats
         const currentBalance = await currentFundContract.getBalance();
         document.getElementById('totalContributed').textContent = `${parseFloat(ethers.formatEther(totalContributed)).toFixed(4)} ETH`;
@@ -2444,7 +2447,18 @@ async function loadBalances() {
         
         // Render balances
         const balancesList = document.getElementById('balancesList');
-        balancesList.innerHTML = balances.map(member => {
+        
+        if (displayBalances.length === 0) {
+            balancesList.innerHTML = `
+                <div class="info-box success-box" style="text-align: center; padding: 2rem;">
+                    <h3>✅ All Balanced!</h3>
+                    <p>Everyone has settled their debts. The colony is in perfect harmony! 🐜</p>
+                </div>
+            `;
+            return;
+        }
+        
+        balancesList.innerHTML = displayBalances.map(member => {
             const isPositive = member.balance > 0n;
             const isNegative = member.balance < 0n;
             const statusClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
@@ -2518,7 +2532,7 @@ function settleDebt(amount) {
         }
         
         // Show informative message
-        showToast(`💳 Monto pre-llenado con tu deuda exacta: ${amount.toFixed(4)} ETH`, 'info');
+        showToast(`💳 Amount pre-filled: ${amount.toFixed(4)} ETH. Confirm to settle your debt.`, 'info');
         
         console.log(`💸 Debt settlement initiated: ${amount} ETH`);
     } catch (error) {
