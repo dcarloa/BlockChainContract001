@@ -1913,6 +1913,13 @@ async function loadFundDetailView() {
         const currentLang = getCurrentLanguage();
         const t = translations[currentLang];
         
+        // Check if Simple Mode or Blockchain Mode
+        if (currentFund.mode === 'simple') {
+            await loadSimpleModeDetailView();
+            return;
+        }
+        
+        // Blockchain Mode - existing logic
         const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
         const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
         
@@ -2057,6 +2064,177 @@ function switchFundTab(tabName) {
     if (tabName === 'propose') {
         loadInvolvedMembersCheckboxes();
     }
+}
+
+/**
+ * Load Simple Mode group detail view (Splitwise-style)
+ */
+async function loadSimpleModeDetailView() {
+    try {
+        console.log("Loading Simple Mode detail view for:", currentFund);
+        
+        const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
+        
+        // Update header
+        document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '🎯';
+        document.getElementById('fundDetailName').textContent = currentFund.fundName;
+        
+        // Get group data from Firebase
+        const groupData = await window.modeManager.getGroup(currentFund.fundAddress);
+        
+        if (!groupData) {
+            throw new Error("Group not found in Firebase");
+        }
+        
+        // Update UI
+        document.getElementById('fundDetailDescription').textContent = groupData.description || 'No description';
+        document.getElementById('fundTypeBadge').textContent = '📝 Simple Mode';
+        document.getElementById('fundStatusBadge').textContent = '🟢 Active';
+        document.getElementById('fundPrivacyBadge').textContent = groupData.isPrivate ? '🔒 Private' : '🌐 Public';
+        
+        // For Simple Mode: show stats differently
+        const members = groupData.members ? Object.keys(groupData.members).length : 1;
+        const expenses = groupData.expenses ? Object.keys(groupData.expenses).filter(k => 
+            groupData.expenses[k].status === 'approved'
+        ).length : 0;
+        const totalSpent = calculateTotalSpent(groupData);
+        
+        document.getElementById('fundBalance').textContent = `$${totalSpent.toFixed(2)}`;
+        document.getElementById('fundMembers').textContent = members.toString();
+        document.getElementById('fundProposals').textContent = expenses.toString();
+        
+        // Target amount
+        if (groupData.targetAmount && groupData.targetAmount > 0) {
+            const progress = (totalSpent / groupData.targetAmount) * 100;
+            document.getElementById('fundTarget').textContent = `$${groupData.targetAmount.toFixed(2)}`;
+            document.getElementById('fundProgress').textContent = `${progress.toFixed(1)}%`;
+            document.getElementById('fundProgressBar').style.width = `${Math.min(progress, 100)}%`;
+            const progressSection = document.querySelector('.progress-section');
+            if (progressSection) progressSection.style.display = 'block';
+        } else {
+            document.getElementById('fundTarget').textContent = 'No limit';
+            document.getElementById('fundProgress').textContent = '-';
+            const progressSection = document.querySelector('.progress-section');
+            if (progressSection) progressSection.style.display = 'none';
+        }
+        
+        // User's share/balance
+        const myBalance = calculateMyBalance(groupData);
+        document.getElementById('userContribution').textContent = myBalance >= 0 
+            ? `You are owed $${Math.abs(myBalance).toFixed(2)}`
+            : `You owe $${Math.abs(myBalance).toFixed(2)}`;
+        
+        // Hide blockchain-specific elements
+        document.getElementById('invitationBanner').style.display = 'none';
+        document.getElementById('closedFundBanner').style.display = 'none';
+        
+        // Show/hide tabs for Simple Mode
+        const depositTab = document.querySelector('.fund-tab-btn[data-tab="deposit"]');
+        const voteTab = document.querySelector('.fund-tab-btn[data-tab="vote"]');
+        const proposeTab = document.querySelector('.fund-tab-btn[data-tab="propose"]');
+        const inviteTab = document.querySelector('.fund-tab-btn[data-tab="invite"]');
+        const membersTab = document.querySelector('.fund-tab-btn[data-tab="members"]');
+        const balancesTab = document.querySelector('.fund-tab-btn[data-tab="balances"]');
+        const manageTab = document.querySelector('.fund-tab-btn[data-tab="manage"]');
+        
+        // Hide blockchain tabs
+        if (depositTab) depositTab.style.display = 'none';
+        if (voteTab) voteTab.style.display = 'none';
+        if (proposeTab) proposeTab.style.display = 'none';
+        
+        // Show Simple Mode tabs
+        if (inviteTab) {
+            inviteTab.style.display = 'flex';
+            inviteTab.textContent = '👥 Invite';
+        }
+        if (membersTab) membersTab.style.display = 'flex';
+        if (balancesTab) balancesTab.style.display = 'flex';
+        if (manageTab) manageTab.style.display = 'none'; // Hide for now
+        
+        // Load expenses (acts as "history" tab)
+        await loadSimpleModeExpenses();
+        
+        // Switch to expenses tab by default
+        switchFundTab('history');
+        
+    } catch (error) {
+        console.error("Error loading Simple Mode detail:", error);
+        showToast("Error loading group: " + error.message, "error");
+    }
+}
+
+/**
+ * Calculate total spent in Simple Mode group
+ */
+function calculateTotalSpent(groupData) {
+    if (!groupData.expenses) return 0;
+    
+    let total = 0;
+    Object.values(groupData.expenses).forEach(expense => {
+        if (expense.status === 'approved') {
+            total += expense.amount;
+        }
+    });
+    
+    return total;
+}
+
+/**
+ * Calculate my balance in Simple Mode group
+ */
+function calculateMyBalance(groupData) {
+    // TODO: Implement balance calculation
+    // This will be based on expenses and settlements
+    return 0;
+}
+
+/**
+ * Load Simple Mode expenses list
+ */
+async function loadSimpleModeExpenses() {
+    const groupData = await window.modeManager.getGroup(currentFund.fundAddress);
+    const historyContainer = document.getElementById('historyList');
+    
+    if (!groupData.expenses || Object.keys(groupData.expenses).length === 0) {
+        historyContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <h4>No expenses yet</h4>
+                <p>Add your first expense to start tracking</p>
+                <button class="btn btn-primary" onclick="showAddExpenseModal()">
+                    <span class="btn-icon">➕</span>
+                    <span>Add Expense</span>
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    // Show expenses
+    const expenses = Object.entries(groupData.expenses).map(([id, expense]) => ({
+        id,
+        ...expense
+    }));
+    
+    // Sort by date (newest first)
+    expenses.sort((a, b) => b.timestamp - a.timestamp);
+    
+    historyContainer.innerHTML = expenses.map(expense => `
+        <div class="expense-card ${expense.status}">
+            <div class="expense-header">
+                <h4>${expense.description}</h4>
+                <span class="expense-amount">$${expense.amount.toFixed(2)}</span>
+            </div>
+            <div class="expense-details">
+                <p>Paid by: <strong>${expense.paidByName || expense.paidBy}</strong></p>
+                <p>Split between: ${expense.splitBetween.length} people</p>
+                <p>Date: ${new Date(expense.timestamp).toLocaleDateString()}</p>
+            </div>
+            <div class="expense-status">
+                ${expense.status === 'pending' ? '⏳ Pending approval' : '✅ Approved'}
+            </div>
+        </div>
+    `).join('');
 }
 
 // ============================================
