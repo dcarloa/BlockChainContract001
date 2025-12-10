@@ -1425,20 +1425,34 @@ async function createFund(event) {
  */
 async function createSimpleFund(fundInfo) {
     try {
-        showLoading("Creating Simple Mode group...");
-        
         // Check if user is authenticated with Firebase
         if (!window.FirebaseConfig.isAuthenticated()) {
+            // Show informative message
+            const shouldSignIn = confirm(
+                "🔐 Simple Mode requires Google/Email Sign-In\n\n" +
+                "Simple Mode uses Firebase (no blockchain) for:\n" +
+                "✅ Free expense tracking\n" +
+                "✅ Group balances calculation\n" +
+                "✅ No gas fees\n\n" +
+                "Your wallet is not needed for Simple Mode.\n\n" +
+                "Would you like to sign in with Google/Email now?"
+            );
+            
+            if (!shouldSignIn) {
+                return;
+            }
+            
             // Show sign-in modal
-            hideLoading();
             await showSignInModal();
             
             // After sign in, retry
             if (!window.FirebaseConfig.isAuthenticated()) {
-                throw new Error("Sign in required to create Simple Mode group");
+                showToast("Sign in required to create Simple Mode group", "warning");
+                return;
             }
-            showLoading("Creating Simple Mode group...");
         }
+        
+        showLoading("Creating Simple Mode group...");
         
         // Create group in Firebase
         const groupId = await window.modeManager.createSimpleGroup({
@@ -1472,6 +1486,28 @@ async function createSimpleFund(fundInfo) {
  */
 async function createBlockchainFund(fundInfo) {
     try {
+        // Check if wallet is connected
+        if (!userAddress || !factoryContract) {
+            const shouldConnect = confirm(
+                "🦊 Blockchain Mode requires MetaMask connection\n\n" +
+                "Blockchain Mode uses smart contracts for:\n" +
+                "✅ Automatic on-chain payments\n" +
+                "✅ Transparent voting\n" +
+                "✅ Decentralized fund management\n\n" +
+                "⚠️ Requires gas fees for transactions.\n\n" +
+                "Would you like to connect your wallet now?"
+            );
+            
+            if (!shouldConnect) {
+                return;
+            }
+            
+            // Trigger wallet connection
+            document.getElementById('connectWallet').click();
+            showToast("Please connect your wallet and try again", "info");
+            return;
+        }
+        
         showLoading("Creating blockchain fund...");
         
         const targetAmountWei = ethers.parseEther(fundInfo.targetAmount.toString());
