@@ -1263,6 +1263,10 @@ async function openFund(fundAddress) {
         document.getElementById('dashboardSection').classList.remove('active');
         document.getElementById('fundDetailSection').classList.add('active');
         
+        // Hide FAB button (will show if Simple Mode)
+        const fabBtn = document.getElementById('addExpenseBtn');
+        if (fabBtn) fabBtn.style.display = 'none';
+        
         // Load fund detail view
         await loadFundDetailView();
         
@@ -1280,6 +1284,10 @@ function backToDashboard() {
     document.getElementById('dashboardSection').classList.add('active');
     currentFund = null;
     currentFundContract = null;
+    
+    // Hide FAB button
+    const fabBtn = document.getElementById('addExpenseBtn');
+    if (fabBtn) fabBtn.style.display = 'none';
 }
 
 /**
@@ -2157,6 +2165,10 @@ async function loadSimpleModeDetailView() {
         // Switch to expenses tab by default
         switchFundTab('history');
         
+        // Show Add Expense FAB button
+        const fabBtn = document.getElementById('addExpenseBtn');
+        if (fabBtn) fabBtn.style.display = 'flex';
+        
     } catch (error) {
         console.error("Error loading Simple Mode detail:", error);
         showToast("Error loading group: " + error.message, "error");
@@ -2236,6 +2248,142 @@ async function loadSimpleModeExpenses() {
         </div>
     `).join('');
 }
+
+// ============================================
+// SIMPLE MODE - ADD EXPENSE
+// ============================================
+
+function showAddExpenseModal() {
+    const modal = document.getElementById('addExpenseModal');
+    if (!modal) return;
+
+    // Populate members
+    populateExpenseMembers();
+
+    // Set default date to today
+    const dateInput = document.querySelector('#addExpenseForm input[type="date"]');
+    if (dateInput) {
+        dateInput.valueAsDate = new Date();
+    }
+
+    // Show modal
+    modal.style.display = 'flex';
+}
+
+function closeAddExpenseModal() {
+    const modal = document.getElementById('addExpenseModal');
+    const form = document.getElementById('addExpenseForm');
+    
+    if (form) form.reset();
+    if (modal) modal.style.display = 'none';
+}
+
+function populateExpenseMembers() {
+    if (!currentFund || !currentFund.members) return;
+
+    const paidBySelect = document.querySelector('#addExpenseForm select[name="paidBy"]');
+    const splitContainer = document.getElementById('splitBetweenContainer');
+
+    if (!paidBySelect || !splitContainer) return;
+
+    // Clear existing options
+    paidBySelect.innerHTML = '<option value="">Select member...</option>';
+    splitContainer.innerHTML = '';
+
+    // Add members to both dropdowns/checkboxes
+    Object.entries(currentFund.members).forEach(([uid, member]) => {
+        // Add to "Paid by" dropdown
+        const option = document.createElement('option');
+        option.value = uid;
+        option.textContent = member.name || member.email || uid;
+        paidBySelect.appendChild(option);
+
+        // Add to "Split between" checkboxes
+        const checkboxDiv = document.createElement('div');
+        checkboxDiv.className = 'checkbox-option';
+        checkboxDiv.innerHTML = `
+            <input type="checkbox" name="splitBetween" value="${uid}" id="split_${uid}" checked>
+            <label for="split_${uid}">${member.name || member.email || uid}</label>
+        `;
+        splitContainer.appendChild(checkboxDiv);
+    });
+}
+
+async function handleExpenseSubmission(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    try {
+        // Get form values
+        const description = formData.get('description');
+        const amount = parseFloat(formData.get('amount'));
+        const paidBy = formData.get('paidBy');
+        const date = formData.get('date');
+        const notes = formData.get('notes') || '';
+
+        // Get selected members for split
+        const splitBetween = Array.from(form.querySelectorAll('input[name="splitBetween"]:checked'))
+            .map(cb => cb.value);
+
+        // Validate
+        if (!description || !amount || !paidBy || splitBetween.length === 0) {
+            showToast('Please fill all required fields', 'error');
+            return;
+        }
+
+        if (amount <= 0) {
+            showToast('Amount must be greater than zero', 'error');
+            return;
+        }
+
+        // Get current user
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('You must be signed in to add expenses', 'error');
+            return;
+        }
+
+        // Get paid by name
+        const paidByMember = currentFund.members[paidBy];
+        const paidByName = paidByMember?.name || paidByMember?.email || paidBy;
+
+        // Create expense object
+        const expenseInfo = {
+            description,
+            amount,
+            splitBetween,
+            category: 'other',
+            notes,
+            receipt: null
+        };
+
+        // Set current group ID for mode manager
+        window.modeManager.currentGroupId = currentFund.fundId;
+
+        // Save to Firebase via mode manager
+        await window.modeManager.addSimpleExpense(expenseInfo);
+
+        showToast('Expense added successfully! ✅', 'success');
+        closeAddExpenseModal();
+
+        // Refresh expense list
+        await loadSimpleModeExpenses();
+
+    } catch (error) {
+        console.error('Error adding expense:', error);
+        showToast(`Error adding expense: ${error.message}`, 'error');
+    }
+}
+
+// Attach form handler when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    const expenseForm = document.getElementById('addExpenseForm');
+    if (expenseForm) {
+        expenseForm.addEventListener('submit', handleExpenseSubmission);
+    }
+});
 
 // ============================================
 // FUND ACTIONS

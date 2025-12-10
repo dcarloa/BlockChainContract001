@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="styles-platform.css">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css">
+    <link rel="stylesheet" href="simple-mode-styles.css">
     <!-- QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
@@ -810,6 +811,113 @@
                 </div>
 
             </section>
+
+            <!-- Floating Add Expense Button (Simple Mode only) -->
+            <button id="addExpenseBtn" class="fab-btn" style="display: none;" onclick="showAddExpenseModal()" title="Add Expense">
+                <span class="fab-icon">➕</span>
+                <span class="fab-text">Add Expense</span>
+            </button>
+
+            <!-- Add Expense Modal (Simple Mode) -->
+            <div id="addExpenseModal" class="modal" style="display: none;">
+                <div class="modal-content modal-medium">
+                    <div class="modal-header">
+                        <h2>➕ Add Expense</h2>
+                        <button class="modal-close" onclick="closeAddExpenseModal()">&times;</button>
+                    </div>
+                    
+                    <form id="addExpenseForm" class="expense-form">
+                        <div class="form-group">
+                            <label for="expenseDescription">
+                                <span class="label-text">Description</span>
+                                <span class="label-required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="expenseDescription" 
+                                class="input-modern"
+                                placeholder="e.g., Dinner at restaurant"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expenseAmount">
+                                <span class="label-text">Amount</span>
+                                <span class="label-required">*</span>
+                            </label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">$</span>
+                                <input 
+                                    type="number" 
+                                    id="expenseAmount" 
+                                    class="input-modern"
+                                    placeholder="0.00"
+                                    step="0.01"
+                                    min="0.01"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expensePaidBy">
+                                <span class="label-text">Paid by</span>
+                                <span class="label-required">*</span>
+                            </label>
+                            <select id="expensePaidBy" class="input-modern" required>
+                                <option value="">Select who paid...</option>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span class="label-text">Split between</span>
+                                <span class="label-required">*</span>
+                            </label>
+                            <div id="expenseSplitBetween" class="checkbox-group">
+                                <!-- Will be populated dynamically -->
+                            </div>
+                            <small class="form-hint">Select all people who should share this expense</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expenseDate">
+                                <span class="label-text">Date</span>
+                            </label>
+                            <input 
+                                type="date" 
+                                id="expenseDate" 
+                                class="input-modern"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expenseNotes">
+                                <span class="label-text">Notes</span>
+                                <span class="label-badge">Optional</span>
+                            </label>
+                            <textarea 
+                                id="expenseNotes" 
+                                class="input-modern"
+                                rows="3"
+                                placeholder="Additional details..."
+                            ></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeAddExpenseModal()">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="btn-icon">💾</span>
+                                <span>Save Expense</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <!-- Create Fund Modal -->
             <div id="createFundModal" class="modal" style="display: none;">
