@@ -18,6 +18,7 @@
     <link rel="icon" type="image/x-icon" href="/assets/ant_pool_icon.ico">
     <link rel="stylesheet" href="styles-platform.css">
     <link rel="stylesheet" href="wallet-connector.css">
+    <link rel="stylesheet" href="create-group-styles.css">
     <!-- QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
@@ -154,6 +155,10 @@
                     </div>
                     <button class="settings-btn-app" onclick="openAppSettings()" title="Settings">
                         ⚙️
+                    </button>
+                    <button id="signOutFirebase" class="btn btn-secondary" style="display: none;" onclick="signOutFromFirebase()" title="Sign out from Google/Email">
+                        <span class="btn-icon">🚪</span>
+                        <span>Sign Out</span>
                     </button>
                     <button id="signInSimpleMode" class="btn btn-secondary" style="display: none;" onclick="showSignInModal()">
                         <span class="btn-icon">🔐</span>
@@ -808,13 +813,13 @@
 
             <!-- Create Fund Modal -->
             <div id="createFundModal" class="modal" style="display: none;">
-                <div class="modal-content modal-large">
+                <div class="modal-content modal-large create-group-modal">
                     <div class="modal-header">
                         <h2>✨ Crear Nuevo Grupo</h2>
                         <button class="modal-close" onclick="closeCreateFundModal()">&times;</button>
                     </div>
                     
-                    <form id="createFundForm">
+                    <form id="createFundForm" class="create-group-form">
                         <!-- Mode Selection -->
                         <div class="form-section mode-selection-section">
                             <div class="section-header">

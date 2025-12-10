@@ -874,6 +874,7 @@ function updateUIForFirebaseUser(user) {
     const firebaseUserBadge = document.getElementById('firebaseUser');
     const firebaseUserDisplay = document.getElementById('firebaseUserDisplay');
     const signInBtn = document.getElementById('signInSimpleMode');
+    const signOutBtn = document.getElementById('signOutFirebase');
     
     if (user) {
         // User is signed in
@@ -881,6 +882,7 @@ function updateUIForFirebaseUser(user) {
         firebaseUserBadge.style.display = 'flex';
         firebaseUserDisplay.textContent = user.displayName || user.email;
         if (signInBtn) signInBtn.style.display = 'none';
+        if (signOutBtn) signOutBtn.style.display = 'flex';
         
         // Reload funds to show Simple Mode groups
         loadUserFunds();
@@ -888,6 +890,7 @@ function updateUIForFirebaseUser(user) {
         // User is signed out
         console.log("🚪 Firebase user signed out");
         firebaseUserBadge.style.display = 'none';
+        if (signOutBtn) signOutBtn.style.display = 'none';
         // Always show Sign In button when Firebase user is logged out
         if (signInBtn) {
             signInBtn.style.display = 'flex';
@@ -1785,6 +1788,37 @@ async function handleCreateAccount(event) {
         hideLoading();
         console.error("❌ Account creation error:", error);
         showToast("Account creation failed: " + error.message, "error");
+    }
+}
+
+/**
+ * Sign out from Firebase (Google/Email)
+ */
+async function signOutFromFirebase() {
+    try {
+        const confirmed = confirm(
+            "🚪 Sign out from Simple Mode?\n\n" +
+            "You will be signed out from Google/Email.\n" +
+            "Your Simple Mode groups will not be accessible until you sign in again.\n\n" +
+            "Your wallet connection (if any) will remain active.\n\n" +
+            "Continue?"
+        );
+        
+        if (!confirmed) {
+            return;
+        }
+        
+        showLoading("Signing out...");
+        await window.FirebaseConfig.signOut();
+        showToast("Signed out successfully", "success");
+        
+        // Reload to update UI
+        await loadUserFunds();
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        console.error("❌ Sign out error:", error);
+        showToast("Sign out failed: " + error.message, "error");
     }
 }
 
