@@ -31,6 +31,82 @@
     <!-- Toast Notifications -->
     <div id="toastContainer" class="toast-container"></div>
 
+    <!-- Sign In Modal (for Simple Mode) -->
+    <div id="signInModal" class="modal" style="display: none;">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2>🔐 Sign In to Continue</h2>
+                <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            </div>
+            
+            <div class="sign-in-content">
+                <p class="sign-in-message">Sign in to create and manage expense groups without needing a crypto wallet.</p>
+                
+                <div class="sign-in-buttons">
+                    <button class="btn btn-google" onclick="signInWithGoogle()">
+                        <svg class="google-icon" viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continue with Google
+                    </button>
+                    
+                    <div class="divider-text">
+                        <span>or</span>
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="showEmailSignIn()">
+                        📧 Sign in with Email
+                    </button>
+                </div>
+                
+                <div id="emailSignInForm" style="display: none;">
+                    <form onsubmit="handleEmailSignIn(event)">
+                        <div class="form-group">
+                            <label for="signInEmail">Email</label>
+                            <input type="email" id="signInEmail" class="input-modern" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signInPassword">Password</label>
+                            <input type="password" id="signInPassword" class="input-modern" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            Sign In
+                        </button>
+                        <button type="button" class="btn btn-link" onclick="showCreateAccount()">
+                            Create new account
+                        </button>
+                    </form>
+                </div>
+                
+                <div id="createAccountForm" style="display: none;">
+                    <form onsubmit="handleCreateAccount(event)">
+                        <div class="form-group">
+                            <label for="createName">Display Name</label>
+                            <input type="text" id="createName" class="input-modern" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="createEmail">Email</label>
+                            <input type="email" id="createEmail" class="input-modern" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="createPassword">Password</label>
+                            <input type="password" id="createPassword" class="input-modern" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            Create Account
+                        </button>
+                        <button type="button" class="btn btn-link" onclick="showEmailSignIn()">
+                            Back to Sign In
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="app-header">
         <div class="container">
@@ -703,6 +779,57 @@
                     </div>
                     
                     <form id="createFundForm">
+                        <!-- Mode Selection -->
+                        <div class="form-section mode-selection-section">
+                            <div class="section-header">
+                                <h3>⚡ Choose Your Mode</h3>
+                                <p>Select how you want to manage your group</p>
+                            </div>
+                            <div class="mode-selection-grid">
+                                <label class="mode-card" id="simpleModeCard">
+                                    <input type="radio" name="groupMode" value="simple" checked>
+                                    <div class="mode-card-content">
+                                        <div class="mode-icon">📝</div>
+                                        <h4>Simple Mode</h4>
+                                        <p class="mode-description">Track expenses easily</p>
+                                        <ul class="mode-features">
+                                            <li>✓ No wallet needed</li>
+                                            <li>✓ Sign in with Google</li>
+                                            <li>✓ Track who owes what</li>
+                                            <li>✓ Approve expenses together</li>
+                                            <li>✓ Settle outside the app</li>
+                                        </ul>
+                                        <div class="mode-badge">Recommended for beginners</div>
+                                    </div>
+                                    <div class="card-checkmark">✓</div>
+                                </label>
+                                
+                                <label class="mode-card" id="blockchainModeCard">
+                                    <input type="radio" name="groupMode" value="blockchain">
+                                    <div class="mode-card-content">
+                                        <div class="mode-icon">⛓️</div>
+                                        <h4>Blockchain Mode</h4>
+                                        <p class="mode-description">Automatic smart contracts</p>
+                                        <ul class="mode-features">
+                                            <li>✓ Wallet required</li>
+                                            <li>✓ Automatic payments</li>
+                                            <li>✓ On-chain voting</li>
+                                            <li>✓ Transparent balances</li>
+                                            <li>✓ Trustless execution</li>
+                                        </ul>
+                                        <div class="mode-badge mode-badge-premium">Advanced</div>
+                                    </div>
+                                    <div class="card-checkmark">✓</div>
+                                </label>
+                            </div>
+                            <div class="mode-info-box" id="modeInfoBox">
+                                <div class="info-icon">💡</div>
+                                <div class="info-content">
+                                    <strong>Simple Mode:</strong> Perfect for getting started. No crypto knowledge needed. You can upgrade to Blockchain Mode later if you want automatic payments.
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Fund Type Selection -->
                         <div class="form-section">
                             <div class="section-header">
@@ -889,10 +1016,58 @@
     <script src="i18n.js"></script>
     <script src="theme.js"></script>
     <script src="ethers.umd.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="mode-manager.js"></script>
     <script src="wallet-connector.js"></script>
     <script src="app-platform.js"></script>
     
     <script>
+        // Mode Selector Interaction
+        document.addEventListener('DOMContentLoaded', () => {
+            const modeRadios = document.querySelectorAll('input[name="groupMode"]');
+            const modeInfoBox = document.getElementById('modeInfoBox');
+            
+            modeRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const selectedMode = e.target.value;
+                    
+                    if (selectedMode === 'simple') {
+                        modeInfoBox.innerHTML = `
+                            <div class="info-icon">💡</div>
+                            <div class="info-content">
+                                <strong>Simple Mode:</strong> Perfect for getting started. No crypto knowledge needed. You can upgrade to Blockchain Mode later if you want automatic payments.
+                            </div>
+                        `;
+                    } else {
+                        modeInfoBox.innerHTML = `
+                            <div class="info-icon">⚠️</div>
+                            <div class="info-content">
+                                <strong>Blockchain Mode:</strong> Requires a wallet (MetaMask) and ETH for gas fees. Payments are automatic and trustless. Once created, the group cannot be converted to Simple Mode.
+                            </div>
+                        `;
+                    }
+                });
+            });
+            
+            // Initialize Firebase when page loads
+            if (typeof window.FirebaseConfig !== 'undefined') {
+                window.FirebaseConfig.initialize().then(success => {
+                    if (success) {
+                        console.log('✅ Firebase ready for Simple Mode');
+                    } else {
+                        console.warn('⚠️ Firebase initialization failed - Simple Mode unavailable');
+                    }
+                });
+            }
+        });
+        
         // Settings Modal Functions for App
         function openAppSettings() {
             const modal = document.getElementById('appSettingsModal');

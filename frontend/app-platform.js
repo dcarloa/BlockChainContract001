@@ -1213,6 +1213,7 @@ async function createFund(event) {
         const approvalPercentage = document.getElementById('approvalPercentage').value;
         const minimumVotes = document.getElementById('minimumVotes').value;
         const fundType = document.querySelector('input[name="fundType"]:checked').value;
+        const groupMode = document.querySelector('input[name="groupMode"]:checked').value;
         
         if (!fundName) {
             showToast("Please enter the fund name", "warning");
@@ -1222,27 +1223,112 @@ async function createFund(event) {
         // targetAmount is optional - 0 means no limit
         const targetAmountValue = targetAmount && parseFloat(targetAmount) > 0 ? parseFloat(targetAmount) : 0;
         
-        showLoading("Creating fund...");
         closeCreateFundModal();
         
-        const targetAmountWei = ethers.parseEther(targetAmountValue.toString());
+        // Route based on selected mode
+        if (groupMode === 'simple') {
+            // SIMPLE MODE - Firebase
+            await createSimpleFund({
+                name: fundName,
+                description: description,
+                targetAmount: targetAmountValue,
+                isPrivate: isPrivate,
+                approvalPercentage: parseInt(approvalPercentage),
+                minimumVotes: parseInt(minimumVotes),
+                fundType: parseInt(fundType)
+            });
+        } else {
+            // BLOCKCHAIN MODE - Smart Contract
+            await createBlockchainFund({
+                name: fundName,
+                description: description,
+                targetAmount: targetAmountValue,
+                isPrivate: isPrivate,
+                approvalPercentage: parseInt(approvalPercentage),
+                minimumVotes: parseInt(minimumVotes),
+                fundType: parseInt(fundType)
+            });
+        }
         
-        // Crear fondo
+    } catch (error) {
+        hideLoading();
+        console.error("Error creating fund:", error);
+        showToast("Error creating fund: " + error.message, "error");
+    }
+}
+
+/**
+ * Create Simple Mode fund (Firebase)
+ */
+async function createSimpleFund(fundInfo) {
+    try {
+        showLoading("Creating Simple Mode group...");
+        
+        // Check if user is authenticated with Firebase
+        if (!window.FirebaseConfig.isAuthenticated()) {
+            // Show sign-in modal
+            hideLoading();
+            await showSignInModal();
+            
+            // After sign in, retry
+            if (!window.FirebaseConfig.isAuthenticated()) {
+                throw new Error("Sign in required to create Simple Mode group");
+            }
+            showLoading("Creating Simple Mode group...");
+        }
+        
+        // Create group in Firebase
+        const groupId = await window.modeManager.createSimpleGroup({
+            name: fundInfo.name,
+            description: fundInfo.description,
+            targetAmount: fundInfo.targetAmount,
+            currency: 'USD' // Can be changed later
+        });
+        
+        console.log("✅ Simple group created:", groupId);
+        showToast(`✅ Group "${fundInfo.name}" created successfully!`, "success");
+        
+        // Reload funds list
+        await loadUserFunds();
+        
+        // Show dashboard
+        document.getElementById('dashboardSection').classList.add('active');
+        document.getElementById('fundDetailSection').classList.remove('active');
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("❌ Error creating simple fund:", error);
+        throw error;
+    }
+}
+
+/**
+ * Create Blockchain Mode fund (Smart Contract)
+ */
+async function createBlockchainFund(fundInfo) {
+    try {
+        showLoading("Creating blockchain fund...");
+        
+        const targetAmountWei = ethers.parseEther(fundInfo.targetAmount.toString());
+        
+        // Crear fondo en blockchain
         const tx = await factoryContract.createFund(
-            fundName,
-            description,
+            fundInfo.name,
+            fundInfo.description,
             targetAmountWei,
-            isPrivate,
-            parseInt(approvalPercentage),
-            parseInt(minimumVotes),
-            parseInt(fundType)
+            fundInfo.isPrivate,
+            fundInfo.approvalPercentage,
+            fundInfo.minimumVotes,
+            fundInfo.fundType
         );
         
-        console.log("Transacción enviada:", tx.hash);
+        console.log("Transaction sent:", tx.hash);
         const receipt = await tx.wait();
         console.log("✅ Transaction confirmed:", receipt.hash);
         
-        showToast(`✅ Fund "${fundName}" created successfully!`, "success");
+        showToast(`✅ Fund "${fundInfo.name}" created successfully!`, "success");
         
         // Give time for blockchain state to update
         showLoading("🐜 Waiting for colony confirmation...");
@@ -1252,7 +1338,7 @@ async function createFund(event) {
         showLoading("Loading your new fund...");
         await loadUserFunds();
         
-        // Asegurarse de que el dashboard esté visible
+        // Show dashboard
         document.getElementById('dashboardSection').classList.add('active');
         document.getElementById('fundDetailSection').classList.remove('active');
         
@@ -1260,8 +1346,8 @@ async function createFund(event) {
         
     } catch (error) {
         hideLoading();
-        console.error("Error creating fund:", error);
-        showToast("Error al crear fondo: " + error.message, "error");
+        console.error("❌ Error creating blockchain fund:", error);
+        throw error;
     }
 }
 
@@ -1333,6 +1419,106 @@ function showToast(message, type = 'info') {
         }, 300);
     }, 3000);
 }
+
+// ============================================
+// SIGN IN MODAL (Simple Mode)
+// ============================================
+
+function showSignInModal() {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('signInModal');
+        modal.style.display = 'block';
+        
+        // Store resolve function to call when user signs in
+        window._signInResolve = resolve;
+        
+        // Reset forms
+        document.getElementById('emailSignInForm').style.display = 'none';
+        document.getElementById('createAccountForm').style.display = 'none';
+        document.querySelector('.sign-in-buttons').style.display = 'flex';
+    });
+}
+
+function closeSignInModal() {
+    const modal = document.getElementById('signInModal');
+    modal.style.display = 'none';
+    
+    if (window._signInResolve) {
+        window._signInResolve();
+        window._signInResolve = null;
+    }
+}
+
+async function signInWithGoogle() {
+    try {
+        showLoading("Signing in with Google...");
+        const user = await window.FirebaseConfig.signInWithGoogle();
+        console.log("✅ Signed in:", user.email);
+        showToast(`Welcome ${user.displayName || user.email}!`, "success");
+        closeSignInModal();
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        console.error("❌ Google sign-in error:", error);
+        showToast("Sign in failed: " + error.message, "error");
+    }
+}
+
+function showEmailSignIn() {
+    document.querySelector('.sign-in-buttons').style.display = 'none';
+    document.getElementById('createAccountForm').style.display = 'none';
+    document.getElementById('emailSignInForm').style.display = 'block';
+}
+
+function showCreateAccount() {
+    document.getElementById('emailSignInForm').style.display = 'none';
+    document.getElementById('createAccountForm').style.display = 'block';
+}
+
+async function handleEmailSignIn(event) {
+    event.preventDefault();
+    
+    try {
+        const email = document.getElementById('signInEmail').value;
+        const password = document.getElementById('signInPassword').value;
+        
+        showLoading("Signing in...");
+        const user = await window.FirebaseConfig.signInWithEmail(email, password);
+        console.log("✅ Signed in:", user.email);
+        showToast(`Welcome back!`, "success");
+        closeSignInModal();
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        console.error("❌ Email sign-in error:", error);
+        showToast("Sign in failed: " + error.message, "error");
+    }
+}
+
+async function handleCreateAccount(event) {
+    event.preventDefault();
+    
+    try {
+        const name = document.getElementById('createName').value;
+        const email = document.getElementById('createEmail').value;
+        const password = document.getElementById('createPassword').value;
+        
+        showLoading("Creating account...");
+        const user = await window.FirebaseConfig.createAccount(email, password, name);
+        console.log("✅ Account created:", user.email);
+        showToast(`Welcome ${name}!`, "success");
+        closeSignInModal();
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        console.error("❌ Account creation error:", error);
+        showToast("Account creation failed: " + error.message, "error");
+    }
+}
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
 
 // Helper: Format address for display (0x1234...5678)
 function formatAddress(address) {

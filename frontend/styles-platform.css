@@ -3321,3 +3321,318 @@ header,
     gap: 0.25rem;
   }
 }
+
+/* ===================================
+   MODE SELECTOR STYLES
+   =================================== */
+
+.mode-selection-section {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border: 2px solid var(--glass-border);
+}
+
+.mode-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.mode-card {
+  position: relative;
+  display: block;
+  background: var(--bg-secondary);
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  overflow: hidden;
+}
+
+.mode-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent-purple) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  z-index: 0;
+}
+
+.mode-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.mode-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mode-card input[type="radio"]:checked + .mode-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.mode-card input[type="radio"]:checked ~ .card-checkmark {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.mode-card input[type="radio"]:checked ~ * {
+  position: relative;
+  z-index: 1;
+}
+
+.mode-card.active,
+.mode-card input[type="radio"]:checked ~ * {
+  border-color: var(--accent-green);
+}
+
+.mode-card.active::before,
+.mode-card input[type="radio"]:checked ~ .mode-card::before {
+  opacity: 0.15;
+}
+
+.mode-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.mode-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+}
+
+.mode-card h4 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+  text-align: center;
+}
+
+.mode-description {
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+  font-size: 0.95rem;
+}
+
+.mode-features {
+  list-style: none;
+  margin-bottom: var(--spacing-md);
+  padding: 0;
+}
+
+.mode-features li {
+  color: var(--text-secondary);
+  padding: var(--spacing-xs) 0;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.mode-features li::before {
+  flex-shrink: 0;
+}
+
+.mode-badge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  background: var(--accent-green);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+
+.mode-badge-premium {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.mode-info-box {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-start;
+}
+
+.info-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.info-content {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.info-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Blockchain mode warning when selected */
+.mode-card input[type="radio"][value="blockchain"]:checked ~ .mode-card-content .mode-badge-premium {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive mode selector */
+@media (max-width: 640px) {
+  .mode-selection-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .mode-card {
+    padding: var(--spacing-md);
+  }
+  
+  .mode-icon {
+    font-size: 2.5rem;
+  }
+  
+  .mode-card h4 {
+    font-size: 1.25rem;
+  }
+}
+
+/* ===================================
+   SIGN IN MODAL STYLES
+   =================================== */
+
+.modal-medium {
+  max-width: 480px;
+}
+
+.sign-in-content {
+  padding: var(--spacing-md);
+}
+
+.sign-in-message {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
+}
+
+.sign-in-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: 1rem 1.5rem;
+  background: white;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.btn-google:hover {
+  background: #f8f9fa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.google-icon {
+  flex-shrink: 0;
+}
+
+.divider-text {
+  text-align: center;
+  position: relative;
+  margin: var(--spacing-md) 0;
+}
+
+.divider-text::before,
+.divider-text::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--glass-border);
+}
+
+.divider-text::before {
+  left: 0;
+}
+
+.divider-text::after {
+  right: 0;
+}
+
+.divider-text span {
+  background: var(--bg-secondary);
+  padding: 0 var(--spacing-sm);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.btn-link {
+  background: transparent;
+  border: none;
+  color: var(--accent-blue);
+  padding: var(--spacing-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color var(--transition-base);
+}
+
+.btn-link:hover {
+  color: var(--accent-purple);
+  text-decoration: underline;
+}
+
+#emailSignInForm,
+#createAccountForm {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "rules": {
+    "groups": {
+      "$groupId": {
+        ".read": "auth != null && (
+          data.child('members').child(auth.uid).exists() ||
+          data.child('createdBy').val() === auth.uid
+        )",
+        ".write": "auth != null && (
+          !data.exists() ||
+          data.child('createdBy').val() === auth.uid ||
+          data.child('members').child(auth.uid).exists()
+        )",
+        "members": {
+          "$memberId": {
+            ".write": "auth != null && (
+              $memberId === auth.uid ||
+              root.child('groups').child($groupId).child('createdBy').val() === auth.uid
+            )"
+          }
+        },
+        "expenses": {
+          "$expenseId": {
+            ".write": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()"
+          }
+        },
+        "settlements": {
+          "$settlementId": {
+            ".write": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()"
+          }
+        }
+      }
+    },
+    "users": {
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": "auth != null && auth.uid === $userId"
+      }
+    }
+  }
+}
