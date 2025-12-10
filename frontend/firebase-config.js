@@ -163,7 +163,10 @@ function isAuthenticated() {
  * @param {Object|null} user Current user
  */
 function onFirebaseUserChange(user) {
-    // This will be overridden by app-platform.js
+    // Call the external callback if set
+    if (typeof window.FirebaseConfig.onAuthStateChanged === 'function') {
+        window.FirebaseConfig.onAuthStateChanged(user);
+    }
     console.log("Auth state changed:", user ? user.email : "No user");
 }
 
@@ -288,6 +291,7 @@ window.FirebaseConfig = {
     signOut,
     getCurrentUser,
     isAuthenticated,
+    onAuthStateChanged: null, // Will be set by app
     getDbRef,
     writeDb,
     updateDb,

@@ -111,12 +111,37 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     
     setupEventListeners();
-    await loadFactoryInfo();
     
-    // Intentar reconectar wallet automáticamente si ya estaba conectada
-    console.log("🔄 Iniciando proceso de auto-reconexión...");
-    await autoReconnectWallet();
-    console.log("✅ Proceso de auto-reconexión completado");
+    // Initialize Firebase (always)
+    if (window.FirebaseConfig) {
+        await window.FirebaseConfig.initialize();
+        
+        // Setup Firebase auth state listener
+        window.FirebaseConfig.onAuthStateChanged = (user) => {
+            updateUIForFirebaseUser(user);
+        };
+    }
+    
+    // Load factory info for blockchain mode (only if wallet available)
+    if (window.ethereum) {
+        await loadFactoryInfo();
+        
+        // Intentar reconectar wallet automáticamente si ya estaba conectada
+        console.log("🔄 Iniciando proceso de auto-reconexión...");
+        await autoReconnectWallet();
+        console.log("✅ Proceso de auto-reconexión completado");
+    } else {
+        console.log("ℹ️ No wallet detected - Simple Mode only");
+        // Show sign in button for Simple Mode
+        document.getElementById('signInSimpleMode').style.display = 'flex';
+        document.getElementById('connectWallet').style.display = 'none';
+    }
+    
+    // Show dashboard anyway
+    showDashboard();
+    
+    // Load user funds (both Simple and Blockchain modes)
+    await loadUserFunds();
 });
 
 function setupEventListeners() {
@@ -815,6 +840,43 @@ window.openInvitedFund = async function(fundAddress) {
         hideLoading();
         console.error("Error opening invited fund:", error);
         showToast("Error opening fund: " + error.message, "error");
+    }
+}
+
+function showDashboard() {
+    // Make sure dashboard section is visible
+    document.getElementById('dashboardSection').classList.add('active');
+    document.getElementById('fundDetailSection').classList.remove('active');
+    
+    // Enable create fund button for both modes
+    const createBtn = document.getElementById('createFundBtn');
+    if (createBtn) {
+        createBtn.disabled = false;
+        createBtn.style.display = 'flex';
+    }
+}
+
+function updateUIForFirebaseUser(user) {
+    const firebaseUserBadge = document.getElementById('firebaseUser');
+    const firebaseUserDisplay = document.getElementById('firebaseUserDisplay');
+    const signInBtn = document.getElementById('signInSimpleMode');
+    
+    if (user) {
+        // User is signed in
+        console.log("✅ Firebase user signed in:", user.email);
+        firebaseUserBadge.style.display = 'flex';
+        firebaseUserDisplay.textContent = user.displayName || user.email;
+        if (signInBtn) signInBtn.style.display = 'none';
+        
+        // Reload funds to show Simple Mode groups
+        loadUserFunds();
+    } else {
+        // User is signed out
+        console.log("🚪 Firebase user signed out");
+        firebaseUserBadge.style.display = 'none';
+        if (signInBtn && !window.ethereum) {
+            signInBtn.style.display = 'flex';
+        }
     }
 }
 

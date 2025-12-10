@@ -117,12 +117,20 @@
                 </div>
                 
                 <div class="header-actions">
+                    <div id="firebaseUser" class="nickname-badge" style="display: none;">
+                        <span class="nickname-icon">👤</span>
+                        <span id="firebaseUserDisplay"></span>
+                    </div>
                     <div id="userNickname" class="nickname-badge" style="display: none;">
                         <span class="nickname-icon">👤</span>
                         <span id="nicknameDisplay"></span>
                     </div>
                     <button class="settings-btn-app" onclick="openAppSettings()" title="Settings">
                         ⚙️
+                    </button>
+                    <button id="signInSimpleMode" class="btn btn-secondary" style="display: none;" onclick="showSignInModal()">
+                        <span class="btn-icon">🔐</span>
+                        <span>Sign In</span>
                     </button>
                     <button id="connectWallet" class="btn btn-primary">
                         <span class="btn-icon">🦊</span>
