@@ -158,11 +158,11 @@ class WalletConnector {
             const modal = document.createElement('div');
             modal.className = 'wallet-modal';
             modal.innerHTML = `
-                <div class="wallet-modal-overlay" onclick="this.parentElement.remove()"></div>
+                <div class="wallet-modal-overlay" onclick="if(typeof hideLoading === 'function') hideLoading(); this.parentElement.remove();"></div>
                 <div class="wallet-modal-content">
                     <div class="wallet-modal-header">
                         <h2>Conectar Wallet</h2>
-                        <button class="wallet-modal-close" onclick="this.closest('.wallet-modal').remove()">×</button>
+                        <button class="wallet-modal-close" onclick="if(typeof hideLoading === 'function') hideLoading(); this.closest('.wallet-modal').remove();">×</button>
                     </div>
                     <div class="wallet-modal-body">
                         <p class="wallet-modal-subtitle">Elige tu wallet preferida para continuar</p>

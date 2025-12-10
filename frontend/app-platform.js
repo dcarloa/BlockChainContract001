@@ -141,9 +141,14 @@ window.addEventListener('DOMContentLoaded', async () => {
         console.log("✅ Proceso de auto-reconexión completado");
     } else {
         console.log("ℹ️ No wallet detected - Simple Mode only");
-        // Show sign in button for Simple Mode
-        document.getElementById('signInSimpleMode').style.display = 'flex';
+        // Hide wallet button if no wallet available
         document.getElementById('connectWallet').style.display = 'none';
+    }
+    
+    // Show Sign In button if user is not signed in with Firebase
+    // (independent of wallet availability)
+    if (!window.FirebaseConfig || !window.FirebaseConfig.getCurrentUser()) {
+        document.getElementById('signInSimpleMode').style.display = 'flex';
     }
     
     // Show dashboard anyway
@@ -883,7 +888,8 @@ function updateUIForFirebaseUser(user) {
         // User is signed out
         console.log("🚪 Firebase user signed out");
         firebaseUserBadge.style.display = 'none';
-        if (signInBtn && !window.ethereum) {
+        // Always show Sign In button when Firebase user is logged out
+        if (signInBtn) {
             signInBtn.style.display = 'flex';
         }
     }
