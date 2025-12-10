@@ -2231,22 +2231,56 @@ async function loadSimpleModeExpenses() {
     // Sort by date (newest first)
     expenses.sort((a, b) => b.timestamp - a.timestamp);
     
-    historyContainer.innerHTML = expenses.map(expense => `
-        <div class="expense-card ${expense.status}">
-            <div class="expense-header">
-                <h4>${expense.description}</h4>
-                <span class="expense-amount">$${expense.amount.toFixed(2)}</span>
+    const currentUserId = firebase.auth().currentUser?.uid;
+    
+    historyContainer.innerHTML = expenses.map(expense => {
+        const approvalCount = expense.approvals ? Object.keys(expense.approvals).filter(uid => expense.approvals[uid].approved).length : 0;
+        const totalMembers = currentFund.members ? Object.keys(currentFund.members).length : 0;
+        const userHasApproved = expense.approvals && expense.approvals[currentUserId]?.approved;
+        const userHasRejected = expense.approvals && expense.approvals[currentUserId]?.approved === false;
+        
+        let actionsHtml = '';
+        if (expense.status === 'pending' && currentUserId && !userHasApproved && !userHasRejected) {
+            actionsHtml = `
+                <div class="expense-actions">
+                    <button class="btn btn-success" onclick="approveExpense('${expense.id}')">
+                        <span>✅ Approve</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="rejectExpense('${expense.id}')">
+                        <span>❌ Reject</span>
+                    </button>
+                </div>
+            `;
+        }
+        
+        let statusHtml = '';
+        if (expense.status === 'pending') {
+            statusHtml = `⏳ Pending (${approvalCount}/${totalMembers} approved)`;
+        } else if (expense.status === 'approved') {
+            statusHtml = '✅ Approved';
+        } else if (expense.status === 'rejected') {
+            statusHtml = '❌ Rejected';
+        }
+        
+        return `
+            <div class="expense-card ${expense.status}">
+                <div class="expense-header">
+                    <h4>${expense.description}</h4>
+                    <span class="expense-amount">$${expense.amount.toFixed(2)}</span>
+                </div>
+                <div class="expense-details">
+                    <p>Paid by: <strong>${expense.paidByName || expense.paidBy}</strong></p>
+                    <p>Split between: ${expense.splitBetween.length} people</p>
+                    <p>Date: ${new Date(expense.timestamp).toLocaleDateString()}</p>
+                    ${expense.notes ? `<p>Notes: ${expense.notes}</p>` : ''}
+                </div>
+                <div class="expense-status">
+                    ${statusHtml}
+                </div>
+                ${actionsHtml}
             </div>
-            <div class="expense-details">
-                <p>Paid by: <strong>${expense.paidByName || expense.paidBy}</strong></p>
-                <p>Split between: ${expense.splitBetween.length} people</p>
-                <p>Date: ${new Date(expense.timestamp).toLocaleDateString()}</p>
-            </div>
-            <div class="expense-status">
-                ${expense.status === 'pending' ? '⏳ Pending approval' : '✅ Approved'}
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // ============================================
@@ -2384,6 +2418,71 @@ document.addEventListener('DOMContentLoaded', function() {
         expenseForm.addEventListener('submit', handleExpenseSubmission);
     }
 });
+
+/**
+ * Approve an expense
+ */
+async function approveExpense(expenseId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('You must be signed in to approve expenses', 'error');
+            return;
+        }
+
+        // Set current group ID for mode manager
+        window.modeManager.currentGroupId = currentFund.fundId;
+
+        // Approve the expense
+        const success = await window.modeManager.approveExpense(expenseId, true);
+
+        if (success) {
+            showToast('Expense approved! ✅', 'success');
+            // Refresh expense list
+            await loadSimpleModeExpenses();
+        } else {
+            showToast('Failed to approve expense', 'error');
+        }
+
+    } catch (error) {
+        console.error('Error approving expense:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Reject an expense
+ */
+async function rejectExpense(expenseId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('You must be signed in to reject expenses', 'error');
+            return;
+        }
+
+        const confirmed = confirm('Are you sure you want to reject this expense?');
+        if (!confirmed) return;
+
+        // Set current group ID for mode manager
+        window.modeManager.currentGroupId = currentFund.fundId;
+
+        // Reject the expense
+        const success = await window.modeManager.approveExpense(expenseId, false);
+
+        if (success) {
+            showToast('Expense rejected ❌', 'info');
+            // Refresh expense list
+            await loadSimpleModeExpenses();
+        } else {
+            showToast('Failed to reject expense', 'error');
+        }
+
+    } catch (error) {
+        console.error('Error rejecting expense:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
+}
 
 // ============================================
 // FUND ACTIONS
