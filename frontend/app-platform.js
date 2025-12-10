@@ -2055,12 +2055,20 @@ function switchFundTab(tabName) {
     
     // Load history when history tab is selected
     if (tabName === 'history') {
-        loadHistory();
+        if (currentFund && currentFund.isSimpleMode) {
+            loadSimpleModeExpenses();
+        } else {
+            loadHistory();
+        }
     }
     
     // Load balances when balances tab is selected
     if (tabName === 'balances') {
-        loadBalances();
+        if (currentFund && currentFund.isSimpleMode) {
+            loadSimpleModeBalances();
+        } else {
+            loadBalances();
+        }
     }
     
     // Load kick members list when manage tab is selected
@@ -2281,6 +2289,148 @@ async function loadSimpleModeExpenses() {
             </div>
         `;
     }).join('');
+}
+
+/**
+ * Load and display Simple Mode balances
+ */
+async function loadSimpleModeBalances() {
+    try {
+        // Set current group ID for mode manager  
+        window.modeManager.currentGroupId = currentFund.fundId;
+        window.modeManager.groupData = currentFund;
+        
+        // Calculate balances using mode manager
+        const memberBalances = await window.modeManager.calculateSimpleBalances();
+        
+        const balancesList = document.getElementById('balancesList');
+        const noBalances = document.getElementById('noBalances');
+        
+        if (!memberBalances || memberBalances.length === 0) {
+            if (balancesList) balancesList.innerHTML = '';
+            if (noBalances) noBalances.style.display = 'flex';
+            return;
+        }
+        
+        if (noBalances) noBalances.style.display = 'none';
+        
+        const currentUserId = firebase.auth().currentUser?.uid;
+        
+        // Simplify debts using greedy algorithm
+        const pairwiseDebts = simplifyDebts(memberBalances);
+        
+        // Separate balances into: I owe, owes me
+        const iOwe = pairwiseDebts.filter(debt => debt.from === currentUserId);
+        const owesMe = pairwiseDebts.filter(debt => debt.to === currentUserId);
+        
+        let html = '';
+        
+        // Show debts I owe
+        if (iOwe.length > 0) {
+            html += '<h4 style="color: var(--error); margin-top: var(--spacing-md);">💸 You owe:</h4>';
+            iOwe.forEach(debt => {
+                const toMember = currentFund.members[debt.to];
+                const toName = toMember?.name || toMember?.email || debt.to;
+                html += `
+                    <div class="balance-card owes">
+                        <div class="balance-header">
+                            <span class="balance-parties">You → ${toName}</span>
+                            <span class="balance-amount owes">$${debt.amount.toFixed(2)}</span>
+                        </div>
+                        <div class="balance-actions">
+                            <button class="btn btn-primary" onclick="showRecordPaymentModal('${debt.to}', ${debt.amount})">
+                                💰 Record Payment
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        // Show debts owed to me
+        if (owesMe.length > 0) {
+            html += '<h4 style="color: var(--success); margin-top: var(--spacing-md);">💰 Owes you:</h4>';
+            owesMe.forEach(debt => {
+                const fromMember = currentFund.members[debt.from];
+                const fromName = fromMember?.name || fromMember?.email || debt.from;
+                html += `
+                    <div class="balance-card owed">
+                        <div class="balance-header">
+                            <span class="balance-parties">${fromName} → You</span>
+                            <span class="balance-amount owed">$${debt.amount.toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        // Show all settled if no debts
+        if (iOwe.length === 0 && owesMe.length === 0) {
+            html += `
+                <div class="empty-state">
+                    <div class="empty-icon">✅</div>
+                    <h4>All Settled!</h4>
+                    <p>Everyone is even. No outstanding balances.</p>
+                </div>
+            `;
+        }
+        
+        balancesList.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading balances:', error);
+        showToast(`Error loading balances: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Simplify debts using greedy algorithm (Splitwise-style)
+ * Converts individual balances to optimal pairwise transactions
+ */
+function simplifyDebts(memberBalances) {
+    // Separate creditors (positive balance) and debtors (negative balance)
+    const creditors = memberBalances.filter(m => m.balance > 0.01)
+        .map(m => ({ id: m.memberId, amount: m.balance }))
+        .sort((a, b) => b.amount - a.amount);
+    
+    const debtors = memberBalances.filter(m => m.balance < -0.01)
+        .map(m => ({ id: m.memberId, amount: Math.abs(m.balance) }))
+        .sort((a, b) => b.amount - a.amount);
+    
+    const transactions = [];
+    
+    let i = 0, j = 0;
+    
+    while (i < creditors.length && j < debtors.length) {
+        const creditor = creditors[i];
+        const debtor = debtors[j];
+        
+        const amount = Math.min(creditor.amount, debtor.amount);
+        
+        if (amount > 0.01) {
+            transactions.push({
+                from: debtor.id,
+                to: creditor.id,
+                amount: amount
+            });
+        }
+        
+        creditor.amount -= amount;
+        debtor.amount -= amount;
+        
+        if (creditor.amount < 0.01) i++;
+        if (debtor.amount < 0.01) j++;
+    }
+    
+    return transactions;
+}
+
+/**
+ * Show record payment modal (stub for Feature #4)
+ */
+function showRecordPaymentModal(toUserId, amount) {
+    // TODO: Implement in Feature #4
+    showToast('Record Payment feature coming soon!', 'info');
 }
 
 // ============================================
