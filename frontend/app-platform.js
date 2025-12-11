@@ -2097,6 +2097,15 @@ function switchFundTab(tabName) {
         }
     }
     
+    // Load members when members tab is selected
+    if (tabName === 'members') {
+        if (currentFund && currentFund.isSimpleMode) {
+            loadSimpleModeMembers();
+        } else {
+            loadMembers();
+        }
+    }
+    
     // Load kick members list when manage tab is selected
     if (tabName === 'manage') {
         loadKickMembersList();
@@ -2452,6 +2461,118 @@ function simplifyDebts(memberBalances) {
     }
     
     return transactions;
+}
+
+/**
+ * Load Simple Mode members list
+ */
+function loadSimpleModeMembers() {
+    const membersList = document.getElementById('membersList');
+    const noMembers = document.getElementById('noMembers');
+    
+    if (!currentFund || !currentFund.members) {
+        if (membersList) membersList.innerHTML = '';
+        if (noMembers) noMembers.style.display = 'flex';
+        return;
+    }
+
+    const members = Object.entries(currentFund.members);
+    
+    if (members.length === 0) {
+        if (membersList) membersList.innerHTML = '';
+        if (noMembers) noMembers.style.display = 'flex';
+        return;
+    }
+
+    if (noMembers) noMembers.style.display = 'none';
+
+    const currentUserId = firebase.auth().currentUser?.uid;
+    const isAdmin = currentFund.creator === currentUserId;
+
+    membersList.innerHTML = members.map(([uid, member]) => {
+        const joinDate = member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'N/A';
+        const isCurrentUser = uid === currentUserId;
+        const isCreator = uid === currentFund.creator;
+
+        let actionsHtml = '';
+        if (isAdmin && !isCurrentUser && !isCreator) {
+            actionsHtml = `
+                <button class="btn btn-danger btn-small" onclick="removeMember('${uid}')">
+                    <span>❌ Remove</span>
+                </button>
+            `;
+        }
+
+        return `
+            <div class="member-card">
+                <div class="member-info">
+                    <div class="member-avatar">
+                        ${(member.name || member.email || 'U').charAt(0).toUpperCase()}
+                    </div>
+                    <div class="member-details">
+                        <h4>${member.name || member.email || uid}</h4>
+                        <p class="member-email">${member.email || ''}</p>
+                        <p class="member-meta">
+                            ${isCreator ? '👑 Creator' : ''}
+                            ${isCurrentUser && !isCreator ? '(You)' : ''}
+                            • Joined ${joinDate}
+                        </p>
+                    </div>
+                </div>
+                ${actionsHtml ? `<div class="member-actions">${actionsHtml}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Remove a member from Simple Mode group
+ */
+async function removeMember(memberId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('You must be signed in', 'error');
+            return;
+        }
+
+        // Check if current user is admin
+        if (currentFund.creator !== user.uid) {
+            showToast('Only the group creator can remove members', 'error');
+            return;
+        }
+
+        const member = currentFund.members[memberId];
+        const memberName = member?.name || member?.email || memberId;
+
+        const confirmed = confirm(
+            `Remove ${memberName} from the group?\n\n` +
+            `This will:\n` +
+            `- Remove them from all future expenses\n` +
+            `- They won't be able to add or approve expenses\n` +
+            `- Past expenses they were part of will remain unchanged`
+        );
+
+        if (!confirmed) return;
+
+        // Remove member from Firebase
+        await window.FirebaseConfig.updateDb(
+            `groups/${currentFund.fundId}/members/${memberId}`,
+            null
+        );
+
+        showToast(`${memberName} removed from group`, 'success');
+
+        // Update local data
+        delete currentFund.members[memberId];
+
+        // Reload members list
+        loadSimpleModeMembers();
+
+    } catch (error) {
+        console.error('Error removing member:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
 }
 
 /**
