@@ -2691,33 +2691,45 @@ async function handleGroupJoin(groupId) {
         
         // Check if already a member
         if (groupData.members && groupData.members[user.uid]) {
-            showToast(`Opening "${groupName}"...`, 'info');
-            // Clean up URL and open group
-            window.history.replaceState({}, document.title, window.location.pathname);
-            sessionStorage.removeItem('pendingGroupJoin');
-            
-            // Load the group completely
-            currentFund = {
-                fundId: groupId,
-                fundAddress: groupId,
-                fundName: groupName,
-                fundType: groupData.fundType || 0,
-                isSimpleMode: true,
-                members: groupData.members,
-                creator: groupData.createdBy || groupData.creator,
-                ...groupData
-            };
-            
-            // Hide dashboard, show detail
-            document.getElementById('dashboardSection').classList.remove('active');
-            document.getElementById('fundDetailSection').classList.add('active');
-            
-            // Hide FAB first (will be shown by loadSimpleModeDetailView)
-            const fabBtn = document.getElementById('addExpenseBtn');
-            if (fabBtn) fabBtn.style.display = 'none';
-            
-            await loadSimpleModeDetailView();
-            return;
+            try {
+                showLoading(`Opening "${groupName}"...`);
+                
+                // Clean up URL and open group
+                window.history.replaceState({}, document.title, window.location.pathname);
+                sessionStorage.removeItem('pendingGroupJoin');
+                
+                // Load the group completely
+                currentFund = {
+                    fundId: groupId,
+                    fundAddress: groupId,
+                    fundName: groupName,
+                    fundType: groupData.fundType || 0,
+                    isSimpleMode: true,
+                    members: groupData.members,
+                    creator: groupData.createdBy || groupData.creator,
+                    name: groupName,
+                    ...groupData
+                };
+                
+                // Hide dashboard, show detail
+                document.getElementById('dashboardSection').classList.remove('active');
+                document.getElementById('fundDetailSection').classList.add('active');
+                
+                // Hide FAB first (will be shown by loadSimpleModeDetailView)
+                const fabBtn = document.getElementById('addExpenseBtn');
+                if (fabBtn) fabBtn.style.display = 'none';
+                
+                await loadSimpleModeDetailView();
+                
+                hideLoading();
+                showToast(`✅ Welcome back to "${groupName}"!`, 'success');
+                return;
+            } catch (error) {
+                hideLoading();
+                console.error('Error opening group:', error);
+                showToast(`Error opening group: ${error.message}`, 'error');
+                return;
+            }
         }
 
         // Add user to group members
