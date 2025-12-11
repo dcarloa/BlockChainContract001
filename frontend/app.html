@@ -919,6 +919,91 @@
                 </div>
             </div>
 
+            <!-- Record Payment Modal -->
+            <div id="recordPaymentModal" class="modal" style="display: none;">
+                <div class="modal-content modal-small">
+                    <div class="modal-header">
+                        <h2>💰 Record Payment</h2>
+                        <button class="modal-close" onclick="closeRecordPaymentModal()">&times;</button>
+                    </div>
+                    
+                    <form id="recordPaymentForm" class="expense-form">
+                        <div class="form-group">
+                            <label for="paymentAmount" class="input-label">
+                                <span class="label-icon">💵</span>
+                                <span>Amount Paid</span>
+                            </label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">$</span>
+                                <input 
+                                    type="number" 
+                                    id="paymentAmount" 
+                                    name="amount"
+                                    class="input-modern" 
+                                    step="0.01" 
+                                    min="0.01"
+                                    required
+                                    placeholder="0.00"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentTo" class="input-label">
+                                <span class="label-icon">👤</span>
+                                <span>Paid To</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="paymentTo" 
+                                class="input-modern" 
+                                readonly
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentDate" class="input-label">
+                                <span class="label-icon">📅</span>
+                                <span>Payment Date</span>
+                            </label>
+                            <input 
+                                type="date" 
+                                id="paymentDate" 
+                                name="date"
+                                class="input-modern"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentNotes" class="input-label">
+                                <span class="label-icon">📝</span>
+                                <span>Notes (Optional)</span>
+                            </label>
+                            <textarea 
+                                id="paymentNotes" 
+                                name="notes"
+                                class="input-modern"
+                                rows="2"
+                                placeholder="Payment method, reference number, etc..."
+                            ></textarea>
+                        </div>
+
+                        <input type="hidden" id="paymentToId" name="toUserId">
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeRecordPaymentModal()">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <span class="btn-icon">✅</span>
+                                <span>Record Payment</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- Create Fund Modal -->
             <div id="createFundModal" class="modal" style="display: none;">
                 <div class="modal-content modal-large create-group-modal">

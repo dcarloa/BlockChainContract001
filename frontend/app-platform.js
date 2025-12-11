@@ -2426,11 +2426,96 @@ function simplifyDebts(memberBalances) {
 }
 
 /**
- * Show record payment modal (stub for Feature #4)
+ * Show record payment modal
  */
 function showRecordPaymentModal(toUserId, amount) {
-    // TODO: Implement in Feature #4
-    showToast('Record Payment feature coming soon!', 'info');
+    const modal = document.getElementById('recordPaymentModal');
+    const form = document.getElementById('recordPaymentForm');
+    if (!modal || !form) return;
+
+    // Get member info
+    const toMember = currentFund.members[toUserId];
+    const toName = toMember?.name || toMember?.email || toUserId;
+
+    // Set form values
+    document.getElementById('paymentAmount').value = amount.toFixed(2);
+    document.getElementById('paymentTo').value = toName;
+    document.getElementById('paymentToId').value = toUserId;
+    
+    // Set default date to today
+    const dateInput = document.getElementById('paymentDate');
+    if (dateInput) {
+        dateInput.valueAsDate = new Date();
+    }
+
+    // Show modal
+    modal.style.display = 'flex';
+}
+
+/**
+ * Close record payment modal
+ */
+function closeRecordPaymentModal() {
+    const modal = document.getElementById('recordPaymentModal');
+    const form = document.getElementById('recordPaymentForm');
+    
+    if (form) form.reset();
+    if (modal) modal.style.display = 'none';
+}
+
+/**
+ * Handle payment submission
+ */
+async function handlePaymentSubmission(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    try {
+        const amount = parseFloat(formData.get('amount'));
+        const toUserId = formData.get('toUserId');
+        const date = formData.get('date');
+        const notes = formData.get('notes') || '';
+
+        // Validate
+        if (!amount || amount <= 0 || !toUserId) {
+            showToast('Invalid payment information', 'error');
+            return;
+        }
+
+        // Get current user
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('You must be signed in to record payments', 'error');
+            return;
+        }
+
+        // Create settlement record
+        const settlementInfo = {
+            from: user.uid,
+            to: toUserId,
+            amount,
+            method: 'cash', // Default to cash
+            notes: notes || `Payment on ${date}`
+        };
+
+        // Set current group ID for mode manager
+        window.modeManager.currentGroupId = currentFund.fundId;
+
+        // Record settlement via mode manager
+        await window.modeManager.recordSettlement(settlementInfo);
+
+        showToast('Payment recorded successfully! ✅', 'success');
+        closeRecordPaymentModal();
+
+        // Refresh balances
+        await loadSimpleModeBalances();
+
+    } catch (error) {
+        console.error('Error recording payment:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
 }
 
 // ============================================
@@ -2561,11 +2646,16 @@ async function handleExpenseSubmission(event) {
     }
 }
 
-// Attach form handler when DOM is ready
+// Attach form handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     const expenseForm = document.getElementById('addExpenseForm');
     if (expenseForm) {
         expenseForm.addEventListener('submit', handleExpenseSubmission);
+    }
+    
+    const paymentForm = document.getElementById('recordPaymentForm');
+    if (paymentForm) {
+        paymentForm.addEventListener('submit', handlePaymentSubmission);
     }
 });
 
