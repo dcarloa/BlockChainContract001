@@ -2134,16 +2134,21 @@ function switchFundTab(tabName) {
  */
 async function loadSimpleModeDetailView() {
     try {
-        console.log("Loading Simple Mode detail view for:", currentFund);
+        console.log("📖 Loading Simple Mode detail view for:", currentFund);
+        console.log("📍 Step 1: Updating header icons...");
         
         const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
         
         // Update header
         document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '🎯';
-        document.getElementById('fundDetailName').textContent = currentFund.fundName;
+        document.getElementById('fundDetailName').textContent = currentFund.fundName || currentFund.name;
+        
+        console.log("📍 Step 2: Reading Firebase data for group:", currentFund.fundAddress);
         
         // Get group data from Firebase
         const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
+        
+        console.log("📍 Step 3: Firebase data received:", groupData ? "✅ YES" : "❌ NO");
         
         if (!groupData) {
             throw new Error("Group not found in Firebase");
@@ -2222,15 +2227,19 @@ async function loadSimpleModeDetailView() {
         if (balancesTab) balancesTab.style.display = 'flex';
         if (manageTab) manageTab.style.display = 'none'; // Hide for now
         
+        console.log("📍 Step 4: Loading invite UI...");
         // Load Simple Mode invite UI
         loadSimpleModeInviteUI();
         
+        console.log("📍 Step 5: Loading expenses...");
         // Load expenses (acts as "history" tab)
         await loadSimpleModeExpenses();
         
+        console.log("📍 Step 6: Switching to history tab...");
         // Switch to expenses tab by default
         switchFundTab('history');
         
+        console.log("📍 Step 7: Showing FAB button...");
         // Show Add Expense FAB button ONLY if we're in detail view
         const fabBtn = document.getElementById('addExpenseBtn');
         const detailSection = document.getElementById('fundDetailSection');
@@ -2238,9 +2247,13 @@ async function loadSimpleModeDetailView() {
             fabBtn.style.display = 'flex';
         }
         
+        console.log("✅ Simple Mode detail view loaded successfully!");
+        
     } catch (error) {
-        console.error("Error loading Simple Mode detail:", error);
+        console.error("❌ Error loading Simple Mode detail:", error);
+        console.error("Error stack:", error.stack);
         showToast("Error loading group: " + error.message, "error");
+        throw error; // Re-throw to be caught by caller
     }
 }
 
@@ -2763,33 +2776,53 @@ async function handleGroupJoin(groupId) {
         // Show loading
         showLoading(`Opening "${groupName}"...`);
 
-        // Reload dashboard to get updated groups list
-        await loadAllFundsDetails();
-        
-        // Now open the newly joined group
-        currentFund = {
-            fundId: groupId,
-            fundAddress: groupId,
-            fundName: groupName,
-            fundType: groupData.fundType || 0,
-            isSimpleMode: true,
-            members: groupData.members,
-            creator: groupData.createdBy || groupData.creator,
-            name: groupName,
-            ...groupData
-        };
-        
-        // Hide dashboard, show detail
-        document.getElementById('dashboardSection').classList.remove('active');
-        document.getElementById('fundDetailSection').classList.add('active');
-        
-        // Hide FAB first (will be shown by loadSimpleModeDetailView)
-        const fabBtn = document.getElementById('addExpenseBtn');
-        if (fabBtn) fabBtn.style.display = 'none';
-        
-        await loadSimpleModeDetailView();
-        
-        hideLoading();
+        try {
+            // Reload dashboard to get updated groups list
+            await loadAllFundsDetails();
+            
+            // Re-read group data now that user is a member
+            const updatedGroupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+            
+            if (!updatedGroupData) {
+                throw new Error('Could not load group data after joining');
+            }
+            
+            // Now open the newly joined group with fresh data
+            currentFund = {
+                fundId: groupId,
+                fundAddress: groupId,
+                fundName: updatedGroupData.name || groupName,
+                fundType: updatedGroupData.fundType || 3,
+                isSimpleMode: true,
+                members: updatedGroupData.members,
+                creator: updatedGroupData.createdBy || updatedGroupData.creator,
+                name: updatedGroupData.name || groupName,
+                description: updatedGroupData.description,
+                targetAmount: updatedGroupData.targetAmount,
+                currency: updatedGroupData.currency || 'USD',
+                ...updatedGroupData
+            };
+            
+            console.log('📖 Opening group after join:', currentFund);
+            
+            // Hide dashboard, show detail
+            document.getElementById('dashboardSection').classList.remove('active');
+            document.getElementById('fundDetailSection').classList.add('active');
+            
+            // Hide FAB first (will be shown by loadSimpleModeDetailView)
+            const fabBtn = document.getElementById('addExpenseBtn');
+            if (fabBtn) fabBtn.style.display = 'none';
+            
+            await loadSimpleModeDetailView();
+            
+            hideLoading();
+        } catch (error) {
+            hideLoading();
+            console.error('Error opening group after join:', error);
+            showToast(`Error opening group: ${error.message}`, 'error');
+            // Fallback: show dashboard
+            await showDashboard();
+        }
 
     } catch (error) {
         console.error('Error joining group:', error);
