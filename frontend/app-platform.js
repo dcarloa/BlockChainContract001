@@ -1162,9 +1162,17 @@ function filterFunds() {
         
         // Filter out hidden funds from localStorage
         const hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
-        const visibleFunds = filteredFunds.filter(fund => 
-            !hiddenFunds.includes(fund.fundAddress.toLowerCase())
-        );
+        console.log(`🔍 Filtering ${filteredFunds.length} funds. Hidden funds:`, hiddenFunds);
+        
+        const visibleFunds = filteredFunds.filter(fund => {
+            const isHidden = hiddenFunds.includes(fund.fundAddress.toLowerCase());
+            if (isHidden) {
+                console.log(`⚠️ Fund ${fund.fundName} (${fund.fundAddress}) is hidden`);
+            }
+            return !isHidden;
+        });
+        
+        console.log(`✅ Showing ${visibleFunds.length} visible funds out of ${filteredFunds.length} total`);
         
         if (visibleFunds.length === 0) {
             fundsGrid.innerHTML = '';
