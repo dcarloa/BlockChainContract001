@@ -2139,9 +2139,16 @@ async function loadSimpleModeDetailView() {
         
         const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
         
-        // Update header
-        document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '🎯';
-        document.getElementById('fundDetailName').textContent = currentFund.fundName || currentFund.name;
+        // Update header - safely check if elements exist
+        const headerIcon = document.getElementById('fundHeaderIcon');
+        const detailName = document.getElementById('fundDetailName');
+        
+        if (headerIcon) {
+            headerIcon.textContent = fundTypeIcons[Number(currentFund.fundType)] || '🎯';
+        }
+        if (detailName) {
+            detailName.textContent = currentFund.fundName || currentFund.name;
+        }
         
         console.log("📍 Step 2: Reading Firebase data for group:", currentFund.fundAddress);
         
@@ -2162,11 +2169,19 @@ async function loadSimpleModeDetailView() {
             isSimpleMode: true
         };
         
-        // Update UI
-        document.getElementById('fundDetailDescription').textContent = groupData.description || 'No description';
-        document.getElementById('fundTypeBadge').textContent = '📝 Simple Mode';
-        document.getElementById('fundStatusBadge').textContent = '🟢 Active';
-        document.getElementById('fundPrivacyBadge').textContent = groupData.isPrivate ? '🔒 Private' : '🌐 Public';
+        console.log("📍 Step 4: Updating UI elements...");
+        
+        // Helper function to safely update element
+        const safeUpdate = (id, property, value) => {
+            const el = document.getElementById(id);
+            if (el) el[property] = value;
+        };
+        
+        // Update UI safely
+        safeUpdate('fundDetailDescription', 'textContent', groupData.description || 'No description');
+        safeUpdate('fundTypeBadge', 'textContent', '📝 Simple Mode');
+        safeUpdate('fundStatusBadge', 'textContent', '🟢 Active');
+        safeUpdate('fundPrivacyBadge', 'textContent', groupData.isPrivate ? '🔒 Private' : '🌐 Public');
         
         // For Simple Mode: show stats differently
         const members = groupData.members ? Object.keys(groupData.members).length : 1;
@@ -2175,34 +2190,40 @@ async function loadSimpleModeDetailView() {
         ).length : 0;
         const totalSpent = calculateTotalSpent(groupData);
         
-        document.getElementById('fundBalance').textContent = `$${totalSpent.toFixed(2)}`;
-        document.getElementById('fundMembers').textContent = members.toString();
-        document.getElementById('fundProposals').textContent = expenses.toString();
+        safeUpdate('fundBalance', 'textContent', `$${totalSpent.toFixed(2)}`);
+        safeUpdate('fundMembers', 'textContent', members.toString());
+        safeUpdate('fundProposals', 'textContent', expenses.toString());
         
         // Target amount
         if (groupData.targetAmount && groupData.targetAmount > 0) {
             const progress = (totalSpent / groupData.targetAmount) * 100;
-            document.getElementById('fundTarget').textContent = `$${groupData.targetAmount.toFixed(2)}`;
-            document.getElementById('fundProgress').textContent = `${progress.toFixed(1)}%`;
-            document.getElementById('fundProgressBar').style.width = `${Math.min(progress, 100)}%`;
+            safeUpdate('fundTarget', 'textContent', `$${groupData.targetAmount.toFixed(2)}`);
+            safeUpdate('fundProgress', 'textContent', `${progress.toFixed(1)}%`);
+            const progressBar = document.getElementById('fundProgressBar');
+            if (progressBar) progressBar.style.width = `${Math.min(progress, 100)}%`;
             const progressSection = document.querySelector('.progress-section');
             if (progressSection) progressSection.style.display = 'block';
         } else {
-            document.getElementById('fundTarget').textContent = 'No limit';
-            document.getElementById('fundProgress').textContent = '-';
+            safeUpdate('fundTarget', 'textContent', 'No limit');
+            safeUpdate('fundProgress', 'textContent', '-');
             const progressSection = document.querySelector('.progress-section');
             if (progressSection) progressSection.style.display = 'none';
         }
         
         // User's share/balance
         const myBalance = calculateMyBalance(groupData);
-        document.getElementById('userContribution').textContent = myBalance >= 0 
+        const balanceText = myBalance >= 0 
             ? `You are owed $${Math.abs(myBalance).toFixed(2)}`
             : `You owe $${Math.abs(myBalance).toFixed(2)}`;
+        safeUpdate('userContribution', 'textContent', balanceText);
         
-        // Hide blockchain-specific elements
-        document.getElementById('invitationBanner').style.display = 'none';
-        document.getElementById('closedFundBanner').style.display = 'none';
+        console.log("📍 Step 5: Hiding blockchain-specific elements...");
+        
+        // Hide blockchain-specific elements safely
+        const inviteBanner = document.getElementById('invitationBanner');
+        const closedBanner = document.getElementById('closedFundBanner');
+        if (inviteBanner) inviteBanner.style.display = 'none';
+        if (closedBanner) closedBanner.style.display = 'none';
         
         // Show/hide tabs for Simple Mode
         const depositTab = document.querySelector('.fund-tab-btn[data-tab="deposit"]');
@@ -2227,24 +2248,27 @@ async function loadSimpleModeDetailView() {
         if (balancesTab) balancesTab.style.display = 'flex';
         if (manageTab) manageTab.style.display = 'none'; // Hide for now
         
-        console.log("📍 Step 4: Loading invite UI...");
+        console.log("📍 Step 6: Loading invite UI...");
         // Load Simple Mode invite UI
         loadSimpleModeInviteUI();
         
-        console.log("📍 Step 5: Loading expenses...");
+        console.log("📍 Step 7: Loading expenses...");
         // Load expenses (acts as "history" tab)
         await loadSimpleModeExpenses();
         
-        console.log("📍 Step 6: Switching to history tab...");
+        console.log("📍 Step 8: Switching to history tab...");
         // Switch to expenses tab by default
         switchFundTab('history');
         
-        console.log("📍 Step 7: Showing FAB button...");
+        console.log("📍 Step 9: Showing FAB button...");
         // Show Add Expense FAB button ONLY if we're in detail view
         const fabBtn = document.getElementById('addExpenseBtn');
         const detailSection = document.getElementById('fundDetailSection');
         if (fabBtn && detailSection && detailSection.classList.contains('active')) {
             fabBtn.style.display = 'flex';
+            console.log("✅ FAB button shown");
+        } else {
+            console.log("⚠️ FAB button not shown - element not found or section not active");
         }
         
         console.log("✅ Simple Mode detail view loaded successfully!");
