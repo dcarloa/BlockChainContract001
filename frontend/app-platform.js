@@ -145,6 +145,26 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('connectWallet').style.display = 'none';
     }
     
+    // Check for invite link in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const joinGroupId = urlParams.get('join');
+    
+    if (joinGroupId) {
+        // Save group ID to join after sign in
+        sessionStorage.setItem('pendingGroupJoin', joinGroupId);
+        
+        // If not signed in, prompt to sign in
+        if (!window.FirebaseConfig || !window.FirebaseConfig.getCurrentUser()) {
+            showToast('Please sign in to join the group', 'info');
+            setTimeout(() => {
+                openSignInModal();
+            }, 1000);
+        } else {
+            // If already signed in, join immediately
+            await handleGroupJoin(joinGroupId);
+        }
+    }
+    
     // Show Sign In button if user is not signed in with Firebase
     // (independent of wallet availability)
     if (!window.FirebaseConfig || !window.FirebaseConfig.getCurrentUser()) {
@@ -870,7 +890,7 @@ function showDashboard() {
     }
 }
 
-function updateUIForFirebaseUser(user) {
+async function updateUIForFirebaseUser(user) {
     const firebaseUserBadge = document.getElementById('firebaseUser');
     const firebaseUserDisplay = document.getElementById('firebaseUserDisplay');
     const signInBtn = document.getElementById('signInSimpleMode');
@@ -883,6 +903,12 @@ function updateUIForFirebaseUser(user) {
         firebaseUserDisplay.textContent = user.displayName || user.email;
         if (signInBtn) signInBtn.style.display = 'none';
         if (signOutBtn) signOutBtn.style.display = 'flex';
+        
+        // Check for pending group join
+        const pendingGroupId = sessionStorage.getItem('pendingGroupJoin');
+        if (pendingGroupId) {
+            await handleGroupJoin(pendingGroupId);
+        }
         
         // Reload funds to show Simple Mode groups
         loadUserFunds();
@@ -2167,6 +2193,9 @@ async function loadSimpleModeDetailView() {
         if (balancesTab) balancesTab.style.display = 'flex';
         if (manageTab) manageTab.style.display = 'none'; // Hide for now
         
+        // Load Simple Mode invite UI
+        loadSimpleModeInviteUI();
+        
         // Load expenses (acts as "history" tab)
         await loadSimpleModeExpenses();
         
@@ -2423,6 +2452,194 @@ function simplifyDebts(memberBalances) {
     }
     
     return transactions;
+}
+
+/**
+ * Load Simple Mode invite UI
+ */
+function loadSimpleModeInviteUI() {
+    const inviteTabContent = document.getElementById('inviteTab');
+    if (!inviteTabContent) return;
+
+    // Generate shareable link
+    const groupId = currentFund.fundId;
+    const inviteLink = `${window.location.origin}${window.location.pathname}?join=${groupId}`;
+
+    inviteTabContent.innerHTML = `
+        <div class="tab-card">
+            <h3>👥 Invite Members</h3>
+            <p>Share this group with friends! No wallet needed for Simple Mode.</p>
+            
+            <div class="invite-method-card">
+                <h4>📎 Share Link</h4>
+                <p>Copy this link and send it via WhatsApp, email, or any messenger:</p>
+                <div class="invite-link-container">
+                    <input type="text" id="inviteLinkInput" class="input-modern" value="${inviteLink}" readonly>
+                    <button class="btn btn-primary" onclick="copyInviteLink()">
+                        <span class="btn-icon">📋</span>
+                        <span>Copy</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="invite-method-card">
+                <h4>✉️ Send Email Invitation</h4>
+                <p>Send an email invitation directly:</p>
+                <div class="form-group">
+                    <input type="email" id="inviteEmail" class="input-modern" placeholder="friend@example.com">
+                </div>
+                <button class="btn btn-secondary" onclick="sendEmailInvite()">
+                    <span class="btn-icon">📧</span>
+                    <span>Send Invitation</span>
+                </button>
+            </div>
+
+            <div class="info-box">
+                <p><strong>ℹ️ How it works:</strong></p>
+                <ul>
+                    <li>Friends click the link or accept the email invite</li>
+                    <li>They sign in with Google or create an account</li>
+                    <li>They're automatically added to the group</li>
+                    <li>No cryptocurrency wallet needed!</li>
+                </ul>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Copy invite link to clipboard
+ */
+function copyInviteLink() {
+    const input = document.getElementById('inviteLinkInput');
+    if (!input) return;
+
+    input.select();
+    input.setSelectionRange(0, 99999); // For mobile
+    
+    try {
+        document.execCommand('copy');
+        showToast('Link copied to clipboard! 📋', 'success');
+    } catch (err) {
+        // Fallback for modern browsers
+        navigator.clipboard.writeText(input.value).then(() => {
+            showToast('Link copied to clipboard! 📋', 'success');
+        }).catch(() => {
+            showToast('Failed to copy link', 'error');
+        });
+    }
+}
+
+/**
+ * Handle joining a group via invite link
+ */
+async function handleGroupJoin(groupId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('Please sign in first', 'error');
+            return;
+        }
+
+        // Check if group exists
+        const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+        
+        if (!groupData) {
+            showToast('Group not found or invite link is invalid', 'error');
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
+
+        // Check if already a member
+        if (groupData.members && groupData.members[user.uid]) {
+            showToast(`You're already a member of "${groupData.fundName}"!`, 'info');
+            // Clean up URL and open group
+            window.history.replaceState({}, document.title, window.location.pathname);
+            sessionStorage.removeItem('pendingGroupJoin');
+            
+            // Load the group
+            currentFund = {
+                fundId: groupId,
+                fundAddress: groupId,
+                fundName: groupData.fundName,
+                fundType: groupData.fundType || 0,
+                isSimpleMode: true,
+                members: groupData.members
+            };
+            await loadSimpleModeDetailView();
+            return;
+        }
+
+        // Add user to group
+        await window.FirebaseConfig.updateDb(`groups/${groupId}/members/${user.uid}`, {
+            email: user.email,
+            name: user.displayName || user.email,
+            joinedAt: Date.now(),
+            status: 'active'
+        });
+
+        showToast(`✅ Successfully joined "${groupData.fundName}"!`, 'success');
+        
+        // Clean up URL and session
+        window.history.replaceState({}, document.title, window.location.pathname);
+        sessionStorage.removeItem('pendingGroupJoin');
+
+        // Reload dashboard to show new group
+        await showDashboard();
+
+    } catch (error) {
+        console.error('Error joining group:', error);
+        showToast(`Error joining group: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Send email invitation
+ */
+async function sendEmailInvite() {
+    const emailInput = document.getElementById('inviteEmail');
+    if (!emailInput) return;
+
+    const email = emailInput.value.trim();
+    
+    if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+    }
+
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('You must be signed in to send invites', 'error');
+            return;
+        }
+
+        // Generate invite link
+        const groupId = currentFund.fundId;
+        const inviteLink = `${window.location.origin}${window.location.pathname}?join=${groupId}`;
+
+        // TODO: Implement actual email sending via Firebase Functions or backend
+        // For now, we'll just show a mailto link
+        const subject = encodeURIComponent(`Join "${currentFund.fundName}" on Ant Pool`);
+        const body = encodeURIComponent(
+            `Hi!\n\n` +
+            `${user.displayName || user.email} invited you to join the group "${currentFund.fundName}" on Ant Pool.\n\n` +
+            `Click here to join: ${inviteLink}\n\n` +
+            `Ant Pool makes it easy to track shared expenses with friends. No wallet needed!\n\n` +
+            `See you there!`
+        );
+
+        const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+        window.location.href = mailtoLink;
+
+        showToast('Opening email client... 📧', 'success');
+        emailInput.value = '';
+
+    } catch (error) {
+        console.error('Error sending invite:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
 }
 
 /**

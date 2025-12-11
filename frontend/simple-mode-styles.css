@@ -228,6 +228,38 @@
   margin-top: var(--spacing-sm);
 }
 
+/* ===================================
+   SIMPLE MODE - INVITE UI
+   =================================== */
+
+.invite-method-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.invite-method-card h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+.invite-link-container {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.invite-link-container input {
+  flex: 1;
+}
+
+.invite-link-container .btn {
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .fab-btn {
@@ -245,5 +277,13 @@
   
   .fab-icon {
     font-size: 1.8rem;
+  }
+  
+  .invite-link-container {
+    flex-direction: column;
+  }
+  
+  .invite-link-container .btn {
+    width: 100%;
   }
 }
