@@ -2266,7 +2266,18 @@ async function loadSimpleModeDetailView() {
         const detailSection = document.getElementById('fundDetailSection');
         if (fabBtn && detailSection && detailSection.classList.contains('active')) {
             fabBtn.style.display = 'flex';
-            console.log("✅ FAB button shown");
+            
+            // Remove any existing listeners to avoid duplicates
+            const newFabBtn = fabBtn.cloneNode(true);
+            fabBtn.parentNode.replaceChild(newFabBtn, fabBtn);
+            
+            // Add click listener
+            newFabBtn.addEventListener('click', function() {
+                console.log('🖱️ FAB button clicked!');
+                showAddExpenseModal();
+            });
+            
+            console.log("✅ FAB button shown and click listener attached");
         } else {
             console.log("⚠️ FAB button not shown - element not found or section not active");
         }
