@@ -361,3 +361,234 @@
     width: 100%;
   }
 }
+
+/* ===================================
+   IMPROVED EXPENSE FORM DESIGN
+   =================================== */
+
+.expense-form-header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.expense-form-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.form-subtitle {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* Form Rows for Side-by-Side Fields */
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.form-group-flex-1 {
+  flex: 1;
+}
+
+.form-group-flex-2 {
+  flex: 2;
+}
+
+/* Improved Labels with Icons */
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.label-icon {
+  font-size: 1.2rem;
+}
+
+.label-text {
+  flex: 1;
+}
+
+.label-required {
+  color: var(--error);
+  font-weight: 700;
+}
+
+.label-badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--text-secondary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+/* Modern Input Styling */
+.input-modern {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.input-modern:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.input-amount {
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: right;
+}
+
+/* Select Dropdown */
+.select-modern {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23666' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+/* Textarea */
+.textarea-modern {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+/* Modern Checkbox Group */
+.modern-checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.modern-checkbox-group .checkbox-option {
+  background: rgba(var(--primary-rgb), 0.05);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  transition: all 0.2s ease;
+}
+
+.modern-checkbox-group .checkbox-option:hover {
+  background: rgba(var(--primary-rgb), 0.1);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modern-checkbox-group .checkbox-option input[type="checkbox"] {
+  display: none;
+}
+
+.modern-checkbox-group .checkbox-option input[type="checkbox"]:checked + label {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.modern-checkbox-group .checkbox-option input[type="checkbox"]:checked + label .member-avatar {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.modern-checkbox-group .checkbox-option label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+.member-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--border-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 2px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.member-name {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+/* Form Hint */
+.form-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Input with Prefix */
+.input-with-prefix {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.input-with-prefix .input-modern {
+  padding-left: 2.5rem;
+}
+
+/* Responsive Form Layout */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .modern-checkbox-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .expense-form-header h3 {
+    font-size: 1.3rem;
+  }
+}

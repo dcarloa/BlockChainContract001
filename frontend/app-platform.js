@@ -3055,13 +3055,22 @@ function closeAddExpenseModal() {
 function populateExpenseMembers() {
     if (!currentFund || !currentFund.members) return;
 
-    const paidBySelect = document.querySelector('#addExpenseForm select[name="paidBy"]');
-    const splitContainer = document.getElementById('splitBetweenContainer');
+    const paidBySelect = document.getElementById('expensePaidBy');
+    const splitContainer = document.getElementById('expenseSplitBetween');
 
-    if (!paidBySelect || !splitContainer) return;
+    console.log('📋 Populating expense members:', Object.keys(currentFund.members).length, 'members');
+
+    if (!paidBySelect) {
+        console.error('❌ Paid by select not found');
+        return;
+    }
+    if (!splitContainer) {
+        console.error('❌ Split container not found');
+        return;
+    }
 
     // Clear existing options
-    paidBySelect.innerHTML = '<option value="">Select member...</option>';
+    paidBySelect.innerHTML = '<option value="">Select who paid...</option>';
     splitContainer.innerHTML = '';
 
     // Add members to both dropdowns/checkboxes
@@ -3071,16 +3080,22 @@ function populateExpenseMembers() {
         option.value = uid;
         option.textContent = member.name || member.email || uid;
         paidBySelect.appendChild(option);
+        console.log('✅ Added member to dropdown:', member.name || member.email);
 
         // Add to "Split between" checkboxes
         const checkboxDiv = document.createElement('div');
         checkboxDiv.className = 'checkbox-option';
         checkboxDiv.innerHTML = `
             <input type="checkbox" name="splitBetween" value="${uid}" id="split_${uid}" checked>
-            <label for="split_${uid}">${member.name || member.email || uid}</label>
+            <label for="split_${uid}">
+                <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
+                <span class="member-name">${member.name || member.email || uid}</span>
+            </label>
         `;
         splitContainer.appendChild(checkboxDiv);
     });
+
+    console.log('✅ Members populated successfully');
 }
 
 async function handleExpenseSubmission(event) {
