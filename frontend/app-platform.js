@@ -2680,9 +2680,11 @@ async function handleGroupJoin(groupId) {
             return;
         }
 
+        const groupName = groupData.name || groupData.fundName || 'the group';
+        
         // Check if already a member
         if (groupData.members && groupData.members[user.uid]) {
-            showToast(`You're already a member of "${groupData.fundName}"!`, 'info');
+            showToast(`You're already a member of "${groupName}"!`, 'info');
             // Clean up URL and open group
             window.history.replaceState({}, document.title, window.location.pathname);
             sessionStorage.removeItem('pendingGroupJoin');
@@ -2691,11 +2693,16 @@ async function handleGroupJoin(groupId) {
             currentFund = {
                 fundId: groupId,
                 fundAddress: groupId,
-                fundName: groupData.fundName,
+                fundName: groupName,
                 fundType: groupData.fundType || 0,
                 isSimpleMode: true,
                 members: groupData.members
             };
+            
+            // Hide dashboard, show detail
+            document.getElementById('dashboardSection').classList.remove('active');
+            document.getElementById('fundDetailSection').classList.add('active');
+            
             await loadSimpleModeDetailView();
             return;
         }
@@ -2708,14 +2715,20 @@ async function handleGroupJoin(groupId) {
             status: 'active'
         });
 
-        showToast(`✅ Successfully joined "${groupData.fundName}"!`, 'success');
+        showToast(`✅ Successfully joined "${groupName}"!`, 'success');
         
         // Clean up URL and session
         window.history.replaceState({}, document.title, window.location.pathname);
         sessionStorage.removeItem('pendingGroupJoin');
 
-        // Reload dashboard to show new group
+        // Show loading
+        showLoading('Loading your groups...');
+
+        // Reload dashboard and wait for groups to load
         await showDashboard();
+        await loadAllFundsDetails();
+        
+        hideLoading();
 
     } catch (error) {
         console.error('Error joining group:', error);
