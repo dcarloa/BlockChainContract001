@@ -3028,8 +3028,16 @@ async function handlePaymentSubmission(event) {
 // ============================================
 
 function showAddExpenseModal() {
+    console.log('🔵 showAddExpenseModal called');
+    
     const modal = document.getElementById('addExpenseModal');
-    if (!modal) return;
+    if (!modal) {
+        console.error('❌ Modal not found');
+        return;
+    }
+
+    console.log('📦 Current fund:', currentFund);
+    console.log('👥 Current fund members:', currentFund ? currentFund.members : 'NO FUND');
 
     // Populate members
     populateExpenseMembers();
@@ -3042,6 +3050,7 @@ function showAddExpenseModal() {
 
     // Show modal
     modal.style.display = 'flex';
+    console.log('✅ Modal displayed');
 }
 
 function closeAddExpenseModal() {
