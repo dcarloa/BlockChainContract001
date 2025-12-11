@@ -878,6 +878,10 @@ window.openInvitedFund = async function(fundAddress) {
 }
 
 function showDashboard() {
+    // Hide FAB button when showing dashboard
+    const fabBtn = document.getElementById('addExpenseBtn');
+    if (fabBtn) fabBtn.style.display = 'none';
+    
     // Make sure dashboard section is visible
     document.getElementById('dashboardSection').classList.add('active');
     document.getElementById('fundDetailSection').classList.remove('active');
@@ -1306,14 +1310,14 @@ async function openFund(fundAddress) {
 }
 
 function backToDashboard() {
+    // Hide FAB button FIRST
+    const fabBtn = document.getElementById('addExpenseBtn');
+    if (fabBtn) fabBtn.style.display = 'none';
+    
     document.getElementById('fundDetailSection').classList.remove('active');
     document.getElementById('dashboardSection').classList.add('active');
     currentFund = null;
     currentFundContract = null;
-    
-    // Hide FAB button
-    const fabBtn = document.getElementById('addExpenseBtn');
-    if (fabBtn) fabBtn.style.display = 'none';
 }
 
 /**
@@ -2219,9 +2223,12 @@ async function loadSimpleModeDetailView() {
         // Switch to expenses tab by default
         switchFundTab('history');
         
-        // Show Add Expense FAB button
+        // Show Add Expense FAB button ONLY if we're in detail view
         const fabBtn = document.getElementById('addExpenseBtn');
-        if (fabBtn) fabBtn.style.display = 'flex';
+        const detailSection = document.getElementById('fundDetailSection');
+        if (fabBtn && detailSection && detailSection.classList.contains('active')) {
+            fabBtn.style.display = 'flex';
+        }
         
     } catch (error) {
         console.error("Error loading Simple Mode detail:", error);
@@ -2684,24 +2691,30 @@ async function handleGroupJoin(groupId) {
         
         // Check if already a member
         if (groupData.members && groupData.members[user.uid]) {
-            showToast(`You're already a member of "${groupName}"!`, 'info');
+            showToast(`Opening "${groupName}"...`, 'info');
             // Clean up URL and open group
             window.history.replaceState({}, document.title, window.location.pathname);
             sessionStorage.removeItem('pendingGroupJoin');
             
-            // Load the group
+            // Load the group completely
             currentFund = {
                 fundId: groupId,
                 fundAddress: groupId,
                 fundName: groupName,
                 fundType: groupData.fundType || 0,
                 isSimpleMode: true,
-                members: groupData.members
+                members: groupData.members,
+                creator: groupData.createdBy || groupData.creator,
+                ...groupData
             };
             
             // Hide dashboard, show detail
             document.getElementById('dashboardSection').classList.remove('active');
             document.getElementById('fundDetailSection').classList.add('active');
+            
+            // Hide FAB first (will be shown by loadSimpleModeDetailView)
+            const fabBtn = document.getElementById('addExpenseBtn');
+            if (fabBtn) fabBtn.style.display = 'none';
             
             await loadSimpleModeDetailView();
             return;
