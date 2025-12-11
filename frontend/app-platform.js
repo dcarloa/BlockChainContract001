@@ -2716,11 +2716,15 @@ function copyInviteLink() {
  */
 async function handleGroupJoin(groupId) {
     try {
+        console.log(`🔗 handleGroupJoin called for group: ${groupId}`);
+        
         const user = firebase.auth().currentUser;
         if (!user) {
             showToast('Please sign in first', 'error');
             return;
         }
+
+        console.log(`👤 Current user: ${user.email} (UID: ${user.uid})`);
 
         // Check if group exists
         const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
@@ -2733,9 +2737,13 @@ async function handleGroupJoin(groupId) {
         }
 
         const groupName = groupData.name || groupData.fundName || 'the group';
+        console.log(`📋 Group found: "${groupName}"`);
+        console.log(`👥 Group members:`, groupData.members ? Object.keys(groupData.members) : 'none');
+        console.log(`🔍 Checking if ${user.uid} is a member...`);
         
         // Check if already a member
         if (groupData.members && groupData.members[user.uid]) {
+            console.log(`✅ User IS already a member of "${groupName}"`);
             try {
                 showLoading(`Opening "${groupName}"...`);
                 
@@ -2791,19 +2799,25 @@ async function handleGroupJoin(groupId) {
             }
         }
 
+        console.log(`❌ User is NOT a member yet. Adding to group...`);
+
         // Add user to group members
+        console.log(`📝 Writing to groups/${groupId}/members/${user.uid}`);
         await window.FirebaseConfig.updateDb(`groups/${groupId}/members/${user.uid}`, {
             email: user.email,
             name: user.displayName || user.email,
             joinedAt: Date.now(),
             status: 'active'
         });
+        console.log(`✅ User added to group members`);
 
         // Add group to user's groups list (CRITICAL for loadUserFunds to work)
+        console.log(`📝 Writing to users/${user.uid}/groups/${groupId}`);
         await window.FirebaseConfig.updateDb(`users/${user.uid}/groups/${groupId}`, {
             role: 'member',
             joinedAt: Date.now()
         });
+        console.log(`✅ User's group list updated`);
 
         showToast(`✅ Successfully joined "${groupName}"!`, 'success');
         
