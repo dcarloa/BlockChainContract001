@@ -2753,11 +2753,33 @@ async function handleGroupJoin(groupId) {
         sessionStorage.removeItem('pendingGroupJoin');
 
         // Show loading
-        showLoading('Loading your groups...');
+        showLoading(`Opening "${groupName}"...`);
 
-        // Reload dashboard and wait for groups to load
-        await showDashboard();
+        // Reload dashboard to get updated groups list
         await loadAllFundsDetails();
+        
+        // Now open the newly joined group
+        currentFund = {
+            fundId: groupId,
+            fundAddress: groupId,
+            fundName: groupName,
+            fundType: groupData.fundType || 0,
+            isSimpleMode: true,
+            members: groupData.members,
+            creator: groupData.createdBy || groupData.creator,
+            name: groupName,
+            ...groupData
+        };
+        
+        // Hide dashboard, show detail
+        document.getElementById('dashboardSection').classList.remove('active');
+        document.getElementById('fundDetailSection').classList.add('active');
+        
+        // Hide FAB first (will be shown by loadSimpleModeDetailView)
+        const fabBtn = document.getElementById('addExpenseBtn');
+        if (fabBtn) fabBtn.style.display = 'none';
+        
+        await loadSimpleModeDetailView();
         
         hideLoading();
 
