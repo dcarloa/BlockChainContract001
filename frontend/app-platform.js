@@ -2131,11 +2131,19 @@ async function loadSimpleModeDetailView() {
         document.getElementById('fundDetailName').textContent = currentFund.fundName;
         
         // Get group data from Firebase
-        const groupData = await window.modeManager.getGroup(currentFund.fundAddress);
+        const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
         
         if (!groupData) {
             throw new Error("Group not found in Firebase");
         }
+        
+        // Update currentFund with Firebase data
+        currentFund = {
+            ...currentFund,
+            ...groupData,
+            fundId: currentFund.fundAddress,
+            isSimpleMode: true
+        };
         
         // Update UI
         document.getElementById('fundDetailDescription').textContent = groupData.description || 'No description';
@@ -2250,10 +2258,10 @@ function calculateMyBalance(groupData) {
  * Load Simple Mode expenses list
  */
 async function loadSimpleModeExpenses() {
-    const groupData = await window.modeManager.getGroup(currentFund.fundAddress);
+    const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
     const historyContainer = document.getElementById('historyList');
     
-    if (!groupData.expenses || Object.keys(groupData.expenses).length === 0) {
+    if (!groupData || !groupData.expenses || Object.keys(groupData.expenses).length === 0) {
         historyContainer.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">📝</div>
