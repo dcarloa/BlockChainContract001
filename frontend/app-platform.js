@@ -2739,6 +2739,16 @@ async function handleGroupJoin(groupId) {
             try {
                 showLoading(`Opening "${groupName}"...`);
                 
+                // IMPORTANT: Ensure user's groups list has this group (repair if missing)
+                const userGroupRef = await window.FirebaseConfig.readDb(`users/${user.uid}/groups/${groupId}`);
+                if (!userGroupRef) {
+                    console.log(`⚠️ Repairing missing user group reference for ${groupId}`);
+                    await window.FirebaseConfig.updateDb(`users/${user.uid}/groups/${groupId}`, {
+                        role: groupData.createdBy === user.email || groupData.creator === user.uid ? 'creator' : 'member',
+                        joinedAt: Date.now()
+                    });
+                }
+                
                 // Clean up URL and open group
                 window.history.replaceState({}, document.title, window.location.pathname);
                 sessionStorage.removeItem('pendingGroupJoin');
@@ -2768,6 +2778,10 @@ async function handleGroupJoin(groupId) {
                 
                 hideLoading();
                 showToast(`✅ Welcome back to "${groupName}"!`, 'success');
+                
+                // Reload dashboard in background to show the group in list
+                setTimeout(() => loadAllFundsDetails(), 500);
+                
                 return;
             } catch (error) {
                 hideLoading();
