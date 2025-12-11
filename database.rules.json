@@ -2,10 +2,7 @@
   "rules": {
     "groups": {
       "$groupId": {
-        ".read": "auth != null && (
-          data.child('members').child(auth.uid).exists() ||
-          data.child('createdBy').val() === auth.uid
-        )",
+        ".read": "auth != null",
         ".write": "auth != null && (
           !data.exists() ||
           data.child('createdBy').val() === auth.uid ||
