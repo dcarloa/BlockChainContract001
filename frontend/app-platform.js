@@ -2720,12 +2720,18 @@ async function handleGroupJoin(groupId) {
             return;
         }
 
-        // Add user to group
+        // Add user to group members
         await window.FirebaseConfig.updateDb(`groups/${groupId}/members/${user.uid}`, {
             email: user.email,
             name: user.displayName || user.email,
             joinedAt: Date.now(),
             status: 'active'
+        });
+
+        // Add group to user's groups list (CRITICAL for loadUserFunds to work)
+        await window.FirebaseConfig.updateDb(`users/${user.uid}/groups/${groupId}`, {
+            role: 'member',
+            joinedAt: Date.now()
         });
 
         showToast(`✅ Successfully joined "${groupName}"!`, 'success');
