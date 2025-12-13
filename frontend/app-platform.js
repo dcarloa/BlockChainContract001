@@ -2374,50 +2374,40 @@ async function loadSimpleModeExpenses() {
     const currentUserId = firebase.auth().currentUser?.uid;
     
     historyContainer.innerHTML = expenses.map(expense => {
-        const approvalCount = expense.approvals ? Object.keys(expense.approvals).filter(uid => expense.approvals[uid].approved).length : 0;
-        const totalMembers = currentFund.members ? Object.keys(currentFund.members).length : 0;
-        const userHasApproved = expense.approvals && expense.approvals[currentUserId]?.approved;
-        const userHasRejected = expense.approvals && expense.approvals[currentUserId]?.approved === false;
-        
-        let actionsHtml = '';
-        if (expense.status === 'pending' && currentUserId && !userHasApproved && !userHasRejected) {
-            actionsHtml = `
-                <div class="expense-actions">
-                    <button class="btn btn-success" onclick="approveExpense('${expense.id}')">
-                        <span>✅ Approve</span>
-                    </button>
-                    <button class="btn btn-danger" onclick="rejectExpense('${expense.id}')">
-                        <span>❌ Reject</span>
-                    </button>
-                </div>
-            `;
+        // Format date properly
+        let dateStr = 'No date';
+        if (expense.date) {
+            // If date is a string like "2025-12-13", parse it
+            dateStr = new Date(expense.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        } else if (expense.timestamp) {
+            dateStr = new Date(expense.timestamp).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
         }
         
-        let statusHtml = '';
-        if (expense.status === 'pending') {
-            statusHtml = `⏳ Pending (${approvalCount}/${totalMembers} approved)`;
-        } else if (expense.status === 'approved') {
-            statusHtml = '✅ Approved';
-        } else if (expense.status === 'rejected') {
-            statusHtml = '❌ Rejected';
-        }
+        // Format amount - preserve full precision
+        const amountStr = expense.amount % 1 === 0 ? `$${expense.amount}` : `$${expense.amount.toFixed(2)}`;
         
         return `
-            <div class="expense-card ${expense.status}">
-                <div class="expense-header">
-                    <h4>${expense.description}</h4>
-                    <span class="expense-amount">$${expense.amount.toFixed(2)}</span>
+            <div class="expense-card-compact">
+                <div class="expense-main">
+                    <div class="expense-info">
+                        <h4 class="expense-title">${expense.description}</h4>
+                        <div class="expense-meta">
+                            <span class="meta-item">👤 ${expense.paidByName || expense.paidBy}</span>
+                            <span class="meta-item">👥 ${expense.splitBetween.length} people</span>
+                            <span class="meta-item">📅 ${dateStr}</span>
+                        </div>
+                        ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
+                    </div>
+                    <div class="expense-amount-large">${amountStr}</div>
                 </div>
-                <div class="expense-details">
-                    <p>Paid by: <strong>${expense.paidByName || expense.paidBy}</strong></p>
-                    <p>Split between: ${expense.splitBetween.length} people</p>
-                    <p>Date: ${new Date(expense.timestamp).toLocaleDateString()}</p>
-                    ${expense.notes ? `<p>Notes: ${expense.notes}</p>` : ''}
-                </div>
-                <div class="expense-status">
-                    ${statusHtml}
-                </div>
-                ${actionsHtml}
             </div>
         `;
     }).join('');
@@ -3188,7 +3178,10 @@ async function handleExpenseSubmission(event) {
             splitBetween,
             category: 'other',
             notes,
-            receipt: null
+            receipt: null,
+            date: date || new Date().toISOString().split('T')[0], // Include date
+            paidBy,
+            paidByName
         };
 
         // Set current group ID for mode manager

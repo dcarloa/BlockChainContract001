@@ -173,24 +173,21 @@ class ModeManager {
             
             const user = window.FirebaseConfig.getCurrentUser();
             const expenseId = this.generateExpenseId();
+            const timestamp = Date.now();
             
             const expense = {
                 id: expenseId,
                 description: expenseInfo.description,
                 amount: expenseInfo.amount,
-                paidBy: user.uid,
-                paidByName: user.displayName || user.email,
+                paidBy: expenseInfo.paidBy || user.uid,
+                paidByName: expenseInfo.paidByName || user.displayName || user.email,
                 splitBetween: expenseInfo.splitBetween, // Array of user IDs
-                createdAt: Date.now(),
+                timestamp: timestamp,
+                createdAt: timestamp,
+                date: expenseInfo.date || new Date().toISOString().split('T')[0],
                 
-                // Approval status
-                status: 'pending', // pending, approved, rejected
-                approvals: {
-                    [user.uid]: {
-                        approved: true,
-                        timestamp: Date.now()
-                    }
-                },
+                // No approval system - expenses are immediately accepted
+                status: 'approved',
                 
                 // Metadata
                 category: expenseInfo.category || 'other',

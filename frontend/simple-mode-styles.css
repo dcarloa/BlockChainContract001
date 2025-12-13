@@ -88,91 +88,72 @@
   color: var(--text-primary);
 }
 
-/* Expense Cards */
-.expense-card {
+/* Expense Cards - Compact Design */
+.expense-card-compact {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
-  transition: all 0.3s ease;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+  border-left: 3px solid var(--primary);
 }
 
-.expense-card:hover {
+.expense-card-compact:hover {
   border-color: var(--primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(var(--primary-rgb), 0.15);
+  transform: translateX(2px);
 }
 
-.expense-card.pending {
-  border-left: 4px solid var(--warning);
-}
-
-.expense-card.approved {
-  border-left: 4px solid var(--success);
-}
-
-.expense-card.rejected {
-  border-left: 4px solid var(--error);
-  opacity: 0.6;
-}
-
-.expense-header {
+.expense-main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-sm);
+  gap: 1.5rem;
 }
 
-.expense-header h4 {
-  margin: 0;
-  font-size: 1.1rem;
+.expense-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.expense-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.05rem;
+  font-weight: 600;
   color: var(--text-primary);
+  line-height: 1.3;
 }
 
-.expense-amount {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-.expense-details {
+.expense-meta {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0;
 }
 
-.expense-details p {
-  margin: 0;
-  font-size: 0.9rem;
+.meta-item {
+  font-size: 0.813rem;
   color: var(--text-secondary);
-}
-
-.expense-details strong {
-  color: var(--text-primary);
-}
-
-.expense-status {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: var(--glass-bg);
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  font-weight: 600;
+  gap: 0.25rem;
 }
 
-.expense-actions {
-  display: flex;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
-  padding-top: var(--spacing-sm);
-  border-top: 1px solid var(--border-color);
+.expense-notes {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.4;
 }
 
-.expense-actions .btn {
-  flex: 1;
+.expense-amount-large {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+  min-width: fit-content;
 }
 
 /* Balance Cards */
@@ -785,5 +766,24 @@
   .btn-large {
     width: 100%;
     padding: 0.875rem 1.5rem;
+  }
+
+  .expense-card-compact {
+    padding: 0.875rem 1rem;
+  }
+
+  .expense-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .expense-amount-large {
+    font-size: 1.25rem;
+    align-self: flex-end;
+  }
+
+  .expense-meta {
+    gap: 0.75rem;
   }
 }
