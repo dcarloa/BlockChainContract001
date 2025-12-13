@@ -836,7 +836,8 @@
                                 <label for="expenseDescription" class="form-label">Description *</label>
                                 <input 
                                     type="text" 
-                                    id="expenseDescription" 
+                                    id="expenseDescription"
+                                    name="description"
                                     class="form-input"
                                     placeholder="What did you pay for?"
                                     required
@@ -850,7 +851,8 @@
                                     <span class="currency-symbol">$</span>
                                     <input 
                                         type="number" 
-                                        id="expenseAmount" 
+                                        id="expenseAmount"
+                                        name="amount"
                                         class="form-input amount-input"
                                         placeholder="0.00"
                                         step="0.01"
@@ -862,7 +864,7 @@
 
                             <div class="form-field">
                                 <label for="expensePaidBy" class="form-label">Paid by *</label>
-                                <select id="expensePaidBy" class="form-input form-select" required>
+                                <select id="expensePaidBy" name="paidBy" class="form-input form-select" required>
                                     <option value="">Select who paid...</option>
                                     <!-- Will be populated dynamically -->
                                 </select>
@@ -872,7 +874,8 @@
                                 <label for="expenseDate" class="form-label">Date</label>
                                 <input 
                                     type="date" 
-                                    id="expenseDate" 
+                                    id="expenseDate"
+                                    name="date"
                                     class="form-input"
                                 >
                             </div>
@@ -888,7 +891,8 @@
                             <div class="form-field">
                                 <label for="expenseNotes" class="form-label">Notes <span class="optional-badge">Optional</span></label>
                                 <textarea 
-                                    id="expenseNotes" 
+                                    id="expenseNotes"
+                                    name="notes"
                                     class="form-input form-textarea"
                                     rows="2"
                                     placeholder="Add any additional details..."
