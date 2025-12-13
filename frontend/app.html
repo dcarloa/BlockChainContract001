@@ -859,7 +859,6 @@
                                     >
                                 </div>
                             </div>
-                        </div>
 
                             <div class="form-field">
                                 <label for="expensePaidBy" class="form-label">Paid by *</label>
@@ -877,33 +876,32 @@
                                     class="form-input"
                                 >
                             </div>
-                        </div>
 
-                        <div class="form-field form-field-full">
-                            <label class="form-label">Split between *</label>
-                            <div id="expenseSplitBetween" class="split-members-list">
-                                <!-- Will be populated dynamically -->
+                            <div class="form-field">
+                                <label class="form-label">Split between *</label>
+                                <div id="expenseSplitBetween" class="split-members-list">
+                                    <!-- Will be populated dynamically -->
+                                </div>
+                                <small class="field-hint">Select who should share this expense</small>
                             </div>
-                            <small class="field-hint">Select who should share this expense</small>
+
+                            <div class="form-field">
+                                <label for="expenseNotes" class="form-label">Notes <span class="optional-badge">Optional</span></label>
+                                <textarea 
+                                    id="expenseNotes" 
+                                    class="form-input form-textarea"
+                                    rows="2"
+                                    placeholder="Add any additional details..."
+                                ></textarea>
+                            </div>
                         </div>
 
-                        <div class="form-field form-field-full">
-                            <label for="expenseNotes" class="form-label">Notes <span class="optional-badge">Optional</span></label>
-                            <textarea 
-                                id="expenseNotes" 
-                                class="form-input form-textarea"
-                                rows="3"
-                                placeholder="Add any additional details or context..."
-                            ></textarea>
-                        </div>
-
-                        <div class="form-actions">
+                        <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" onclick="closeAddExpenseModal()">
                                 Cancel
                             </button>
                             <button type="submit" class="btn btn-primary">
-                                <span class="btn-icon">💾</span>
-                                <span>Save Expense</span>
+                                Save Expense
                             </button>
                         </div>
                     </form>

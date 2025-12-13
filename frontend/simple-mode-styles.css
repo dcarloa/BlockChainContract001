@@ -368,13 +368,14 @@
 
 /* Modal Overrides */
 #addExpenseModal .modal-content {
-  max-width: 750px !important;
+  max-width: 580px !important;
   width: 90%;
   background: #1a1f2e;
 }
 
 #addExpenseModal .modal-body {
   padding: 0;
+  overflow-x: hidden;
 }
 
 /* Form Container */
@@ -385,7 +386,7 @@
 
 /* Form Header */
 .form-header-clean {
-  padding: 2rem 2.5rem 1.5rem;
+  padding: 1.75rem 2rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -399,11 +400,13 @@
 
 /* Form Grid Layout */
 .form-grid {
-  padding: 2rem 2.5rem;
+  padding: 1.75rem 2rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
   background: #1a1f2e;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Form Fields */
@@ -411,10 +414,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-.form-field-full {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
 /* Form Labels - Clean Style */
@@ -528,7 +528,7 @@
   padding: 0;
   background: transparent;
   border: none;
-  max-height: 280px;
+  max-height: 200px;
   overflow-y: auto;
 }
 
@@ -671,7 +671,7 @@
 
 /* Button Styling in Modal */
 #addExpenseModal .modal-footer {
-  padding: 1.5rem 2.5rem;
+  padding: 1.25rem 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: #111827;
 }
