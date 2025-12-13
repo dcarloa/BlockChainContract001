@@ -3140,10 +3140,13 @@ async function handleExpenseSubmission(event) {
     try {
         // Get form values
         const description = formData.get('description');
-        const amount = Math.round(Number(formData.get('amount')) * 100) / 100; // Round to 2 decimals
+        const rawAmount = formData.get('amount');
+        const amount = Math.round(Number(rawAmount) * 100) / 100; // Round to 2 decimals
         const paidBy = formData.get('paidBy');
         const date = formData.get('date');
         const notes = formData.get('notes') || '';
+
+        console.log('💰 Form amount input:', rawAmount, '→ Parsed:', amount);
 
         // Get selected members for split
         const splitBetween = Array.from(form.querySelectorAll('input[name="splitBetween"]:checked'))

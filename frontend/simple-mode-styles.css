@@ -88,7 +88,7 @@
   color: var(--text-primary);
 }
 
-/* Expense Cards - Compact Design */
+/* Expense Cards - Compact Professional Design v2 */
 .expense-card-compact {
   background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.03) 0%, var(--card-bg) 100%);
   border: 1px solid var(--border-color);
