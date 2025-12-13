@@ -323,6 +323,11 @@ class ModeManager {
                 return [];
             }
             
+            // Log all expense statuses
+            Object.entries(expensesData).forEach(([id, exp]) => {
+                console.log(`📝 Expense ${id.slice(-8)}: status="${exp.status}", amount=$${exp.amount}, desc="${exp.description}"`);
+            });
+            
             // Filter approved expenses
             const expenses = Object.values(expensesData).filter(
                 e => e.status === 'approved'
