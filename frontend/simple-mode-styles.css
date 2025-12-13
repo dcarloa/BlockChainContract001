@@ -499,6 +499,7 @@
   transition: all 0.2s ease;
   cursor: pointer;
   position: relative;
+  opacity: 0.7;
 }
 
 .modern-checkbox-group .checkbox-option:hover {
@@ -519,24 +520,39 @@
   z-index: 1;
 }
 
+.modern-checkbox-group .checkbox-option input[type="checkbox"]:checked {
+  opacity: 1;
+}
+
 .modern-checkbox-group .checkbox-option input[type="checkbox"]:checked ~ label {
   color: var(--primary);
   font-weight: 600;
+}
+
+.modern-checkbox-group .checkbox-option:has(input[type="checkbox"]:checked) {
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.15) 0%, rgba(var(--primary-rgb), 0.08) 100%);
+  border-color: var(--primary);
+  border-width: 3px;
+  opacity: 1;
+  box-shadow: 0 2px 12px rgba(var(--primary-rgb), 0.3);
 }
 
 .modern-checkbox-group .checkbox-option input[type="checkbox"]:checked ~ label .member-avatar {
   background: var(--primary);
   color: white;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.3);
+  transform: scale(1.05);
 }
 
 .modern-checkbox-group .checkbox-option input[type="checkbox"]:checked ~ label .member-name::after {
   content: '✓';
   margin-left: auto;
   color: var(--primary);
-  font-weight: 700;
-  font-size: 1.2rem;
+  font-weight: 900;
+  font-size: 1.5rem;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4);
 }
 
 .modern-checkbox-group .checkbox-option label {
@@ -604,12 +620,17 @@
 
 /* Add Expense Modal Width Override */
 #addExpenseModal .modal-content {
-  max-width: 650px !important;
+  max-width: 700px !important;
   width: 90%;
 }
 
 #addExpenseModal .modal-body {
-  padding: 1.5rem 2rem;
+  padding: 2rem 2.5rem;
+  margin: 0;
+}
+
+#addExpenseModal .form-group {
+  margin-bottom: 1.75rem;
 }
 
 /* Responsive Form Layout */
@@ -631,6 +652,10 @@
   }
   
   #addExpenseModal .modal-body {
-    padding: 1rem;
+    padding: 1.5rem 1.25rem;
+  }
+  
+  #addExpenseModal .form-group {
+    margin-bottom: 1.5rem;
   }
 }
