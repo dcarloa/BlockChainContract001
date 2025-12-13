@@ -3102,7 +3102,7 @@ function populateExpenseMembers() {
         paidBySelect.appendChild(option);
         console.log('✅ Added member to dropdown:', member.name || member.email);
 
-        // Add to "Split between" checkboxes
+        // Add to "Split between" checkboxes with professional design
         const checkboxDiv = document.createElement('div');
         checkboxDiv.className = 'checkbox-option';
         checkboxDiv.innerHTML = `

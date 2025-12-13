@@ -826,41 +826,32 @@
                         <button class="modal-close" onclick="closeAddExpenseModal()">&times;</button>
                     </div>
                     
-                    <form id="addExpenseForm" class="expense-form">
-                        <div class="expense-form-header">
-                            <h3>✨ Add New Expense</h3>
-                            <p class="form-subtitle">Split costs fairly with your group</p>
+                    <form id="addExpenseForm" class="expense-form-clean">
+                        <div class="form-header-clean">
+                            <h3>Add Expense</h3>
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group form-group-flex-2">
-                                <label for="expenseDescription">
-                                    <span class="label-icon">📝</span>
-                                    <span class="label-text">What did you pay for?</span>
-                                    <span class="label-required">*</span>
-                                </label>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="expenseDescription" class="form-label">Description *</label>
                                 <input 
                                     type="text" 
                                     id="expenseDescription" 
-                                    class="input-modern"
-                                    placeholder="e.g., Groceries, Dinner, Gas"
+                                    class="form-input"
+                                    placeholder="What did you pay for?"
                                     required
                                     autocomplete="off"
                                 >
                             </div>
 
-                            <div class="form-group form-group-flex-1">
-                                <label for="expenseAmount">
-                                    <span class="label-icon">💰</span>
-                                    <span class="label-text">Amount</span>
-                                    <span class="label-required">*</span>
-                                </label>
-                                <div class="input-with-prefix">
-                                    <span class="input-prefix">$</span>
+                            <div class="form-field">
+                                <label for="expenseAmount" class="form-label">Amount *</label>
+                                <div class="amount-input-wrapper">
+                                    <span class="currency-symbol">$</span>
                                     <input 
                                         type="number" 
                                         id="expenseAmount" 
-                                        class="input-modern input-amount"
+                                        class="form-input amount-input"
                                         placeholder="0.00"
                                         step="0.01"
                                         min="0.01"
@@ -870,54 +861,38 @@
                             </div>
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group form-group-flex-1">
-                                <label for="expensePaidBy">
-                                    <span class="label-icon">👤</span>
-                                    <span class="label-text">Who paid?</span>
-                                    <span class="label-required">*</span>
-                                </label>
-                                <select id="expensePaidBy" class="input-modern select-modern" required>
+                            <div class="form-field">
+                                <label for="expensePaidBy" class="form-label">Paid by *</label>
+                                <select id="expensePaidBy" class="form-input form-select" required>
                                     <option value="">Select who paid...</option>
                                     <!-- Will be populated dynamically -->
                                 </select>
                             </div>
 
-                            <div class="form-group form-group-flex-1">
-                                <label for="expenseDate">
-                                    <span class="label-icon">📅</span>
-                                    <span class="label-text">Date</span>
-                                </label>
+                            <div class="form-field">
+                                <label for="expenseDate" class="form-label">Date</label>
                                 <input 
                                     type="date" 
                                     id="expenseDate" 
-                                    class="input-modern"
+                                    class="form-input"
                                 >
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>
-                                <span class="label-icon">👥</span>
-                                <span class="label-text">Split between</span>
-                                <span class="label-required">*</span>
-                            </label>
-                            <div id="expenseSplitBetween" class="checkbox-group modern-checkbox-group">
+                        <div class="form-field form-field-full">
+                            <label class="form-label">Split between *</label>
+                            <div id="expenseSplitBetween" class="split-members-list">
                                 <!-- Will be populated dynamically -->
                             </div>
-                            <small class="form-hint">💡 Select everyone who should share this cost</small>
+                            <small class="field-hint">Select who should share this expense</small>
                         </div>
 
-                        <div class="form-group">
-                            <label for="expenseNotes">
-                                <span class="label-icon">📄</span>
-                                <span class="label-text">Notes</span>
-                                <span class="label-badge">Optional</span>
-                            </label>
+                        <div class="form-field form-field-full">
+                            <label for="expenseNotes" class="form-label">Notes <span class="optional-badge">Optional</span></label>
                             <textarea 
                                 id="expenseNotes" 
-                                class="input-modern textarea-modern"
-                                rows="2"
+                                class="form-input form-textarea"
+                                rows="3"
                                 placeholder="Add any additional details or context..."
                             ></textarea>
                         </div>
