@@ -3140,7 +3140,7 @@ async function handleExpenseSubmission(event) {
     try {
         // Get form values
         const description = formData.get('description');
-        const amount = parseFloat(formData.get('amount'));
+        const amount = Math.round(Number(formData.get('amount')) * 100) / 100; // Round to 2 decimals
         const paidBy = formData.get('paidBy');
         const date = formData.get('date');
         const notes = formData.get('notes') || '';

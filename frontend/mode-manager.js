@@ -334,16 +334,16 @@ class ModeManager {
             // Process each expense
             expenses.forEach(expense => {
                 const paidBy = expense.paidBy;
-                const amount = expense.amount;
+                const amount = Number(expense.amount);
                 const splitBetween = expense.splitBetween;
-                const perPerson = amount / splitBetween.length;
+                const perPerson = Math.round((amount / splitBetween.length) * 100) / 100;
                 
                 // Person who paid gets positive balance
-                balances[paidBy] += amount;
+                balances[paidBy] = Math.round((balances[paidBy] + amount) * 100) / 100;
                 
                 // People who owe get negative balance
                 splitBetween.forEach(memberId => {
-                    balances[memberId] -= perPerson;
+                    balances[memberId] = Math.round((balances[memberId] - perPerson) * 100) / 100;
                 });
             });
             
