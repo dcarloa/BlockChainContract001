@@ -2418,6 +2418,9 @@ async function loadSimpleModeExpenses() {
  */
 async function loadSimpleModeBalances() {
     try {
+        console.log('⚖️ Loading Simple Mode balances...');
+        console.log('📊 Current fund:', currentFund);
+        
         // Set current group ID for mode manager  
         window.modeManager.currentGroupId = currentFund.fundId;
         window.modeManager.groupData = currentFund;
@@ -2425,10 +2428,13 @@ async function loadSimpleModeBalances() {
         // Calculate balances using mode manager
         const memberBalances = await window.modeManager.calculateSimpleBalances();
         
+        console.log('💰 Member balances calculated:', memberBalances);
+        
         const balancesList = document.getElementById('balancesList');
         const noBalances = document.getElementById('noBalances');
         
         if (!memberBalances || memberBalances.length === 0) {
+            console.log('⚠️ No balances to display');
             if (balancesList) balancesList.innerHTML = '';
             if (noBalances) noBalances.style.display = 'flex';
             return;

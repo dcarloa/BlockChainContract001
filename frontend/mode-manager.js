@@ -308,12 +308,18 @@ class ModeManager {
      */
     async calculateSimpleBalances() {
         try {
+            console.log('🔍 Calculating balances for group:', this.currentGroupId);
+            console.log('👥 Group data:', this.groupData);
+            
             // Load all approved expenses
             const expensesData = await window.FirebaseConfig.readDb(
                 `groups/${this.currentGroupId}/expenses`
             );
             
+            console.log('💸 Expenses data:', expensesData);
+            
             if (!expensesData) {
+                console.log('⚠️ No expenses found');
                 return [];
             }
             
@@ -322,11 +328,14 @@ class ModeManager {
                 e => e.status === 'approved'
             );
             
+            console.log('✅ Approved expenses:', expenses.length);
+            
             // Calculate net balances
             const balances = {};
             
             // Initialize all members
             const members = Object.keys(this.groupData.members);
+            console.log('👥 Members to initialize:', members);
             members.forEach(memberId => {
                 balances[memberId] = 0;
             });
@@ -349,12 +358,15 @@ class ModeManager {
             
             // Convert to array format
             const balanceArray = [];
+            console.log('📊 Raw balances:', balances);
+            
             for (const [memberId, balance] of Object.entries(balances)) {
+                console.log(`  Member ${memberId}: balance = ${balance}`);
                 if (Math.abs(balance) > 0.01) { // Ignore negligible amounts
                     const member = this.groupData.members[memberId];
                     balanceArray.push({
                         memberId,
-                        memberName: member.name,
+                        memberName: member?.name || member?.email || 'Unknown',
                         balance: balance,
                         owes: balance < 0 ? Math.abs(balance) : 0,
                         isOwed: balance > 0 ? balance : 0
@@ -362,7 +374,8 @@ class ModeManager {
                 }
             }
             
-            console.log("✅ Balances calculated:", balanceArray.length, "members");
+            console.log("✅ Balances calculated:", balanceArray.length, "members with non-zero balance");
+            console.log("📋 Balance array:", balanceArray);
             return balanceArray;
             
         } catch (error) {
