@@ -878,9 +878,12 @@ window.openInvitedFund = async function(fundAddress) {
 }
 
 function showDashboard() {
-    // Hide FAB button when showing dashboard
+    // Hide FAB button and action card when showing dashboard
     const fabBtn = document.getElementById('addExpenseBtn');
     if (fabBtn) fabBtn.style.display = 'none';
+    
+    const addExpenseCard = document.getElementById('simpleAddExpenseCard');
+    if (addExpenseCard) addExpenseCard.style.display = 'none';
     
     // Make sure dashboard section is visible
     document.getElementById('dashboardSection').classList.add('active');
@@ -2260,7 +2263,27 @@ async function loadSimpleModeDetailView() {
         // Switch to expenses tab by default
         switchFundTab('history');
         
-        console.log("📍 Step 9: Showing FAB button...");
+        console.log("📍 Step 9: Showing Add Expense UI elements...");
+        
+        // Show Add Expense Action Card
+        const addExpenseCard = document.getElementById('simpleAddExpenseCard');
+        if (addExpenseCard) {
+            addExpenseCard.style.display = 'block';
+            
+            // Add click listener to card button
+            const cardBtn = document.getElementById('addExpenseCardBtn');
+            if (cardBtn) {
+                // Remove existing listeners
+                const newCardBtn = cardBtn.cloneNode(true);
+                cardBtn.parentNode.replaceChild(newCardBtn, cardBtn);
+                
+                newCardBtn.addEventListener('click', function() {
+                    console.log('🖱️ Action card button clicked!');
+                    showAddExpenseModal();
+                });
+            }
+        }
+        
         // Show Add Expense FAB button ONLY if we're in detail view
         const fabBtn = document.getElementById('addExpenseBtn');
         const detailSection = document.getElementById('fundDetailSection');

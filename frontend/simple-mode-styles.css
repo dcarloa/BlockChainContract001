@@ -669,6 +669,67 @@
   padding-left: 2.5rem;
 }
 
+/* Action Card - Prominent Add Expense Button */
+.action-card {
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.15) 0%, rgba(var(--primary-rgb), 0.05) 100%);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.2);
+}
+
+.action-card-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.action-card-icon {
+  font-size: 3rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.action-card-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.action-card-text h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.action-card-text p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 10px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.4);
+}
+
+.btn-large:active {
+  transform: translateY(0);
+}
+
 /* Button Styling in Modal */
 #addExpenseModal .modal-footer {
   padding: 1.25rem 2rem;
@@ -705,5 +766,24 @@
   
   .form-header-clean h3 {
     font-size: 1.25rem;
+  }
+
+  .action-card {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .action-card-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .action-card-icon {
+    font-size: 2.5rem;
+  }
+
+  .btn-large {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
   }
 }
