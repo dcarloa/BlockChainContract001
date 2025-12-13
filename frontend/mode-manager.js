@@ -328,12 +328,10 @@ class ModeManager {
                 console.log(`📝 Expense ${id.slice(-8)}: status="${exp.status}", amount=$${exp.amount}, desc="${exp.description}"`);
             });
             
-            // Filter approved expenses
-            const expenses = Object.values(expensesData).filter(
-                e => e.status === 'approved'
-            );
+            // In Simple Mode, ALL expenses count (no approval needed)
+            const expenses = Object.values(expensesData);
             
-            console.log('✅ Approved expenses:', expenses.length);
+            console.log('✅ Total expenses to process:', expenses.length);
             
             // Calculate net balances
             const balances = {};
