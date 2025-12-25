@@ -2613,15 +2613,41 @@ async function loadSimpleModeBalances() {
         
         const balancesList = document.getElementById('balancesList');
         const noBalances = document.getElementById('noBalances');
+        const dashboard = document.getElementById('simpleModeBalanceDashboard');
         
         if (!memberBalances || memberBalances.length === 0) {
             console.log('⚠️ No balances to display');
             if (balancesList) balancesList.innerHTML = '';
             if (noBalances) noBalances.style.display = 'flex';
+            if (dashboard) dashboard.style.display = 'none';
             return;
         }
         
         if (noBalances) noBalances.style.display = 'none';
+        if (dashboard) dashboard.style.display = 'block';
+        
+        // Calculate stats for dashboard
+        const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
+        let totalExpenses = 0;
+        let expenseCount = 0;
+        
+        if (groupData.expenses) {
+            Object.values(groupData.expenses).forEach(expense => {
+                totalExpenses += Math.abs(expense.amount || 0);
+                expenseCount++;
+            });
+        }
+        
+        const memberCount = Object.keys(currentFund.members || {}).length;
+        const perPerson = memberCount > 0 ? totalExpenses / memberCount : 0;
+        
+        // Update dashboard stats
+        document.getElementById('simpleModeTotalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+        document.getElementById('simpleModePerPerson').textContent = `$${perPerson.toFixed(2)}`;
+        document.getElementById('simpleModeActiveMembers').textContent = memberCount;
+        
+        // Render balance chart
+        renderBalanceChart(memberBalances);
         
         const currentUserId = firebase.auth().currentUser?.uid;
         
@@ -2636,21 +2662,28 @@ async function loadSimpleModeBalances() {
         
         // Show debts I owe
         if (iOwe.length > 0) {
-            html += '<h4 style="color: var(--error); margin-top: var(--spacing-md);">💸 You owe:</h4>';
+            html += '<h4 class="balance-section-title balance-owes">💸 You owe:</h4>';
             iOwe.forEach(debt => {
                 const toMember = currentFund.members[debt.to];
                 const toName = toMember?.name || toMember?.email || debt.to;
                 html += `
-                    <div class="balance-card owes">
-                        <div class="balance-header">
-                            <span class="balance-parties">You → ${toName}</span>
-                            <span class="balance-amount owes">$${debt.amount.toFixed(2)}</span>
+                    <div class="balance-card-simple owes">
+                        <div class="balance-card-content">
+                            <div class="balance-info">
+                                <div class="balance-avatar">${(toName || 'U').charAt(0).toUpperCase()}</div>
+                                <div class="balance-details">
+                                    <span class="balance-name">${toName}</span>
+                                    <span class="balance-description">You owe this person</span>
+                                </div>
+                            </div>
+                            <div class="balance-amount-display owes">
+                                $${debt.amount.toFixed(2)}
+                            </div>
                         </div>
-                        <div class="balance-actions">
-                            <button class="btn btn-primary" onclick="showRecordPaymentModal('${debt.to}', ${debt.amount})">
-                                💰 Record Payment
-                            </button>
-                        </div>
+                        <button class="btn btn-primary btn-record-payment" onclick="showRecordPaymentModal('${debt.to}', ${debt.amount})">
+                            <span class="btn-icon">💰</span>
+                            <span>Record Payment</span>
+                        </button>
                     </div>
                 `;
             });
@@ -2658,15 +2691,23 @@ async function loadSimpleModeBalances() {
         
         // Show debts owed to me
         if (owesMe.length > 0) {
-            html += '<h4 style="color: var(--success); margin-top: var(--spacing-md);">💰 Owes you:</h4>';
+            html += '<h4 class="balance-section-title balance-owed">💰 Owes you:</h4>';
             owesMe.forEach(debt => {
                 const fromMember = currentFund.members[debt.from];
                 const fromName = fromMember?.name || fromMember?.email || debt.from;
                 html += `
-                    <div class="balance-card owed">
-                        <div class="balance-header">
-                            <span class="balance-parties">${fromName} → You</span>
-                            <span class="balance-amount owed">$${debt.amount.toFixed(2)}</span>
+                    <div class="balance-card-simple owed">
+                        <div class="balance-card-content">
+                            <div class="balance-info">
+                                <div class="balance-avatar">${(fromName || 'U').charAt(0).toUpperCase()}</div>
+                                <div class="balance-details">
+                                    <span class="balance-name">${fromName}</span>
+                                    <span class="balance-description">This person owes you</span>
+                                </div>
+                            </div>
+                            <div class="balance-amount-display owed">
+                                $${debt.amount.toFixed(2)}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -2690,6 +2731,52 @@ async function loadSimpleModeBalances() {
         console.error('Error loading balances:', error);
         showToast(`Error loading balances: ${error.message}`, 'error');
     }
+}
+
+/**
+ * Render visual balance chart
+ */
+function renderBalanceChart(memberBalances) {
+    const chartContainer = document.getElementById('balanceChart');
+    if (!chartContainer) return;
+    
+    // Find max absolute balance for scaling
+    const maxBalance = Math.max(...memberBalances.map(m => Math.abs(m.balance)));
+    
+    if (maxBalance === 0) {
+        chartContainer.innerHTML = '<div class="chart-empty">No balances to display</div>';
+        return;
+    }
+    
+    let html = '<div class="chart-bars">';
+    
+    memberBalances.forEach(member => {
+        const memberData = currentFund.members[member.memberId];
+        const memberName = memberData?.name || memberData?.email || member.memberId;
+        const shortName = memberName.split(' ')[0]; // First name only
+        
+        const percentage = (Math.abs(member.balance) / maxBalance) * 100;
+        const isPositive = member.balance > 0;
+        const isNegative = member.balance < 0;
+        
+        html += `
+            <div class="chart-bar-item">
+                <div class="chart-bar-label">${shortName}</div>
+                <div class="chart-bar-container">
+                    <div class="chart-bar ${isPositive ? 'positive' : isNegative ? 'negative' : 'neutral'}" 
+                         style="width: ${percentage}%"
+                         title="${memberName}: $${member.balance.toFixed(2)}">
+                    </div>
+                </div>
+                <div class="chart-bar-value ${isPositive ? 'positive' : isNegative ? 'negative' : ''}">
+                    ${isPositive ? '+' : ''}$${Math.abs(member.balance).toFixed(2)}
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    chartContainer.innerHTML = html;
 }
 
 /**

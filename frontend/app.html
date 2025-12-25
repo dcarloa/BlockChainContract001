@@ -694,52 +694,67 @@
 
                     <!-- Balances Tab -->
                     <div id="balancesTab" class="tab-pane">
-                        <h3>⚖️ Balances del Grupo</h3>
-                        <p class="tab-description">Cálculo automático de quién debe dinero a quién basado en aportes y gastos ejecutados.</p>
-                        
-                        <div class="balances-summary">
-                            <div class="balance-stat-card positive">
-                                <div class="balance-stat-icon">💰</div>
-                                <div class="balance-stat-content">
-                                    <span class="balance-stat-label">Total Aportado</span>
-                                    <span class="balance-stat-value" id="totalContributed">0 ETH</span>
+                        <div class="balances-header-simple">
+                            <h3>⚖️ Group Balances</h3>
+                            <p class="tab-description">See who owes money and who is owed based on shared expenses</p>
+                        </div>
+
+                        <!-- Balance Dashboard for Simple Mode -->
+                        <div id="simpleModeBalanceDashboard" class="balance-dashboard-simple" style="display: none;">
+                            <div class="dashboard-stats">
+                                <div class="stat-card stat-expenses">
+                                    <div class="stat-icon">💸</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Total Expenses</span>
+                                        <span class="stat-value" id="simpleModeTotalExpenses">$0</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card stat-per-person">
+                                    <div class="stat-icon">👤</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Per Person</span>
+                                        <span class="stat-value" id="simpleModePerPerson">$0</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card stat-members">
+                                    <div class="stat-icon">👥</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Active Members</span>
+                                        <span class="stat-value" id="simpleModeActiveMembers">0</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="balance-stat-card negative">
-                                <div class="balance-stat-icon">💸</div>
-                                <div class="balance-stat-content">
-                                    <span class="balance-stat-label">Total Gastado</span>
-                                    <span class="balance-stat-value" id="totalSpent">0 ETH</span>
-                                </div>
-                            </div>
-                            <div class="balance-stat-card neutral">
-                                <div class="balance-stat-icon">📊</div>
-                                <div class="balance-stat-content">
-                                    <span class="balance-stat-label">Balance Disponible</span>
-                                    <span class="balance-stat-value" id="availableBalance">0 ETH</span>
+
+                            <!-- Visual Balance Chart -->
+                            <div class="balance-chart-container">
+                                <h4 class="chart-title">💰 Balance Overview</h4>
+                                <div id="balanceChart" class="balance-chart">
+                                    <!-- Chart will be rendered here -->
                                 </div>
                             </div>
                         </div>
 
-                        <div class="info-box" style="margin: 1.5rem 0;">
-                            <p><strong>💡 Cómo se calculan los balances:</strong></p>
-                            <ul>
-                                <li><strong>Parte justa de cada uno</strong> = Total gastado ÷ Número de miembros</li>
-                                <li><strong>Balance personal</strong> = Lo que aportaste - Tu parte justa</li>
-                                <li><strong>Positivo (verde)</strong> = Otros te deben dinero</li>
-                                <li><strong>Negativo (rojo)</strong> = Debes dinero al grupo</li>
-                                <li><strong>Cero (gris)</strong> = Estás equilibrado</li>
+                        <!-- Balance List -->
+                        <div class="balances-list-container">
+                            <div id="balancesList" class="balances-list-simple">
+                                <!-- Balances will be loaded here -->
+                            </div>
+                            
+                            <div id="noBalances" class="empty-state" style="display: none;">
+                                <div class="empty-icon">⚖️</div>
+                                <h4>No members yet</h4>
+                                <p>Balances will appear when members start contributing to expenses</p>
+                            </div>
+                        </div>
+
+                        <!-- How it works info -->
+                        <div class="info-box-simple">
+                            <h4>💡 How balances work:</h4>
+                            <ul class="info-list">
+                                <li><strong>Green (+):</strong> Others owe you money</li>
+                                <li><strong>Red (-):</strong> You owe money to others</li>
+                                <li><strong>Balanced transactions:</strong> Simplified to minimize payments</li>
                             </ul>
-                        </div>
-
-                        <div id="balancesList">
-                            <!-- Balances will be loaded here -->
-                        </div>
-                        
-                        <div id="noBalances" class="empty-state" style="display: none;">
-                            <div class="empty-icon">⚖️</div>
-                            <h4>No hay gastos ejecutados aún</h4>
-                            <p>Los balances se calcularán cuando haya gastos aprobados y ejecutados</p>
                         </div>
                     </div>
 
