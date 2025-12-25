@@ -343,7 +343,6 @@ async function disconnectWallet() {
         document.getElementById('connectWallet').disabled = false;
         document.getElementById('connectWallet').style.opacity = '1';
         document.getElementById('disconnectWallet').style.display = 'none';
-        document.getElementById('userNickname').style.display = 'none';
         
         // Update unified session badge
         updateUnifiedSessionBadge();
@@ -450,8 +449,9 @@ async function autoReconnectWallet() {
             // Usuario tiene nickname - cargar dashboard automáticamente
             userNickname = nickname;
             console.log("✅ Usuario tiene nickname:", userNickname);
-            document.getElementById('nicknameDisplay').textContent = userNickname;
-            document.getElementById('userNickname').style.display = 'flex';
+            
+            // Update unified session badge
+            updateUnifiedSessionBadge();
             
             try {
                 await loadDashboard();
@@ -477,7 +477,9 @@ async function autoReconnectWallet() {
             `;
             document.getElementById('connectWallet').style.display = 'inline-flex';
             document.getElementById('disconnectWallet').style.display = 'none';
-            document.getElementById('userNickname').style.display = 'none';
+            
+            // Update unified session badge
+            updateUnifiedSessionBadge();
             
             console.log("🔄 Auto-reconnect cancelado - usuario debe conectar manualmente y establecer nickname");
             return; // Salir sin completar el reconnect
@@ -502,7 +504,9 @@ async function autoReconnectWallet() {
         `;
         document.getElementById('connectWallet').style.display = 'inline-flex';
         document.getElementById('disconnectWallet').style.display = 'none';
-        document.getElementById('userNickname').style.display = 'none';
+        
+        // Update unified session badge
+        updateUnifiedSessionBadge();
         
         // Restaurar el evento click original
         const connectBtn = document.getElementById('connectWallet');
@@ -564,8 +568,9 @@ async function checkUserNickname() {
         } else {
             // Usuario tiene nickname
             userNickname = nickname;
-            document.getElementById('nicknameDisplay').textContent = userNickname;
-            document.getElementById('userNickname').style.display = 'flex';
+            
+            // Update unified session badge
+            updateUnifiedSessionBadge();
             
             // Cargar dashboard
             await loadDashboard();
@@ -608,8 +613,10 @@ async function setNickname() {
             showToast(`⚠️ You already have a nickname set: "${currentNickname}"`, "warning");
             // Update UI with existing nickname
             userNickname = currentNickname;
-            document.getElementById('nicknameDisplay').textContent = userNickname;
-            document.getElementById('userNickname').style.display = 'flex';
+            
+            // Update unified session badge
+            updateUnifiedSessionBadge();
+            
             document.getElementById('nicknameModal').style.display = 'none';
             // Cargar dashboard
             await loadDashboard();
@@ -634,8 +641,9 @@ async function setNickname() {
         await tx.wait();
         
         userNickname = nickname;
-        document.getElementById('nicknameDisplay').textContent = userNickname;
-        document.getElementById('userNickname').style.display = 'flex';
+        
+        // Update unified session badge
+        updateUnifiedSessionBadge();
         
         // Cerrar modal
         document.getElementById('nicknameModal').style.display = 'none';
