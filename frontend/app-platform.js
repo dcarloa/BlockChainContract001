@@ -2627,14 +2627,22 @@ async function loadSimpleModeBalances() {
         if (noBalances) noBalances.style.display = 'none';
         if (dashboard) dashboard.style.display = 'block';
         
-        // Calculate stats for dashboard
+        // Calculate stats for dashboard with currency conversion
         const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
-        let totalExpenses = 0;
+        let totalExpensesUSD = 0;
         let expenseCount = 0;
         const currencyTotals = {}; // Track totals by currency
+        const hasMixedCurrencies = new Set();
         
         if (groupData.expenses) {
-            Object.values(groupData.expenses).forEach(expense => {
+            // First pass: collect currency info
+            for (const expense of Object.values(groupData.expenses)) {
+                const currency = expense.currency || 'USD';
+                hasMixedCurrencies.add(currency);
+            }
+
+            // Second pass: convert all to USD
+            for (const expense of Object.values(groupData.expenses)) {
                 const currency = expense.currency || 'USD';
                 const amount = Math.abs(expense.amount || 0);
                 
@@ -2642,36 +2650,42 @@ async function loadSimpleModeBalances() {
                     currencyTotals[currency] = 0;
                 }
                 currencyTotals[currency] += amount;
-                totalExpenses += amount; // For backwards compatibility
+                
+                // Convert to USD for totals
+                const amountUSD = await convertToUSD(amount, currency);
+                totalExpensesUSD += amountUSD;
                 expenseCount++;
-            });
+            }
         }
         
         const memberCount = Object.keys(currentFund.members || {}).length;
-        
-        // Show multi-currency totals or single currency
         const currencies = Object.keys(currencyTotals);
+        
+        // Update dashboard stats
         let totalText = '';
         if (currencies.length === 1) {
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
             totalText = `${symbol}${currencyTotals[currency].toFixed(2)}`;
         } else if (currencies.length > 1) {
-            // Show multiple currencies
-            totalText = currencies.map(curr => 
+            // Show USD equivalent with original currencies
+            const currencyList = currencies.map(curr => 
                 `${getCurrencySymbol(curr)}${currencyTotals[curr].toFixed(2)}`
             ).join(' + ');
+            totalText = `$${totalExpensesUSD.toFixed(2)} USD (${currencyList})`;
         } else {
             totalText = '$0.00';
         }
         
-        // Update dashboard stats
         document.getElementById('simpleModeTotalExpenses').textContent = totalText;
+        document.getElementById('simpleModeTotalExpenses').title = currencies.length > 1 ? 
+            'Converted to USD using current exchange rates' : '';
         
-        // For per person, show warning if mixed currencies
+        // For per person
         if (currencies.length > 1) {
-            document.getElementById('simpleModePerPerson').textContent = 'Mixed 💱';
-            document.getElementById('simpleModePerPerson').title = 'Multiple currencies used. See details below.';
+            const perPersonUSD = memberCount > 0 ? totalExpensesUSD / memberCount : 0;
+            document.getElementById('simpleModePerPerson').textContent = `$${perPersonUSD.toFixed(2)} USD`;
+            document.getElementById('simpleModePerPerson').title = 'Average per person (converted to USD)';
         } else if (currencies.length === 1) {
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
@@ -3041,7 +3055,7 @@ async function showExpenseComments(expenseId) {
 
         // Create modal
         const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
+        modal.className = 'modal-overlay active';
         modal.style.display = 'flex';
         modal.onclick = (e) => {
             if (e.target === modal) {
@@ -3782,6 +3796,89 @@ const CURRENCY_SYMBOLS = {
     'INR': '₹',
     'CHF': 'CHF'
 };
+
+// Cache for exchange rates
+let exchangeRatesCache = null;
+let exchangeRatesCacheTime = null;
+const CACHE_DURATION = 3600000; // 1 hour
+
+/**
+ * Fetch current exchange rates from API
+ * @returns {Object} Exchange rates with USD as base
+ */
+async function fetchExchangeRates() {
+    try {
+        // Check cache first
+        if (exchangeRatesCache && exchangeRatesCacheTime && 
+            (Date.now() - exchangeRatesCacheTime < CACHE_DURATION)) {
+            console.log('💱 Using cached exchange rates');
+            return exchangeRatesCache;
+        }
+
+        console.log('💱 Fetching exchange rates from API...');
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch exchange rates');
+        }
+
+        const data = await response.json();
+        exchangeRatesCache = data.rates;
+        exchangeRatesCacheTime = Date.now();
+        
+        console.log('✅ Exchange rates updated:', Object.keys(exchangeRatesCache).length, 'currencies');
+        return exchangeRatesCache;
+
+    } catch (error) {
+        console.error('❌ Error fetching exchange rates:', error);
+        // Fallback rates (approximate, updated Dec 2024)
+        return {
+            USD: 1,
+            EUR: 0.92,
+            GBP: 0.79,
+            MXN: 17.5,
+            COP: 4100,
+            BRL: 4.95,
+            CAD: 1.36,
+            AUD: 1.52,
+            JPY: 149,
+            CNY: 7.24,
+            INR: 83.2,
+            CHF: 0.88
+        };
+    }
+}
+
+/**
+ * Convert amount from one currency to USD
+ * @param {number} amount - Amount to convert
+ * @param {string} fromCurrency - Source currency code
+ * @returns {Promise<number>} Amount in USD
+ */
+async function convertToUSD(amount, fromCurrency = 'USD') {
+    if (!fromCurrency || fromCurrency === 'USD') {
+        return amount;
+    }
+
+    try {
+        const rates = await fetchExchangeRates();
+        const rate = rates[fromCurrency];
+        
+        if (!rate) {
+            console.warn(`⚠️ No exchange rate for ${fromCurrency}, using 1:1`);
+            return amount;
+        }
+
+        // Convert to USD: divide by the rate (since rates are from USD)
+        const converted = amount / rate;
+        console.log(`💱 Converted ${amount} ${fromCurrency} to ${converted.toFixed(2)} USD (rate: ${rate})`);
+        return converted;
+
+    } catch (error) {
+        console.error('Error converting currency:', error);
+        return amount;
+    }
+}
 
 /**
  * Update currency symbol in the form
