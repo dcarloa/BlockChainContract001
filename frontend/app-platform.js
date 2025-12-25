@@ -2529,10 +2529,11 @@ async function loadSimpleModeExpenses() {
             });
         }
         
-        // Format amount - preserve full precision
+        // Format amount - preserve full precision and show correct currency
         const isNegative = expense.amount < 0;
         const absAmount = Math.abs(expense.amount);
-        const amountStr = absAmount % 1 === 0 ? `$${absAmount}` : `$${absAmount.toFixed(2)}`;
+        const currencySymbol = getCurrencySymbol(expense.currency);
+        const amountStr = absAmount % 1 === 0 ? `${currencySymbol}${absAmount}` : `${currencySymbol}${absAmount.toFixed(2)}`;
         const amountClass = isNegative ? 'expense-amount-negative' : 'expense-amount-large';
         const amountPrefix = isNegative ? '-' : '';
         
@@ -2630,20 +2631,56 @@ async function loadSimpleModeBalances() {
         const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
         let totalExpenses = 0;
         let expenseCount = 0;
+        const currencyTotals = {}; // Track totals by currency
         
         if (groupData.expenses) {
             Object.values(groupData.expenses).forEach(expense => {
-                totalExpenses += Math.abs(expense.amount || 0);
+                const currency = expense.currency || 'USD';
+                const amount = Math.abs(expense.amount || 0);
+                
+                if (!currencyTotals[currency]) {
+                    currencyTotals[currency] = 0;
+                }
+                currencyTotals[currency] += amount;
+                totalExpenses += amount; // For backwards compatibility
                 expenseCount++;
             });
         }
         
         const memberCount = Object.keys(currentFund.members || {}).length;
-        const perPerson = memberCount > 0 ? totalExpenses / memberCount : 0;
+        
+        // Show multi-currency totals or single currency
+        const currencies = Object.keys(currencyTotals);
+        let totalText = '';
+        if (currencies.length === 1) {
+            const currency = currencies[0];
+            const symbol = getCurrencySymbol(currency);
+            totalText = `${symbol}${currencyTotals[currency].toFixed(2)}`;
+        } else if (currencies.length > 1) {
+            // Show multiple currencies
+            totalText = currencies.map(curr => 
+                `${getCurrencySymbol(curr)}${currencyTotals[curr].toFixed(2)}`
+            ).join(' + ');
+        } else {
+            totalText = '$0.00';
+        }
         
         // Update dashboard stats
-        document.getElementById('simpleModeTotalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
-        document.getElementById('simpleModePerPerson').textContent = `$${perPerson.toFixed(2)}`;
+        document.getElementById('simpleModeTotalExpenses').textContent = totalText;
+        
+        // For per person, show warning if mixed currencies
+        if (currencies.length > 1) {
+            document.getElementById('simpleModePerPerson').textContent = 'Mixed 💱';
+            document.getElementById('simpleModePerPerson').title = 'Multiple currencies used. See details below.';
+        } else if (currencies.length === 1) {
+            const currency = currencies[0];
+            const symbol = getCurrencySymbol(currency);
+            const perPerson = memberCount > 0 ? currencyTotals[currency] / memberCount : 0;
+            document.getElementById('simpleModePerPerson').textContent = `${symbol}${perPerson.toFixed(2)}`;
+        } else {
+            document.getElementById('simpleModePerPerson').textContent = '$0.00';
+        }
+        
         document.getElementById('simpleModeActiveMembers').textContent = memberCount;
         
         // Render balance chart
@@ -3728,6 +3765,49 @@ function populateExpenseMembers() {
     console.log('✅ Members populated successfully');
 }
 
+// ============================================
+// CURRENCY UTILITIES
+// ============================================
+
+const CURRENCY_SYMBOLS = {
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£',
+    'MXN': '$',
+    'COP': '$',
+    'BRL': 'R$',
+    'CAD': 'CA$',
+    'AUD': 'A$',
+    'JPY': '¥',
+    'CNY': '¥',
+    'INR': '₹',
+    'CHF': 'CHF'
+};
+
+/**
+ * Update currency symbol in the form
+ */
+function updateCurrencySymbol() {
+    const currencySelect = document.getElementById('expenseCurrency');
+    const currencySymbol = document.getElementById('currencySymbol');
+    
+    if (currencySelect && currencySymbol) {
+        const currency = currencySelect.value;
+        currencySymbol.textContent = CURRENCY_SYMBOLS[currency] || '$';
+    }
+}
+
+/**
+ * Get currency symbol for a currency code
+ */
+function getCurrencySymbol(currency) {
+    return CURRENCY_SYMBOLS[currency] || '$';
+}
+
+// ============================================
+// EXPENSE SUBMISSION
+// ============================================
+
 async function handleExpenseSubmission(event) {
     event.preventDefault();
 
@@ -3742,8 +3822,9 @@ async function handleExpenseSubmission(event) {
         const paidBy = formData.get('paidBy');
         const date = formData.get('date');
         const notes = formData.get('notes') || '';
+        const currency = formData.get('currency') || 'USD';
 
-        console.log('💰 Form amount input:', rawAmount, '→ Parsed:', amount);
+        console.log('💰 Form amount input:', rawAmount, '→ Parsed:', amount, 'Currency:', currency);
 
         // Get selected members for split
         const splitBetween = Array.from(form.querySelectorAll('input[name="splitBetween"]:checked'))
@@ -3781,7 +3862,8 @@ async function handleExpenseSubmission(event) {
             receipt: null,
             date: date || new Date().toISOString().split('T')[0], // Include date
             paidBy,
-            paidByName
+            paidByName,
+            currency: currency || 'USD'
         };
 
         // Set current group ID for mode manager
