@@ -3294,7 +3294,7 @@ async function deleteExpense(expenseId) {
         if (!confirmed) return;
 
         // Delete expense
-        await window.FirebaseConfig.updateDb(expensePath, null);
+        await window.FirebaseConfig.deleteDb(expensePath);
 
         showToast('Expense deleted', 'success');
         await loadSimpleModeExpenses();
