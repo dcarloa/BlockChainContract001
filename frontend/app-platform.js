@@ -3153,7 +3153,6 @@ async function addComment(expenseId) {
         document.getElementById('newCommentText').value = '';
 
         // Reload comments
-        const groupId = currentFund.fundId || currentFund.fundAddress;
         const expense = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses/${expenseId}`);
         document.getElementById('commentsList').innerHTML = await renderComments(expense.comments || {});
 
