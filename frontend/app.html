@@ -867,6 +867,9 @@
 
                             <div class="form-field">
                                 <label for="expenseAmount" class="form-label">Amount *</label>
+                                <div class="form-hint" style="margin-bottom: 0.5rem; font-size: 0.85rem; color: #9ca3af;">
+                                    Enter a <strong>positive</strong> number for expenses, or a <strong>negative</strong> number for payments received/loans.
+                                </div>
                                 <div class="amount-input-wrapper">
                                     <span class="currency-symbol">$</span>
                                     <input 
@@ -876,9 +879,11 @@
                                         class="form-input amount-input"
                                         placeholder="0.00"
                                         step="any"
-                                        min="0.01"
                                         required
                                     >
+                                </div>
+                                <div class="form-examples" style="margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                                    Examples: 50 (expense), -50 (payment received)
                                 </div>
                             </div>
 

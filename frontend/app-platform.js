@@ -2530,13 +2530,29 @@ async function loadSimpleModeExpenses() {
         }
         
         // Format amount - preserve full precision
-        const amountStr = expense.amount % 1 === 0 ? `$${expense.amount}` : `$${expense.amount.toFixed(2)}`;
+        const isNegative = expense.amount < 0;
+        const absAmount = Math.abs(expense.amount);
+        const amountStr = absAmount % 1 === 0 ? `$${absAmount}` : `$${absAmount.toFixed(2)}`;
+        const amountClass = isNegative ? 'expense-amount-negative' : 'expense-amount-large';
+        const amountPrefix = isNegative ? '-' : '';
+        
+        // Check if current user created this expense
+        const isCreator = expense.paidBy === currentUserId;
+        
+        // Count interactions
+        const likesCount = expense.likes ? Object.keys(expense.likes).length : 0;
+        const hasLiked = expense.likes && expense.likes[currentUserId];
+        const commentsCount = expense.comments ? Object.keys(expense.comments).length : 0;
+        const deleteRequestsCount = expense.deleteRequests ? Object.keys(expense.deleteRequests).length : 0;
         
         return `
-            <div class="expense-card-compact">
+            <div class="expense-card-compact" data-expense-id="${expense.id}">
                 <div class="expense-main">
                     <div class="expense-info">
-                        <h4 class="expense-title">${expense.description}</h4>
+                        <h4 class="expense-title">
+                            ${isNegative ? '💰 ' : ''}${expense.description}
+                            ${isNegative ? '<span class="expense-badge badge-payment">Payment Received</span>' : ''}
+                        </h4>
                         <div class="expense-meta">
                             <span class="meta-item">👤 ${expense.paidByName || expense.paidBy}</span>
                             <span class="meta-item">👥 ${expense.splitBetween.length} people</span>
@@ -2544,8 +2560,35 @@ async function loadSimpleModeExpenses() {
                         </div>
                         ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
                     </div>
-                    <div class="expense-amount-large">${amountStr}</div>
+                    <div class="${amountClass}">${amountPrefix}${amountStr}</div>
                 </div>
+                
+                <!-- Interaction Bar -->
+                <div class="expense-interactions">
+                    <button class="interaction-btn ${hasLiked ? 'active' : ''}" onclick="toggleLikeExpense('${expense.id}')" title="Like">
+                        ${hasLiked ? '❤️' : '🤍'} ${likesCount > 0 ? likesCount : ''}
+                    </button>
+                    <button class="interaction-btn" onclick="showExpenseComments('${expense.id}')" title="Comments">
+                        💬 ${commentsCount > 0 ? commentsCount : ''}
+                    </button>
+                    ${!isCreator ? `
+                        <button class="interaction-btn ${deleteRequestsCount > 0 ? 'active' : ''}" onclick="requestDeleteExpense('${expense.id}')" title="Request deletion">
+                            ⚠️ ${deleteRequestsCount > 0 ? deleteRequestsCount : ''}
+                        </button>
+                    ` : `
+                        <button class="interaction-btn btn-delete" onclick="deleteExpense('${expense.id}')" title="Delete expense">
+                            🗑️ Delete
+                        </button>
+                    `}
+                </div>
+                
+                ${deleteRequestsCount > 0 && isCreator ? `
+                    <div class="expense-alert">
+                        <span class="alert-icon">⚠️</span>
+                        <span>${deleteRequestsCount} member${deleteRequestsCount > 1 ? 's' : ''} requested deletion of this expense</span>
+                        <button class="btn-link" onclick="showDeleteRequests('${expense.id}')">View requests</button>
+                    </div>
+                ` : ''}
             </div>
         `;
     }).join('');
@@ -2800,6 +2843,305 @@ async function removeMember(memberId) {
     } catch (error) {
         console.error('Error removing member:', error);
         showToast(`Error: ${error.message}`, 'error');
+    }
+}
+
+// ============================================
+// EXPENSE SOCIAL INTERACTIONS
+// ============================================
+
+/**
+ * Toggle like on an expense
+ */
+async function toggleLikeExpense(expenseId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('Sign in to like expenses', 'info');
+            return;
+        }
+
+        const likePath = `groups/${currentFund.fundAddress}/expenses/${expenseId}/likes/${user.uid}`;
+        const currentLike = await window.FirebaseConfig.readDb(likePath);
+
+        if (currentLike) {
+            // Remove like
+            await window.FirebaseConfig.updateDb(likePath, null);
+        } else {
+            // Add like
+            await window.FirebaseConfig.updateDb(likePath, {
+                userId: user.uid,
+                userName: user.displayName || user.email,
+                timestamp: Date.now()
+            });
+        }
+
+        // Reload expenses to show updated likes
+        await loadSimpleModeExpenses();
+
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        showToast('Error updating like', 'error');
+    }
+}
+
+/**
+ * Show comments modal for an expense
+ */
+async function showExpenseComments(expenseId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('Sign in to view comments', 'info');
+            return;
+        }
+
+        // Get expense data
+        const expensePath = `groups/${currentFund.fundAddress}/expenses/${expenseId}`;
+        const expense = await window.FirebaseConfig.readDb(expensePath);
+        
+        if (!expense) {
+            showToast('Expense not found', 'error');
+            return;
+        }
+
+        // Create modal
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h3>💬 Comments: ${expense.description}</h3>
+                    <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="commentsList" class="comments-list" style="max-height: 400px; overflow-y: auto; margin-bottom: 1rem;">
+                        ${await renderComments(expense.comments || {})}
+                    </div>
+                    <div class="comment-form">
+                        <textarea 
+                            id="newCommentText" 
+                            placeholder="Add a comment..." 
+                            rows="3" 
+                            class="input-modern"
+                            style="resize: vertical; margin-bottom: 0.5rem;"
+                        ></textarea>
+                        <button 
+                            class="btn btn-primary" 
+                            onclick="addComment('${expenseId}')"
+                            style="width: 100%;"
+                        >
+                            <span class="btn-icon">💬</span>
+                            <span>Post Comment</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+    } catch (error) {
+        console.error('Error showing comments:', error);
+        showToast('Error loading comments', 'error');
+    }
+}
+
+/**
+ * Render comments HTML
+ */
+async function renderComments(comments) {
+    if (!comments || Object.keys(comments).length === 0) {
+        return '<div class="empty-state"><p>No comments yet. Be the first to comment!</p></div>';
+    }
+
+    const commentEntries = Object.entries(comments);
+    commentEntries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+
+    return commentEntries.map(([commentId, comment]) => {
+        const date = new Date(comment.timestamp).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        return `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-author">👤 ${comment.userName}</span>
+                    <span class="comment-date">${date}</span>
+                </div>
+                <div class="comment-text">${comment.text}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Add a comment to an expense
+ */
+async function addComment(expenseId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('Sign in to comment', 'info');
+            return;
+        }
+
+        const commentText = document.getElementById('newCommentText').value.trim();
+        if (!commentText) {
+            showToast('Please enter a comment', 'warning');
+            return;
+        }
+
+        const commentId = `cmt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const commentPath = `groups/${currentFund.fundAddress}/expenses/${expenseId}/comments/${commentId}`;
+
+        await window.FirebaseConfig.updateDb(commentPath, {
+            userId: user.uid,
+            userName: user.displayName || user.email,
+            text: commentText,
+            timestamp: Date.now()
+        });
+
+        // Clear input
+        document.getElementById('newCommentText').value = '';
+
+        // Reload comments
+        const expense = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}/expenses/${expenseId}`);
+        document.getElementById('commentsList').innerHTML = await renderComments(expense.comments || {});
+
+        // Reload expenses list to update comment count
+        await loadSimpleModeExpenses();
+
+        showToast('Comment added', 'success');
+
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        showToast('Error posting comment', 'error');
+    }
+}
+
+/**
+ * Request deletion of an expense
+ */
+async function requestDeleteExpense(expenseId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('Sign in to request deletion', 'info');
+            return;
+        }
+
+        const confirmed = confirm(
+            'Request deletion of this expense?\n\n' +
+            'The expense creator will be notified and can decide to delete it.'
+        );
+
+        if (!confirmed) return;
+
+        const requestPath = `groups/${currentFund.fundAddress}/expenses/${expenseId}/deleteRequests/${user.uid}`;
+
+        await window.FirebaseConfig.updateDb(requestPath, {
+            userId: user.uid,
+            userName: user.displayName || user.email,
+            reason: 'User requested deletion',
+            timestamp: Date.now()
+        });
+
+        showToast('Deletion request sent', 'success');
+        await loadSimpleModeExpenses();
+
+    } catch (error) {
+        console.error('Error requesting deletion:', error);
+        showToast('Error sending request', 'error');
+    }
+}
+
+/**
+ * Show delete requests for an expense
+ */
+async function showDeleteRequests(expenseId) {
+    try {
+        const expensePath = `groups/${currentFund.fundAddress}/expenses/${expenseId}`;
+        const expense = await window.FirebaseConfig.readDb(expensePath);
+        
+        if (!expense || !expense.deleteRequests) {
+            showToast('No deletion requests found', 'info');
+            return;
+        }
+
+        const requests = Object.values(expense.deleteRequests);
+        const requestList = requests.map(req => {
+            const date = new Date(req.timestamp).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            return `<li>👤 ${req.userName} - ${date}</li>`;
+        }).join('');
+
+        const confirmed = confirm(
+            `${requests.length} member(s) requested deletion:\n\n` +
+            requests.map(r => `• ${r.userName}`).join('\n') +
+            '\n\nDo you want to delete this expense?'
+        );
+
+        if (confirmed) {
+            await deleteExpense(expenseId);
+        }
+
+    } catch (error) {
+        console.error('Error showing delete requests:', error);
+        showToast('Error loading requests', 'error');
+    }
+}
+
+/**
+ * Delete an expense (only creator can do this)
+ */
+async function deleteExpense(expenseId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('Sign in to delete expenses', 'info');
+            return;
+        }
+
+        // Get expense to verify creator
+        const expensePath = `groups/${currentFund.fundAddress}/expenses/${expenseId}`;
+        const expense = await window.FirebaseConfig.readDb(expensePath);
+
+        if (!expense) {
+            showToast('Expense not found', 'error');
+            return;
+        }
+
+        if (expense.paidBy !== user.uid) {
+            showToast('Only the expense creator can delete it', 'error');
+            return;
+        }
+
+        const confirmed = confirm(
+            `Delete expense: ${expense.description}?\n\n` +
+            `Amount: $${expense.amount}\n` +
+            `This action cannot be undone.`
+        );
+
+        if (!confirmed) return;
+
+        // Delete expense
+        await window.FirebaseConfig.updateDb(expensePath, null);
+
+        showToast('Expense deleted', 'success');
+        await loadSimpleModeExpenses();
+        await loadSimpleModeBalances(); // Update balances
+
+    } catch (error) {
+        console.error('Error deleting expense:', error);
+        showToast('Error deleting expense', 'error');
     }
 }
 
