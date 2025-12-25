@@ -288,6 +288,9 @@ async function connectWallet() {
         // Check if user has nickname
         await checkUserNickname();
         
+        // Update unified session badge
+        updateUnifiedSessionBadge();
+        
         hideLoading();
         showToast(`✅ Conectado con ${walletResult.walletName}`, "success");
         
@@ -341,6 +344,9 @@ async function disconnectWallet() {
         document.getElementById('connectWallet').style.opacity = '1';
         document.getElementById('disconnectWallet').style.display = 'none';
         document.getElementById('userNickname').style.display = 'none';
+        
+        // Update unified session badge
+        updateUnifiedSessionBadge();
         
         // Hide dashboard and fund detail sections
         document.getElementById('dashboardSection').classList.remove('active');
@@ -898,18 +904,17 @@ function showDashboard() {
 }
 
 async function updateUIForFirebaseUser(user) {
-    const firebaseUserBadge = document.getElementById('firebaseUser');
-    const firebaseUserDisplay = document.getElementById('firebaseUserDisplay');
     const signInBtn = document.getElementById('signInSimpleMode');
     const signOutBtn = document.getElementById('signOutFirebase');
     
     if (user) {
         // User is signed in
         console.log("✅ Firebase user signed in:", user.email);
-        firebaseUserBadge.style.display = 'flex';
-        firebaseUserDisplay.textContent = user.displayName || user.email;
         if (signInBtn) signInBtn.style.display = 'none';
         if (signOutBtn) signOutBtn.style.display = 'flex';
+        
+        // Update unified session badge
+        updateUnifiedSessionBadge();
         
         // Check for pending group join
         const pendingGroupId = sessionStorage.getItem('pendingGroupJoin');
@@ -922,13 +927,125 @@ async function updateUIForFirebaseUser(user) {
     } else {
         // User is signed out
         console.log("🚪 Firebase user signed out");
-        firebaseUserBadge.style.display = 'none';
         if (signOutBtn) signOutBtn.style.display = 'none';
         // Always show Sign In button when Firebase user is logged out
         if (signInBtn) {
             signInBtn.style.display = 'flex';
         }
+        
+        // Update unified session badge
+        updateUnifiedSessionBadge();
     }
+}
+
+/**
+ * Update unified session badge showing both Firebase auth and wallet status
+ */
+function updateUnifiedSessionBadge() {
+    const badge = document.getElementById('unifiedSessionBadge');
+    const authDisplay = document.getElementById('sessionAuthDisplay');
+    const walletDisplay = document.getElementById('sessionWalletDisplay');
+    const userName = document.getElementById('sessionUserName');
+    const walletAddress = document.getElementById('sessionWalletAddress');
+    const statusDisplay = document.getElementById('sessionStatus');
+    
+    const firebaseUser = window.FirebaseConfig?.getCurrentUser();
+    const hasWallet = !!userAddress;
+    
+    // If no authentication at all, hide badge
+    if (!firebaseUser && !hasWallet) {
+        badge.style.display = 'none';
+        return;
+    }
+    
+    // Show badge
+    badge.style.display = 'flex';
+    
+    // Update auth display
+    if (firebaseUser) {
+        authDisplay.style.display = 'flex';
+        userName.textContent = firebaseUser.displayName || firebaseUser.email;
+    } else {
+        authDisplay.style.display = 'none';
+    }
+    
+    // Update wallet display
+    if (hasWallet) {
+        walletDisplay.style.display = 'flex';
+        walletAddress.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+    } else {
+        walletDisplay.style.display = 'none';
+    }
+    
+    // Update status display
+    if (firebaseUser && hasWallet) {
+        statusDisplay.innerHTML = '<span class="status-full">✅ Full Access</span>';
+        statusDisplay.title = 'You have access to Simple Mode AND Blockchain Mode';
+    } else if (firebaseUser && !hasWallet) {
+        statusDisplay.innerHTML = '<span class="status-limited">⚠️ Limited Access</span>';
+        statusDisplay.title = 'Simple Mode only. Connect wallet for blockchain features.';
+    } else if (!firebaseUser && hasWallet) {
+        statusDisplay.innerHTML = '<span class="status-wallet-only">🦊 Wallet Only</span>';
+        statusDisplay.title = 'Blockchain Mode available. Sign in for Simple Mode groups.';
+    }
+}
+
+/**
+ * Check if user has access to blockchain features
+ * @returns {boolean} True if user has wallet connected
+ */
+function hasBlockchainAccess() {
+    return !!userAddress && !!provider;
+}
+
+/**
+ * Check if user has access to simple mode features
+ * @returns {boolean} True if user is signed in with Firebase
+ */
+function hasSimpleModeAccess() {
+    return window.FirebaseConfig?.isAuthenticated() || false;
+}
+
+/**
+ * Show access denied modal with specific message
+ * @param {string} mode - 'blockchain' or 'simple'
+ */
+function showAccessDeniedModal(mode) {
+    let title, message, action;
+    
+    if (mode === 'blockchain') {
+        title = '🔒 Blockchain Access Required';
+        message = `You need to connect a wallet to access blockchain groups.
+        
+Your current session uses Google/Email authentication which only provides access to Simple Mode features.
+
+To use blockchain features:
+1. Connect a wallet (MetaMask, Coinbase, etc.)
+2. Ensure you're on Base Sepolia network
+
+Would you like to connect a wallet now?`;
+        action = () => {
+            if (confirm(message)) {
+                connectWallet();
+            }
+        };
+    } else {
+        title = '🔒 Sign In Required';
+        message = `You need to sign in to access Simple Mode groups.
+
+To create and join Simple Mode groups, please sign in with:
+• Google account
+• Email/Password
+
+Would you like to sign in now?`;
+        action = () => {
+            if (confirm(message)) {
+                openSignInModal();
+            }
+        };
+    }
+    
+    action();
 }
 
 async function loadUserFunds() {
@@ -1285,6 +1402,19 @@ async function openFund(fundAddress) {
         }
         
         console.log("Fund found:", currentFund);
+        
+        // Validate access based on fund mode
+        if (currentFund.mode === 'blockchain' && !hasBlockchainAccess()) {
+            hideLoading();
+            showAccessDeniedModal('blockchain');
+            return;
+        }
+        
+        if (currentFund.mode === 'simple' && !hasSimpleModeAccess()) {
+            hideLoading();
+            showAccessDeniedModal('simple');
+            return;
+        }
         
         // Initialize based on mode
         if (currentFund.mode === 'simple') {

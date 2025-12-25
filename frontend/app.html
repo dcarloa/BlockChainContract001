@@ -146,13 +146,19 @@
                 </div>
                 
                 <div class="header-actions">
-                    <div id="firebaseUser" class="nickname-badge" style="display: none;">
-                        <span class="nickname-icon">👤</span>
-                        <span id="firebaseUserDisplay"></span>
-                    </div>
-                    <div id="userNickname" class="nickname-badge" style="display: none;">
-                        <span class="nickname-icon">👤</span>
-                        <span id="nicknameDisplay"></span>
+                    <!-- Unified Session Badge -->
+                    <div id="unifiedSessionBadge" class="unified-session-badge" style="display: none;">
+                        <div class="session-info">
+                            <div class="session-auth" id="sessionAuthDisplay">
+                                <span class="session-icon">👤</span>
+                                <span id="sessionUserName"></span>
+                            </div>
+                            <div class="session-wallet" id="sessionWalletDisplay" style="display: none;">
+                                <span class="session-icon">🦊</span>
+                                <span id="sessionWalletAddress"></span>
+                            </div>
+                        </div>
+                        <div class="session-status" id="sessionStatus"></div>
                     </div>
                     <button class="settings-btn-app" onclick="openAppSettings()" title="Settings">
                         ⚙️

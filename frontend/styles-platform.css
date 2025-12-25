@@ -339,6 +339,63 @@ header,
   display: flex;
 }
 
+/* Unified Session Badge */
+.unified-session-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8rem;
+  max-width: 280px;
+}
+
+.unified-session-badge .session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.unified-session-badge .session-auth,
+.unified-session-badge .session-wallet {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.unified-session-badge .session-icon {
+  font-size: 0.875rem;
+}
+
+.unified-session-badge .session-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.25rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid rgba(102, 126, 234, 0.2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.unified-session-badge .status-full {
+  color: #10b981;
+}
+
+.unified-session-badge .status-limited {
+  color: #f59e0b;
+}
+
+.unified-session-badge .status-wallet-only {
+  color: #667eea;
+}
+
 /* Wallet Button in Header */
 #connectWallet {
   padding: 0.5rem 1rem;
@@ -375,6 +432,16 @@ header,
   .nickname-badge {
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
+  }
+  
+  .unified-session-badge {
+    max-width: 200px;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.7rem;
+  }
+  
+  .unified-session-badge .session-status {
+    font-size: 0.65rem;
   }
   
   #connectWallet {
