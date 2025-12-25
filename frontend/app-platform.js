@@ -2948,7 +2948,8 @@ async function toggleLikeExpense(expenseId) {
             return;
         }
 
-        const likePath = `groups/${currentFund.fundAddress}/expenses/${expenseId}/likes/${user.uid}`;
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const likePath = `groups/${groupId}/expenses/${expenseId}/likes/${user.uid}`;
         const currentLike = await window.FirebaseConfig.readDb(likePath);
 
         if (currentLike) {
@@ -2977,26 +2978,42 @@ async function toggleLikeExpense(expenseId) {
  */
 async function showExpenseComments(expenseId) {
     try {
+        console.log('💬 Opening comments for expense:', expenseId);
+        console.log('📂 Current fund:', currentFund);
+        
         const user = firebase.auth().currentUser;
         if (!user) {
             showToast('Sign in to view comments', 'info');
             return;
         }
 
-        // Get expense data
-        const expensePath = `groups/${currentFund.fundAddress}/expenses/${expenseId}`;
+        // Get expense data - use fundId instead of fundAddress for Simple Mode
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const expensePath = `groups/${groupId}/expenses/${expenseId}`;
+        console.log('📍 Reading expense from:', expensePath);
+        
         const expense = await window.FirebaseConfig.readDb(expensePath);
         
         if (!expense) {
+            console.error('❌ Expense not found at path:', expensePath);
             showToast('Expense not found', 'error');
             return;
         }
 
+        console.log('✅ Expense loaded:', expense);
+
         // Create modal
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
+        modal.style.display = 'flex';
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        };
+        
         modal.innerHTML = `
-            <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-content" style="max-width: 600px;" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3>💬 Comments: ${expense.description}</h3>
                     <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">&times;</button>
@@ -3027,10 +3044,12 @@ async function showExpenseComments(expenseId) {
         `;
 
         document.body.appendChild(modal);
+        console.log('✅ Comments modal opened');
 
     } catch (error) {
-        console.error('Error showing comments:', error);
-        showToast('Error loading comments', 'error');
+        console.error('❌ Error showing comments:', error);
+        console.error('Stack:', error.stack);
+        showToast('Error loading comments: ' + error.message, 'error');
     }
 }
 
@@ -3083,7 +3102,8 @@ async function addComment(expenseId) {
         }
 
         const commentId = `cmt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        const commentPath = `groups/${currentFund.fundAddress}/expenses/${expenseId}/comments/${commentId}`;
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const commentPath = `groups/${groupId}/expenses/${expenseId}/comments/${commentId}`;
 
         await window.FirebaseConfig.updateDb(commentPath, {
             userId: user.uid,
@@ -3096,7 +3116,8 @@ async function addComment(expenseId) {
         document.getElementById('newCommentText').value = '';
 
         // Reload comments
-        const expense = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}/expenses/${expenseId}`);
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const expense = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses/${expenseId}`);
         document.getElementById('commentsList').innerHTML = await renderComments(expense.comments || {});
 
         // Reload expenses list to update comment count
@@ -3128,7 +3149,8 @@ async function requestDeleteExpense(expenseId) {
 
         if (!confirmed) return;
 
-        const requestPath = `groups/${currentFund.fundAddress}/expenses/${expenseId}/deleteRequests/${user.uid}`;
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const requestPath = `groups/${groupId}/expenses/${expenseId}/deleteRequests/${user.uid}`;
 
         await window.FirebaseConfig.updateDb(requestPath, {
             userId: user.uid,
@@ -3151,7 +3173,8 @@ async function requestDeleteExpense(expenseId) {
  */
 async function showDeleteRequests(expenseId) {
     try {
-        const expensePath = `groups/${currentFund.fundAddress}/expenses/${expenseId}`;
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const expensePath = `groups/${groupId}/expenses/${expenseId}`;
         const expense = await window.FirebaseConfig.readDb(expensePath);
         
         if (!expense || !expense.deleteRequests) {
@@ -3198,7 +3221,8 @@ async function deleteExpense(expenseId) {
         }
 
         // Get expense to verify creator
-        const expensePath = `groups/${currentFund.fundAddress}/expenses/${expenseId}`;
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const expensePath = `groups/${groupId}/expenses/${expenseId}`;
         const expense = await window.FirebaseConfig.readDb(expensePath);
 
         if (!expense) {
