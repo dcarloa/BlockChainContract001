@@ -3350,6 +3350,9 @@ async function deleteExpense(expenseId) {
         showToast('Expense deleted', 'success');
         await loadSimpleModeExpenses();
         await loadSimpleModeBalances(); // Update balances
+        
+        // Refresh group info to update total balance
+        await loadSimpleModeGroupInfo(currentFund.fundAddress);
 
     } catch (error) {
         console.error('Error deleting expense:', error);
@@ -4034,8 +4037,12 @@ async function handleExpenseSubmission(event) {
         showToast('Expense added successfully! ✅', 'success');
         closeAddExpenseModal();
 
-        // Refresh expense list
+        // Refresh expense list and balances
         await loadSimpleModeExpenses();
+        await loadSimpleModeBalances();
+        
+        // Refresh group info to update total balance
+        await loadSimpleModeGroupInfo(currentFund.fundAddress);
 
     } catch (error) {
         console.error('Error adding expense:', error);
