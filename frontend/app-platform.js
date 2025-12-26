@@ -5713,6 +5713,46 @@ function closeAppSettings(event) {
  * Update settings UI with current values
  */
 function updateAppSettingsUI() {
-    // This function can be expanded to load and display current settings
-    console.log('⚙️ Settings modal opened');
+    // Update language buttons active state
+    const currentLang = getCurrentLanguage();
+    document.querySelectorAll('.setting-option[data-lang]').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-lang') === currentLang) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Update theme buttons active state
+    const currentTheme = getCurrentTheme();
+    document.querySelectorAll('.setting-option[data-theme]').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-theme') === currentTheme) {
+            btn.classList.add('active');
+        }
+    });
+    
+    console.log('⚙️ Settings modal opened - Lang:', currentLang, 'Theme:', currentTheme);
 }
+
+/**
+ * Change language
+ */
+function changeLanguage(lang) {
+    if (typeof setLanguage === 'function') {
+        setLanguage(lang);
+    } else {
+        console.error('setLanguage function not found');
+    }
+}
+
+/**
+ * Change theme
+ */
+function changeTheme(theme) {
+    if (typeof setTheme === 'function') {
+        setTheme(theme);
+        updateAppSettingsUI(); // Update UI immediately after theme change
+        closeAppSettings(); // Close modal after theme change
+    } else {
+        console.error('setTheme function not found');
+    }
