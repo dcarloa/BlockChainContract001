@@ -2667,17 +2667,20 @@ async function loadSimpleModeBalances() {
         const balancesList = document.getElementById('balancesList');
         const noBalances = document.getElementById('noBalances');
         const dashboard = document.getElementById('simpleModeBalanceDashboard');
+        const timelineSection = document.getElementById('timelineFilterSection');
         
         if (!memberBalances || memberBalances.length === 0) {
             console.log('⚠️ No balances to display');
             if (balancesList) balancesList.innerHTML = '';
             if (noBalances) noBalances.style.display = 'flex';
             if (dashboard) dashboard.style.display = 'none';
+            if (timelineSection) timelineSection.style.display = 'none';
             return;
         }
         
         if (noBalances) noBalances.style.display = 'none';
         if (dashboard) dashboard.style.display = 'block';
+        if (timelineSection) timelineSection.style.display = 'block';
         
         // Calculate stats for dashboard with currency conversion
         const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
@@ -2922,6 +2925,189 @@ function simplifyDebts(memberBalances) {
     }
     
     return transactions;
+}
+
+// ============================================
+// EXPENSE TIMELINE FUNCTIONS
+// ============================================
+
+/**
+ * Toggle timeline visibility
+ */
+function toggleTimeline() {
+    const content = document.getElementById('timelineContent');
+    const icon = document.getElementById('timelineToggleIcon');
+    const text = document.getElementById('timelineToggleText');
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.textContent = '▲';
+        text.textContent = 'Hide Timeline';
+        loadExpenseTimeline();
+    } else {
+        content.style.display = 'none';
+        icon.textContent = '▼';
+        text.textContent = 'Show Timeline';
+    }
+}
+
+/**
+ * Load and render expense timeline
+ */
+async function loadExpenseTimeline(startDate = null, endDate = null) {
+    try {
+        const timelineContainer = document.getElementById('expenseTimeline');
+        if (!timelineContainer || !currentFund) return;
+        
+        console.log('📅 Loading expense timeline...');
+        
+        // Get expenses from Firebase
+        const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
+        
+        if (!groupData || !groupData.expenses) {
+            timelineContainer.innerHTML = `
+                <div class="timeline-empty">
+                    <div class="timeline-empty-icon">📭</div>
+                    <p>No expenses yet</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Convert expenses object to array and add IDs
+        let expenses = Object.entries(groupData.expenses).map(([id, expense]) => ({
+            id,
+            ...expense
+        }));
+        
+        // Filter by date range if provided
+        if (startDate || endDate) {
+            expenses = expenses.filter(expense => {
+                const expenseDate = new Date(expense.timestamp);
+                const start = startDate ? new Date(startDate) : null;
+                const end = endDate ? new Date(endDate) : null;
+                
+                if (start && expenseDate < start) return false;
+                if (end) {
+                    // Set end date to end of day
+                    end.setHours(23, 59, 59, 999);
+                    if (expenseDate > end) return false;
+                }
+                return true;
+            });
+        }
+        
+        // Sort by timestamp (newest first)
+        expenses.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        if (expenses.length === 0) {
+            timelineContainer.innerHTML = `
+                <div class="timeline-empty">
+                    <div class="timeline-empty-icon">🔍</div>
+                    <p>No expenses found in the selected date range</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Group by date
+        const groupedByDate = {};
+        expenses.forEach(expense => {
+            const date = new Date(expense.timestamp).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            if (!groupedByDate[date]) {
+                groupedByDate[date] = [];
+            }
+            groupedByDate[date].push(expense);
+        });
+        
+        // Render timeline
+        let html = '';
+        Object.entries(groupedByDate).forEach(([date, dateExpenses]) => {
+            dateExpenses.forEach((expense, index) => {
+                const isFirstOfDate = index === 0;
+                const currency = expense.currency || 'USD';
+                const symbol = getCurrencySymbol(currency);
+                const amount = Math.abs(expense.amount || 0);
+                const isNegative = (expense.amount || 0) < 0;
+                
+                // Get payer names
+                let paidByText = 'Unknown';
+                if (expense.paidBy) {
+                    const payers = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
+                    const payerNames = payers.map(payerId => {
+                        const member = currentFund.members[payerId];
+                        return member?.name || member?.email || payerId.substring(0, 8);
+                    });
+                    paidByText = payerNames.join(', ');
+                }
+                
+                // Get category emoji
+                const categoryEmoji = {
+                    'food': '🍔',
+                    'transport': '🚗',
+                    'entertainment': '🎬',
+                    'shopping': '🛍️',
+                    'bills': '📄',
+                    'other': '📦'
+                }[expense.category] || '📦';
+                
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        ${isFirstOfDate ? `<div class="timeline-date">${date}</div>` : ''}
+                        <div class="timeline-expense-card">
+                            <div class="timeline-expense-header">
+                                <div class="timeline-expense-desc">
+                                    ${categoryEmoji} ${expense.description || 'No description'}
+                                </div>
+                                <div class="timeline-expense-amount ${isNegative ? 'negative' : ''}">
+                                    ${isNegative ? '+' : '-'}${symbol}${amount.toFixed(2)}
+                                </div>
+                            </div>
+                            <div class="timeline-expense-meta">
+                                <span>👤 ${paidByText}</span>
+                                <span>💱 ${currency}</span>
+                                <span>🕐 ${new Date(expense.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+        
+        timelineContainer.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading timeline:', error);
+        document.getElementById('expenseTimeline').innerHTML = `
+            <div class="timeline-empty">
+                <div class="timeline-empty-icon">⚠️</div>
+                <p>Error loading timeline: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Filter timeline by selected date range
+ */
+function filterTimelineByDate() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    loadExpenseTimeline(startDate, endDate);
+}
+
+/**
+ * Reset date filter
+ */
+function resetDateFilter() {
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    loadExpenseTimeline();
 }
 
 /**

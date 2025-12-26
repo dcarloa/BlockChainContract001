@@ -700,6 +700,34 @@
                             <p class="tab-description">See who owes money and who is owed based on shared expenses</p>
                         </div>
 
+                        <!-- Date Filter for Timeline -->
+                        <div id="timelineFilterSection" class="timeline-filter-section" style="display: none;">
+                            <div class="filter-header">
+                                <h4>📅 Expense Timeline</h4>
+                                <button class="toggle-timeline-btn" onclick="toggleTimeline()">
+                                    <span id="timelineToggleIcon">▼</span> <span id="timelineToggleText">Show Timeline</span>
+                                </button>
+                            </div>
+                            <div id="timelineContent" class="timeline-content" style="display: none;">
+                                <div class="date-range-selector">
+                                    <div class="date-input-group">
+                                        <label for="startDate">From:</label>
+                                        <input type="date" id="startDate" class="date-input" onchange="filterTimelineByDate()">
+                                    </div>
+                                    <div class="date-input-group">
+                                        <label for="endDate">To:</label>
+                                        <input type="date" id="endDate" class="date-input" onchange="filterTimelineByDate()">
+                                    </div>
+                                    <button class="btn-reset-dates" onclick="resetDateFilter()">
+                                        🔄 Reset
+                                    </button>
+                                </div>
+                                <div id="expenseTimeline" class="expense-timeline">
+                                    <!-- Timeline items will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Balance Dashboard for Simple Mode -->
                         <div id="simpleModeBalanceDashboard" class="balance-dashboard-simple" style="display: none;">
                             <div class="dashboard-stats">
