@@ -2327,17 +2327,38 @@ async function loadSimpleModeDetailView() {
         // For Simple Mode: show stats differently
         const members = groupData.members ? Object.keys(groupData.members).length : 1;
         const expenses = groupData.expenses ? Object.keys(groupData.expenses).filter(k => 
-            groupData.expenses[k].status === 'approved'
+            groupData.expenses[k].status === 'approved' || !groupData.expenses[k].status
         ).length : 0;
-        const totalSpent = calculateTotalSpent(groupData);
         
-        safeUpdate('fundBalance', 'textContent', `$${totalSpent.toFixed(2)}`);
+        // Calculate total spent with currency conversion
+        const { totalUSD, currencyBreakdown } = await calculateTotalSpent(groupData);
+        
+        // Format balance display
+        const currencies = Object.keys(currencyBreakdown);
+        let balanceText = '';
+        if (currencies.length === 1 && currencies[0] === 'USD') {
+            balanceText = `$${totalUSD.toFixed(2)}`;
+        } else if (currencies.length === 1) {
+            const currency = currencies[0];
+            const symbol = getCurrencySymbol(currency);
+            balanceText = `${symbol}${currencyBreakdown[currency].toFixed(2)} ${currency}`;
+        } else if (currencies.length > 1) {
+            // Show USD total with breakdown
+            const breakdown = currencies.map(curr => 
+                `${getCurrencySymbol(curr)}${currencyBreakdown[curr].toFixed(2)} ${curr}`
+            ).join(' + ');
+            balanceText = `$${totalUSD.toFixed(2)} USD (${breakdown})`;
+        } else {
+            balanceText = '$0.00';
+        }
+        
+        safeUpdate('fundBalance', 'textContent', balanceText);
         safeUpdate('fundMembers', 'textContent', members.toString());
         safeUpdate('fundProposals', 'textContent', expenses.toString());
         
         // Target amount
         if (groupData.targetAmount && groupData.targetAmount > 0) {
-            const progress = (totalSpent / groupData.targetAmount) * 100;
+            const progress = (totalUSD / groupData.targetAmount) * 100;
             safeUpdate('fundTarget', 'textContent', `$${groupData.targetAmount.toFixed(2)}`);
             safeUpdate('fundProgress', 'textContent', `${progress.toFixed(1)}%`);
             const progressBar = document.getElementById('fundProgressBar');
@@ -2456,17 +2477,30 @@ async function loadSimpleModeDetailView() {
 /**
  * Calculate total spent in Simple Mode group
  */
-function calculateTotalSpent(groupData) {
-    if (!groupData.expenses) return 0;
+async function calculateTotalSpent(groupData) {
+    if (!groupData.expenses) return { totalUSD: 0, currencyBreakdown: {} };
     
-    let total = 0;
-    Object.values(groupData.expenses).forEach(expense => {
-        if (expense.status === 'approved') {
-            total += expense.amount;
+    let totalUSD = 0;
+    const currencyBreakdown = {};
+    
+    for (const expense of Object.values(groupData.expenses)) {
+        if (expense.status === 'approved' || !expense.status) { // Include all in Simple Mode
+            const currency = expense.currency || 'USD';
+            const amount = Math.abs(expense.amount || 0);
+            
+            // Track by currency
+            if (!currencyBreakdown[currency]) {
+                currencyBreakdown[currency] = 0;
+            }
+            currencyBreakdown[currency] += amount;
+            
+            // Convert to USD for total
+            const amountUSD = await convertToUSD(amount, currency);
+            totalUSD += amountUSD;
         }
-    });
+    }
     
-    return total;
+    return { totalUSD, currencyBreakdown };
 }
 
 /**
@@ -2532,8 +2566,10 @@ async function loadSimpleModeExpenses() {
         // Format amount - preserve full precision and show correct currency
         const isNegative = expense.amount < 0;
         const absAmount = Math.abs(expense.amount);
-        const currencySymbol = getCurrencySymbol(expense.currency);
+        const currency = expense.currency || 'USD';
+        const currencySymbol = getCurrencySymbol(currency);
         const amountStr = absAmount % 1 === 0 ? `${currencySymbol}${absAmount}` : `${currencySymbol}${absAmount.toFixed(2)}`;
+        const currencyLabel = currency !== 'USD' ? ` <span class="currency-label">${currency}</span>` : '';
         const amountClass = isNegative ? 'expense-amount-negative' : 'expense-amount-large';
         const amountPrefix = isNegative ? '-' : '';
         
@@ -2572,7 +2608,9 @@ async function loadSimpleModeExpenses() {
                         </div>
                         ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
                     </div>
-                    <div class="${amountClass}">${amountPrefix}${amountStr}</div>
+                    <div class="${amountClass}">
+                        ${amountPrefix}${amountStr}${currencyLabel}
+                    </div>
                 </div>
                 
                 <!-- Interaction Bar -->

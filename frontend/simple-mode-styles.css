@@ -179,6 +179,9 @@
   min-width: fit-content;
   text-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
   letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .expense-amount-negative {
@@ -189,6 +192,19 @@
   min-width: fit-content;
   text-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
   letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.currency-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #9ca3af;
+  background: rgba(156, 163, 175, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
 }
 
 .expense-badge {
