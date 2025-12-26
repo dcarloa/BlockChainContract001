@@ -2374,10 +2374,10 @@ async function loadSimpleModeDetailView() {
         
         // User's share/balance
         const myBalance = calculateMyBalance(groupData);
-        const balanceText = myBalance >= 0 
+        const userBalanceText = myBalance >= 0 
             ? `You are owed $${Math.abs(myBalance).toFixed(2)}`
             : `You owe $${Math.abs(myBalance).toFixed(2)}`;
-        safeUpdate('userContribution', 'textContent', balanceText);
+        safeUpdate('userContribution', 'textContent', userBalanceText);
         
         console.log("📍 Step 5: Hiding blockchain-specific elements...");
         
