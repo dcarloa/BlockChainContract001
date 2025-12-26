@@ -185,6 +185,7 @@ class ModeManager {
                 timestamp: timestamp,
                 createdAt: timestamp,
                 date: expenseInfo.date || new Date().toISOString().split('T')[0],
+                currency: expenseInfo.currency || 'USD', // Add currency field
                 
                 // No approval system - expenses are immediately accepted
                 status: 'approved',
