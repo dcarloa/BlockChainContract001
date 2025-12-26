@@ -3968,10 +3968,14 @@ function getCurrencySymbol(currency) {
 // ============================================
 
 async function handleExpenseSubmission(event) {
+    console.log('🚀 handleExpenseSubmission CALLED!', event);
     event.preventDefault();
 
     const form = event.target;
     const formData = new FormData(form);
+
+    console.log('📋 Form element:', form);
+    console.log('📦 FormData created');
 
     try {
         // Get form values
@@ -4060,7 +4064,10 @@ async function handleExpenseSubmission(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const expenseForm = document.getElementById('addExpenseForm');
     if (expenseForm) {
+        console.log('✅ Attaching submit handler to addExpenseForm');
         expenseForm.addEventListener('submit', handleExpenseSubmission);
+    } else {
+        console.error('❌ addExpenseForm not found in DOM');
     }
     
     const paymentForm = document.getElementById('recordPaymentForm');
