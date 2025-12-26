@@ -5682,3 +5682,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ============================================
+// SETTINGS MODAL FUNCTIONS
+// ============================================
+
+/**
+ * Open app settings modal
+ */
+function openAppSettings() {
+    const modal = document.getElementById('appSettingsModal');
+    if (modal) {
+        modal.classList.add('active');
+        updateAppSettingsUI();
+    }
+}
+
+/**
+ * Close app settings modal
+ */
+function closeAppSettings(event) {
+    if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
+        const modal = document.getElementById('appSettingsModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+}
+
+/**
+ * Update settings UI with current values
+ */
+function updateAppSettingsUI() {
+    // This function can be expanded to load and display current settings
+    console.log('⚙️ Settings modal opened');
+}
