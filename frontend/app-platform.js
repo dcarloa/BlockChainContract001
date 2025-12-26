@@ -5756,3 +5756,4 @@ function changeTheme(theme) {
     } else {
         console.error('setTheme function not found');
     }
+}
