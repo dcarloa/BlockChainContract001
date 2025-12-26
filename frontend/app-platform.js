@@ -3943,6 +3943,9 @@ async function convertToUSD(amount, fromCurrency = 'USD') {
     }
 }
 
+// Make convertToUSD available globally for mode-manager
+window.convertToUSD = convertToUSD;
+
 /**
  * Update currency symbol in the form
  */

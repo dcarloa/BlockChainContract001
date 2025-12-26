@@ -345,9 +345,17 @@ class ModeManager {
             });
             
             // Process each expense
-            expenses.forEach(expense => {
+            for (const expense of expenses) {
                 const paidBy = expense.paidBy;
-                const amount = Number(expense.amount);
+                let amount = Number(expense.amount);
+                
+                // Convert amount to USD if needed
+                const currency = expense.currency || 'USD';
+                if (currency !== 'USD' && window.convertToUSD) {
+                    amount = await window.convertToUSD(amount, currency);
+                    console.log(`💱 Converted ${expense.amount} ${currency} to ${amount.toFixed(2)} USD for balance calculation`);
+                }
+                
                 const splitBetween = expense.splitBetween;
                 const perPerson = Math.round((amount / splitBetween.length) * 100) / 100;
                 
@@ -364,7 +372,7 @@ class ModeManager {
                 splitBetween.forEach(memberId => {
                     balances[memberId] = Math.round((balances[memberId] - perPerson) * 100) / 100;
                 });
-            });
+            }
             
             // Convert to array format
             const balanceArray = [];
