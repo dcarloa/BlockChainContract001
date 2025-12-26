@@ -3982,7 +3982,10 @@ async function handleExpenseSubmission(event) {
         const notes = formData.get('notes') || '';
         const currency = formData.get('currency') || 'USD';
 
-        console.log('💰 Form amount input:', rawAmount, '→ Parsed:', amount, 'Currency:', currency);
+        console.log('💰 Form submission - Amount:', rawAmount, '→ Parsed:', amount);
+        console.log('💱 Form submission - Currency from form:', formData.get('currency'), '→ Final:', currency);
+        console.log('📝 Form submission - Description:', description);
+        console.log('🔍 All form data:', Array.from(formData.entries()));
 
         // Get selected members who paid (can be multiple)
         const paidBy = Array.from(form.querySelectorAll('input[name="paidBy"]:checked'))
