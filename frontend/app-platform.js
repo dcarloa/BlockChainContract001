@@ -2569,9 +2569,12 @@ async function loadSimpleModeExpenses() {
         const currency = expense.currency || 'USD';
         const currencySymbol = getCurrencySymbol(currency);
         const amountStr = absAmount % 1 === 0 ? `${currencySymbol}${absAmount}` : `${currencySymbol}${absAmount.toFixed(2)}`;
-        const currencyLabel = currency !== 'USD' ? ` <span class="currency-label">${currency}</span>` : '';
+        // Show currency label for all currencies (including USD for debugging)
+        const currencyLabel = ` <span class="currency-label">${currency}</span>`;
         const amountClass = isNegative ? 'expense-amount-negative' : 'expense-amount-large';
         const amountPrefix = isNegative ? '-' : '';
+        
+        console.log(`💰 Expense "${expense.description}": amount=${expense.amount}, currency=${expense.currency || 'undefined'}, display=${amountStr} ${currency}`);
         
         // Check if current user created/paid this expense
         const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
@@ -3352,7 +3355,7 @@ async function deleteExpense(expenseId) {
         await loadSimpleModeBalances(); // Update balances
         
         // Refresh group info to update total balance
-        await loadSimpleModeGroupInfo(currentFund.fundAddress);
+        await loadSimpleModeDetailView();
 
     } catch (error) {
         console.error('Error deleting expense:', error);
@@ -4042,7 +4045,7 @@ async function handleExpenseSubmission(event) {
         await loadSimpleModeBalances();
         
         // Refresh group info to update total balance
-        await loadSimpleModeGroupInfo(currentFund.fundAddress);
+        await loadSimpleModeDetailView();
 
     } catch (error) {
         console.error('Error adding expense:', error);
