@@ -350,8 +350,14 @@ class ModeManager {
                 const splitBetween = expense.splitBetween;
                 const perPerson = Math.round((amount / splitBetween.length) * 100) / 100;
                 
-                // Person who paid gets positive balance
-                balances[paidBy] = Math.round((balances[paidBy] + amount) * 100) / 100;
+                // Handle multiple payers
+                const paidByArray = Array.isArray(paidBy) ? paidBy : [paidBy];
+                const amountPerPayer = Math.round((amount / paidByArray.length) * 100) / 100;
+                
+                // Each person who paid gets their share as positive balance
+                paidByArray.forEach(payerId => {
+                    balances[payerId] = Math.round((balances[payerId] + amountPerPayer) * 100) / 100;
+                });
                 
                 // People who owe get negative balance
                 splitBetween.forEach(memberId => {

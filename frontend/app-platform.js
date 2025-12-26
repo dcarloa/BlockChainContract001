@@ -2537,8 +2537,19 @@ async function loadSimpleModeExpenses() {
         const amountClass = isNegative ? 'expense-amount-negative' : 'expense-amount-large';
         const amountPrefix = isNegative ? '-' : '';
         
-        // Check if current user created this expense
-        const isCreator = expense.paidBy === currentUserId;
+        // Check if current user created/paid this expense
+        const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
+        const isCreator = paidByArray.includes(currentUserId);
+        
+        // Format paidBy display
+        let paidByDisplay = expense.paidByName || '';
+        if (!paidByDisplay && paidByArray.length > 0) {
+            const names = paidByArray.map(uid => {
+                const member = currentFund.members?.[uid];
+                return member?.name || member?.email || uid;
+            });
+            paidByDisplay = names.join(' & ');
+        }
         
         // Count interactions
         const likesCount = expense.likes ? Object.keys(expense.likes).length : 0;
@@ -2555,7 +2566,7 @@ async function loadSimpleModeExpenses() {
                             ${isNegative ? '<span class="expense-badge badge-payment">Payment Received</span>' : ''}
                         </h4>
                         <div class="expense-meta">
-                            <span class="meta-item">👤 ${expense.paidByName || expense.paidBy}</span>
+                            <span class="meta-item">👤 ${paidByDisplay}</span>
                             <span class="meta-item">👥 ${expense.splitBetween.length} people</span>
                             <span class="meta-item">📅 ${dateStr}</span>
                         </div>
@@ -3280,8 +3291,10 @@ async function deleteExpense(expenseId) {
             return;
         }
 
-        if (expense.paidBy !== user.uid) {
-            showToast('Only the expense creator can delete it', 'error');
+        // Check if user is one of the payers
+        const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
+        if (!paidByArray.includes(user.uid)) {
+            showToast('Only those who paid can delete this expense', 'error');
             return;
         }
 
@@ -3735,13 +3748,13 @@ function closeAddExpenseModal() {
 function populateExpenseMembers() {
     if (!currentFund || !currentFund.members) return;
 
-    const paidBySelect = document.getElementById('expensePaidBy');
+    const paidByContainer = document.getElementById('expensePaidBy');
     const splitContainer = document.getElementById('expenseSplitBetween');
 
     console.log('📋 Populating expense members:', Object.keys(currentFund.members).length, 'members');
 
-    if (!paidBySelect) {
-        console.error('❌ Paid by select not found');
+    if (!paidByContainer) {
+        console.error('❌ Paid by container not found');
         return;
     }
     if (!splitContainer) {
@@ -3750,17 +3763,23 @@ function populateExpenseMembers() {
     }
 
     // Clear existing options
-    paidBySelect.innerHTML = '<option value="">Select who paid...</option>';
+    paidByContainer.innerHTML = '';
     splitContainer.innerHTML = '';
 
-    // Add members to both dropdowns/checkboxes
+    // Add members to both sections with checkboxes
     Object.entries(currentFund.members).forEach(([uid, member]) => {
-        // Add to "Paid by" dropdown
-        const option = document.createElement('option');
-        option.value = uid;
-        option.textContent = member.name || member.email || uid;
-        paidBySelect.appendChild(option);
-        console.log('✅ Added member to dropdown:', member.name || member.email);
+        // Add to "Paid by" checkboxes
+        const paidByDiv = document.createElement('div');
+        paidByDiv.className = 'checkbox-option';
+        paidByDiv.innerHTML = `
+            <input type="checkbox" name="paidBy" value="${uid}" id="paidby_${uid}">
+            <label for="paidby_${uid}">
+                <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
+                <span class="member-name">${member.name || member.email || uid}</span>
+            </label>
+        `;
+        paidByContainer.appendChild(paidByDiv);
+        console.log('✅ Added member to paid by:', member.name || member.email);
 
         // Add to "Split between" checkboxes with professional design
         const checkboxDiv = document.createElement('div');
@@ -3915,25 +3934,28 @@ async function handleExpenseSubmission(event) {
         const description = formData.get('description');
         const rawAmount = formData.get('amount');
         const amount = Math.round(Number(rawAmount) * 100) / 100; // Round to 2 decimals
-        const paidBy = formData.get('paidBy');
         const date = formData.get('date');
         const notes = formData.get('notes') || '';
         const currency = formData.get('currency') || 'USD';
 
         console.log('💰 Form amount input:', rawAmount, '→ Parsed:', amount, 'Currency:', currency);
 
+        // Get selected members who paid (can be multiple)
+        const paidBy = Array.from(form.querySelectorAll('input[name="paidBy"]:checked'))
+            .map(cb => cb.value);
+
         // Get selected members for split
         const splitBetween = Array.from(form.querySelectorAll('input[name="splitBetween"]:checked'))
             .map(cb => cb.value);
 
         // Validate
-        if (!description || !amount || !paidBy || splitBetween.length === 0) {
+        if (!description || !amount || paidBy.length === 0 || splitBetween.length === 0) {
             showToast('Please fill all required fields', 'error');
             return;
         }
 
-        if (amount <= 0) {
-            showToast('Amount must be greater than zero', 'error');
+        if (amount === 0) {
+            showToast('Amount cannot be zero', 'error');
             return;
         }
 
@@ -3944,9 +3966,12 @@ async function handleExpenseSubmission(event) {
             return;
         }
 
-        // Get paid by name
-        const paidByMember = currentFund.members[paidBy];
-        const paidByName = paidByMember?.name || paidByMember?.email || paidBy;
+        // Get paid by names (can be multiple)
+        const paidByNames = paidBy.map(uid => {
+            const member = currentFund.members[uid];
+            return member?.name || member?.email || uid;
+        });
+        const paidByName = paidByNames.join(' & ');
 
         // Create expense object
         const expenseInfo = {

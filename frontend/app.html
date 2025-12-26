@@ -921,11 +921,11 @@
                             </div>
 
                             <div class="form-field">
-                                <label for="expensePaidBy" class="form-label">Paid by *</label>
-                                <select id="expensePaidBy" name="paidBy" class="form-input form-select" required>
-                                    <option value="">Select who paid...</option>
-                                    <!-- Will be populated dynamically -->
-                                </select>
+                                <label class="form-label">Paid by *</label>
+                                <div id="expensePaidBy" class="split-members-list">
+                                    <!-- Will be populated dynamically with checkboxes -->
+                                </div>
+                                <small class="field-hint">Select who paid (can be multiple people)</small>
                             </div>
 
                             <div class="form-field">
