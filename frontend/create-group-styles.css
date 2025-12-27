@@ -442,12 +442,55 @@
   }
   
   .form-section {
-    padding: var(--spacing-md);
+    padding: 1rem;
+  }
+  
+  .mode-card,
+  .fund-type-card {
+    padding: 1.25rem;
+  }
+  
+  .mode-card h3,
+  .fund-type-card h3 {
+    font-size: 1rem;
+  }
+  
+  .mode-card p,
+  .fund-type-card p {
+    font-size: 0.85rem;
   }
 }
 
 @media (max-width: 480px) {
   .fund-type-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    margin: 0.5rem !important;
+  }
+  
+  .form-section {
+    padding: 0.85rem;
+  }
+  
+  .form-section h3 {
+    font-size: 1.05rem;
+  }
+  
+  .mode-icon,
+  .fund-type-icon {
+    font-size: 2rem;
+  }
+  
+  .form-group label {
+    font-size: 0.85rem;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    font-size: 0.9rem;
+    padding: 0.65rem;
   }
 }

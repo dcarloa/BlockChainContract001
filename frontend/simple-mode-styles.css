@@ -925,39 +925,62 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   #addExpenseModal .modal-content {
-    width: 95%;
+    width: 96%;
+    max-width: 100%;
+    margin: 0.5rem;
   }
   
   .form-header-clean {
-    padding: 1.5rem 1.5rem 1rem;
+    padding: 1rem 1rem 0.75rem;
   }
   
   .form-grid {
     grid-template-columns: 1fr;
-    padding: 1.5rem;
-    gap: 1.25rem;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .form-group-clean label {
+    font-size: 0.85rem;
+  }
+  
+  .input-clean,
+  .select-clean,
+  .textarea-clean {
+    font-size: 0.9rem;
+    padding: 0.65rem 0.85rem;
   }
   
   #addExpenseModal .modal-footer {
-    padding: 1.25rem 1.5rem;
+    padding: 1rem;
+    gap: 0.5rem;
   }
   
   .form-header-clean h3 {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
 
   .action-card {
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.25rem;
   }
 
   .action-card-content {
     flex-direction: column;
     text-align: center;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .action-card-icon {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
+  }
+  
+  .action-card h4 {
+    font-size: 1rem;
+  }
+  
+  .action-card p {
+    font-size: 0.8rem;
+  }
   }
 
   .btn-large {
@@ -1559,5 +1582,134 @@
   .timeline-expense-meta {
     flex-direction: column;
     gap: 0.3rem;
+  }
+}
+
+/* ============================================ */
+/* ADDITIONAL MOBILE OPTIMIZATIONS */
+/* ============================================ */
+
+@media (max-width: 480px) {
+  /* Dashboard stats - more compact */
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .stat-card {
+    padding: 0.85rem;
+  }
+  
+  .stat-icon {
+    font-size: 1.75rem;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
+  }
+  
+  .stat-value {
+    font-size: 1rem;
+  }
+  
+  /* Balance cards */
+  .balance-card-simple {
+    padding: 0.85rem;
+  }
+  
+  .balance-section-title {
+    font-size: 1rem;
+    padding: 0.6rem 0;
+  }
+  
+  .balance-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+  
+  .balance-name {
+    font-size: 0.95rem;
+  }
+  
+  .balance-description {
+    font-size: 0.75rem;
+  }
+  
+  .balance-amount-display {
+    font-size: 1.15rem;
+  }
+  
+  /* Tabs */
+  .tab-btn {
+    padding: 0.7rem 0.85rem;
+    font-size: 0.85rem;
+  }
+  
+  .tab-icon {
+    font-size: 1.1rem;
+  }
+  
+  /* Buttons */
+  .btn-record-payment {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Timeline optimizations */
+  .timeline-filter-section {
+    padding: 1rem;
+  }
+  
+  .filter-header h4 {
+    font-size: 0.95rem;
+  }
+  
+  .toggle-timeline-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .timeline-expense-desc {
+    font-size: 0.85rem;
+  }
+  
+  .timeline-expense-amount {
+    font-size: 0.95rem;
+  }
+  
+  .timeline-expense-meta {
+    font-size: 0.75rem;
+  }
+  
+  /* Chart optimizations */
+  .chart-title {
+    font-size: 1rem;
+  }
+  
+  .chart-bar-label {
+    font-size: 0.75rem;
+  }
+  
+  .chart-bar-value {
+    font-size: 0.8rem;
+  }
+  
+  /* Modals */
+  .modal-content {
+    width: 96% !important;
+    max-width: 100% !important;
+    margin: 0.5rem !important;
+    max-height: calc(100vh - 1rem) !important;
+  }
+  
+  .modal-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .close-btn {
+    font-size: 1.75rem;
+    width: 32px;
+    height: 32px;
   }
 }
