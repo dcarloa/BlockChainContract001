@@ -548,6 +548,84 @@ header,
   transform: none !important;
 }
 
+/* Descriptive multi-line buttons */
+.btn-create-group,
+.btn-add-expense {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.85rem 1.25rem;
+  min-width: 140px;
+}
+
+.btn-create-group .btn-text,
+.btn-add-expense .btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  line-height: 1.2;
+}
+
+.btn-create-group strong,
+.btn-add-expense strong {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.btn-create-group small,
+.btn-add-expense small {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.btn-create-group .btn-icon,
+.btn-add-expense .btn-icon {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .btn-create-group,
+  .btn-add-expense {
+    min-width: 120px;
+    padding: 0.75rem 1rem;
+  }
+  
+  .btn-create-group strong,
+  .btn-add-expense strong {
+    font-size: 0.9rem;
+  }
+  
+  .btn-create-group small,
+  .btn-add-expense small {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-create-group,
+  .btn-add-expense {
+    min-width: auto;
+    padding: 0.7rem 0.9rem;
+  }
+  
+  .btn-create-group .btn-icon,
+  .btn-add-expense .btn-icon {
+    font-size: 1.3rem;
+  }
+  
+  .btn-create-group strong,
+  .btn-add-expense strong {
+    font-size: 0.85rem;
+  }
+  
+  .btn-create-group small,
+  .btn-add-expense small {
+    font-size: 0.65rem;
+  }
+}
+
 /* === CONTAINER === */
 .container {
   max-width: 1400px;

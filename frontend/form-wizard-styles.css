@@ -89,6 +89,7 @@
 /* Form Steps Container */
 .form-step {
     animation: fadeIn 0.3s ease;
+    padding: 1.5rem 0.5rem;
 }
 
 @keyframes fadeIn {
@@ -103,16 +104,24 @@
 }
 
 .form-step h3 {
-    font-size: 1.4rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
     color: var(--text-primary);
     text-align: center;
+}
+
+.form-step > p {
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.75rem;
 }
 
 .form-step-buttons {
     display: flex;
     gap: 1rem;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     justify-content: space-between;
 }
 
@@ -162,13 +171,13 @@
 .fund-type-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin: 1.5rem 0;
+    gap: 1.25rem;
+    margin: 2rem 0;
 }
 
 .fund-type-card {
     position: relative;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
@@ -202,34 +211,35 @@
 }
 
 .fund-type-icon {
-    font-size: 3rem;
-    margin-bottom: 0.75rem;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
     transition: transform 0.3s ease;
     display: block;
 }
 
 .fund-type-name {
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
 
 .fund-type-desc {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.4;
 }
 
 /* Mode selection cards */
 .mode-selection-grid {
     display: grid;
-    gap: 1.5rem;
-    margin: 1.5rem 0;
+    gap: 1.75rem;
+    margin: 2rem 0;
 }
 
 .mode-card {
     position: relative;
-    padding: 1.75rem;
+    padding: 2rem;
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;

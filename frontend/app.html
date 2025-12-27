@@ -364,9 +364,12 @@
                 <!-- Action Bar -->
                 <div class="action-bar">
                     <h2>Mis Grupos</h2>
-                    <button id="createFundBtn" class="btn btn-primary">
-                        <span class="btn-icon">➕</span>
-                        <span>Crear Nuevo Grupo</span>
+                    <button id="createFundBtn" class="btn btn-primary btn-create-group">
+                        <span class="btn-icon">✨</span>
+                        <span class="btn-text">
+                            <strong>Crear Grupo</strong>
+                            <small>Nuevo grupo de gastos</small>
+                        </span>
                     </button>
                 </div>
 
@@ -662,20 +665,14 @@
                                     <h4>Register an Expense</h4>
                                     <p>Track shared expenses with your group. Split costs fairly and keep everyone in sync.</p>
                                 </div>
-                                <button id="addExpenseCardBtn" class="btn btn-primary btn-large">
-                                    <span>➕ Add Expense</span>
+                                <button id="addExpenseCardBtn" class="btn btn-primary btn-large btn-add-expense">
+                                    <span class="btn-icon">💵</span>
+                                    <span class="btn-text">
+                                        <strong>Add Expense</strong>
+                                        <small>Register a new payment</small>
+                                    </span>
                                 </button>
                             </div>
-                        </div>
-
-                        <h3>📜 Proposal History</h3>
-                        <p class="tab-description">All proposals: executed, cancelled and expired</p>
-                        <div id="historyList">
-                            <!-- History will be loaded here -->
-                        </div>
-                        <div id="noHistory" class="empty-state" style="display: none;">
-                            <div class="empty-icon">📋</div>
-                            <h4>No history yet</h4>
                             <p>Proposal history will appear here</p>
                         </div>
                     </div>
