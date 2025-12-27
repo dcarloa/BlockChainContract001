@@ -762,6 +762,17 @@
                             </div>
                         </div>
 
+                        <!-- Smart Settlements Button -->
+                        <div id="smartSettlementsSection" class="smart-settlements-section" style="display: none;">
+                            <button class="btn-smart-settle" onclick="openSmartSettlements()">
+                                <span class="btn-icon">🎯</span>
+                                <div class="btn-content">
+                                    <span class="btn-title">Smart Settlements</span>
+                                    <span class="btn-subtitle">Simplify payments with one click</span>
+                                </div>
+                            </button>
+                        </div>
+
                         <!-- How it works info -->
                         <div class="info-box-simple">
                             <h4>💡 How balances work:</h4>
@@ -1291,6 +1302,50 @@
 
         </div>
     </main>
+
+    <!-- Smart Settlements Modal -->
+    <div id="smartSettlementsModal" class="modal-overlay" onclick="closeSmartSettlements(event)">
+        <div class="modal-content smart-settlements-modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>🎯 Smart Settlements</h3>
+                <button class="close-btn" onclick="closeSmartSettlements()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settlements-intro">
+                    <p class="settlements-description">
+                        💡 We've optimized your payments to minimize the number of transactions needed to settle all debts.
+                    </p>
+                    <div class="settlements-stats">
+                        <div class="stat-badge">
+                            <span class="stat-number" id="settlementsCount">0</span>
+                            <span class="stat-label">payments needed</span>
+                        </div>
+                        <div class="stat-badge">
+                            <span class="stat-number" id="settlementsTotal">$0</span>
+                            <span class="stat-label">total to settle</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="settlementsList" class="settlements-list">
+                    <!-- Settlements will be rendered here -->
+                </div>
+                
+                <div id="noSettlements" class="empty-state" style="display: none;">
+                    <div class="empty-icon">✅</div>
+                    <h4>All Settled!</h4>
+                    <p>Everyone is even. No payments needed.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSmartSettlements()">Close</button>
+                <button class="btn btn-success" id="markAllSettledBtn" onclick="markAllSettled()" style="display: none;">
+                    <span class="btn-icon">✓</span>
+                    <span>Mark All as Settled</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="i18n.js"></script>

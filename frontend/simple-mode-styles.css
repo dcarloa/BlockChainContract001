@@ -1713,3 +1713,287 @@
     height: 32px;
   }
 }
+
+/* ============================================ */
+/* SMART SETTLEMENTS */
+/* ============================================ */
+
+.smart-settlements-section {
+  margin: 2rem 0;
+}
+
+.btn-smart-settle {
+  width: 100%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-smart-settle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-smart-settle .btn-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.btn-smart-settle .btn-content {
+  flex: 1;
+  text-align: left;
+}
+
+.btn-smart-settle .btn-title {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.btn-smart-settle .btn-subtitle {
+  display: block;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Smart Settlements Modal */
+.smart-settlements-modal {
+  max-width: 700px;
+}
+
+.settlements-intro {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.settlements-description {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.settlements-stats {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.stat-badge {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  text-align: center;
+}
+
+.stat-badge .stat-number {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.25rem;
+}
+
+.stat-badge .stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Settlements List */
+.settlements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settlement-item {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.settlement-item:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.settlement-item.settlement-completed {
+  animation: settlementComplete 0.6s ease;
+}
+
+@keyframes settlementComplete {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.6);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.settlement-arrow {
+  font-size: 1.5rem;
+  color: var(--primary-light);
+  flex-shrink: 0;
+}
+
+.settlement-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.settlement-from,
+.settlement-to {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 120px;
+}
+
+.settlement-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.settlement-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.settlement-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 1rem;
+  flex: 1;
+  min-width: 100px;
+}
+
+.settlement-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.settlement-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.settlement-mark-btn {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.settlement-mark-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.5);
+  transform: scale(1.1);
+}
+
+.settlement-mark-btn .btn-icon {
+  font-size: 1.25rem;
+  color: #10b981;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .btn-smart-settle {
+    padding: 1rem;
+  }
+  
+  .btn-smart-settle .btn-icon {
+    font-size: 1.75rem;
+  }
+  
+  .btn-smart-settle .btn-title {
+    font-size: 1rem;
+  }
+  
+  .btn-smart-settle .btn-subtitle {
+    font-size: 0.8rem;
+  }
+  
+  .settlements-stats {
+    flex-direction: column;
+  }
+  
+  .settlement-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .settlement-from,
+  .settlement-to {
+    width: 100%;
+  }
+  
+  .settlement-details {
+    width: 100%;
+    padding: 0.75rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .settlement-arrow {
+    transform: rotate(90deg);
+  }
+}

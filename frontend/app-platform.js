@@ -2642,6 +2642,7 @@ async function loadSimpleModeBalances() {
         const noBalances = document.getElementById('noBalances');
         const dashboard = document.getElementById('simpleModeBalanceDashboard');
         const timelineSection = document.getElementById('timelineFilterSection');
+        const smartSettlementsSection = document.getElementById('smartSettlementsSection');
         
         if (!memberBalances || memberBalances.length === 0) {
             console.log('⚠️ No balances to display');
@@ -2649,12 +2650,19 @@ async function loadSimpleModeBalances() {
             if (noBalances) noBalances.style.display = 'flex';
             if (dashboard) dashboard.style.display = 'none';
             if (timelineSection) timelineSection.style.display = 'none';
+            if (smartSettlementsSection) smartSettlementsSection.style.display = 'none';
             return;
         }
         
         if (noBalances) noBalances.style.display = 'none';
         if (dashboard) dashboard.style.display = 'block';
         if (timelineSection) timelineSection.style.display = 'block';
+        
+        // Show Smart Settlements button if there are unsettled debts
+        const pairwiseDebts = simplifyDebts(memberBalances);
+        if (smartSettlementsSection) {
+            smartSettlementsSection.style.display = pairwiseDebts.length > 0 ? 'block' : 'none';
+        }
         
         // Calculate stats for dashboard with currency conversion
         const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
@@ -2899,6 +2907,164 @@ function simplifyDebts(memberBalances) {
     }
     
     return transactions;
+}
+
+// ============================================
+// SMART SETTLEMENTS FUNCTIONS
+// ============================================
+
+/**
+ * Open Smart Settlements modal
+ */
+function openSmartSettlements() {
+    const modal = document.getElementById('smartSettlementsModal');
+    if (!modal) return;
+    
+    modal.classList.add('active');
+    loadSmartSettlements();
+}
+
+/**
+ * Close Smart Settlements modal
+ */
+function closeSmartSettlements(event) {
+    if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
+        const modal = document.getElementById('smartSettlementsModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+}
+
+/**
+ * Load and display smart settlements
+ */
+async function loadSmartSettlements() {
+    try {
+        console.log('🎯 Loading smart settlements...');
+        
+        if (!currentFund) {
+            showToast('No group selected', 'error');
+            return;
+        }
+        
+        // Set current group ID for mode manager
+        window.modeManager.currentGroupId = currentFund.fundId;
+        window.modeManager.groupData = currentFund;
+        
+        // Calculate balances
+        const memberBalances = await window.modeManager.calculateSimpleBalances();
+        
+        if (!memberBalances || memberBalances.length === 0) {
+            document.getElementById('noSettlements').style.display = 'flex';
+            document.getElementById('settlementsList').style.display = 'none';
+            document.getElementById('markAllSettledBtn').style.display = 'none';
+            return;
+        }
+        
+        // Simplify debts
+        const settlements = simplifyDebts(memberBalances);
+        
+        if (settlements.length === 0) {
+            document.getElementById('noSettlements').style.display = 'flex';
+            document.getElementById('settlementsList').style.display = 'none';
+            document.getElementById('markAllSettledBtn').style.display = 'none';
+            return;
+        }
+        
+        // Hide empty state
+        document.getElementById('noSettlements').style.display = 'none';
+        document.getElementById('settlementsList').style.display = 'block';
+        document.getElementById('markAllSettledBtn').style.display = 'inline-flex';
+        
+        // Update stats
+        const totalAmount = settlements.reduce((sum, s) => sum + s.amount, 0);
+        document.getElementById('settlementsCount').textContent = settlements.length;
+        document.getElementById('settlementsTotal').textContent = `$${totalAmount.toFixed(2)}`;
+        
+        // Render settlements
+        const listContainer = document.getElementById('settlementsList');
+        let html = '';
+        
+        settlements.forEach((settlement, index) => {
+            const fromMember = currentFund.members[settlement.from];
+            const toMember = currentFund.members[settlement.to];
+            const fromName = fromMember?.name || fromMember?.email || 'Unknown';
+            const toName = toMember?.name || toMember?.email || 'Unknown';
+            
+            html += `
+                <div class="settlement-item" id="settlement-${index}">
+                    <div class="settlement-arrow">→</div>
+                    <div class="settlement-content">
+                        <div class="settlement-from">
+                            <div class="settlement-avatar">${fromName.charAt(0).toUpperCase()}</div>
+                            <div class="settlement-name">${fromName}</div>
+                        </div>
+                        <div class="settlement-details">
+                            <div class="settlement-label">pays</div>
+                            <div class="settlement-amount">$${settlement.amount.toFixed(2)}</div>
+                        </div>
+                        <div class="settlement-to">
+                            <div class="settlement-avatar">${toName.charAt(0).toUpperCase()}</div>
+                            <div class="settlement-name">${toName}</div>
+                        </div>
+                    </div>
+                    <button class="settlement-mark-btn" onclick="markSettlementComplete(${index})" title="Mark as complete">
+                        <span class="btn-icon">✓</span>
+                    </button>
+                </div>
+            `;
+        });
+        
+        listContainer.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading smart settlements:', error);
+        showToast(`Error loading settlements: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Mark a single settlement as complete
+ */
+async function markSettlementComplete(index) {
+    const settlementEl = document.getElementById(`settlement-${index}`);
+    if (!settlementEl) return;
+    
+    // Add completed animation
+    settlementEl.classList.add('settlement-completed');
+    
+    // Wait for animation
+    setTimeout(() => {
+        settlementEl.style.opacity = '0.5';
+        settlementEl.style.transform = 'scale(0.95)';
+    }, 300);
+    
+    showToast('Settlement marked as complete! 🎉', 'success');
+}
+
+/**
+ * Mark all settlements as complete
+ */
+async function markAllSettled() {
+    const settlements = document.querySelectorAll('.settlement-item');
+    
+    if (settlements.length === 0) return;
+    
+    // Animate all settlements
+    settlements.forEach((settlement, index) => {
+        setTimeout(() => {
+            settlement.classList.add('settlement-completed');
+        }, index * 100);
+    });
+    
+    // Wait for animations
+    setTimeout(() => {
+        closeSmartSettlements();
+        showToast(`All ${settlements.length} payments marked as settled! 🎉`, 'success');
+        // Reload balances
+        loadSimpleModeBalances();
+    }, settlements.length * 100 + 500);
 }
 
 // ============================================
