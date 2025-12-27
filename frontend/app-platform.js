@@ -2739,8 +2739,8 @@ async function loadSimpleModeBalances() {
         
         const currentUserId = firebase.auth().currentUser?.uid;
         
-        // Simplify debts using greedy algorithm
-        const pairwiseDebts = simplifyDebts(memberBalances);
+        // Reuse pairwiseDebts from earlier (already calculated for Smart Settlements button)
+        // const pairwiseDebts = simplifyDebts(memberBalances); // Already declared above
         
         // Separate balances into: I owe, owes me
         const iOwe = pairwiseDebts.filter(debt => debt.from === currentUserId);
