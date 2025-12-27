@@ -1186,24 +1186,38 @@ async function loadAllFundsDetails() {
                 const groupData = await window.FirebaseConfig.readDb(`groups/${fund.fundAddress}`);
                 
                 if (groupData) {
-                    // Calculate total balance from approved expenses
+                    // Calculate total balance from approved expenses by currency
                     const expenses = groupData.expenses || {};
-                    let totalExpenses = 0;
+                    let balanceByCurrency = {};
                     let expenseCount = 0;
                     
                     for (const expense of Object.values(expenses)) {
                         if (expense.status === 'approved') {
-                            totalExpenses += expense.amount;
+                            const currency = expense.currency || 'USD';
+                            balanceByCurrency[currency] = (balanceByCurrency[currency] || 0) + expense.amount;
                             expenseCount++;
                         }
                     }
                     
-                    fund.balance = totalExpenses.toFixed(2);
+                    // Store balance info
+                    fund.balanceByCurrency = balanceByCurrency;
+                    fund.currencies = Object.keys(balanceByCurrency);
+                    
+                    // For simple display, show total in first currency or 0
+                    const currencies = Object.keys(balanceByCurrency);
+                    if (currencies.length > 0) {
+                        fund.balance = balanceByCurrency[currencies[0]].toFixed(2);
+                        fund.primaryCurrency = currencies[0];
+                    } else {
+                        fund.balance = 0;
+                        fund.primaryCurrency = 'USD';
+                    }
+                    
                     fund.contributors = fund.memberCount || 0;
                     fund.proposals = expenseCount;
                     fund.target = fund.targetAmount || 0;
                     fund.progress = fund.target > 0 
-                        ? (totalExpenses / fund.target) * 100 
+                        ? (parseFloat(fund.balance) / fund.target) * 100 
                         : 0;
                 }
                 
@@ -1355,7 +1369,8 @@ function createFundCard(fund) {
                 <div class="fund-stats">
                     <div class="fund-stat">
                         <span class="fund-stat-label">${t.app.fundDetail.info.balance}</span>
-                        <span class="fund-stat-value">${fund.mode === 'simple' ? `$${fund.balance || 0}` : `${formatEth(fund.balance || 0)} ETH`}</span>
+                        <span class="fund-stat-value">${fund.mode === 'simple' ? `$${fund.balance || 0} ${fund.primaryCurrency || 'USD'}` : `${formatEth(fund.balance || 0)} ETH`}</span>
+                        ${fund.mode === 'simple' && fund.currencies && fund.currencies.length > 1 ? `<small class="fund-stat-hint">+${fund.currencies.length - 1} more</small>` : ''}
                     </div>
                     <div class="fund-stat">
                         <span class="fund-stat-label">${parseFloat(fund.target || 0) > 0 ? t.app.fundDetail.info.target : t.app.fundDetail.info.target}</span>

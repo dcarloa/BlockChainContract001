@@ -997,6 +997,9 @@ header,
 
 .fund-stat {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .fund-stat-value {
@@ -1011,6 +1014,14 @@ header,
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.fund-stat-hint {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .fund-progress {
@@ -2342,11 +2353,15 @@ header,
   }
   
   .fund-stat-value {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
   
   .fund-stat-label {
     font-size: 0.7rem;
+  }
+  
+  .fund-stat-hint {
+    font-size: 0.6rem;
   }
   
   .fund-meta {
