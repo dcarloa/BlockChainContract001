@@ -1234,7 +1234,7 @@
                                     </ul>
                                 </label>
                                 
-                                <label class="mode-card">
+                                <label class="mode-card" id="blockchainModeCard">
                                     <input type="radio" name="groupMode" value="blockchain" />
                                     <div class="mode-title">
                                         <span>⛓️</span>
@@ -1250,6 +1250,15 @@
                                         <li>Ejecución sin confianza</li>
                                     </ul>
                                 </label>
+                            </div>
+
+                            <!-- Wallet Warning (shown when wallet not connected) -->
+                            <div id="walletWarning" class="wallet-warning" style="display: none;">
+                                <div class="warning-icon">⚠️</div>
+                                <div class="warning-content">
+                                    <strong>Wallet Not Connected</strong>
+                                    <p>To create a Blockchain mode group, you need to connect your crypto wallet first. Please connect your wallet from the main menu.</p>
+                                </div>
                             </div>
 
                             <!-- Hidden governance fields with defaults -->

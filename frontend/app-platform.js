@@ -1565,6 +1565,33 @@ async function hideFund(fundAddress, fundName) {
 
 function showCreateFundModal() {
     document.getElementById('createFundModal').style.display = 'flex';
+    
+    // Check if wallet is connected
+    const blockchainModeRadio = document.querySelector('input[name="groupMode"][value="blockchain"]');
+    const blockchainModeCard = blockchainModeRadio ? blockchainModeRadio.closest('.mode-card') : null;
+    const walletWarning = document.getElementById('walletWarning');
+    
+    if (!userAddress && blockchainModeCard) {
+        // Wallet not connected - disable blockchain mode
+        blockchainModeRadio.disabled = true;
+        blockchainModeCard.classList.add('mode-disabled');
+        if (walletWarning) {
+            walletWarning.style.display = 'block';
+        }
+        
+        // Ensure simple mode is selected
+        const simpleModeRadio = document.querySelector('input[name="groupMode"][value="simple"]');
+        if (simpleModeRadio) {
+            simpleModeRadio.checked = true;
+        }
+    } else if (blockchainModeCard) {
+        // Wallet is connected - enable blockchain mode
+        blockchainModeRadio.disabled = false;
+        blockchainModeCard.classList.remove('mode-disabled');
+        if (walletWarning) {
+            walletWarning.style.display = 'none';
+        }
+    }
 }
 
 function closeCreateFundModal() {
@@ -1590,6 +1617,12 @@ async function createFund(event) {
         
         if (!fundName) {
             showToast("Please enter the fund name", "warning");
+            return;
+        }
+        
+        // Validate wallet connection for blockchain mode
+        if (groupMode === 'blockchain' && !userAddress) {
+            showToast("⚠️ Please connect your wallet to create a Blockchain mode group", "warning");
             return;
         }
         
