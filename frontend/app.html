@@ -436,32 +436,18 @@
 
                 <!-- Fund Stats Bar -->
                 <div class="fund-stats-bar">
-                    <div class="fund-stat-item">
-                        <span class="stat-label">Balance</span>
-                        <span class="stat-value" id="fundBalance">0 ETH</span>
+                    <div class="fund-stat-item stat-balance">
+                        <span class="stat-label">💰 Balance Total</span>
+                        <span class="stat-value" id="fundBalanceMain">0 ETH</span>
+                        <div class="stat-breakdown" id="fundBalanceBreakdown" style="display: none;"></div>
                     </div>
                     <div class="fund-stat-item">
-                        <span class="stat-label">Meta</span>
-                        <span class="stat-value" id="fundTarget">0 ETH</span>
-                    </div>
-                    <div class="fund-stat-item">
-                        <span class="stat-label">Progreso</span>
-                        <span class="stat-value" id="fundProgress">0%</span>
-                    </div>
-                    <div class="fund-stat-item">
-                        <span class="stat-label">Miembros</span>
+                        <span class="stat-label">👥 Miembros</span>
                         <span class="stat-value" id="fundMembers">0</span>
                     </div>
                     <div class="fund-stat-item">
-                        <span class="stat-label">Propuestas</span>
+                        <span class="stat-label">💸 Gastos</span>
                         <span class="stat-value" id="fundProposals">0</span>
-                    </div>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="fundProgressBar" style="width: 0%"></div>
                     </div>
                 </div>
 
@@ -1225,26 +1211,6 @@
                                     class="input-modern"
                                 ></textarea>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="targetAmount">
-                                    <span class="label-text">Presupuesto o Meta</span>
-                                    <span class="label-badge">Opcional</span>
-                                </label>
-                                <div class="input-with-prefix">
-                                    <span class="input-prefix">ETH</span>
-                                    <input 
-                                        type="number" 
-                                        id="targetAmount" 
-                                        placeholder="0.00"
-                                        step="0.01"
-                                        min="0"
-                                        value="0"
-                                        class="input-modern"
-                                    >
-                                </div>
-                                <small class="form-hint">💡 Deja en 0 para gastos sin límite</small>
-                            </div>
                         </div>
 
                         <!-- Privacy Settings -->
@@ -1844,17 +1810,6 @@
             
             const fundDescInput = document.querySelector('#fundDescription');
             if (fundDescInput) fundDescInput.placeholder = t.app.createFund.fields.descriptionPlaceholder;
-            
-            const targetLabel = document.querySelector('label[for="targetAmount"] .label-text');
-            if (targetLabel) targetLabel.textContent = t.app.createFund.fields.budget;
-            
-            const targetBadge = document.querySelector('label[for="targetAmount"] .label-badge');
-            if (targetBadge) targetBadge.textContent = t.app.createFund.fields.budgetBadge;
-            
-            const targetHint = document.querySelector('label[for="targetAmount"]').nextElementSibling?.nextElementSibling;
-            if (targetHint && targetHint.tagName === 'SMALL') {
-                targetHint.textContent = `💡 ${t.app.createFund.fields.budgetHint}`;
-            }
             
             // Privacy toggle
             const privateToggleTitle = document.querySelector('.toggle-option-title');

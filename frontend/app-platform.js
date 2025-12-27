@@ -2133,29 +2133,10 @@ async function loadFundDetailView() {
         document.getElementById('fundPrivacyBadge').textContent = isPrivate ? `🔒 ${t.app.fundDetail.info.private}` : `🌐 ${t.app.fundDetail.info.public}`;
         
         const balanceEth = ethers.formatEther(balance);
-        const targetEth = ethers.formatEther(target);
         
-        document.getElementById('fundBalance').textContent = `${formatEth(balanceEth)} ETH`;
+        document.getElementById('fundBalanceMain').textContent = `${formatEth(balanceEth)} ETH`;
         document.getElementById('fundMembers').textContent = contributors.toString();
         document.getElementById('fundProposals').textContent = proposals.toString();
-        
-        // Si targetAmount es 0, no hay meta - mostrar "Sin límite"
-        if (parseFloat(targetEth) === 0) {
-            document.getElementById('fundTarget').textContent = t.app.fundDetail.info.noLimit;
-            document.getElementById('fundProgress').textContent = '-';
-            document.getElementById('fundProgressBar').style.width = '0%';
-            // Ocultar la barra de progreso si quieres
-            const progressSection = document.querySelector('.progress-section');
-            if (progressSection) progressSection.style.display = 'none';
-        } else {
-            const progress = (parseFloat(balanceEth) / parseFloat(targetEth)) * 100;
-            document.getElementById('fundTarget').textContent = `${formatEth(targetEth)} ETH`;
-            document.getElementById('fundProgress').textContent = `${progress.toFixed(1)}%`;
-            document.getElementById('fundProgressBar').style.width = `${Math.min(progress, 100)}%`;
-            // Mostrar la barra de progreso
-            const progressSection = document.querySelector('.progress-section');
-            if (progressSection) progressSection.style.display = 'block';
-        }
         
         // User contribution
         document.getElementById('userContribution').textContent = `${formatEth(ethers.formatEther(userContribution))} ETH`;
@@ -2333,44 +2314,37 @@ async function loadSimpleModeDetailView() {
         // Calculate total spent with currency conversion
         const { totalUSD, currencyBreakdown } = await calculateTotalSpent(groupData);
         
-        // Format balance display
+        // Format balance display - simplified with breakdown
         const currencies = Object.keys(currencyBreakdown);
-        let balanceText = '';
+        const balanceMainEl = document.getElementById('fundBalanceMain');
+        const balanceBreakdownEl = document.getElementById('fundBalanceBreakdown');
+        
         if (currencies.length === 1 && currencies[0] === 'USD') {
-            balanceText = `$${totalUSD.toFixed(2)}`;
+            // Single currency USD - show simple
+            safeUpdate('fundBalanceMain', 'textContent', `$${totalUSD.toFixed(2)}`);
+            if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'none';
         } else if (currencies.length === 1) {
+            // Single non-USD currency
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
-            balanceText = `${symbol}${currencyBreakdown[currency].toFixed(2)} ${currency}`;
+            safeUpdate('fundBalanceMain', 'textContent', `${symbol}${currencyBreakdown[currency].toFixed(2)} ${currency}`);
+            safeUpdate('fundBalanceBreakdown', 'innerHTML', `≈ $${totalUSD.toFixed(2)} USD`);
+            if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'block';
         } else if (currencies.length > 1) {
-            // Show USD total with breakdown
+            // Multiple currencies - show USD total with breakdown
+            safeUpdate('fundBalanceMain', 'textContent', `$${totalUSD.toFixed(2)} USD`);
             const breakdown = currencies.map(curr => 
-                `${getCurrencySymbol(curr)}${currencyBreakdown[curr].toFixed(2)} ${curr}`
+                `${getCurrencySymbol(curr)}${currencyBreakdown[curr].toFixed(2)} <span class="currency-code">${curr}</span>`
             ).join(' + ');
-            balanceText = `$${totalUSD.toFixed(2)} USD (${breakdown})`;
+            safeUpdate('fundBalanceBreakdown', 'innerHTML', breakdown);
+            if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'block';
         } else {
-            balanceText = '$0.00';
+            safeUpdate('fundBalanceMain', 'textContent', '$0.00');
+            if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'none';
         }
         
-        safeUpdate('fundBalance', 'textContent', balanceText);
         safeUpdate('fundMembers', 'textContent', members.toString());
         safeUpdate('fundProposals', 'textContent', expenses.toString());
-        
-        // Target amount
-        if (groupData.targetAmount && groupData.targetAmount > 0) {
-            const progress = (totalUSD / groupData.targetAmount) * 100;
-            safeUpdate('fundTarget', 'textContent', `$${groupData.targetAmount.toFixed(2)}`);
-            safeUpdate('fundProgress', 'textContent', `${progress.toFixed(1)}%`);
-            const progressBar = document.getElementById('fundProgressBar');
-            if (progressBar) progressBar.style.width = `${Math.min(progress, 100)}%`;
-            const progressSection = document.querySelector('.progress-section');
-            if (progressSection) progressSection.style.display = 'block';
-        } else {
-            safeUpdate('fundTarget', 'textContent', 'No limit');
-            safeUpdate('fundProgress', 'textContent', '-');
-            const progressSection = document.querySelector('.progress-section');
-            if (progressSection) progressSection.style.display = 'none';
-        }
         
         // User's share/balance
         const myBalance = calculateMyBalance(groupData);
