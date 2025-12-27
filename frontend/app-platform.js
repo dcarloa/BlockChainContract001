@@ -2529,6 +2529,11 @@ async function loadSimpleModeExpenses() {
     const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
     const historyContainer = document.getElementById('historyList');
     
+    if (!historyContainer) {
+        console.error('❌ History container not found (historyList)');
+        return;
+    }
+    
     if (!groupData || !groupData.expenses || Object.keys(groupData.expenses).length === 0) {
         historyContainer.innerHTML = `
             <div class="empty-state">
