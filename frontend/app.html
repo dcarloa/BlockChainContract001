@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css">
     <link rel="stylesheet" href="simple-mode-styles.css">
+    <link rel="stylesheet" href="form-wizard-styles.css">
     <!-- QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
@@ -1089,113 +1090,29 @@
                         <button class="modal-close" onclick="closeCreateFundModal()">&times;</button>
                     </div>
                     
-                    <form id="createFundForm" class="create-group-form">
-                        <!-- Mode Selection -->
-                        <div class="form-section mode-selection-section">
-                            <div class="section-header">
-                                <h3>⚡ Choose Your Mode</h3>
-                                <p>Select how you want to manage your group</p>
+                    <form id="createFundForm" class="create-group-form" onsubmit="createFund(event)">
+                        <!-- Step Indicator -->
+                        <div class="step-indicator">
+                            <div class="step active" data-step="1">
+                                <div class="step-number">1</div>
+                                <div class="step-label">Básico</div>
+                                <div class="step-connector"></div>
                             </div>
-                            <div class="mode-selection-grid">
-                                <label class="mode-card" id="simpleModeCard">
-                                    <input type="radio" name="groupMode" value="simple" checked>
-                                    <div class="mode-card-content">
-                                        <div class="mode-icon">📝</div>
-                                        <h4>Simple Mode</h4>
-                                        <p class="mode-description">Track expenses easily</p>
-                                        <ul class="mode-features">
-                                            <li>✓ No wallet needed</li>
-                                            <li>✓ Sign in with Google</li>
-                                            <li>✓ Track who owes what</li>
-                                            <li>✓ Approve expenses together</li>
-                                            <li>✓ Settle outside the app</li>
-                                        </ul>
-                                        <div class="mode-badge">Recommended for beginners</div>
-                                    </div>
-                                    <div class="card-checkmark">✓</div>
-                                </label>
-                                
-                                <label class="mode-card" id="blockchainModeCard">
-                                    <input type="radio" name="groupMode" value="blockchain">
-                                    <div class="mode-card-content">
-                                        <div class="mode-icon">⛓️</div>
-                                        <h4>Blockchain Mode</h4>
-                                        <p class="mode-description">Automatic smart contracts</p>
-                                        <ul class="mode-features">
-                                            <li>✓ Wallet required</li>
-                                            <li>✓ Automatic payments</li>
-                                            <li>✓ On-chain voting</li>
-                                            <li>✓ Transparent balances</li>
-                                            <li>✓ Trustless execution</li>
-                                        </ul>
-                                        <div class="mode-badge mode-badge-premium">Advanced</div>
-                                    </div>
-                                    <div class="card-checkmark">✓</div>
-                                </label>
+                            <div class="step" data-step="2">
+                                <div class="step-number">2</div>
+                                <div class="step-label">Tipo</div>
+                                <div class="step-connector"></div>
                             </div>
-                            <div class="mode-info-box" id="modeInfoBox">
-                                <div class="info-icon">💡</div>
-                                <div class="info-content">
-                                    <strong>Simple Mode:</strong> Perfect for getting started. No crypto knowledge needed. You can upgrade to Blockchain Mode later if you want automatic payments.
-                                </div>
+                            <div class="step" data-step="3">
+                                <div class="step-number">3</div>
+                                <div class="step-label">Modo</div>
                             </div>
                         </div>
 
-                        <!-- Fund Type Selection -->
-                        <div class="form-section">
-                            <div class="section-header">
-                                <h3>🎯 Tipo de Grupo</h3>
-                                <p>Selecciona el propósito principal</p>
-                            </div>
-                            <div class="fund-type-grid">
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="0" checked>
-                                    <div class="fund-type-content">
-                                        <div class="fund-type-icon">🌴</div>
-                                        <h4>Viaje</h4>
-                                        <p>Vacaciones y aventuras</p>
-                                    </div>
-                                    <div class="card-checkmark">✓</div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="1">
-                                    <div class="fund-type-content">
-                                        <div class="fund-type-icon">💰</div>
-                                        <h4>Ahorro</h4>
-                                        <p>Meta financiera grupal</p>
-                                    </div>
-                                    <div class="card-checkmark">✓</div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="2">
-                                    <div class="fund-type-content">
-                                        <div class="fund-type-icon">🤝</div>
-                                        <h4>Roommates</h4>
-                                        <p>Gastos compartidos</p>
-                                    </div>
-                                    <div class="card-checkmark">✓</div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="3">
-                                    <div class="fund-type-content">
-                                        <div class="fund-type-icon">🎯</div>
-                                        <h4>Otro</h4>
-                                        <p>Propósito personalizado</p>
-                                    </div>
-                                    <div class="card-checkmark">✓</div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Fund Details -->
-                        <div class="form-section">
-                            <div class="section-header">
-                                <h3>📝 Información Básica</h3>
-                                <p>Define nombre, presupuesto y descripción</p>
-                            </div>
+                        <!-- Step 1: Basic Info -->
+                        <div class="form-step" data-step="1" style="display: block;">
+                            <h3>📝 ¿Cómo se llama tu grupo?</h3>
+                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Dale un nombre que todos reconozcan fácilmente</p>
                             
                             <div class="form-group">
                                 <label for="fundName">
@@ -1205,96 +1122,148 @@
                                 <input 
                                     type="text" 
                                     id="fundName" 
-                                    placeholder="Ej: Viaje a Cancún 2025"
-                                    required
-                                    class="input-modern"
-                                >
+                                    placeholder="Ej: Gastos del Xolo, Viaje a Cancún, Roommates 2025" 
+                                    required 
+                                    class="input-modern input-large"
+                                />
+                                <small class="form-hint">💡 Usa un nombre claro y descriptivo</small>
                             </div>
 
                             <div class="form-group">
                                 <label for="fundDescription">
                                     <span class="label-text">Descripción</span>
+                                    <span class="label-badge">Opcional</span>
                                 </label>
                                 <textarea 
                                     id="fundDescription" 
-                                    rows="3"
-                                    placeholder="Describe el propósito del grupo y qué tipo de gastos se manejarán..."
+                                    rows="3" 
+                                    placeholder="Ej: Gastos compartidos de comida, paseos y cuidados del perro"
                                     class="input-modern"
                                 ></textarea>
                             </div>
-                        </div>
 
-                        <!-- Privacy Settings -->
-                        <div class="form-section">
-                            <div class="section-header">
-                                <h3>🔒 Privacidad</h3>
-                                <p>Controla quién puede unirse</p>
-                            </div>
-                            <label class="toggle-option">
-                                <div class="toggle-option-info">
-                                    <div class="toggle-option-title">Grupo Privado</div>
-                                    <div class="toggle-option-desc">Solo pueden unirse con invitación</div>
-                                </div>
-                                <div class="toggle-switch">
-                                    <input type="checkbox" id="isPrivate" checked>
-                                    <span class="toggle-slider"></span>
-                                </div>
-                            </label>
-                        </div>
-
-                        <!-- Governance Settings -->
-                        <div class="form-section">
-                            <div class="section-header">
-                                <h3>🗳️ Reglas de Votación</h3>
-                                <p>Define cómo se aprueban los gastos</p>
-                            </div>
-                            <div class="governance-grid">
-                                <div class="form-group">
-                                    <label for="approvalPercentage">
-                                        <span class="label-text">Porcentaje de Aprobación</span>
-                                        <span class="label-required">*</span>
-                                    </label>
-                                    <div class="input-with-suffix">
-                                        <input 
-                                            type="number" 
-                                            id="approvalPercentage" 
-                                            value="60"
-                                            min="1"
-                                            max="100"
-                                            required
-                                            class="input-modern"
-                                        >
-                                        <span class="input-suffix">%</span>
+                            <div class="form-group">
+                                <label class="toggle-option">
+                                    <div class="toggle-option-info">
+                                        <div class="toggle-option-title">🔒 Grupo Privado</div>
+                                        <div class="toggle-option-desc">Solo pueden unirse con tu invitación</div>
                                     </div>
-                                    <small class="form-hint">% de votos a favor para aprobar</small>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="minimumVotes">
-                                        <span class="label-text">Votos Mínimos</span>
-                                        <span class="label-required">*</span>
-                                    </label>
-                                    <input 
-                                        type="number" 
-                                        id="minimumVotes" 
-                                        value="2"
-                                        min="1"
-                                        required
-                                        class="input-modern"
-                                    >
-                                    <small class="form-hint">Cantidad mínima requerida</small>
-                                </div>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="isPrivate" checked />
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-step-buttons">
+                                <button type="button" class="btn-step btn-step-back" onclick="closeCreateFundModal()">
+                                    Cancelar
+                                </button>
+                                <button type="button" class="btn-step btn-step-next" onclick="nextStep(2)">
+                                    Siguiente →
+                                </button>
                             </div>
                         </div>
 
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" onclick="closeCreateFundModal()">
-                                Cancelar
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <span class="btn-icon">🚀</span>
-                                <span>Crear Fondo</span>
-                            </button>
+                        <!-- Step 2: Fund Type -->
+                        <div class="form-step" data-step="2" style="display: none;">
+                            <h3>🎯 ¿Para qué es este grupo?</h3>
+                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Esto nos ayuda a personalizar tu experiencia</p>
+                            
+                            <div class="fund-type-grid">
+                                <label class="fund-type-card">
+                                    <input type="radio" name="fundType" value="0" checked />
+                                    <div class="fund-type-icon">🌴</div>
+                                    <div class="fund-type-name">Viaje</div>
+                                    <div class="fund-type-desc">Vacaciones y aventuras</div>
+                                </label>
+                                
+                                <label class="fund-type-card">
+                                    <input type="radio" name="fundType" value="1" />
+                                    <div class="fund-type-icon">💰</div>
+                                    <div class="fund-type-name">Ahorro</div>
+                                    <div class="fund-type-desc">Meta financiera grupal</div>
+                                </label>
+                                
+                                <label class="fund-type-card">
+                                    <input type="radio" name="fundType" value="2" />
+                                    <div class="fund-type-icon">🤝</div>
+                                    <div class="fund-type-name">Roommates</div>
+                                    <div class="fund-type-desc">Gastos compartidos</div>
+                                </label>
+                                
+                                <label class="fund-type-card">
+                                    <input type="radio" name="fundType" value="3" />
+                                    <div class="fund-type-icon">🎯</div>
+                                    <div class="fund-type-name">Otro</div>
+                                    <div class="fund-type-desc">Propósito personalizado</div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-step-buttons">
+                                <button type="button" class="btn-step btn-step-back" onclick="previousStep(1)">
+                                    ← Atrás
+                                </button>
+                                <button type="button" class="btn-step btn-step-next" onclick="nextStep(3)">
+                                    Siguiente →
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Mode Selection -->
+                        <div class="form-step" data-step="3" style="display: none;">
+                            <h3>⚡ ¿Cómo quieres manejar los gastos?</h3>
+                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Elige el modo que mejor se adapte a tu grupo</p>
+                            
+                            <div class="mode-selection-grid">
+                                <label class="mode-card">
+                                    <input type="radio" name="groupMode" value="simple" checked />
+                                    <span class="mode-recommended">✨ Recomendado</span>
+                                    <div class="mode-title">
+                                        <span>📝</span>
+                                        <span>Modo Simple</span>
+                                    </div>
+                                    <div class="mode-description">
+                                        Perfecto para empezar. Sin billetera necesaria. Registra gastos y divide cuentas fácilmente.
+                                    </div>
+                                    <ul class="mode-features">
+                                        <li>Inicio con Google o Email</li>
+                                        <li>Seguimiento de deudas</li>
+                                        <li>Aprobación colaborativa</li>
+                                        <li>Liquidar fuera de la app</li>
+                                    </ul>
+                                </label>
+                                
+                                <label class="mode-card">
+                                    <input type="radio" name="groupMode" value="blockchain" />
+                                    <div class="mode-title">
+                                        <span>⛓️</span>
+                                        <span>Modo Blockchain</span>
+                                    </div>
+                                    <div class="mode-description">
+                                        Contratos inteligentes automáticos. Votación on-chain y transparencia total.
+                                    </div>
+                                    <ul class="mode-features">
+                                        <li>Requiere Wallet cripto</li>
+                                        <li>Pagos automáticos</li>
+                                        <li>Votación en blockchain</li>
+                                        <li>Ejecución sin confianza</li>
+                                    </ul>
+                                </label>
+                            </div>
+
+                            <!-- Hidden governance fields with defaults -->
+                            <input type="hidden" id="approvalPercentage" value="60" />
+                            <input type="hidden" id="minimumVotes" value="2" />
+                            
+                            <div class="form-step-buttons">
+                                <button type="button" class="btn-step btn-step-back" onclick="previousStep(2)">
+                                    ← Atrás
+                                </button>
+                                <button type="submit" class="btn-step btn-step-submit">
+                                    🚀 Crear Grupo
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -1362,6 +1331,7 @@
     <script src="firebase-config.js"></script>
     <script src="mode-manager.js"></script>
     <script src="wallet-connector.js"></script>
+    <script src="form-wizard.js"></script>
     <script src="app-platform.js"></script>
     
     <script>

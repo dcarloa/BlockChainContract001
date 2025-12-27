@@ -1570,6 +1570,10 @@ function showCreateFundModal() {
 function closeCreateFundModal() {
     document.getElementById('createFundModal').style.display = 'none';
     document.getElementById('createFundForm').reset();
+    // Reset wizard to step 1
+    if (typeof resetFormWizard === 'function') {
+        resetFormWizard();
+    }
 }
 
 async function createFund(event) {
@@ -1578,7 +1582,6 @@ async function createFund(event) {
     try {
         const fundName = document.getElementById('fundName').value.trim();
         const description = document.getElementById('fundDescription').value.trim() || "Sin descripción";
-        const targetAmount = document.getElementById('targetAmount').value;
         const isPrivate = document.getElementById('isPrivate').checked;
         const approvalPercentage = document.getElementById('approvalPercentage').value;
         const minimumVotes = document.getElementById('minimumVotes').value;
@@ -1590,8 +1593,8 @@ async function createFund(event) {
             return;
         }
         
-        // targetAmount is optional - 0 means no limit
-        const targetAmountValue = targetAmount && parseFloat(targetAmount) > 0 ? parseFloat(targetAmount) : 0;
+        // No target amount - always 0 (no limit)
+        const targetAmountValue = 0;
         
         closeCreateFundModal();
         
