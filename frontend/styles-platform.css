@@ -640,7 +640,7 @@ header,
   }
   
   .btn-create-group::after {
-    content: '👆 TAP TO CREATE';
+    content: '👆 TAP HERE';
     position: absolute;
     bottom: -1.5rem;
     left: 50%;
