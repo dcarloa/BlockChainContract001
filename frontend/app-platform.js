@@ -2543,6 +2543,7 @@ function calculateMyBalance(groupData) {
 async function loadSimpleModeExpenses() {
     const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
     const historyContainer = document.getElementById('historyList');
+    const searchSection = document.getElementById('expenseSearchSection');
     
     if (!historyContainer) {
         console.error('❌ History container not found (historyList)');
@@ -2550,6 +2551,7 @@ async function loadSimpleModeExpenses() {
     }
     
     if (!groupData || !groupData.expenses || Object.keys(groupData.expenses).length === 0) {
+        if (searchSection) searchSection.style.display = 'none';
         historyContainer.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">📝</div>
@@ -2563,6 +2565,9 @@ async function loadSimpleModeExpenses() {
         `;
         return;
     }
+    
+    // Show search section when there are expenses
+    if (searchSection) searchSection.style.display = 'block';
     
     // Show expenses
     const expenses = Object.entries(groupData.expenses).map(([id, expense]) => ({
@@ -6135,6 +6140,103 @@ function changeTheme(theme) {
         setTheme(theme);
         updateAppSettingsUI(); // Update UI immediately after theme change
         closeAppSettings(); // Close modal after theme change
+    } else {
+        console.error('setTheme function not found');
+    }
+}
+
+// ============================================
+// EXPENSE FILTERING FUNCTIONS
+// ============================================
+
+/**
+ * Filter expenses by search term and date range
+ */
+function filterExpenses() {
+    const searchTerm = document.getElementById('expenseSearchInput')?.value.toLowerCase() || '';
+    const startDate = document.getElementById('expenseFilterStart')?.value || '';
+    const endDate = document.getElementById('expenseFilterEnd')?.value || '';
+    
+    const expenseCards = document.querySelectorAll('.expense-card-compact');
+    let visibleCount = 0;
+    
+    expenseCards.forEach(card => {
+        const title = card.querySelector('.expense-title')?.textContent.toLowerCase() || '';
+        const notes = card.querySelector('.expense-notes')?.textContent.toLowerCase() || '';
+        const dateElement = card.querySelector('.meta-item:nth-child(3)')?.textContent || '';
+        
+        // Check if search term matches
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || notes.includes(searchTerm);
+        
+        // Check if date is in range
+        let matchesDate = true;
+        if (startDate || endDate) {
+            // Extract date from element - it's in format "📅 Dec 13, 2025"
+            const dateMatch = dateElement.match(/(\w+)\s+(\d+),\s+(\d+)/);
+            if (dateMatch) {
+                const [, month, day, year] = dateMatch;
+                const months = {
+                    'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                    'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+                };
+                const expenseDate = new Date(year, months[month], day);
+                
+                if (startDate) {
+                    const start = new Date(startDate);
+                    if (expenseDate < start) matchesDate = false;
+                }
+                
+                if (endDate) {
+                    const end = new Date(endDate);
+                    end.setHours(23, 59, 59, 999);
+                    if (expenseDate > end) matchesDate = false;
+                }
+            }
+        }
+        
+        // Show/hide card based on filters
+        if (matchesSearch && matchesDate) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Show message if no results
+    const historyList = document.getElementById('historyList');
+    const existingNoResults = historyList?.querySelector('.no-results-message');
+    
+    if (visibleCount === 0 && !existingNoResults) {
+        const noResultsDiv = document.createElement('div');
+        noResultsDiv.className = 'no-results-message';
+        noResultsDiv.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h4>No expenses found</h4>
+                <p>Try adjusting your filters</p>
+            </div>
+        `;
+        historyList.appendChild(noResultsDiv);
+    } else if (visibleCount > 0 && existingNoResults) {
+        existingNoResults.remove();
+    }
+}
+
+/**
+ * Clear all expense filters
+ */
+function clearExpenseFilters() {
+    const searchInput = document.getElementById('expenseSearchInput');
+    const startDate = document.getElementById('expenseFilterStart');
+    const endDate = document.getElementById('expenseFilterEnd');
+    
+    if (searchInput) searchInput.value = '';
+    if (startDate) startDate.value = '';
+    if (endDate) endDate.value = '';
+    
+    filterExpenses();
+}
     } else {
         console.error('setTheme function not found');
     }

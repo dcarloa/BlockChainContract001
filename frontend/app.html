@@ -677,6 +677,39 @@
 
                         <h3>📜 Proposal History</h3>
                         <p class="tab-description">All proposals: executed, cancelled and expired</p>
+                        
+                        <!-- Expense Search Filter -->
+                        <div id="expenseSearchSection" class="expense-search-section" style="display: none;">
+                            <div class="search-filters">
+                                <div class="search-input-wrapper">
+                                    <input type="text" 
+                                           id="expenseSearchInput" 
+                                           class="search-input" 
+                                           placeholder="🔍 Search by name..." 
+                                           onkeyup="filterExpenses()">
+                                </div>
+                                <div class="date-filters-row">
+                                    <div class="date-filter-group">
+                                        <label class="filter-label">From:</label>
+                                        <input type="date" 
+                                               id="expenseFilterStart" 
+                                               class="date-filter-input" 
+                                               onchange="filterExpenses()">
+                                    </div>
+                                    <div class="date-filter-group">
+                                        <label class="filter-label">To:</label>
+                                        <input type="date" 
+                                               id="expenseFilterEnd" 
+                                               class="date-filter-input" 
+                                               onchange="filterExpenses()">
+                                    </div>
+                                    <button class="btn-clear-filters" onclick="clearExpenseFilters()" title="Clear filters">
+                                        ✕
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div id="historyList">
                             <!-- History will be loaded here -->
                         </div>
