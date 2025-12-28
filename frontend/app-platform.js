@@ -6237,7 +6237,3 @@ function clearExpenseFilters() {
     
     filterExpenses();
 }
-    } else {
-        console.error('setTheme function not found');
-    }
-}
