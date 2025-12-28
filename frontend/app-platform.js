@@ -2633,26 +2633,31 @@ async function loadSimpleModeExpenses() {
         
         return `
             <div class="expense-card-compact" data-expense-id="${expense.id}">
-                <div class="expense-main">
-                    <div class="expense-info">
-                        <h4 class="expense-title">
+                <div class="expense-header" onclick="toggleExpenseDetails('${expense.id}')">
+                    <div class="expense-header-left">
+                        <h4 class="expense-title-compact">
                             ${isNegative ? '💰 ' : ''}${expense.description}
-                            ${isNegative ? '<span class="expense-badge badge-payment">Payment Received</span>' : ''}
+                            ${isNegative ? '<span class="expense-badge badge-payment">Payment</span>' : ''}
                         </h4>
-                        <div class="expense-meta">
-                            <span class="meta-item">👤 ${paidByDisplay}</span>
-                            <span class="meta-item">👥 ${expense.splitBetween.length} people</span>
-                            <span class="meta-item">📅 ${dateStr}</span>
-                        </div>
-                        ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
+                        <span class="expense-date-compact">📅 ${dateStr}</span>
                     </div>
-                    <div class="${amountClass}">
-                        ${amountPrefix}${amountStr}${currencyLabel}
+                    <div class="expense-header-right">
+                        <div class="${amountClass}">
+                            ${amountPrefix}${amountStr}${currencyLabel}
+                        </div>
+                        <span class="expand-icon">▼</span>
                     </div>
                 </div>
                 
-                <!-- Interaction Bar -->
-                <div class="expense-interactions">
+                <div class="expense-details" style="display: none;">
+                    <div class="expense-meta">
+                        <span class="meta-item">👤 ${paidByDisplay}</span>
+                        <span class="meta-item">👥 ${expense.splitBetween.length} people</span>
+                    </div>
+                    ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
+                    
+                    <!-- Interaction Bar -->
+                    <div class="expense-interactions">
                     <button class="interaction-btn ${hasLiked ? 'active' : ''}" onclick="toggleLikeExpense('${expense.id}')" title="Like">
                         ${hasLiked ? '❤️' : '🤍'} ${likesCount > 0 ? likesCount : ''}
                     </button>
@@ -2670,13 +2675,14 @@ async function loadSimpleModeExpenses() {
                     `}
                 </div>
                 
-                ${deleteRequestsCount > 0 && isCreator ? `
-                    <div class="expense-alert">
-                        <span class="alert-icon">⚠️</span>
-                        <span>${deleteRequestsCount} member${deleteRequestsCount > 1 ? 's' : ''} requested deletion of this expense</span>
-                        <button class="btn-link" onclick="showDeleteRequests('${expense.id}')">View requests</button>
-                    </div>
-                ` : ''}
+                    ${deleteRequestsCount > 0 && isCreator ? `
+                        <div class="expense-alert">
+                            <span class="alert-icon">⚠️</span>
+                            <span>${deleteRequestsCount} member${deleteRequestsCount > 1 ? 's' : ''} requested deletion of this expense</span>
+                            <button class="btn-link" onclick="showDeleteRequests('${expense.id}')">View requests</button>
+                        </div>
+                    ` : ''}
+                </div>
             </div>
         `;
     }).join('');
@@ -6236,4 +6242,25 @@ function clearExpenseFilters() {
     if (endDate) endDate.value = '';
     
     filterExpenses();
+}
+
+/**
+ * Toggle expense card details (expand/collapse)
+ */
+function toggleExpenseDetails(expenseId) {
+    const card = document.querySelector(`[data-expense-id="${expenseId}"]`);
+    if (!card) return;
+    
+    const details = card.querySelector('.expense-details');
+    const expandIcon = card.querySelector('.expand-icon');
+    
+    if (details.style.display === 'none') {
+        details.style.display = 'block';
+        expandIcon.textContent = '▲';
+        card.classList.add('expanded');
+    } else {
+        details.style.display = 'none';
+        expandIcon.textContent = '▼';
+        card.classList.remove('expanded');
+    }
 }
