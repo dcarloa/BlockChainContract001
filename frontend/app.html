@@ -741,34 +741,45 @@
                         <h3>📜 Proposal History</h3>
                         <p class="tab-description">All proposals: executed, cancelled and expired</p>
                         
-                        <!-- Expense Search Filter -->
-                        <div id="expenseSearchSection" class="expense-search-section" style="display: none;">
-                            <div class="search-filters">
-                                <div class="search-input-wrapper">
-                                    <input type="text" 
-                                           id="expenseSearchInput" 
-                                           class="search-input" 
-                                           placeholder="🔍 Search by name..." 
-                                           onkeyup="filterExpenses()">
+                        <!-- Expense Search Filter - Collapsible -->
+                        <div id="expenseSearchSection" style="display: none; margin-bottom: 1rem;">
+                            <div class="collapsible-header" onclick="toggleCollapsible('searchContent')" style="background: rgba(255,255,255,0.05); padding: 1rem 1.5rem; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s ease;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.2rem;">🔍</span>
+                                    <strong style="font-size: 1rem;">Search & Filter</strong>
                                 </div>
-                                <div class="date-filters-row">
-                                    <div class="date-filter-group">
-                                        <label class="filter-label">From:</label>
-                                        <input type="date" 
-                                               id="expenseFilterStart" 
-                                               class="date-filter-input" 
-                                               onchange="filterExpenses()">
+                                <span id="searchContentToggle" style="font-size: 1.2rem; transition: transform 0.3s ease;">▼</span>
+                            </div>
+                            <div id="searchContent" class="collapsible-content" style="display: none; margin-top: 0.5rem;">
+                                <div class="expense-search-section">
+                                    <div class="search-filters">
+                                        <div class="search-input-wrapper">
+                                            <input type="text" 
+                                                   id="expenseSearchInput" 
+                                                   class="search-input" 
+                                                   placeholder="🔍 Search by name..." 
+                                                   onkeyup="filterExpenses()">
+                                        </div>
+                                        <div class="date-filters-row">
+                                            <div class="date-filter-group">
+                                                <label class="filter-label">From:</label>
+                                                <input type="date" 
+                                                       id="expenseFilterStart" 
+                                                       class="date-filter-input" 
+                                                       onchange="filterExpenses()">
+                                            </div>
+                                            <div class="date-filter-group">
+                                                <label class="filter-label">To:</label>
+                                                <input type="date" 
+                                                       id="expenseFilterEnd" 
+                                                       class="date-filter-input" 
+                                                       onchange="filterExpenses()">
+                                            </div>
+                                            <button class="btn-clear-filters" onclick="clearExpenseFilters()" title="Clear filters">
+                                                ✕
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="date-filter-group">
-                                        <label class="filter-label">To:</label>
-                                        <input type="date" 
-                                               id="expenseFilterEnd" 
-                                               class="date-filter-input" 
-                                               onchange="filterExpenses()">
-                                    </div>
-                                    <button class="btn-clear-filters" onclick="clearExpenseFilters()" title="Clear filters">
-                                        ✕
-                                    </button>
                                 </div>
                             </div>
                         </div>
