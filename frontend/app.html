@@ -433,7 +433,6 @@
                         <div class="fund-badges">
                             <span class="badge" id="fundTypeBadge">Tipo</span>
                             <span class="badge" id="fundStatusBadge">Estado</span>
-                            <span class="badge" id="fundPrivacyBadge">Privacidad</span>
                         </div>
                     </div>
                 </div>
@@ -1181,19 +1180,10 @@
                                     class="input-modern"
                                 ></textarea>
                             </div>
-
-                            <div class="form-group">
-                                <label class="toggle-option">
-                                    <div class="toggle-option-info">
-                                        <div class="toggle-option-title">🔒 Grupo Privado</div>
-                                        <div class="toggle-option-desc">Solo pueden unirse con tu invitación</div>
-                                    </div>
-                                    <div class="toggle-switch">
-                                        <input type="checkbox" id="isPrivate" checked />
-                                        <span class="toggle-slider"></span>
-                                    </div>
-                                </label>
-                            </div>
+                            
+                            <!-- Hidden fields with default values -->
+                            <input type="hidden" id="isPrivate" value="true" />
+                            <input type="hidden" id="fundType" value="0" />
                             
                             <div class="form-step-buttons">
                                 <button type="button" class="btn-step btn-step-back" onclick="closeCreateFundModal()">
@@ -1205,53 +1195,8 @@
                             </div>
                         </div>
 
-                        <!-- Step 2: Fund Type -->
+                        <!-- Step 2: Mode Selection -->
                         <div class="form-step" data-step="2" style="display: none;">
-                            <h3>🎯 ¿Para qué es este grupo?</h3>
-                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Esto nos ayuda a personalizar tu experiencia</p>
-                            
-                            <div class="fund-type-grid">
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="0" checked />
-                                    <div class="fund-type-icon">🌴</div>
-                                    <div class="fund-type-name">Viaje</div>
-                                    <div class="fund-type-desc">Vacaciones y aventuras</div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="1" />
-                                    <div class="fund-type-icon">💰</div>
-                                    <div class="fund-type-name">Ahorro</div>
-                                    <div class="fund-type-desc">Meta financiera grupal</div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="2" />
-                                    <div class="fund-type-icon">🤝</div>
-                                    <div class="fund-type-name">Roommates</div>
-                                    <div class="fund-type-desc">Gastos compartidos</div>
-                                </label>
-                                
-                                <label class="fund-type-card">
-                                    <input type="radio" name="fundType" value="3" />
-                                    <div class="fund-type-icon">🎯</div>
-                                    <div class="fund-type-name">Otro</div>
-                                    <div class="fund-type-desc">Propósito personalizado</div>
-                                </label>
-                            </div>
-                            
-                            <div class="form-step-buttons">
-                                <button type="button" class="btn-step btn-step-back" onclick="previousStep(1)">
-                                    ← Atrás
-                                </button>
-                                <button type="button" class="btn-step btn-step-next" onclick="nextStep(3)">
-                                    Siguiente →
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 3: Mode Selection -->
-                        <div class="form-step" data-step="3" style="display: none;">
                             <h3>⚡ ¿Cómo quieres manejar los gastos?</h3>
                             <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Elige el modo que mejor se adapte a tu grupo</p>
                             
@@ -1308,7 +1253,7 @@
                             <input type="hidden" id="minimumVotes" value="2" />
                             
                             <div class="form-step-buttons">
-                                <button type="button" class="btn-step btn-step-back" onclick="previousStep(2)">
+                                <button type="button" class="btn-step btn-step-back" onclick="previousStep(1)">
                                     ← Atrás
                                 </button>
                                 <button type="submit" class="btn-step btn-step-submit">
@@ -1538,11 +1483,6 @@
             const fundStatusBadge = document.querySelector('#fundStatusBadge');
             if (fundStatusBadge && fundStatusBadge.textContent === 'Estado') {
                 fundStatusBadge.textContent = t.app.fundDetail.info.status;
-            }
-            
-            const fundPrivacyBadge = document.querySelector('#fundPrivacyBadge');
-            if (fundPrivacyBadge && fundPrivacyBadge.textContent === 'Privacidad') {
-                fundPrivacyBadge.textContent = t.app.fundDetail.info.privacy;
             }
             
             // Fund Tabs
@@ -1837,42 +1777,8 @@
             if (createFundTitle) createFundTitle.textContent = `✨ ${t.app.createFund.title}`;
             
             // Section headers
-            const sectionHeaders = document.querySelectorAll('#createFundModal .section-header');
-            if (sectionHeaders[0]) {
-                sectionHeaders[0].querySelector('h3').textContent = `🎯 ${t.app.createFund.sections.type}`;
-                sectionHeaders[0].querySelector('p').textContent = t.app.createFund.sections.typeDesc;
-            }
-            if (sectionHeaders[1]) {
-                sectionHeaders[1].querySelector('h3').textContent = `📝 ${t.app.createFund.sections.basic}`;
-                sectionHeaders[1].querySelector('p').textContent = t.app.createFund.sections.basicDesc;
-            }
-            if (sectionHeaders[2]) {
-                sectionHeaders[2].querySelector('h3').textContent = `🔒 ${t.app.createFund.sections.privacy}`;
-                sectionHeaders[2].querySelector('p').textContent = t.app.createFund.sections.privacyDesc;
-            }
-            if (sectionHeaders[3]) {
-                sectionHeaders[3].querySelector('h3').textContent = `🗳️ ${t.app.createFund.sections.voting}`;
-                sectionHeaders[3].querySelector('p').textContent = t.app.createFund.sections.votingDesc;
-            }
-            
-            // Fund type cards
-            const fundTypeCards = document.querySelectorAll('.fund-type-card');
-            if (fundTypeCards[0]) {
-                fundTypeCards[0].querySelector('h4').textContent = t.app.createFund.types.travel;
-                fundTypeCards[0].querySelector('p').textContent = t.app.createFund.types.travelDesc;
-            }
-            if (fundTypeCards[1]) {
-                fundTypeCards[1].querySelector('h4').textContent = t.app.createFund.types.savings;
-                fundTypeCards[1].querySelector('p').textContent = t.app.createFund.types.savingsDesc;
-            }
-            if (fundTypeCards[2]) {
-                fundTypeCards[2].querySelector('h4').textContent = t.app.createFund.types.roommates;
-                fundTypeCards[2].querySelector('p').textContent = t.app.createFund.types.roommatesDesc;
-            }
-            if (fundTypeCards[3]) {
-                fundTypeCards[3].querySelector('h4').textContent = t.app.createFund.types.other;
-                fundTypeCards[3].querySelector('p').textContent = t.app.createFund.types.otherDesc;
-            }
+            // Section headers (removed fund type and privacy sections)
+            // No section headers to translate now
             
             // Form fields
             const fundNameLabel = document.querySelector('label[for="fundName"] .label-text');
@@ -1886,13 +1792,6 @@
             
             const fundDescInput = document.querySelector('#fundDescription');
             if (fundDescInput) fundDescInput.placeholder = t.app.createFund.fields.descriptionPlaceholder;
-            
-            // Privacy toggle
-            const privateToggleTitle = document.querySelector('.toggle-option-title');
-            if (privateToggleTitle) privateToggleTitle.textContent = t.app.createFund.fields.privateToggle;
-            
-            const privateToggleDesc = document.querySelector('.toggle-option-desc');
-            if (privateToggleDesc) privateToggleDesc.textContent = t.app.createFund.fields.privateDesc;
             
             // Voting fields
             const approvalLabel = document.querySelector('label[for="approvalPercentage"] .label-text');

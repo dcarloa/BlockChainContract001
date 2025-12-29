@@ -1624,10 +1624,10 @@ async function createFund(event) {
     try {
         const fundName = document.getElementById('fundName').value.trim();
         const description = document.getElementById('fundDescription').value.trim() || "Sin descripción";
-        const isPrivate = document.getElementById('isPrivate').checked;
+        const isPrivate = document.getElementById('isPrivate').value === 'true'; // Hidden field with default true
         const approvalPercentage = document.getElementById('approvalPercentage').value;
         const minimumVotes = document.getElementById('minimumVotes').value;
-        const fundType = document.querySelector('input[name="fundType"]:checked').value;
+        const fundType = document.getElementById('fundType').value; // Hidden field with default 0
         const groupMode = document.querySelector('input[name="groupMode"]:checked').value;
         
         if (!fundName) {
