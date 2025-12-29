@@ -2536,3 +2536,150 @@
 [data-theme="light"] .invite-method-card h4 {
   color: #0f172a;
 }
+/* ===================================
+   ADD EXPENSE MODAL - LIGHT MODE
+   =================================== */
+
+[data-theme="light"] #addExpenseModal .modal-content {
+  background: white;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] #addExpenseModal .modal-header {
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] #addExpenseModal .modal-header h2 {
+  color: #0f172a;
+}
+
+[data-theme="light"] #addExpenseModal .modal-body {
+  background: white;
+}
+
+[data-theme="light"] .form-header-clean {
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] .form-header-clean h3 {
+  color: #0f172a;
+}
+
+[data-theme="light"] .form-grid {
+  background: white;
+}
+
+[data-theme="light"] .form-label {
+  color: #64748b;
+}
+
+[data-theme="light"] .form-input,
+[data-theme="light"] .form-select,
+[data-theme="light"] .form-textarea,
+[data-theme="light"] .select-modern,
+[data-theme="light"] .textarea-modern,
+[data-theme="light"] .input-modern {
+  background: white;
+  border: 2px solid #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .form-input:hover,
+[data-theme="light"] .form-select:hover,
+[data-theme="light"] .select-modern:hover,
+[data-theme="light"] .input-modern:hover {
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .form-input:focus,
+[data-theme="light"] .form-select:focus,
+[data-theme="light"] .textarea-modern:focus,
+[data-theme="light"] .select-modern:focus,
+[data-theme="light"] .input-modern:focus {
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+[data-theme="light"] .form-input::placeholder,
+[data-theme="light"] .input-modern::placeholder,
+[data-theme="light"] .textarea-modern::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .amount-input-wrapper {
+  background: white;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .currency-symbol {
+  color: #64748b;
+  border-right-color: #e2e8f0;
+}
+
+[data-theme="light"] .amount-input {
+  color: #0f172a;
+}
+
+[data-theme="light"] .split-members-list .checkbox-option {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .split-members-list .checkbox-option:hover {
+  background: #eff6ff;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .split-members-list .checkbox-option:has(input[type="checkbox"]:checked) {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: #667eea;
+}
+
+[data-theme="light"] .split-members-list .checkbox-option label,
+[data-theme="light"] .member-name {
+  color: #0f172a;
+}
+
+[data-theme="light"] .field-hint,
+[data-theme="light"] .form-hint {
+  color: #64748b;
+}
+
+[data-theme="light"] #addExpenseModal .modal-footer {
+  background: #f8fafc;
+  border-top-color: #e2e8f0;
+}
+
+[data-theme="light"] .btn-scan-receipt {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+[data-theme="light"] .input-prefix {
+  color: #64748b;
+  border-right-color: #e2e8f0;
+}
+
+[data-theme="light"] .input-with-prefix {
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .input-with-prefix:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+[data-theme="light"] #scanningIndicator {
+  background: rgba(102, 126, 234, 0.05) !important;
+  border-left-color: #667eea !important;
+}
+
+[data-theme="light"] #scanningIndicator strong {
+  color: #667eea !important;
+}
+
+[data-theme="light"] #scanningIndicator p {
+  color: #64748b !important;
+}
