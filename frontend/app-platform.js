@@ -4272,10 +4272,8 @@ function populateExpenseMembers() {
             <label class="member-share-checkbox" for="split_${uid}">
                 <input type="checkbox" name="splitBetween" value="${uid}" id="split_${uid}" checked onchange="toggleExpenseShare(this, ${memberIndex})">
                 <div class="member-share-info">
-                    <span class="member-share-name">
-                        <span class="member-avatar" style="display: inline-block; width: 24px; height: 24px; line-height: 24px; font-size: 0.75rem; margin-right: 0.5rem;">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
-                        ${member.name || member.email || uid}
-                    </span>
+                    <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
+                    <span class="member-share-name">${member.name || member.email || uid}</span>
                 </div>
             </label>
             <div class="member-share-controls" id="split-share-controls-${memberIndex}">
@@ -4284,7 +4282,7 @@ function populateExpenseMembers() {
                 </button>
                 <div class="share-counter" id="split-share-count-${memberIndex}">
                     <span class="share-number">1</span>
-                    <span class="share-label">persona</span>
+                    <span class="share-label">person</span>
                 </div>
                 <button type="button" class="share-btn share-btn-plus" onclick="incrementExpenseShare(${memberIndex})" title="Agregar una porción">
                     +
@@ -4352,75 +4350,7 @@ function updateExpenseShareDisplay(index, shares) {
     const label = counter.querySelector('.share-label');
     
     if (number) number.textContent = shares;
-    if (label) label.textContent = shares > 1 ? 'personas' : 'persona';
-    
-    // Visual feedback
-    counter.style.transform = 'scale(1.15)';
-    setTimeout(() => {
-        counter.style.transform = 'scale(1)';
-    }, 150);
-}
-
-// Make functions globally accessible
-window.toggleExpenseShare = toggleExpenseShare;
-window.incrementExpenseShare = incrementExpenseShare;
-window.decrementExpenseShare = decrementExpenseShare;
-
-// ============================================
-// EXPENSE SHARE MANAGEMENT FUNCTIONS
-// ============================================
-
-// Toggle expense share selection
-function toggleExpenseShare(checkbox, index) {
-    const item = checkbox.closest('.member-share-item');
-    const controls = document.getElementById(`split-share-controls-${index}`);
-    
-    if (checkbox.checked) {
-        item.classList.add('selected');
-        if (controls) controls.style.display = 'flex';
-        item.dataset.shares = '1';
-        updateExpenseShareDisplay(index, 1);
-    } else {
-        item.classList.remove('selected');
-        if (controls) controls.style.display = 'none';
-        item.dataset.shares = '0';
-    }
-}
-
-// Increment share count for expense
-function incrementExpenseShare(index) {
-    const item = document.getElementById(`split-member-item-${index}`);
-    if (!item) return;
-    
-    let shares = parseInt(item.dataset.shares) || 1;
-    shares++;
-    item.dataset.shares = shares.toString();
-    updateExpenseShareDisplay(index, shares);
-}
-
-// Decrement share count for expense
-function decrementExpenseShare(index) {
-    const item = document.getElementById(`split-member-item-${index}`);
-    if (!item) return;
-    
-    let shares = parseInt(item.dataset.shares) || 1;
-    if (shares > 1) {
-        shares--;
-        item.dataset.shares = shares.toString();
-        updateExpenseShareDisplay(index, shares);
-    }
-}
-
-// Update share display for expense
-function updateExpenseShareDisplay(index, shares) {
-    const counter = document.getElementById(`split-share-count-${index}`);
-    if (!counter) return;
-    
-    const number = counter.querySelector('.share-number');
-    const label = counter.querySelector('.share-label');
-    
-    if (number) number.textContent = shares;
-    if (label) label.textContent = shares > 1 ? 'personas' : 'persona';
+    if (label) label.textContent = shares > 1 ? 'people' : 'person';
     
     // Visual feedback
     counter.style.transform = 'scale(1.15)';
@@ -5223,7 +5153,7 @@ async function loadInvolvedMembersCheckboxes() {
                         </button>
                         <div class="share-counter" id="share-count-${i}">
                             <span class="share-number">1</span>
-                            <span class="share-label">persona${1 > 1 ? 's' : ''}</span>
+                            <span class="share-label">person</span>
                         </div>
                         <button type="button" class="share-btn share-btn-plus" onclick="incrementShare(${i})" title="Agregar una porción">
                             +
@@ -5288,7 +5218,7 @@ function updateShareDisplay(index, shares) {
     const label = counter.querySelector('.share-label');
     
     if (number) number.textContent = shares;
-    if (label) label.textContent = shares > 1 ? 'personas' : 'persona';
+    if (label) label.textContent = shares > 1 ? 'people' : 'person';
     
     // Visual feedback
     counter.style.transform = 'scale(1.15)';
@@ -6672,7 +6602,7 @@ function updateRecurringShareDisplay(index, shares) {
     const label = counter.querySelector('.share-label');
     
     if (number) number.textContent = shares;
-    if (label) label.textContent = shares > 1 ? 'personas' : 'persona';
+    if (label) label.textContent = shares > 1 ? 'people' : 'person';
     
     // Visual feedback
     counter.style.transform = 'scale(1.15)';
@@ -6725,7 +6655,7 @@ function populateRecurringMembers() {
                 </button>
                 <div class="share-counter" id="recurring-share-count-${index}">
                     <span class="share-number">1</span>
-                    <span class="share-label">persona</span>
+                    <span class="share-label">person</span>
                 </div>
                 <button type="button" class="share-btn share-btn-plus" onclick="incrementRecurringShare(${index})" title="Agregar una porción">
                     +

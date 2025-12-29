@@ -3639,15 +3639,31 @@ header,
 
 .member-share-info {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.75rem;
   flex: 1;
+}
+
+.member-share-info .member-avatar {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
 }
 
 .member-share-name {
   color: var(--text-primary);
   font-weight: 500;
   font-size: 0.95rem;
+  flex: 1;
 }
 
 .member-share-address {
