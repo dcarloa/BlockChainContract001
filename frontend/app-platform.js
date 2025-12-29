@@ -1344,6 +1344,7 @@ function filterFunds() {
     
     if (filteredFunds.length === 0) {
         fundsGrid.innerHTML = '';
+        fundsGrid.style.display = 'none';
         emptyState.style.display = 'flex';
     } else {
         emptyState.style.display = 'none';
@@ -1364,8 +1365,10 @@ function filterFunds() {
         
         if (visibleFunds.length === 0) {
             fundsGrid.innerHTML = '';
+            fundsGrid.style.display = 'none';
             emptyState.style.display = 'flex';
         } else {
+            fundsGrid.style.display = 'grid';
             fundsGrid.innerHTML = visibleFunds.map(fund => createFundCard(fund)).join('');
         }
     }
