@@ -4246,6 +4246,7 @@ function populateExpenseMembers() {
     splitContainer.innerHTML = '';
 
     // Add members to both sections with checkboxes
+    let memberIndex = 0;
     Object.entries(currentFund.members).forEach(([uid, member]) => {
         // Add to "Paid by" checkboxes
         const paidByDiv = document.createElement('div');
@@ -4260,21 +4261,178 @@ function populateExpenseMembers() {
         paidByContainer.appendChild(paidByDiv);
         console.log('✅ Added member to paid by:', member.name || member.email);
 
-        // Add to "Split between" checkboxes with professional design
-        const checkboxDiv = document.createElement('div');
-        checkboxDiv.className = 'checkbox-option';
-        checkboxDiv.innerHTML = `
-            <input type="checkbox" name="splitBetween" value="${uid}" id="split_${uid}" checked>
-            <label for="split_${uid}">
-                <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
-                <span class="member-name">${member.name || member.email || uid}</span>
+        // Add to "Split between" with share counter
+        const splitDiv = document.createElement('div');
+        splitDiv.className = 'member-share-item';
+        splitDiv.id = `split-member-item-${memberIndex}`;
+        splitDiv.dataset.uid = uid;
+        splitDiv.dataset.shares = '1';
+        
+        splitDiv.innerHTML = `
+            <label class="member-share-checkbox" for="split_${uid}">
+                <input type="checkbox" name="splitBetween" value="${uid}" id="split_${uid}" checked onchange="toggleExpenseShare(this, ${memberIndex})">
+                <div class="member-share-info">
+                    <span class="member-share-name">
+                        <span class="member-avatar" style="display: inline-block; width: 24px; height: 24px; line-height: 24px; font-size: 0.75rem; margin-right: 0.5rem;">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
+                        ${member.name || member.email || uid}
+                    </span>
+                </div>
             </label>
+            <div class="member-share-controls" id="split-share-controls-${memberIndex}">
+                <button type="button" class="share-btn share-btn-minus" onclick="decrementExpenseShare(${memberIndex})" title="Quitar una porción">
+                    −
+                </button>
+                <div class="share-counter" id="split-share-count-${memberIndex}">
+                    <span class="share-number">1</span>
+                    <span class="share-label">persona</span>
+                </div>
+                <button type="button" class="share-btn share-btn-plus" onclick="incrementExpenseShare(${memberIndex})" title="Agregar una porción">
+                    +
+                </button>
+            </div>
         `;
-        splitContainer.appendChild(checkboxDiv);
+        splitContainer.appendChild(splitDiv);
+        memberIndex++;
     });
 
     console.log('✅ Members populated successfully');
 }
+
+// ============================================
+// EXPENSE SHARE MANAGEMENT FUNCTIONS
+// ============================================
+
+// Toggle expense share selection
+function toggleExpenseShare(checkbox, index) {
+    const item = checkbox.closest('.member-share-item');
+    const controls = document.getElementById(`split-share-controls-${index}`);
+    
+    if (checkbox.checked) {
+        item.classList.add('selected');
+        if (controls) controls.style.display = 'flex';
+        item.dataset.shares = '1';
+        updateExpenseShareDisplay(index, 1);
+    } else {
+        item.classList.remove('selected');
+        if (controls) controls.style.display = 'none';
+        item.dataset.shares = '0';
+    }
+}
+
+// Increment share count for expense
+function incrementExpenseShare(index) {
+    const item = document.getElementById(`split-member-item-${index}`);
+    if (!item) return;
+    
+    let shares = parseInt(item.dataset.shares) || 1;
+    shares++;
+    item.dataset.shares = shares.toString();
+    updateExpenseShareDisplay(index, shares);
+}
+
+// Decrement share count for expense
+function decrementExpenseShare(index) {
+    const item = document.getElementById(`split-member-item-${index}`);
+    if (!item) return;
+    
+    let shares = parseInt(item.dataset.shares) || 1;
+    if (shares > 1) {
+        shares--;
+        item.dataset.shares = shares.toString();
+        updateExpenseShareDisplay(index, shares);
+    }
+}
+
+// Update share display for expense
+function updateExpenseShareDisplay(index, shares) {
+    const counter = document.getElementById(`split-share-count-${index}`);
+    if (!counter) return;
+    
+    const number = counter.querySelector('.share-number');
+    const label = counter.querySelector('.share-label');
+    
+    if (number) number.textContent = shares;
+    if (label) label.textContent = shares > 1 ? 'personas' : 'persona';
+    
+    // Visual feedback
+    counter.style.transform = 'scale(1.15)';
+    setTimeout(() => {
+        counter.style.transform = 'scale(1)';
+    }, 150);
+}
+
+// Make functions globally accessible
+window.toggleExpenseShare = toggleExpenseShare;
+window.incrementExpenseShare = incrementExpenseShare;
+window.decrementExpenseShare = decrementExpenseShare;
+
+// ============================================
+// EXPENSE SHARE MANAGEMENT FUNCTIONS
+// ============================================
+
+// Toggle expense share selection
+function toggleExpenseShare(checkbox, index) {
+    const item = checkbox.closest('.member-share-item');
+    const controls = document.getElementById(`split-share-controls-${index}`);
+    
+    if (checkbox.checked) {
+        item.classList.add('selected');
+        if (controls) controls.style.display = 'flex';
+        item.dataset.shares = '1';
+        updateExpenseShareDisplay(index, 1);
+    } else {
+        item.classList.remove('selected');
+        if (controls) controls.style.display = 'none';
+        item.dataset.shares = '0';
+    }
+}
+
+// Increment share count for expense
+function incrementExpenseShare(index) {
+    const item = document.getElementById(`split-member-item-${index}`);
+    if (!item) return;
+    
+    let shares = parseInt(item.dataset.shares) || 1;
+    shares++;
+    item.dataset.shares = shares.toString();
+    updateExpenseShareDisplay(index, shares);
+}
+
+// Decrement share count for expense
+function decrementExpenseShare(index) {
+    const item = document.getElementById(`split-member-item-${index}`);
+    if (!item) return;
+    
+    let shares = parseInt(item.dataset.shares) || 1;
+    if (shares > 1) {
+        shares--;
+        item.dataset.shares = shares.toString();
+        updateExpenseShareDisplay(index, shares);
+    }
+}
+
+// Update share display for expense
+function updateExpenseShareDisplay(index, shares) {
+    const counter = document.getElementById(`split-share-count-${index}`);
+    if (!counter) return;
+    
+    const number = counter.querySelector('.share-number');
+    const label = counter.querySelector('.share-label');
+    
+    if (number) number.textContent = shares;
+    if (label) label.textContent = shares > 1 ? 'personas' : 'persona';
+    
+    // Visual feedback
+    counter.style.transform = 'scale(1.15)';
+    setTimeout(() => {
+        counter.style.transform = 'scale(1)';
+    }, 150);
+}
+
+// Make functions globally accessible
+window.toggleExpenseShare = toggleExpenseShare;
+window.incrementExpenseShare = incrementExpenseShare;
+window.decrementExpenseShare = decrementExpenseShare;
 
 // ============================================
 // CURRENCY UTILITIES
@@ -4448,9 +4606,20 @@ async function handleExpenseSubmission(event) {
         const paidBy = Array.from(form.querySelectorAll('input[name="paidBy"]:checked'))
             .map(cb => cb.value);
 
-        // Get selected members for split
-        const splitBetween = Array.from(form.querySelectorAll('input[name="splitBetween"]:checked'))
-            .map(cb => cb.value);
+        // Get selected members for split with share multipliers
+        const splitItems = document.querySelectorAll('.member-share-item');
+        const splitBetween = [];
+        splitItems.forEach(item => {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            if (checkbox && checkbox.checked) {
+                const uid = checkbox.value;
+                const shares = parseInt(item.dataset.shares) || 1;
+                // Add the member multiple times based on shares
+                for (let i = 0; i < shares; i++) {
+                    splitBetween.push(uid);
+                }
+            }
+        });
 
         // Validate
         if (!description || !amount || paidBy.length === 0 || splitBetween.length === 0) {
@@ -6449,6 +6618,74 @@ function updateRecurringCurrencySymbol() {
     document.getElementById('recurringCurrencySymbol').textContent = CURRENCY_SYMBOLS[currency] || '$';
 }
 
+// ============================================
+// RECURRING EXPENSE SHARE MANAGEMENT
+// ============================================
+
+// Toggle recurring share selection
+function toggleRecurringShare(checkbox, index) {
+    const item = checkbox.closest('.member-share-item');
+    const controls = document.getElementById(`recurring-share-controls-${index}`);
+    
+    if (checkbox.checked) {
+        item.classList.add('selected');
+        if (controls) controls.style.display = 'flex';
+        item.dataset.shares = '1';
+        updateRecurringShareDisplay(index, 1);
+    } else {
+        item.classList.remove('selected');
+        if (controls) controls.style.display = 'none';
+        item.dataset.shares = '0';
+    }
+}
+
+// Increment share count for recurring
+function incrementRecurringShare(index) {
+    const item = document.getElementById(`recurring-member-item-${index}`);
+    if (!item) return;
+    
+    let shares = parseInt(item.dataset.shares) || 1;
+    shares++;
+    item.dataset.shares = shares.toString();
+    updateRecurringShareDisplay(index, shares);
+}
+
+// Decrement share count for recurring
+function decrementRecurringShare(index) {
+    const item = document.getElementById(`recurring-member-item-${index}`);
+    if (!item) return;
+    
+    let shares = parseInt(item.dataset.shares) || 1;
+    if (shares > 1) {
+        shares--;
+        item.dataset.shares = shares.toString();
+        updateRecurringShareDisplay(index, shares);
+    }
+}
+
+// Update share display for recurring
+function updateRecurringShareDisplay(index, shares) {
+    const counter = document.getElementById(`recurring-share-count-${index}`);
+    if (!counter) return;
+    
+    const number = counter.querySelector('.share-number');
+    const label = counter.querySelector('.share-label');
+    
+    if (number) number.textContent = shares;
+    if (label) label.textContent = shares > 1 ? 'personas' : 'persona';
+    
+    // Visual feedback
+    counter.style.transform = 'scale(1.15)';
+    setTimeout(() => {
+        counter.style.transform = 'scale(1)';
+    }, 150);
+}
+
+// Make functions globally accessible
+window.toggleRecurringShare = toggleRecurringShare;
+window.incrementRecurringShare = incrementRecurringShare;
+window.decrementRecurringShare = decrementRecurringShare;
+
 function populateRecurringMembers() {
     const paidByContainer = document.getElementById('recurringPaidBy');
     const splitContainer = document.getElementById('recurringSplitBetween');
@@ -6466,13 +6703,37 @@ function populateRecurringMembers() {
         </label>
     `).join('');
     
-    // Populate split between (checkboxes - all checked by default)
-    splitContainer.innerHTML = members.map(([uid, member]) => `
-        <label class="member-checkbox">
-            <input type="checkbox" name="recurringSplitBetween" value="${uid}" checked>
-            <span>${member.name || member.email}</span>
-        </label>
-    `).join('');
+    // Populate split between with share counters
+    splitContainer.innerHTML = '';
+    members.forEach(([uid, member], index) => {
+        const splitDiv = document.createElement('div');
+        splitDiv.className = 'member-share-item';
+        splitDiv.id = `recurring-member-item-${index}`;
+        splitDiv.dataset.uid = uid;
+        splitDiv.dataset.shares = '1';
+        
+        splitDiv.innerHTML = `
+            <label class="member-share-checkbox" for="recurring_split_${uid}">
+                <input type="checkbox" name="recurringSplitBetween" value="${uid}" id="recurring_split_${uid}" checked onchange="toggleRecurringShare(this, ${index})">
+                <div class="member-share-info">
+                    <span class="member-share-name">${member.name || member.email}</span>
+                </div>
+            </label>
+            <div class="member-share-controls" id="recurring-share-controls-${index}">
+                <button type="button" class="share-btn share-btn-minus" onclick="decrementRecurringShare(${index})" title="Quitar una porción">
+                    −
+                </button>
+                <div class="share-counter" id="recurring-share-count-${index}">
+                    <span class="share-number">1</span>
+                    <span class="share-label">persona</span>
+                </div>
+                <button type="button" class="share-btn share-btn-plus" onclick="incrementRecurringShare(${index})" title="Agregar una porción">
+                    +
+                </button>
+            </div>
+        `;
+        splitContainer.appendChild(splitDiv);
+    });
 }
 
 // Handle recurring expense form submission
@@ -6498,9 +6759,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const paidByCheckboxes = document.querySelectorAll('input[name="recurringPaidBy"]:checked');
                 const paidBy = Array.from(paidByCheckboxes).map(cb => cb.value);
                 
-                // Get splitBetween
-                const splitCheckboxes = document.querySelectorAll('input[name="recurringSplitBetween"]:checked');
-                const splitBetween = Array.from(splitCheckboxes).map(cb => cb.value);
+                // Get splitBetween with share multipliers
+                const splitItems = document.querySelectorAll('#recurringSplitBetween .member-share-item');
+                const splitBetween = [];
+                splitItems.forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox && checkbox.checked) {
+                        const uid = checkbox.value;
+                        const shares = parseInt(item.dataset.shares) || 1;
+                        // Add the member multiple times based on shares
+                        for (let i = 0; i < shares; i++) {
+                            splitBetween.push(uid);
+                        }
+                    }
+                });
                 
                 if (paidBy.length === 0) {
                     showToast('Please select who pays this recurring expense', 'warning');
