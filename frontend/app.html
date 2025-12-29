@@ -22,6 +22,11 @@
     <link rel="stylesheet" href="create-group-styles.css">
     <link rel="stylesheet" href="simple-mode-styles.css">
     <link rel="stylesheet" href="form-wizard-styles.css">
+    <link rel="stylesheet" href="new-features-styles.css">
+    
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
     <!-- QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
@@ -671,6 +676,49 @@
                                         <small>Click to add new payment</small>
                                     </span>
                                 </button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions for New Features -->
+                        <div id="simpleQuickActions" class="quick-actions-grid" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                            <button class="quick-action-btn" onclick="showRecurringExpenseModal()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="quick-action-icon">🔄</div>
+                                <div class="quick-action-text">
+                                    <strong>Recurring Expenses</strong>
+                                    <small>Automate rent, utilities, subscriptions</small>
+                                </div>
+                            </button>
+                            
+                            <button class="quick-action-btn" onclick="showBudgetModal()" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                <div class="quick-action-icon">💰</div>
+                                <div class="quick-action-text">
+                                    <strong>Set Budget</strong>
+                                    <small>Track spending limits & get alerts</small>
+                                </div>
+                            </button>
+                            
+                            <button class="quick-action-btn" onclick="showAnalyticsModal()" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                <div class="quick-action-icon">📊</div>
+                                <div class="quick-action-text">
+                                    <strong>Analytics</strong>
+                                    <small>View insights & export data</small>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Budget Status Bar (if budget is set) -->
+                        <div id="budgetStatusBar" style="display: none; margin-bottom: 1.5rem;">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <!-- Active Recurring Expenses -->
+                        <div id="recurringExpensesSection" style="display: none; margin-bottom: 1.5rem;">
+                            <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                🔄 Active Recurring Expenses
+                                <span id="recurringCount" class="badge-count" style="background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">0</span>
+                            </h3>
+                            <div id="recurringExpensesList" class="recurring-list">
+                                <!-- Populated dynamically -->
                             </div>
                         </div>
 
@@ -1840,5 +1888,267 @@
             updateAppSettingsUI();
         });
     </script>
+
+    <!-- Recurring Expense Modal -->
+    <div id="recurringExpenseModal" class="modal" style="display: none;">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2>🔄 Create Recurring Expense</h2>
+                <button class="modal-close" onclick="closeRecurringExpenseModal()">&times;</button>
+            </div>
+            
+            <form id="recurringExpenseForm" class="expense-form-clean">
+                <div class="form-header-clean">
+                    <h3>Automate Regular Expenses</h3>
+                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                        Perfect for rent, utilities, subscriptions, or any expense that repeats regularly.
+                    </p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="recurringDescription" class="form-label">Description *</label>
+                        <input 
+                            type="text" 
+                            id="recurringDescription"
+                            class="form-input"
+                            placeholder="e.g., Monthly Rent, Netflix, Groceries"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="recurringAmount" class="form-label">Amount *</label>
+                        <div class="amount-input-wrapper">
+                            <span class="currency-symbol" id="recurringCurrencySymbol">$</span>
+                            <input 
+                                type="number" 
+                                id="recurringAmount"
+                                class="form-input amount-input"
+                                placeholder="0.00"
+                                step="any"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="recurringCurrency" class="form-label">Currency</label>
+                        <select id="recurringCurrency" class="form-input form-select" onchange="updateRecurringCurrencySymbol()">
+                            <option value="USD" selected>🇺🇸 USD</option>
+                            <option value="EUR">🇪🇺 EUR</option>
+                            <option value="GBP">🇬🇧 GBP</option>
+                            <option value="MXN">🇲🇽 MXN</option>
+                            <option value="COP">🇨🇴 COP</option>
+                            <option value="BRL">🇧🇷 BRL</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="recurringFrequency" class="form-label">Frequency *</label>
+                        <select id="recurringFrequency" class="form-input form-select" onchange="updateRecurringFrequencyOptions()">
+                            <option value="daily">📅 Daily</option>
+                            <option value="weekly">📆 Weekly</option>
+                            <option value="monthly" selected>🗓️ Monthly</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field" id="dayOfMonthField">
+                        <label for="recurringDayOfMonth" class="form-label">Day of Month *</label>
+                        <select id="recurringDayOfMonth" class="form-input form-select">
+                            <option value="1" selected>1st of month</option>
+                            <option value="15">15th of month</option>
+                            <option value="30">30th of month (last day for shorter months)</option>
+                        </select>
+                        <small class="field-hint">When should this expense be created each month?</small>
+                    </div>
+
+                    <div class="form-field" id="dayOfWeekField" style="display: none;">
+                        <label for="recurringDayOfWeek" class="form-label">Day of Week *</label>
+                        <select id="recurringDayOfWeek" class="form-input form-select">
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                            <option value="7">Sunday</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Paid by *</label>
+                        <div id="recurringPaidBy" class="split-members-list">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Split between *</label>
+                        <div id="recurringSplitBetween" class="split-members-list">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeRecurringExpenseModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        🔄 Create Recurring Expense
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div id="budgetModal" class="modal" style="display: none;">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2>💰 Set Group Budget</h2>
+                <button class="modal-close" onclick="closeBudgetModal()">&times;</button>
+            </div>
+            
+            <div class="budget-info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <h3 style="color: white; margin-bottom: 0.5rem; font-size: 1.1rem;">📊 What is a Budget?</h3>
+                <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; line-height: 1.5;">
+                    Set a spending limit for your group. We'll track expenses and alert you when approaching the limit. Perfect for trips or monthly shared costs.
+                </p>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                    <strong style="color: white;">Example:</strong>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 0.85rem; margin-top: 0.5rem;">
+                        "Cancún Trip: $2,000 budget" → Get alerts at $1,000 (50%), $1,600 (80%), and $2,000 (100%)
+                    </p>
+                </div>
+            </div>
+            
+            <form id="budgetForm" class="expense-form-clean">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="budgetAmount" class="form-label">Budget Amount *</label>
+                        <div class="amount-input-wrapper">
+                            <span class="currency-symbol" id="budgetCurrencySymbol">$</span>
+                            <input 
+                                type="number" 
+                                id="budgetAmount"
+                                class="form-input amount-input"
+                                placeholder="2000"
+                                step="any"
+                                required
+                            >
+                        </div>
+                        <small class="field-hint">Total amount you plan to spend</small>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="budgetCurrency" class="form-label">Currency</label>
+                        <select id="budgetCurrency" class="form-input form-select" onchange="updateBudgetCurrencySymbol()">
+                            <option value="USD" selected>🇺🇸 USD</option>
+                            <option value="EUR">🇪🇺 EUR</option>
+                            <option value="GBP">🇬🇧 GBP</option>
+                            <option value="MXN">🇲🇽 MXN</option>
+                            <option value="COP">🇨🇴 COP</option>
+                            <option value="BRL">🇧🇷 BRL</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="budgetPeriod" class="form-label">Budget Period *</label>
+                        <select id="budgetPeriod" class="form-input form-select">
+                            <option value="trip">🏖️ For this trip/event (one-time)</option>
+                            <option value="monthly">📆 Monthly (resets each month)</option>
+                            <option value="weekly">📅 Weekly (resets each week)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Alert me when spending reaches:</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alert50" checked>
+                                <span>50%</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alert80" checked>
+                                <span>80%</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="alert100" checked>
+                                <span>100% (exceeded)</span>
+                            </label>
+                        </div>
+                        <small class="field-hint">You'll see visual warnings when thresholds are reached</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeBudgetModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        💰 Set Budget
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div id="analyticsModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>📊 Expense Analytics</h2>
+                <button class="modal-close" onclick="closeAnalyticsModal()">&times;</button>
+            </div>
+            
+            <div class="analytics-container">
+                <!-- Timeframe selector -->
+                <div class="timeframe-selector" style="margin-bottom: 2rem;">
+                    <button class="btn-timeframe active" onclick="switchTimeframe('week')">Week</button>
+                    <button class="btn-timeframe" onclick="switchTimeframe('month')">Month</button>
+                    <button class="btn-timeframe" onclick="switchTimeframe('year')">Year</button>
+                    <button class="btn-timeframe" onclick="switchTimeframe('all')">All Time</button>
+                </div>
+
+                <!-- Summary Stats -->
+                <div id="analyticsStats" class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Charts -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 1rem;">By Category</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 1rem;">By Member</h3>
+                        <canvas id="memberChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">Spending Over Time</h3>
+                    <canvas id="timelineChart"></canvas>
+                </div>
+
+                <!-- Export Options -->
+                <div class="export-section" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
+                    <h3 style="margin-bottom: 1rem;">📥 Export Data</h3>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-secondary" onclick="exportToCSV()">
+                            📄 Export to CSV
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportToPDF()">
+                            📑 Export to PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

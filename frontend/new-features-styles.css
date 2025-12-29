@@ -1,0 +1,284 @@
+/* ============================================
+   NEW FEATURES STYLES
+   Recurring Expenses, Budget, Analytics
+   ============================================ */
+
+/* Quick Actions Grid */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: white;
+    text-align: left;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.quick-action-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.quick-action-text {
+    flex: 1;
+}
+
+.quick-action-text strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.quick-action-text small {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+/* Badge Count */
+.badge-count {
+    background: #667eea;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* Recurring Expenses List */
+.recurring-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.recurring-card {
+    background: rgba(102, 126, 234, 0.1);
+    border-left: 3px solid #667eea;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.recurring-card:hover {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+.btn-icon-small {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s ease;
+}
+
+.btn-icon-small:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Timeframe Selector */
+.timeframe-selector {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-timeframe {
+    padding: 0.5rem 1.25rem;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-timeframe:hover {
+    border-color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.9);
+}
+
+.btn-timeframe.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+}
+
+/* Analytics Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* Chart Containers */
+.chart-container {
+    background: rgba(255,255,255,0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.chart-container h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.9);
+}
+
+/* Budget Info Box */
+.budget-info-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.budget-info-box h3 {
+    color: white;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.budget-info-box p {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Modal Large */
+.modal-large {
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Checkbox Labels */
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.checkbox-label input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* Export Section */
+.export-section {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 1.5rem;
+}
+
+.export-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.9);
+}
+
+/* Analytics Container */
+.analytics-container {
+    padding: 1rem 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .modal-large {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .analytics-container > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .timeframe-selector {
+        gap: 0.25rem;
+    }
+    
+    .btn-timeframe {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Member Checkbox List */
+.member-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.member-checkbox:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.member-checkbox input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.member-checkbox span {
+    flex: 1;
+    color: rgba(255,255,255,0.9);
+}
+
+/* Field Hint */
+.field-hint {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+}

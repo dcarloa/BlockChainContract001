@@ -2443,6 +2443,17 @@ async function loadSimpleModeDetailView() {
         // Load expenses (acts as "history" tab)
         await loadSimpleModeExpenses();
         
+        console.log("📍 Step 7.5: Loading new features...");
+        // Load new features: recurring expenses, budget status
+        await loadRecurringExpenses();
+        await loadBudgetStatus();
+        
+        // Show quick actions
+        const quickActions = document.getElementById('simpleQuickActions');
+        if (quickActions) {
+            quickActions.style.display = 'grid';
+        }
+        
         console.log("📍 Step 8: Switching to history tab...");
         // Switch to expenses tab by default
         switchFundTab('history');
@@ -6263,4 +6274,614 @@ function toggleExpenseDetails(expenseId) {
         expandIcon.textContent = '▼';
         card.classList.remove('expanded');
     }
+}
+// ============================================
+// RECURRING EXPENSES
+// ============================================
+
+function showRecurringExpenseModal() {
+    const modal = document.getElementById('recurringExpenseModal');
+    modal.style.display = 'flex';
+    populateRecurringMembers();
+}
+
+function closeRecurringExpenseModal() {
+    const modal = document.getElementById('recurringExpenseModal');
+    modal.style.display = 'none';
+    document.getElementById('recurringExpenseForm').reset();
+}
+
+function updateRecurringFrequencyOptions() {
+    const frequency = document.getElementById('recurringFrequency').value;
+    const dayOfMonthField = document.getElementById('dayOfMonthField');
+    const dayOfWeekField = document.getElementById('dayOfWeekField');
+    
+    if (frequency === 'monthly') {
+        dayOfMonthField.style.display = 'block';
+        dayOfWeekField.style.display = 'none';
+    } else if (frequency === 'weekly') {
+        dayOfMonthField.style.display = 'none';
+        dayOfWeekField.style.display = 'block';
+    } else {
+        dayOfMonthField.style.display = 'none';
+        dayOfWeekField.style.display = 'none';
+    }
+}
+
+function updateRecurringCurrencySymbol() {
+    const currency = document.getElementById('recurringCurrency').value;
+    document.getElementById('recurringCurrencySymbol').textContent = CURRENCY_SYMBOLS[currency] || '$';
+}
+
+function populateRecurringMembers() {
+    const paidByContainer = document.getElementById('recurringPaidBy');
+    const splitContainer = document.getElementById('recurringSplitBetween');
+    
+    if (!currentFund || !currentFund.members) return;
+    
+    const currentUserId = firebase.auth().currentUser?.uid;
+    const members = Object.entries(currentFund.members);
+    
+    // Populate paid by (checkboxes)
+    paidByContainer.innerHTML = members.map(([uid, member]) => `
+        <label class="member-checkbox">
+            <input type="checkbox" name="recurringPaidBy" value="${uid}" ${uid === currentUserId ? 'checked' : ''}>
+            <span>${member.name || member.email}</span>
+        </label>
+    `).join('');
+    
+    // Populate split between (checkboxes - all checked by default)
+    splitContainer.innerHTML = members.map(([uid, member]) => `
+        <label class="member-checkbox">
+            <input type="checkbox" name="recurringSplitBetween" value="${uid}" checked>
+            <span>${member.name || member.email}</span>
+        </label>
+    `).join('');
+}
+
+// Handle recurring expense form submission
+document.addEventListener('DOMContentLoaded', () => {
+    const recurringForm = document.getElementById('recurringExpenseForm');
+    if (recurringForm) {
+        recurringForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const description = document.getElementById('recurringDescription').value.trim();
+                const amount = parseFloat(document.getElementById('recurringAmount').value);
+                const currency = document.getElementById('recurringCurrency').value;
+                const frequency = document.getElementById('recurringFrequency').value;
+                const dayOfMonth = parseInt(document.getElementById('recurringDayOfMonth').value);
+                const dayOfWeek = parseInt(document.getElementById('recurringDayOfWeek').value);
+                
+                // Get paidBy (can be multiple)
+                const paidByCheckboxes = document.querySelectorAll('input[name="recurringPaidBy"]:checked');
+                const paidBy = Array.from(paidByCheckboxes).map(cb => cb.value);
+                
+                // Get splitBetween
+                const splitCheckboxes = document.querySelectorAll('input[name="recurringSplitBetween"]:checked');
+                const splitBetween = Array.from(splitCheckboxes).map(cb => cb.value);
+                
+                if (paidBy.length === 0) {
+                    showToast('Please select who pays this recurring expense', 'warning');
+                    return;
+                }
+                
+                if (splitBetween.length === 0) {
+                    showToast('Please select who splits this recurring expense', 'warning');
+                    return;
+                }
+                
+                // Get paidByName(s)
+                const paidByNames = paidBy.map(uid => {
+                    const member = currentFund.members[uid];
+                    return member?.name || member?.email || uid;
+                });
+                const paidByName = paidByNames.join(' & ');
+                
+                showLoading('Creating recurring expense...');
+                
+                window.modeManager.currentGroupId = currentFund.fundId;
+                
+                await window.modeManager.createRecurringExpense({
+                    description,
+                    amount,
+                    currency,
+                    frequency,
+                    dayOfMonth,
+                    dayOfWeek,
+                    paidBy,
+                    paidByName,
+                    splitBetween
+                });
+                
+                hideLoading();
+                showToast('✅ Recurring expense created!', 'success');
+                closeRecurringExpenseModal();
+                
+                // Reload recurring expenses list
+                await loadRecurringExpenses();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error creating recurring expense:', error);
+                showToast('Error: ' + error.message, 'error');
+            }
+        });
+    }
+});
+
+async function loadRecurringExpenses() {
+    try {
+        if (!currentFund || !currentFund.fundId) return;
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const recurring = await window.modeManager.loadRecurringExpenses();
+        
+        const section = document.getElementById('recurringExpensesSection');
+        const list = document.getElementById('recurringExpensesList');
+        const count = document.getElementById('recurringCount');
+        
+        if (!recurring || recurring.length === 0) {
+            section.style.display = 'none';
+            return;
+        }
+        
+        section.style.display = 'block';
+        count.textContent = recurring.length;
+        
+        list.innerHTML = recurring.map(rec => {
+            const frequencyIcons = { daily: '📅', weekly: '📆', monthly: '🗓️' };
+            const icon = frequencyIcons[rec.frequency] || '🔄';
+            const nextDue = new Date(rec.nextDue).toLocaleDateString();
+            
+            return `
+                <div class="recurring-card" style="background: rgba(102, 126, 234, 0.1); border-left: 3px solid #667eea; padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span style="font-size: 1.2rem;">${icon}</span>
+                                <strong style="font-size: 1rem;">${rec.description}</strong>
+                            </div>
+                            <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                                <span style="color: #667eea; font-weight: bold;">${formatCurrency(rec.amount, rec.currency)}</span>
+                                • ${capitalizeFirst(rec.frequency)}
+                                • Next: ${nextDue}
+                            </div>
+                            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.25rem;">
+                                Paid by: ${rec.paidByName}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-icon-small" onclick="toggleRecurringExpense('${rec.id}')" title="${rec.isActive ? 'Pause' : 'Resume'}">
+                                ${rec.isActive ? '⏸️' : '▶️'}
+                            </button>
+                            <button class="btn-icon-small" onclick="deleteRecurringExpense('${rec.id}')" title="Delete">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading recurring expenses:', error);
+    }
+}
+
+function capitalizeFirst(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+async function toggleRecurringExpense(recurringId) {
+    try {
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const recurring = await window.FirebaseConfig.readDb(
+            `groups/${currentFund.fundId}/recurringExpenses/${recurringId}`
+        );
+        
+        await window.modeManager.updateRecurringExpense(recurringId, {
+            isActive: !recurring.isActive
+        });
+        
+        showToast(recurring.isActive ? 'Recurring expense paused' : 'Recurring expense resumed', 'success');
+        await loadRecurringExpenses();
+        
+    } catch (error) {
+        console.error('Error toggling recurring expense:', error);
+        showToast('Error updating recurring expense', 'error');
+    }
+}
+
+async function deleteRecurringExpense(recurringId) {
+    try {
+        const confirmed = confirm('Delete this recurring expense? Past expenses created by it will remain.');
+        if (!confirmed) return;
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        await window.modeManager.deleteRecurringExpense(recurringId);
+        
+        showToast('Recurring expense deleted', 'success');
+        await loadRecurringExpenses();
+        
+    } catch (error) {
+        console.error('Error deleting recurring expense:', error);
+        showToast('Error deleting recurring expense', 'error');
+    }
+}
+
+// ============================================
+// BUDGET
+// ============================================
+
+function showBudgetModal() {
+    const modal = document.getElementById('budgetModal');
+    modal.style.display = 'flex';
+    loadCurrentBudget();
+}
+
+function closeBudgetModal() {
+    const modal = document.getElementById('budgetModal');
+    modal.style.display = 'none';
+    document.getElementById('budgetForm').reset();
+}
+
+function updateBudgetCurrencySymbol() {
+    const currency = document.getElementById('budgetCurrency').value;
+    document.getElementById('budgetCurrencySymbol').textContent = CURRENCY_SYMBOLS[currency] || '$';
+}
+
+async function loadCurrentBudget() {
+    try {
+        if (!currentFund || !currentFund.fundId) return;
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const budget = await window.modeManager.loadGroupBudget();
+        
+        if (budget && budget.enabled) {
+            document.getElementById('budgetAmount').value = budget.amount;
+            document.getElementById('budgetCurrency').value = budget.currency;
+            document.getElementById('budgetPeriod').value = budget.period;
+            updateBudgetCurrencySymbol();
+        }
+    } catch (error) {
+        console.error('Error loading current budget:', error);
+    }
+}
+
+// Handle budget form submission
+document.addEventListener('DOMContentLoaded', () => {
+    const budgetForm = document.getElementById('budgetForm');
+    if (budgetForm) {
+        budgetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const amount = parseFloat(document.getElementById('budgetAmount').value);
+                const currency = document.getElementById('budgetCurrency').value;
+                const period = document.getElementById('budgetPeriod').value;
+                
+                const alertThresholds = [];
+                if (document.getElementById('alert50').checked) alertThresholds.push(50);
+                if (document.getElementById('alert80').checked) alertThresholds.push(80);
+                if (document.getElementById('alert100').checked) alertThresholds.push(100);
+                
+                showLoading('Setting budget...');
+                
+                window.modeManager.currentGroupId = currentFund.fundId;
+                
+                await window.modeManager.setGroupBudget({
+                    amount,
+                    currency,
+                    period,
+                    alertThresholds
+                });
+                
+                hideLoading();
+                showToast('✅ Budget set successfully!', 'success');
+                closeBudgetModal();
+                
+                // Reload budget status
+                await loadBudgetStatus();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error setting budget:', error);
+                showToast('Error: ' + error.message, 'error');
+            }
+        });
+    }
+});
+
+async function loadBudgetStatus() {
+    try {
+        if (!currentFund || !currentFund.fundId) return;
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const status = await window.modeManager.calculateBudgetStatus();
+        
+        const statusBar = document.getElementById('budgetStatusBar');
+        
+        if (!status) {
+            statusBar.style.display = 'none';
+            return;
+        }
+        
+        statusBar.style.display = 'block';
+        
+        const progressColor = status.status === 'exceeded' ? '#ef4444' : 
+                             status.status === 'warning' ? '#f59e0b' : '#10b981';
+        
+        const progressWidth = Math.min(status.percentage, 100);
+        
+        statusBar.innerHTML = `
+            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; border-left: 4px solid ${progressColor};">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h4 style="margin: 0; font-size: 1rem; color: rgba(255,255,255,0.9);">💰 Budget Tracker</h4>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
+                            ${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)}
+                        </p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: ${progressColor};">
+                            ${status.percentage.toFixed(0)}%
+                        </div>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">
+                            ${status.remaining >= 0 ? formatCurrency(status.remaining, status.currency) + ' left' : 'Exceeded by ' + formatCurrency(Math.abs(status.remaining), status.currency)}
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(0,0,0,0.3); height: 12px; border-radius: 6px; overflow: hidden;">
+                    <div style="background: ${progressColor}; height: 100%; width: ${progressWidth}%; transition: width 0.3s ease;"></div>
+                </div>
+                
+                ${status.status === 'exceeded' ? 
+                    `<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 3px solid #ef4444;">
+                        <strong style="color: #ef4444;">⚠️ Budget Exceeded!</strong>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
+                            You've spent ${formatCurrency(status.spent - status.budget, status.currency)} over budget.
+                        </p>
+                    </div>` : 
+                status.status === 'warning' ?
+                    `<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 3px solid #f59e0b;">
+                        <strong style="color: #f59e0b;">⚡ Warning: Approaching Limit</strong>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
+                            You're at ${status.percentage.toFixed(0)}% of your budget. Consider slowing down spending.
+                        </p>
+                    </div>` : ''}
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('Error loading budget status:', error);
+    }
+}
+
+// ============================================
+// ANALYTICS
+// ============================================
+
+let currentTimeframe = 'month';
+let analyticsCharts = {};
+
+function showAnalyticsModal() {
+    const modal = document.getElementById('analyticsModal');
+    modal.style.display = 'flex';
+    loadAnalytics(currentTimeframe);
+}
+
+function closeAnalyticsModal() {
+    const modal = document.getElementById('analyticsModal');
+    modal.style.display = 'none';
+    
+    // Destroy charts
+    Object.values(analyticsCharts).forEach(chart => {
+        if (chart) chart.destroy();
+    });
+    analyticsCharts = {};
+}
+
+function switchTimeframe(timeframe) {
+    currentTimeframe = timeframe;
+    
+    // Update button states
+    document.querySelectorAll('.btn-timeframe').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    loadAnalytics(timeframe);
+}
+
+async function loadAnalytics(timeframe) {
+    try {
+        if (!currentFund || !currentFund.fundId) return;
+        
+        showLoading('Generating analytics...');
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const analytics = await window.modeManager.generateAnalytics(timeframe);
+        
+        // Update stats
+        const statsContainer = document.getElementById('analyticsStats');
+        statsContainer.innerHTML = `
+            <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px;">
+                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Total Spent</div>
+                <div style="font-size: 2rem; font-weight: bold; color: white;">$${analytics.totalSpent.toFixed(2)}</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 1.5rem; border-radius: 12px;">
+                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Expenses</div>
+                <div style="font-size: 2rem; font-weight: bold; color: white;">${analytics.expenseCount}</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 1.5rem; border-radius: 12px;">
+                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Average</div>
+                <div style="font-size: 2rem; font-weight: bold; color: white;">$${analytics.averageExpense.toFixed(2)}</div>
+            </div>
+        `;
+        
+        // Render charts
+        renderCategoryChart(analytics.byCategory);
+        renderMemberChart(analytics.byMember);
+        renderTimelineChart(analytics.byMonth);
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error('Error loading analytics:', error);
+        showToast('Error loading analytics', 'error');
+    }
+}
+
+function renderCategoryChart(byCategory) {
+    const ctx = document.getElementById('categoryChart');
+    if (!ctx) return;
+    
+    // Destroy previous chart
+    if (analyticsCharts.category) analyticsCharts.category.destroy();
+    
+    const labels = Object.keys(byCategory);
+    const data = Object.values(byCategory);
+    
+    analyticsCharts.category = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels.map(l => capitalizeFirst(l)),
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    '#667eea', '#f093fb', '#4facfe', '#fa709a',
+                    '#764ba2', '#f5576c', '#00f2fe', '#fee140'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: 'rgba(255,255,255,0.8)' }
+                }
+            }
+        }
+    });
+}
+
+function renderMemberChart(byMember) {
+    const ctx = document.getElementById('memberChart');
+    if (!ctx) return;
+    
+    if (analyticsCharts.member) analyticsCharts.member.destroy();
+    
+    const labels = Object.keys(byMember);
+    const data = Object.values(byMember);
+    
+    analyticsCharts.member = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Amount Paid',
+                data: data,
+                backgroundColor: '#667eea'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: 'rgba(255,255,255,0.8)' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
+                },
+                x: {
+                    ticks: { color: 'rgba(255,255,255,0.8)' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
+                }
+            }
+        }
+    });
+}
+
+function renderTimelineChart(byMonth) {
+    const ctx = document.getElementById('timelineChart');
+    if (!ctx) return;
+    
+    if (analyticsCharts.timeline) analyticsCharts.timeline.destroy();
+    
+    const labels = Object.keys(byMonth).sort();
+    const data = labels.map(month => byMonth[month]);
+    
+    analyticsCharts.timeline = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Monthly Spending',
+                data: data,
+                borderColor: '#4facfe',
+                backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: 'rgba(255,255,255,0.8)' }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: 'rgba(255,255,255,0.8)' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
+                },
+                x: {
+                    ticks: { color: 'rgba(255,255,255,0.8)' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
+                }
+            }
+        }
+    });
+}
+
+async function exportToCSV() {
+    try {
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const analytics = await window.modeManager.generateAnalytics('all');
+        
+        // Create CSV content
+        let csv = 'Category,Amount\n';
+        Object.entries(analytics.byCategory).forEach(([cat, amount]) => {
+            csv += `${cat},${amount}\n`;
+        });
+        
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${currentFund.name}_analytics_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        
+        showToast('✅ CSV exported', 'success');
+        
+    } catch (error) {
+        console.error('Error exporting CSV:', error);
+        showToast('Error exporting CSV', 'error');
+    }
+}
+
+function exportToPDF() {
+    showToast('PDF export coming soon!', 'info');
 }

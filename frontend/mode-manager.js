@@ -211,6 +211,338 @@ class ModeManager {
         }
     }
     
+    // ============================================
+    // RECURRING EXPENSES
+    // ============================================
+    
+    /**
+     * Create recurring expense
+     * @param {Object} recurringInfo Recurring expense information
+     * @returns {Promise<string>} Recurring expense ID
+     */
+    async createRecurringExpense(recurringInfo) {
+        try {
+            if (!window.FirebaseConfig.isAuthenticated()) {
+                throw new Error("User must be authenticated");
+            }
+            
+            const recurringId = `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            
+            const recurring = {
+                id: recurringId,
+                description: recurringInfo.description,
+                amount: recurringInfo.amount,
+                currency: recurringInfo.currency || 'USD',
+                frequency: recurringInfo.frequency, // 'daily', 'weekly', 'monthly'
+                dayOfMonth: recurringInfo.dayOfMonth || 1, // For monthly
+                dayOfWeek: recurringInfo.dayOfWeek || 1, // For weekly (1=Monday, 7=Sunday)
+                paidBy: recurringInfo.paidBy,
+                paidByName: recurringInfo.paidByName,
+                splitBetween: recurringInfo.splitBetween,
+                category: recurringInfo.category || 'recurring',
+                isActive: true,
+                createdAt: Date.now(),
+                lastCreated: null, // Timestamp of last auto-created expense
+                nextDue: this.calculateNextDue(recurringInfo.frequency, recurringInfo.dayOfMonth, recurringInfo.dayOfWeek)
+            };
+            
+            await window.FirebaseConfig.writeDb(
+                `groups/${this.currentGroupId}/recurringExpenses/${recurringId}`,
+                recurring
+            );
+            
+            console.log("✅ Recurring expense created:", recurringId);
+            return recurringId;
+            
+        } catch (error) {
+            console.error("❌ Failed to create recurring expense:", error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Calculate next due date for recurring expense
+     */
+    calculateNextDue(frequency, dayOfMonth, dayOfWeek) {
+        const now = new Date();
+        const next = new Date();
+        
+        switch(frequency) {
+            case 'daily':
+                next.setDate(now.getDate() + 1);
+                break;
+            case 'weekly':
+                const currentDay = now.getDay(); // 0=Sunday, 6=Saturday
+                const targetDay = dayOfWeek === 7 ? 0 : dayOfWeek; // Convert to JS format
+                const daysUntilNext = (targetDay - currentDay + 7) % 7 || 7;
+                next.setDate(now.getDate() + daysUntilNext);
+                break;
+            case 'monthly':
+                next.setMonth(now.getMonth() + 1);
+                next.setDate(dayOfMonth);
+                if (next < now) {
+                    next.setMonth(next.getMonth() + 1);
+                }
+                break;
+        }
+        
+        return next.getTime();
+    }
+    
+    /**
+     * Update recurring expense
+     */
+    async updateRecurringExpense(recurringId, updates) {
+        try {
+            await window.FirebaseConfig.updateDb(
+                `groups/${this.currentGroupId}/recurringExpenses/${recurringId}`,
+                updates
+            );
+            console.log("✅ Recurring expense updated");
+            return true;
+        } catch (error) {
+            console.error("❌ Failed to update recurring expense:", error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Delete recurring expense
+     */
+    async deleteRecurringExpense(recurringId) {
+        try {
+            await window.FirebaseConfig.updateDb(
+                `groups/${this.currentGroupId}/recurringExpenses/${recurringId}`,
+                { isActive: false }
+            );
+            console.log("✅ Recurring expense deactivated");
+            return true;
+        } catch (error) {
+            console.error("❌ Failed to delete recurring expense:", error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Load all recurring expenses for group
+     */
+    async loadRecurringExpenses() {
+        try {
+            const recurring = await window.FirebaseConfig.readDb(
+                `groups/${this.currentGroupId}/recurringExpenses`
+            );
+            
+            if (!recurring) return [];
+            
+            return Object.values(recurring).filter(r => r.isActive);
+        } catch (error) {
+            console.error("❌ Failed to load recurring expenses:", error);
+            return [];
+        }
+    }
+    
+    // ============================================
+    // GROUP BUDGET
+    // ============================================
+    
+    /**
+     * Set group budget
+     */
+    async setGroupBudget(budgetInfo) {
+        try {
+            const budget = {
+                enabled: true,
+                amount: budgetInfo.amount,
+                currency: budgetInfo.currency || 'USD',
+                period: budgetInfo.period || 'monthly', // 'trip', 'monthly', 'weekly'
+                startDate: budgetInfo.startDate || Date.now(),
+                endDate: budgetInfo.endDate || null,
+                alertThresholds: budgetInfo.alertThresholds || [50, 80, 100], // % thresholds
+                notifiedAt: {}, // Track which thresholds have been notified
+                createdAt: Date.now()
+            };
+            
+            await window.FirebaseConfig.writeDb(
+                `groups/${this.currentGroupId}/budget`,
+                budget
+            );
+            
+            console.log("✅ Budget set:", budget);
+            return true;
+        } catch (error) {
+            console.error("❌ Failed to set budget:", error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Load group budget
+     */
+    async loadGroupBudget() {
+        try {
+            const budget = await window.FirebaseConfig.readDb(
+                `groups/${this.currentGroupId}/budget`
+            );
+            return budget;
+        } catch (error) {
+            console.error("❌ Failed to load budget:", error);
+            return null;
+        }
+    }
+    
+    /**
+     * Calculate budget status
+     */
+    async calculateBudgetStatus() {
+        try {
+            const budget = await this.loadGroupBudget();
+            if (!budget || !budget.enabled) {
+                return null;
+            }
+            
+            // Load all expenses
+            const expenses = await window.FirebaseConfig.readDb(
+                `groups/${this.currentGroupId}/expenses`
+            );
+            
+            if (!expenses) {
+                return {
+                    budget: budget.amount,
+                    spent: 0,
+                    remaining: budget.amount,
+                    percentage: 0,
+                    currency: budget.currency,
+                    status: 'good' // 'good', 'warning', 'exceeded'
+                };
+            }
+            
+            // Calculate total spent (filter by budget period if needed)
+            let totalSpent = 0;
+            Object.values(expenses).forEach(expense => {
+                if (expense.status === 'approved') {
+                    // Convert to budget currency if needed (simplified - same currency for now)
+                    if (expense.currency === budget.currency) {
+                        totalSpent += expense.amount;
+                    }
+                }
+            });
+            
+            const remaining = budget.amount - totalSpent;
+            const percentage = (totalSpent / budget.amount) * 100;
+            
+            let status = 'good';
+            if (percentage >= 100) status = 'exceeded';
+            else if (percentage >= 80) status = 'warning';
+            
+            return {
+                budget: budget.amount,
+                spent: totalSpent,
+                remaining: remaining,
+                percentage: percentage,
+                currency: budget.currency,
+                status: status,
+                alertThresholds: budget.alertThresholds
+            };
+            
+        } catch (error) {
+            console.error("❌ Failed to calculate budget status:", error);
+            return null;
+        }
+    }
+    
+    // ============================================
+    // ANALYTICS
+    // ============================================
+    
+    /**
+     * Generate expense analytics
+     */
+    async generateAnalytics(timeframe = 'all') {
+        try {
+            const expenses = await window.FirebaseConfig.readDb(
+                `groups/${this.currentGroupId}/expenses`
+            );
+            
+            if (!expenses) {
+                return {
+                    totalSpent: 0,
+                    expenseCount: 0,
+                    byCategory: {},
+                    byMember: {},
+                    byMonth: {},
+                    byCurrency: {},
+                    averageExpense: 0
+                };
+            }
+            
+            const expenseList = Object.values(expenses).filter(e => e.status === 'approved');
+            
+            // Apply timeframe filter
+            const now = Date.now();
+            const filteredExpenses = expenseList.filter(expense => {
+                if (timeframe === 'all') return true;
+                
+                const expenseTime = expense.timestamp;
+                const dayMs = 24 * 60 * 60 * 1000;
+                
+                switch(timeframe) {
+                    case 'week':
+                        return (now - expenseTime) <= (7 * dayMs);
+                    case 'month':
+                        return (now - expenseTime) <= (30 * dayMs);
+                    case 'year':
+                        return (now - expenseTime) <= (365 * dayMs);
+                    default:
+                        return true;
+                }
+            });
+            
+            // Calculate analytics
+            let totalSpent = 0;
+            const byCategory = {};
+            const byMember = {};
+            const byMonth = {};
+            const byCurrency = {};
+            
+            filteredExpenses.forEach(expense => {
+                const amount = expense.amount;
+                totalSpent += amount;
+                
+                // By category
+                const category = expense.category || 'other';
+                byCategory[category] = (byCategory[category] || 0) + amount;
+                
+                // By member (who paid)
+                const paidBy = expense.paidByName || expense.paidBy;
+                byMember[paidBy] = (byMember[paidBy] || 0) + amount;
+                
+                // By month
+                const date = new Date(expense.timestamp);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                byMonth[monthKey] = (byMonth[monthKey] || 0) + amount;
+                
+                // By currency
+                const currency = expense.currency || 'USD';
+                byCurrency[currency] = (byCurrency[currency] || 0) + amount;
+            });
+            
+            return {
+                totalSpent,
+                expenseCount: filteredExpenses.length,
+                byCategory,
+                byMember,
+                byMonth,
+                byCurrency,
+                averageExpense: filteredExpenses.length > 0 ? totalSpent / filteredExpenses.length : 0,
+                timeframe
+            };
+            
+        } catch (error) {
+            console.error("❌ Failed to generate analytics:", error);
+            throw error;
+        }
+    }
+    
     /**
      * Approve or reject an expense
      * @param {string} expenseId Expense ID
