@@ -1253,11 +1253,42 @@ async function loadAllFundsDetails() {
 function updateStats() {
     const createdCount = allUserFunds.filter(f => f.isCreator).length;
     const participatingCount = allUserFunds.length;
-    const totalValue = allUserFunds.reduce((sum, f) => sum + parseFloat(f.balance || 0), 0);
+    
+    // Calculate total spent in USD from Simple Mode groups
+    let totalUSD = 0;
+    const simpleFunds = allUserFunds.filter(f => f.mode === 'simple');
+    
+    for (const fund of simpleFunds) {
+        if (fund.expenses) {
+            Object.values(fund.expenses).forEach(expense => {
+                if (expense.status === 'approved') {
+                    const amount = expense.amount || 0;
+                    const currency = expense.currency || 'USD';
+                    
+                    // Simple conversion (can be enhanced with real rates)
+                    if (currency === 'USD') {
+                        totalUSD += amount;
+                    } else if (currency === 'EUR') {
+                        totalUSD += amount * 1.1; // Approximate conversion
+                    } else if (currency === 'GBP') {
+                        totalUSD += amount * 1.27;
+                    } else if (currency === 'MXN') {
+                        totalUSD += amount * 0.05;
+                    } else if (currency === 'COP') {
+                        totalUSD += amount * 0.00025;
+                    } else if (currency === 'BRL') {
+                        totalUSD += amount * 0.2;
+                    } else {
+                        totalUSD += amount; // Default to USD
+                    }
+                }
+            });
+        }
+    }
     
     document.getElementById('totalFundsCreated').textContent = createdCount;
     document.getElementById('totalFundsParticipating').textContent = participatingCount;
-    document.getElementById('totalValueLocked').textContent = formatEth(totalValue);
+    document.getElementById('totalValueLocked').textContent = `$${totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     
     // Update filter counts
     document.getElementById('countAll').textContent = allUserFunds.length;
@@ -4264,6 +4295,21 @@ const CURRENCY_SYMBOLS = {
     'CHF': 'CHF'
 };
 
+/**
+ * Format currency with symbol
+ * @param {number} amount - The amount to format
+ * @param {string} currency - Currency code (USD, EUR, etc.)
+ * @returns {string} Formatted currency string
+ */
+function formatCurrency(amount, currency = 'USD') {
+    const symbol = CURRENCY_SYMBOLS[currency] || '$';
+    const formattedAmount = amount.toLocaleString('en-US', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+    });
+    return `${symbol}${formattedAmount}`;
+}
+
 // Cache for exchange rates
 let exchangeRatesCache = null;
 let exchangeRatesCacheTime = null;
@@ -4431,12 +4477,16 @@ async function handleExpenseSubmission(event) {
         });
         const paidByName = paidByNames.join(' & ');
 
+        // Get category from form
+        const categoryElement = document.getElementById('expenseCategory');
+        const category = categoryElement ? categoryElement.value : 'other';
+
         // Create expense object
         const expenseInfo = {
             description,
             amount,
             splitBetween,
-            category: 'other',
+            category,
             notes,
             receipt: null,
             date: date || new Date().toISOString().split('T')[0], // Include date
@@ -6354,6 +6404,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dayOfMonth = parseInt(document.getElementById('recurringDayOfMonth').value);
                 const dayOfWeek = parseInt(document.getElementById('recurringDayOfWeek').value);
                 
+                // Get category
+                const categoryElement = document.getElementById('recurringCategory');
+                const category = categoryElement ? categoryElement.value : 'housing';
+                
                 // Get paidBy (can be multiple)
                 const paidByCheckboxes = document.querySelectorAll('input[name="recurringPaidBy"]:checked');
                 const paidBy = Array.from(paidByCheckboxes).map(cb => cb.value);
@@ -6387,6 +6441,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     description,
                     amount,
                     currency,
+                    category,
                     frequency,
                     dayOfMonth,
                     dayOfWeek,
@@ -6511,6 +6566,257 @@ async function deleteRecurringExpense(recurringId) {
     }
 }
 
+// Show manage recurring expenses modal
+function showManageRecurringModal() {
+    const modal = document.getElementById('manageRecurringModal');
+    modal.style.display = 'flex';
+    loadAllRecurringExpenses();
+}
+
+function closeManageRecurringModal() {
+    const modal = document.getElementById('manageRecurringModal');
+    modal.style.display = 'none';
+}
+
+async function loadAllRecurringExpenses() {
+    try {
+        if (!currentFund || !currentFund.fundId) return;
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const recurring = await window.modeManager.loadRecurringExpenses();
+        
+        const container = document.getElementById('manageRecurringList');
+        if (!recurring || recurring.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.6);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                    <p>No recurring expenses yet</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        Create one to automatically track rent, subscriptions, or other regular payments
+                    </p>
+                </div>
+            `;
+            return;
+        }
+        
+        const getCategoryIcon = (category) => {
+            const icons = {
+                'food': '🍕',
+                'transport': '🚗',
+                'housing': '🏠',
+                'utilities': '💡',
+                'entertainment': '🎬',
+                'shopping': '🛍️',
+                'health': '⚕️',
+                'travel': '✈️',
+                'subscription': '📺',
+                'other': '🎯'
+            };
+            return icons[category] || '🎯';
+        };
+        
+        container.innerHTML = recurring.map(rec => {
+            const icon = getCategoryIcon(rec.category);
+            const statusBadge = rec.isActive 
+                ? '<span class="status-badge status-active">● Active</span>'
+                : '<span class="status-badge status-paused">⏸ Paused</span>';
+            
+            const nextDue = new Date(rec.nextDue).toLocaleDateString();
+            const daysUntil = Math.ceil((new Date(rec.nextDue) - new Date()) / (1000 * 60 * 60 * 24));
+            const daysText = daysUntil > 0 
+                ? `in ${daysUntil} day${daysUntil > 1 ? 's' : ''}`
+                : daysUntil === 0 
+                    ? 'today'
+                    : `${Math.abs(daysUntil)} day${Math.abs(daysUntil) > 1 ? 's' : ''} ago`;
+            
+            return `
+                <div class="recurring-card-manage" onclick="showRecurringDetails('${rec.id}')" style="cursor: pointer; margin-bottom: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="font-size: 2rem;">${icon}</div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                                <strong style="font-size: 1.1rem;">${rec.description}</strong>
+                                ${statusBadge}
+                            </div>
+                            <div style="display: flex; gap: 2rem; flex-wrap: wrap; font-size: 0.9rem; color: rgba(255,255,255,0.8);">
+                                <div>
+                                    <span style="color: rgba(255,255,255,0.6);">Amount:</span>
+                                    <strong style="color: #667eea; margin-left: 0.25rem;">${formatCurrency(rec.amount, rec.currency)}</strong>
+                                </div>
+                                <div>
+                                    <span style="color: rgba(255,255,255,0.6);">Frequency:</span>
+                                    <strong style="margin-left: 0.25rem;">${capitalizeFirst(rec.frequency)}</strong>
+                                </div>
+                                <div>
+                                    <span style="color: rgba(255,255,255,0.6);">Next Due:</span>
+                                    <strong style="margin-left: 0.25rem;">${nextDue} (${daysText})</strong>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.5rem;">
+                                Paid by: ${rec.paidByName} • Split: ${rec.splitBetween.length} member${rec.splitBetween.length > 1 ? 's' : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading all recurring expenses:', error);
+    }
+}
+
+async function showRecurringDetails(recurringId) {
+    try {
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const rec = await window.FirebaseConfig.readDb(
+            `groups/${currentFund.fundId}/recurringExpenses/${recurringId}`
+        );
+        
+        if (!rec) {
+            showToast('Recurring expense not found', 'error');
+            return;
+        }
+        
+        const icon = {
+            'food': '🍕', 'transport': '🚗', 'housing': '🏠', 'utilities': '💡',
+            'entertainment': '🎬', 'shopping': '🛍️', 'health': '⚕️', 'travel': '✈️',
+            'subscription': '📺', 'other': '🎯'
+        }[rec.category] || '🎯';
+        
+        const statusBadge = rec.isActive 
+            ? '<span class="status-badge status-active">● Active</span>'
+            : '<span class="status-badge status-paused">⏸ Paused</span>';
+        
+        const nextDue = new Date(rec.nextDue).toLocaleDateString();
+        const daysUntil = Math.ceil((new Date(rec.nextDue) - new Date()) / (1000 * 60 * 60 * 24));
+        const daysText = daysUntil > 0 
+            ? `in ${daysUntil} day${daysUntil > 1 ? 's' : ''}`
+            : daysUntil === 0 
+                ? 'today'
+                : `${Math.abs(daysUntil)} day${Math.abs(daysUntil) > 1 ? 's' : ''} ago`;
+        
+        // Get member names
+        const splitNames = rec.splitBetween.map(uid => {
+            const member = currentFund.members[uid];
+            return member?.name || member?.email || uid;
+        }).join(', ');
+        
+        const frequencyText = rec.frequency === 'weekly' && rec.dayOfWeek !== undefined
+            ? `${capitalizeFirst(rec.frequency)} (${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][rec.dayOfWeek]})`
+            : rec.frequency === 'monthly' && rec.dayOfMonth
+                ? `${capitalizeFirst(rec.frequency)} (Day ${rec.dayOfMonth})`
+                : capitalizeFirst(rec.frequency);
+        
+        const content = document.getElementById('recurringDetailsContent');
+        content.innerHTML = `
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">${icon}</div>
+                <h3 style="margin: 0; font-size: 1.5rem;">${rec.description}</h3>
+                <div style="margin-top: 0.5rem;">${statusBadge}</div>
+            </div>
+            
+            <div style="background: rgba(102, 126, 234, 0.1); border-left: 3px solid #667eea; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.25rem;">Amount</div>
+                        <div style="font-size: 1.3rem; font-weight: bold; color: #667eea;">
+                            ${formatCurrency(rec.amount, rec.currency)}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.25rem;">Frequency</div>
+                        <div style="font-size: 1.1rem; font-weight: bold;">
+                            ${frequencyText}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.25rem;">Next Due</div>
+                        <div style="font-size: 1.1rem; font-weight: bold;">
+                            ${nextDue}
+                        </div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                            ${daysText}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 0.5rem;">
+                <div style="margin-bottom: 1rem;">
+                    <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.25rem;">Paid by</div>
+                    <div style="font-weight: bold;">${rec.paidByName}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.25rem;">Split between</div>
+                    <div style="font-weight: bold;">${splitNames}</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: center;">
+                <button class="btn ${rec.isActive ? 'btn-secondary' : 'btn-primary'}" onclick="toggleRecurringFromDetails('${rec.id}', ${rec.isActive})">
+                    ${rec.isActive ? '⏸️ Pause' : '▶️ Resume'}
+                </button>
+            </div>
+        `;
+        
+        // Store recurringId for delete button
+        window.currentRecurringId = recurringId;
+        
+        const modal = document.getElementById('recurringDetailsModal');
+        modal.style.display = 'flex';
+        
+    } catch (error) {
+        console.error('Error loading recurring details:', error);
+        showToast('Error loading details', 'error');
+    }
+}
+
+function closeRecurringDetailsModal() {
+    const modal = document.getElementById('recurringDetailsModal');
+    modal.style.display = 'none';
+    window.currentRecurringId = null;
+}
+
+async function toggleRecurringFromDetails(recurringId, currentlyActive) {
+    try {
+        window.modeManager.currentGroupId = currentFund.fundId;
+        await window.modeManager.updateRecurringExpense(recurringId, {
+            isActive: !currentlyActive
+        });
+        
+        showToast(currentlyActive ? 'Recurring expense paused' : 'Recurring expense resumed', 'success');
+        closeRecurringDetailsModal();
+        await loadAllRecurringExpenses();
+        await loadRecurringExpenses();
+        
+    } catch (error) {
+        console.error('Error toggling recurring expense:', error);
+        showToast('Error updating recurring expense', 'error');
+    }
+}
+
+async function confirmDeleteRecurring() {
+    if (!window.currentRecurringId) return;
+    
+    try {
+        const confirmed = confirm('Delete this recurring expense? Past expenses created by it will remain.');
+        if (!confirmed) return;
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        await window.modeManager.deleteRecurringExpense(window.currentRecurringId);
+        
+        showToast('Recurring expense deleted', 'success');
+        closeRecurringDetailsModal();
+        await loadAllRecurringExpenses();
+        await loadRecurringExpenses();
+        
+    } catch (error) {
+        console.error('Error deleting recurring expense:', error);
+        showToast('Error deleting recurring expense', 'error');
+    }
+}
+
 // ============================================
 // BUDGET
 // ============================================
@@ -6602,6 +6908,7 @@ async function loadBudgetStatus() {
         const status = await window.modeManager.calculateBudgetStatus();
         
         const statusBar = document.getElementById('budgetStatusBar');
+        const budgetContent = document.getElementById('budgetContent');
         
         if (!status) {
             statusBar.style.display = 'none';
@@ -6615,21 +6922,30 @@ async function loadBudgetStatus() {
         
         const progressWidth = Math.min(status.percentage, 100);
         
-        statusBar.innerHTML = `
+        budgetContent.innerHTML = `
             <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; border-left: 4px solid ${progressColor};">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <div>
-                        <h4 style="margin: 0; font-size: 1rem; color: rgba(255,255,255,0.9);">💰 Budget Tracker</h4>
-                        <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
+                    <div style="flex: 1;">
+                        <p style="margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
                             ${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)}
                         </p>
                     </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: ${progressColor};">
-                            ${status.percentage.toFixed(0)}%
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: ${progressColor};">
+                                ${status.percentage.toFixed(0)}%
+                            </div>
+                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">
+                                ${status.remaining >= 0 ? formatCurrency(status.remaining, status.currency) + ' left' : 'Exceeded by ' + formatCurrency(Math.abs(status.remaining), status.currency)}
+                            </div>
                         </div>
-                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">
-                            ${status.remaining >= 0 ? formatCurrency(status.remaining, status.currency) + ' left' : 'Exceeded by ' + formatCurrency(Math.abs(status.remaining), status.currency)}
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-icon-small" onclick="editBudget()" title="Edit Budget">
+                                ✏️
+                            </button>
+                            <button class="btn-icon-small" onclick="deleteBudget()" title="Delete Budget" style="color: #ef4444;">
+                                🗑️
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -6658,6 +6974,272 @@ async function loadBudgetStatus() {
     } catch (error) {
         console.error('Error loading budget status:', error);
     }
+}
+
+async function editBudget() {
+    showBudgetModal();
+}
+
+async function deleteBudget() {
+    try {
+        const confirmed = confirm('Are you sure you want to delete the budget? This action cannot be undone.');
+        if (!confirmed) return;
+        
+        showLoading('Deleting budget...');
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        
+        // Delete budget by setting it to null/disabled
+        await window.FirebaseConfig.writeDb(
+            `groups/${currentFund.fundId}/budget`,
+            null
+        );
+        
+        hideLoading();
+        showToast('Budget deleted successfully', 'success');
+        
+        // Reload budget status (will hide it)
+        await loadBudgetStatus();
+        
+    } catch (error) {
+        hideLoading();
+        console.error('Error deleting budget:', error);
+        showToast('Error deleting budget', 'error');
+    }
+}
+
+// Toggle collapsible sections
+function toggleCollapsible(contentId) {
+    const content = document.getElementById(contentId);
+    const toggle = document.getElementById(contentId + 'Toggle');
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        if (toggle) toggle.style.transform = 'rotate(180deg)';
+    } else {
+        content.style.display = 'none';
+        if (toggle) toggle.style.transform = 'rotate(0deg)';
+    }
+}
+
+// ============================================
+// RECEIPT SCANNING WITH OPENAI
+// ============================================
+
+function getOpenAIKey() {
+    return localStorage.getItem('openai_api_key');
+}
+
+function showOpenAIConfigModal() {
+    const modal = document.getElementById('openaiConfigModal');
+    const input = document.getElementById('openaiApiKey');
+    input.value = getOpenAIKey() || '';
+    modal.style.display = 'flex';
+}
+
+function closeOpenAIConfigModal() {
+    document.getElementById('openaiConfigModal').style.display = 'none';
+}
+
+function saveOpenAIConfig() {
+    const apiKey = document.getElementById('openaiApiKey').value.trim();
+    
+    if (!apiKey) {
+        showToast('Please enter a valid API key', 'error');
+        return;
+    }
+    
+    if (!apiKey.startsWith('sk-')) {
+        showToast('Invalid API key format. Should start with "sk-"', 'error');
+        return;
+    }
+    
+    localStorage.setItem('openai_api_key', apiKey);
+    showToast('✅ API key saved successfully!', 'success');
+    closeOpenAIConfigModal();
+}
+
+function triggerReceiptScan() {
+    // Check if API key is configured
+    const apiKey = getOpenAIKey();
+    if (!apiKey) {
+        showToast('Please configure your OpenAI API key first', 'warning');
+        showOpenAIConfigModal();
+        return;
+    }
+    
+    document.getElementById('receiptImageInput').click();
+}
+
+async function handleReceiptImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file', 'error');
+        return;
+    }
+    
+    // Validate file size (max 20MB for OpenAI)
+    if (file.size > 20 * 1024 * 1024) {
+        showToast('Image too large. Please use an image under 20MB', 'error');
+        return;
+    }
+    
+    try {
+        // Show scanning indicator
+        const scanningIndicator = document.getElementById('scanningIndicator');
+        scanningIndicator.style.display = 'block';
+        
+        // Convert image to base64
+        const base64Image = await fileToBase64(file);
+        
+        // Call OpenAI Vision API
+        const extractedData = await scanReceiptWithOpenAI(base64Image);
+        
+        // Fill form with extracted data
+        if (extractedData) {
+            fillExpenseFormFromReceipt(extractedData);
+            showToast('✅ Receipt scanned successfully!', 'success');
+        }
+        
+    } catch (error) {
+        console.error('Error scanning receipt:', error);
+        showToast('Error scanning receipt: ' + error.message, 'error');
+    } finally {
+        // Hide scanning indicator
+        document.getElementById('scanningIndicator').style.display = 'none';
+        // Clear file input
+        event.target.value = '';
+    }
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+async function scanReceiptWithOpenAI(base64Image) {
+    const apiKey = getOpenAIKey();
+    
+    if (!apiKey) {
+        throw new Error('OpenAI API key not configured');
+    }
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+            model: 'gpt-4-vision-preview',
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Analyze this receipt/ticket image and extract the following information in JSON format:
+{
+  "amount": <total amount as number>,
+  "currency": <currency code like "USD", "EUR", "MXN", etc.>,
+  "description": <brief description of what was purchased>,
+  "date": <date in YYYY-MM-DD format>,
+  "category": <one of: "food", "transport", "housing", "utilities", "entertainment", "shopping", "health", "travel", "subscription", "other">
+}
+
+If you cannot find some information, use null for that field. Be as accurate as possible with the amount and date. For description, summarize the main items purchased.`
+                        },
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: `data:image/jpeg;base64,${base64Image}`
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens: 500
+        })
+    });
+    
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || 'OpenAI API request failed');
+    }
+    
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content;
+    
+    if (!content) {
+        throw new Error('No response from OpenAI');
+    }
+    
+    // Parse JSON from response
+    try {
+        // Extract JSON from markdown code blocks if present
+        const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/\{[\s\S]*\}/);
+        const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
+        const parsed = JSON.parse(jsonStr);
+        
+        console.log('Extracted receipt data:', parsed);
+        return parsed;
+    } catch (parseError) {
+        console.error('Failed to parse OpenAI response:', content);
+        throw new Error('Could not parse receipt data from image');
+    }
+}
+
+function fillExpenseFormFromReceipt(data) {
+    // Fill description
+    if (data.description) {
+        document.getElementById('expenseDescription').value = data.description;
+    }
+    
+    // Fill amount
+    if (data.amount) {
+        document.getElementById('expenseAmount').value = data.amount;
+    }
+    
+    // Fill currency
+    if (data.currency) {
+        const currencySelect = document.getElementById('expenseCurrency');
+        const currencyOption = Array.from(currencySelect.options).find(
+            opt => opt.value === data.currency.toUpperCase()
+        );
+        if (currencyOption) {
+            currencySelect.value = data.currency.toUpperCase();
+            updateCurrencySymbol();
+        }
+    }
+    
+    // Fill date
+    if (data.date) {
+        document.getElementById('expenseDate').value = data.date;
+    }
+    
+    // Fill category
+    if (data.category) {
+        const categorySelect = document.getElementById('expenseCategory');
+        const categoryOption = Array.from(categorySelect.options).find(
+            opt => opt.value === data.category.toLowerCase()
+        );
+        if (categoryOption) {
+            categorySelect.value = data.category.toLowerCase();
+        }
+    }
+    
+    // Scroll to form to show filled data
+    document.getElementById('expenseDescription').focus();
 }
 
 // ============================================
@@ -6705,27 +7287,48 @@ async function loadAnalytics(timeframe) {
         window.modeManager.currentGroupId = currentFund.fundId;
         const analytics = await window.modeManager.generateAnalytics(timeframe);
         
+        // Detect currencies
+        const currencies = Object.keys(analytics.byCurrency);
+        let displayCurrency = 'USD';
+        let currencyNote = '';
+        
+        if (currencies.length === 1) {
+            // Single currency - use it
+            displayCurrency = currencies[0];
+            currencyNote = '';
+        } else if (currencies.length > 1) {
+            // Multiple currencies - show note
+            displayCurrency = '';
+            currencyNote = `<div style="background: rgba(255,165,0,0.2); border-left: 3px solid #ffa502; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem;">
+                <strong>⚠️ Multiple Currencies Detected:</strong> ${currencies.join(', ')}
+                <br><small style="color: rgba(255,255,255,0.7);">Amounts shown in original currencies. Future update will convert to a single currency.</small>
+            </div>`;
+        }
+        
+        const currencySymbol = displayCurrency ? (CURRENCY_SYMBOLS[displayCurrency] || '$') : '';
+        
         // Update stats
         const statsContainer = document.getElementById('analyticsStats');
         statsContainer.innerHTML = `
+            ${currencyNote}
             <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px;">
-                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Total Spent</div>
-                <div style="font-size: 2rem; font-weight: bold; color: white;">$${analytics.totalSpent.toFixed(2)}</div>
+                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Total Spent${displayCurrency ? ' (' + displayCurrency + ')' : ''}</div>
+                <div style="font-size: 2rem; font-weight: bold; color: white;">${currencySymbol}${analytics.totalSpent.toFixed(2)}</div>
             </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 1.5rem; border-radius: 12px;">
                 <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Expenses</div>
                 <div style="font-size: 2rem; font-weight: bold; color: white;">${analytics.expenseCount}</div>
             </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 1.5rem; border-radius: 12px;">
-                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Average</div>
-                <div style="font-size: 2rem; font-weight: bold; color: white;">$${analytics.averageExpense.toFixed(2)}</div>
+                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Average${displayCurrency ? ' (' + displayCurrency + ')' : ''}</div>
+                <div style="font-size: 2rem; font-weight: bold; color: white;">${currencySymbol}${analytics.averageExpense.toFixed(2)}</div>
             </div>
         `;
         
         // Render charts
         renderCategoryChart(analytics.byCategory);
         renderMemberChart(analytics.byMember);
-        renderTimelineChart(analytics.byMonth);
+        renderTimelineChart(analytics.byMonth, displayCurrency);
         
         hideLoading();
         
@@ -6811,7 +7414,7 @@ function renderMemberChart(byMember) {
     });
 }
 
-function renderTimelineChart(byMonth) {
+function renderTimelineChart(byMonth, displayCurrency = '') {
     const ctx = document.getElementById('timelineChart');
     if (!ctx) return;
     
@@ -6820,12 +7423,16 @@ function renderTimelineChart(byMonth) {
     const labels = Object.keys(byMonth).sort();
     const data = labels.map(month => byMonth[month]);
     
+    const chartLabel = displayCurrency 
+        ? `Monthly Spending (${displayCurrency})`
+        : 'Monthly Spending';
+    
     analyticsCharts.timeline = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Monthly Spending',
+                label: chartLabel,
                 data: data,
                 borderColor: '#4facfe',
                 backgroundColor: 'rgba(79, 172, 254, 0.1)',

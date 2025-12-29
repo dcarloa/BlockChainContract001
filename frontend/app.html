@@ -12,7 +12,7 @@
         media-src 'self' blob:;
         font-src 'self' https://fonts.gstatic.com;
         frame-src 'self' https://*.firebaseapp.com https://accounts.google.com;
-        connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org https://www.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com https://accounts.google.com https://api.exchangerate-api.com;
+        connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org https://www.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com https://accounts.google.com https://api.exchangerate-api.com https://api.openai.com;
     ">
     <title>Ant Pool - Cooperative Finance Colony</title>
     <meta name="description" content="Work together like ants. Share expenses the simple way or use blockchain for automatic payments. Your choice.">
@@ -347,10 +347,10 @@
                     </div>
                     
                     <div class="stat-card">
-                        <div class="stat-icon">💎</div>
+                        <div class="stat-icon">�</div>
                         <div class="stat-content">
-                            <h3 id="totalValueLocked">0</h3>
-                            <p>ETH Total</p>
+                            <h3 id="totalValueLocked">$0.00</h3>
+                            <p>Total Gastado (USD)</p>
                         </div>
                     </div>
                 </div>
@@ -680,45 +680,61 @@
                         </div>
 
                         <!-- Quick Actions for New Features -->
-                        <div id="simpleQuickActions" class="quick-actions-grid" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-                            <button class="quick-action-btn" onclick="showRecurringExpenseModal()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <div class="quick-action-icon">🔄</div>
-                                <div class="quick-action-text">
-                                    <strong>Recurring Expenses</strong>
-                                    <small>Automate rent, utilities, subscriptions</small>
-                                </div>
+                        <div id="simpleQuickActions" class="quick-actions-compact" style="display: none; margin-bottom: 1rem;">
+                            <button class="quick-action-btn-compact" onclick="showRecurringExpenseModal()" title="Set up recurring expenses like rent or subscriptions">
+                                <span class="quick-icon">🔄</span>
+                                <span class="quick-label">Recurring</span>
                             </button>
                             
-                            <button class="quick-action-btn" onclick="showBudgetModal()" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                                <div class="quick-action-icon">💰</div>
-                                <div class="quick-action-text">
-                                    <strong>Set Budget</strong>
-                                    <small>Track spending limits & get alerts</small>
-                                </div>
+                            <button class="quick-action-btn-compact" onclick="showBudgetModal()" title="Set spending limits and get alerts">
+                                <span class="quick-icon">💰</span>
+                                <span class="quick-label">Budget</span>
                             </button>
                             
-                            <button class="quick-action-btn" onclick="showAnalyticsModal()" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                                <div class="quick-action-icon">📊</div>
-                                <div class="quick-action-text">
-                                    <strong>Analytics</strong>
-                                    <small>View insights & export data</small>
-                                </div>
+                            <button class="quick-action-btn-compact" onclick="showAnalyticsModal()" title="View spending analytics and insights">
+                                <span class="quick-icon">📊</span>
+                                <span class="quick-label">Analytics</span>
+                            </button>
+                            
+                            <button class="quick-action-btn-compact" onclick="showOpenAIConfigModal()" title="Configure OpenAI for receipt scanning">
+                                <span class="quick-icon">🔑</span>
+                                <span class="quick-label">AI Setup</span>
                             </button>
                         </div>
 
                         <!-- Budget Status Bar (if budget is set) -->
                         <div id="budgetStatusBar" style="display: none; margin-bottom: 1.5rem;">
-                            <!-- Populated dynamically -->
+                            <div class="collapsible-header" onclick="toggleCollapsible('budgetContent')" style="background: rgba(255,255,255,0.05); padding: 1rem 1.5rem; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s ease;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.2rem;">💰</span>
+                                    <strong style="font-size: 1rem;">Budget Tracker</strong>
+                                </div>
+                                <span id="budgetContentToggle" style="font-size: 1.2rem; transition: transform 0.3s ease;">▼</span>
+                            </div>
+                            <div id="budgetContent" class="collapsible-content" style="display: none; margin-top: 0.5rem;">
+                                <!-- Populated dynamically -->
+                            </div>
                         </div>
 
                         <!-- Active Recurring Expenses -->
                         <div id="recurringExpensesSection" style="display: none; margin-bottom: 1.5rem;">
-                            <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                                🔄 Active Recurring Expenses
-                                <span id="recurringCount" class="badge-count" style="background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">0</span>
-                            </h3>
-                            <div id="recurringExpensesList" class="recurring-list">
-                                <!-- Populated dynamically -->
+                            <div class="collapsible-header" onclick="toggleCollapsible('recurringContent')" style="background: rgba(255,255,255,0.05); padding: 1rem 1.5rem; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s ease;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.2rem;">🔄</span>
+                                    <strong style="font-size: 1rem;">Active Recurring Expenses</strong>
+                                    <span id="recurringCount" class="badge-count" style="background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">0</span>
+                                </div>
+                                <span id="recurringContentToggle" style="font-size: 1.2rem; transition: transform 0.3s ease;">▼</span>
+                            </div>
+                            <div id="recurringContent" class="collapsible-content" style="display: none; margin-top: 0.5rem;">
+                                <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+                                    <button class="btn btn-secondary btn-small" onclick="showManageRecurringModal()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                        📋 View All
+                                    </button>
+                                </div>
+                                <div id="recurringExpensesList" class="recurring-list">
+                                    <!-- Populated dynamically -->
+                                </div>
                             </div>
                         </div>
 
@@ -978,6 +994,31 @@
                     <form id="addExpenseForm" class="expense-form-clean">
                         <div class="form-header-clean">
                             <h3>Add Expense</h3>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <button type="button" class="btn-scan-receipt" onclick="triggerReceiptScan()">
+                                    📸 Scan Receipt
+                                </button>
+                                <input 
+                                    type="file" 
+                                    id="receiptImageInput" 
+                                    accept="image/*" 
+                                    capture="environment"
+                                    style="display: none;"
+                                    onchange="handleReceiptImage(event)"
+                                >
+                            </div>
+                        </div>
+
+                        <div id="scanningIndicator" style="display: none; background: rgba(102, 126, 234, 0.1); border-left: 3px solid #667eea; padding: 1rem; border-radius: 8px; margin: 1rem 1.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div class="spinner-small"></div>
+                                <div>
+                                    <strong style="color: #667eea;">Scanning receipt...</strong>
+                                    <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                                        Extracting amount, description, and date from image
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-grid">
@@ -1050,6 +1091,23 @@
                                     name="date"
                                     class="form-input"
                                 >
+                            </div>
+
+                            <div class="form-field">
+                                <label for="expenseCategory" class="form-label">Category</label>
+                                <select id="expenseCategory" name="category" class="form-input form-select">
+                                    <option value="food">🍕 Food & Dining</option>
+                                    <option value="transport">🚗 Transportation</option>
+                                    <option value="housing">🏠 Housing & Rent</option>
+                                    <option value="utilities">💡 Utilities</option>
+                                    <option value="entertainment">🎬 Entertainment</option>
+                                    <option value="shopping">🛍️ Shopping</option>
+                                    <option value="health">⚕️ Health & Medical</option>
+                                    <option value="travel">✈️ Travel</option>
+                                    <option value="subscription">📺 Subscriptions</option>
+                                    <option value="other" selected>🎯 Other</option>
+                                </select>
+                                <small class="field-hint">Helps with analytics and expense tracking</small>
                             </div>
 
                             <div class="form-field">
@@ -1945,6 +2003,22 @@
                     </div>
 
                     <div class="form-field">
+                        <label for="recurringCategory" class="form-label">Category</label>
+                        <select id="recurringCategory" class="form-input form-select">
+                            <option value="food">🍕 Food & Dining</option>
+                            <option value="transport">🚗 Transportation</option>
+                            <option value="housing" selected>🏠 Housing & Rent</option>
+                            <option value="utilities">💡 Utilities</option>
+                            <option value="entertainment">🎬 Entertainment</option>
+                            <option value="shopping">🛍️ Shopping</option>
+                            <option value="health">⚕️ Health & Medical</option>
+                            <option value="travel">✈️ Travel</option>
+                            <option value="subscription">📺 Subscriptions</option>
+                            <option value="other">🎯 Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
                         <label for="recurringFrequency" class="form-label">Frequency *</label>
                         <select id="recurringFrequency" class="form-input form-select" onchange="updateRecurringFrequencyOptions()">
                             <option value="daily">📅 Daily</option>
@@ -2011,20 +2085,13 @@
                 <button class="modal-close" onclick="closeBudgetModal()">&times;</button>
             </div>
             
-            <div class="budget-info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
-                <h3 style="color: white; margin-bottom: 0.5rem; font-size: 1.1rem;">📊 What is a Budget?</h3>
-                <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; line-height: 1.5;">
-                    Set a spending limit for your group. We'll track expenses and alert you when approaching the limit. Perfect for trips or monthly shared costs.
-                </p>
-                <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
-                    <strong style="color: white;">Example:</strong>
-                    <p style="color: rgba(255,255,255,0.9); font-size: 0.85rem; margin-top: 0.5rem;">
-                        "Cancún Trip: $2,000 budget" → Get alerts at $1,000 (50%), $1,600 (80%), and $2,000 (100%)
+            <form id="budgetForm" class="expense-form-clean">
+                <div class="form-header-clean" style="padding: 1rem 1.5rem 0;">
+                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin: 0;">
+                        Set a spending limit and get alerts when approaching it. Perfect for trips or monthly shared costs.
                     </p>
                 </div>
-            </div>
-            
-            <form id="budgetForm" class="expense-form-clean">
+
                 <div class="form-grid">
                     <div class="form-field">
                         <label for="budgetAmount" class="form-label">Budget Amount *</label>
@@ -2057,14 +2124,14 @@
                     <div class="form-field">
                         <label for="budgetPeriod" class="form-label">Budget Period *</label>
                         <select id="budgetPeriod" class="form-input form-select">
-                            <option value="trip">🏖️ For this trip/event (one-time)</option>
-                            <option value="monthly">📆 Monthly (resets each month)</option>
-                            <option value="weekly">📅 Weekly (resets each week)</option>
+                            <option value="trip">🏖️ One-time (trip/event)</option>
+                            <option value="monthly">📆 Monthly</option>
+                            <option value="weekly">📅 Weekly</option>
                         </select>
                     </div>
 
                     <div class="form-field">
-                        <label class="form-label">Alert me when spending reaches:</label>
+                        <label class="form-label">Alerts</label>
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="alert50" checked>
@@ -2076,10 +2143,10 @@
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" id="alert100" checked>
-                                <span>100% (exceeded)</span>
+                                <span>100%</span>
                             </label>
                         </div>
-                        <small class="field-hint">You'll see visual warnings when thresholds are reached</small>
+                        <small class="field-hint">Visual warnings when thresholds are reached</small>
                     </div>
                 </div>
 
@@ -2146,6 +2213,99 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recurring Expense Details/Edit Modal -->
+    <div id="recurringDetailsModal" class="modal" style="display: none;">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2>🔄 Recurring Expense Details</h2>
+                <button class="modal-close" onclick="closeRecurringDetailsModal()">&times;</button>
+            </div>
+            
+            <div id="recurringDetailsContent" style="padding: 1.5rem;">
+                <!-- Populated dynamically -->
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeRecurringDetailsModal()">
+                    Close
+                </button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteRecurring()">
+                    🗑️ Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Recurring Expenses Modal (List View) -->
+    <div id="manageRecurringModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>🔄 Manage Recurring Expenses</h2>
+                <button class="modal-close" onclick="closeManageRecurringModal()">&times;</button>
+            </div>
+            
+            <div style="padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <p style="color: rgba(255,255,255,0.7); margin: 0;">
+                        View and manage all your recurring expenses. Click on any expense to see details and make changes.
+                    </p>
+                    <button class="btn btn-primary" onclick="closeManageRecurringModal(); showRecurringExpenseModal();">
+                        ➕ Add New
+                    </button>
+                </div>
+                
+                <div id="manageRecurringList">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OpenAI Configuration Modal -->
+    <div id="openaiConfigModal" class="modal" style="display: none;">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2>🔑 Configure OpenAI API</h2>
+                <button class="modal-close" onclick="closeOpenAIConfigModal()">&times;</button>
+            </div>
+            
+            <div style="padding: 1.5rem;">
+                <p style="color: rgba(255,255,255,0.8); margin-bottom: 1rem;">
+                    To use receipt scanning, you need an OpenAI API key. Your key is stored locally and never shared.
+                </p>
+                
+                <div class="form-field">
+                    <label for="openaiApiKey" class="form-label">OpenAI API Key</label>
+                    <input 
+                        type="password" 
+                        id="openaiApiKey"
+                        class="form-input"
+                        placeholder="sk-..."
+                    >
+                    <small class="field-hint">
+                        Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank" style="color: #667eea;">platform.openai.com</a>
+                    </small>
+                </div>
+                
+                <div style="background: rgba(102, 126, 234, 0.1); border-left: 3px solid #667eea; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <strong style="color: #667eea;">💡 Tip:</strong>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: rgba(255,255,255,0.8);">
+                        Each receipt scan costs approximately $0.01-0.03 USD. Your API key is stored in your browser's local storage.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeOpenAIConfigModal()">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveOpenAIConfig()">
+                    💾 Save API Key
+                </button>
             </div>
         </div>
     </div>
