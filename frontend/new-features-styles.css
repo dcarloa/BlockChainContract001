@@ -478,3 +478,155 @@
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+/* ============================================
+   LIGHT MODE IMPROVEMENTS
+   ============================================ */
+
+[data-theme="light"] .quick-action-btn-compact {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    color: #475569;
+}
+
+[data-theme="light"] .quick-action-btn-compact:hover {
+    background: #eff6ff;
+    border-color: #667eea;
+    color: #667eea;
+}
+
+[data-theme="light"] .quick-label {
+    color: #475569;
+}
+
+[data-theme="light"] .quick-action-btn-compact:hover .quick-label {
+    color: #667eea;
+}
+
+[data-theme="light"] .collapsible-header {
+    background: #f8fafc !important;
+    border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .collapsible-header:hover {
+    background: #eff6ff !important;
+    border-color: #cbd5e1;
+}
+
+[data-theme="light"] .collapsible-header strong {
+    color: #0f172a;
+}
+
+[data-theme="light"] .collapsible-header span {
+    color: #475569;
+}
+
+[data-theme="light"] .recurring-card {
+    background: #eff6ff;
+    border-left-color: #667eea;
+}
+
+[data-theme="light"] .recurring-card:hover {
+    background: #dbeafe;
+}
+
+[data-theme="light"] .recurring-card strong {
+    color: #0f172a;
+}
+
+[data-theme="light"] .recurring-card span,
+[data-theme="light"] .recurring-card p {
+    color: #475569;
+}
+
+[data-theme="light"] .btn-icon-small {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+[data-theme="light"] .btn-icon-small:hover {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+[data-theme="light"] .chart-container {
+    background: white;
+    border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .chart-container h3 {
+    color: #0f172a;
+}
+
+[data-theme="light"] .stat-card {
+    background: white;
+    border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .stat-card h4 {
+    color: #0f172a;
+}
+
+[data-theme="light"] .stat-card p {
+    color: #64748b;
+}
+
+[data-theme="light"] .btn-timeframe {
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+[data-theme="light"] .btn-timeframe:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+[data-theme="light"] .btn-timeframe.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+}
+
+[data-theme="light"] .checkbox-label {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .checkbox-label:hover {
+    background: #f1f5f9;
+}
+
+[data-theme="light"] .checkbox-label span {
+    color: #475569;
+}
+
+[data-theme="light"] .export-section {
+    border-top-color: #e2e8f0;
+}
+
+[data-theme="light"] .export-section h3 {
+    color: #0f172a;
+}
+
+[data-theme="light"] .btn-scan-receipt {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+[data-theme="light"] .recurring-card-manage {
+    background: white;
+    border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .recurring-card-manage:hover {
+    border-color: #667eea;
+}
+
+[data-theme="light"] .recurring-card-manage strong {
+    color: #0f172a;
+}
+
+[data-theme="light"] .recurring-card-manage span,
+[data-theme="light"] .recurring-card-manage p {
+    color: #64748b;
+}

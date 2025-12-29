@@ -4600,3 +4600,60 @@ header,
   border-color: #667eea;
   color: #667eea;
 }
+/* Collapsible headers and content in light mode */
+[data-theme="light"] .collapsible-header {
+  background: #f8fafc !important;
+  border: 2px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .collapsible-header:hover {
+  background: #eff6ff !important;
+}
+
+[data-theme="light"] .collapsible-header strong,
+[data-theme="light"] .collapsible-header span {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .collapsible-content {
+  color: #475569;
+}
+
+[data-theme="light"] h3,
+[data-theme="light"] h4 {
+  color: #0f172a;
+}
+
+[data-theme="light"] p {
+  color: #475569;
+}
+
+[data-theme="light"] .tab-description {
+  color: #64748b;
+}
+
+/* Budget progress bars in light mode */
+[data-theme="light"] .budget-progress {
+  background: #e2e8f0;
+}
+
+[data-theme="light"] .budget-progress-bar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Ensure all text in fund detail is visible in light mode */
+[data-theme="light"] #fundDetailSection {
+  color: #0f172a;
+}
+
+[data-theme="light"] #fundDetailSection strong {
+  color: #0f172a;
+}
+
+[data-theme="light"] #fundDetailSection span {
+  color: #475569;
+}
+
+[data-theme="light"] #fundDetailSection p {
+  color: #64748b;
+}
