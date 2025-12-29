@@ -4993,13 +4993,28 @@ async function createProposal() {
     }
 }
 
-// Helper function to get selected involved members
+// Helper function to get selected involved members (with share multipliers)
 function getSelectedInvolvedMembers() {
-    const checkboxes = document.querySelectorAll('.member-checkbox-item input[type="checkbox"]:checked');
-    return Array.from(checkboxes).map(cb => cb.value);
+    const items = document.querySelectorAll('.member-share-item');
+    const members = [];
+    
+    items.forEach(item => {
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        if (checkbox && checkbox.checked) {
+            const address = checkbox.value;
+            const shares = parseInt(item.dataset.shares) || 1;
+            
+            // Add the member address multiple times based on shares
+            for (let i = 0; i < shares; i++) {
+                members.push(address);
+            }
+        }
+    });
+    
+    return members;
 }
 
-// Load involved members checkboxes
+// Load involved members checkboxes with share counters
 async function loadInvolvedMembersCheckboxes() {
     try {
         if (!currentFundContract) return;
@@ -5019,19 +5034,33 @@ async function loadInvolvedMembersCheckboxes() {
             const shortAddr = `${address.slice(0, 6)}...${address.slice(-4)}`;
             
             return `
-                <label class="member-checkbox-item" for="member-${i}">
-                    <input 
-                        type="checkbox" 
-                        id="member-${i}" 
-                        value="${address}"
-                        checked
-                        onchange="toggleMemberCheckbox(this)"
-                    >
-                    <div class="member-checkbox-label">
-                        <span>${nickname}</span>
-                        <span class="member-checkbox-address">${shortAddr}</span>
+                <div class="member-share-item" id="member-item-${i}" data-address="${address}" data-shares="1">
+                    <label class="member-share-checkbox" for="member-${i}">
+                        <input 
+                            type="checkbox" 
+                            id="member-${i}" 
+                            value="${address}"
+                            checked
+                            onchange="toggleMemberShare(this, ${i})"
+                        >
+                        <div class="member-share-info">
+                            <span class="member-share-name">${nickname}</span>
+                            <span class="member-share-address">${shortAddr}</span>
+                        </div>
+                    </label>
+                    <div class="member-share-controls" id="share-controls-${i}">
+                        <button type="button" class="share-btn share-btn-minus" onclick="decrementShare(${i})" title="Quitar una porción">
+                            −
+                        </button>
+                        <div class="share-counter" id="share-count-${i}">
+                            <span class="share-number">1</span>
+                            <span class="share-label">persona${1 > 1 ? 's' : ''}</span>
+                        </div>
+                        <button type="button" class="share-btn share-btn-plus" onclick="incrementShare(${i})" title="Agregar una porción">
+                            +
+                        </button>
                     </div>
-                </label>
+                </div>
             `;
         }).join('');
         
@@ -5040,18 +5069,69 @@ async function loadInvolvedMembersCheckboxes() {
     }
 }
 
-// Toggle member checkbox selection
-function toggleMemberCheckbox(checkbox) {
-    const label = checkbox.closest('.member-checkbox-item');
+// Toggle member share selection
+function toggleMemberShare(checkbox, index) {
+    const item = checkbox.closest('.member-share-item');
+    const controls = document.getElementById(`share-controls-${index}`);
+    
     if (checkbox.checked) {
-        label.classList.add('selected');
+        item.classList.add('selected');
+        controls.style.display = 'flex';
+        item.dataset.shares = '1';
+        updateShareDisplay(index, 1);
     } else {
-        label.classList.remove('selected');
+        item.classList.remove('selected');
+        controls.style.display = 'none';
+        item.dataset.shares = '0';
     }
 }
 
+// Increment share count for a member
+function incrementShare(index) {
+    const item = document.getElementById(`member-item-${index}`);
+    if (!item) return;
+    
+    let shares = parseInt(item.dataset.shares) || 1;
+    shares++;
+    item.dataset.shares = shares.toString();
+    updateShareDisplay(index, shares);
+}
+
+// Decrement share count for a member
+function decrementShare(index) {
+    const item = document.getElementById(`member-item-${index}`);
+    if (!item) return;
+    
+    let shares = parseInt(item.dataset.shares) || 1;
+    if (shares > 1) {
+        shares--;
+        item.dataset.shares = shares.toString();
+        updateShareDisplay(index, shares);
+    }
+}
+
+// Update share display
+function updateShareDisplay(index, shares) {
+    const counter = document.getElementById(`share-count-${index}`);
+    if (!counter) return;
+    
+    const number = counter.querySelector('.share-number');
+    const label = counter.querySelector('.share-label');
+    
+    if (number) number.textContent = shares;
+    if (label) label.textContent = shares > 1 ? 'personas' : 'persona';
+    
+    // Visual feedback
+    counter.style.transform = 'scale(1.15)';
+    setTimeout(() => {
+        counter.style.transform = 'scale(1)';
+    }, 150);
+}
+
 // Make functions globally accessible
-window.toggleMemberCheckbox = toggleMemberCheckbox;
+window.toggleMemberShare = toggleMemberShare;
+window.incrementShare = incrementShare;
+window.decrementShare = decrementShare;
 
 // ============================================
 // LOAD MEMBERS AND PROPOSALS
@@ -6116,10 +6196,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectAllBtn = document.getElementById('selectAllMembersBtn');
     if (selectAllBtn) {
         selectAllBtn.addEventListener('click', () => {
-            const checkboxes = document.querySelectorAll('.member-checkbox-item input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                cb.checked = true;
-                toggleMemberCheckbox(cb);
+            const items = document.querySelectorAll('.member-share-item');
+            items.forEach((item, index) => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox && !checkbox.checked) {
+                    checkbox.checked = true;
+                    toggleMemberShare(checkbox, index);
+                }
             });
         });
     }
@@ -6127,10 +6210,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const deselectAllBtn = document.getElementById('deselectAllMembersBtn');
     if (deselectAllBtn) {
         deselectAllBtn.addEventListener('click', () => {
-            const checkboxes = document.querySelectorAll('.member-checkbox-item input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                cb.checked = false;
-                toggleMemberCheckbox(cb);
+            const items = document.querySelectorAll('.member-share-item');
+            items.forEach((item, index) => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    checkbox.checked = false;
+                    toggleMemberShare(checkbox, index);
+                }
             });
         });
     }

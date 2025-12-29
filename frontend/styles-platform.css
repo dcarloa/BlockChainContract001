@@ -3593,6 +3593,175 @@ header,
 }
 
 /* ============================================
+   MEMBER SHARE SYSTEM (Multiple shares per member)
+   ============================================ */
+
+.member-share-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+}
+
+.member-share-item:last-child {
+  margin-bottom: 0;
+}
+
+.member-share-item:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.member-share-item.selected {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: var(--accent-purple);
+}
+
+.member-share-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  cursor: pointer;
+}
+
+.member-share-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.member-share-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.member-share-name {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.member-share-address {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: 'Courier New', monospace;
+}
+
+.member-share-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.share-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.share-btn:hover {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: var(--accent-purple);
+  transform: scale(1.05);
+}
+
+.share-btn:active {
+  transform: scale(0.95);
+}
+
+.share-btn-plus {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.share-btn-plus:hover {
+  background: rgba(34, 197, 94, 0.3);
+  border-color: rgb(34, 197, 94);
+}
+
+.share-btn-minus {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.share-btn-minus:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgb(239, 68, 68);
+}
+
+.share-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  transition: transform 0.15s ease;
+}
+
+.share-number {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-purple);
+  line-height: 1.2;
+}
+
+.share-label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .member-share-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .member-share-controls {
+    justify-content: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .share-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .share-counter {
+    min-width: 70px;
+  }
+}
+
+/* ============================================
    BORROWED FUNDS ALERT (Full Consent Warning)
    ============================================ */
 
