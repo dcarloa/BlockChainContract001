@@ -2,45 +2,8 @@
    SIMPLE MODE - ADD EXPENSE
    =================================== */
 
-/* Floating Action Button */
-.fab-btn {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: auto;
-  height: 56px;
-  padding: 0 1.5rem;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: white;
-  border: none;
-  border-radius: 28px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.fab-btn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-}
-
-.fab-btn:active {
-  transform: translateY(-2px);
-}
-
-.fab-icon {
-  font-size: 1.5rem;
-}
-
-.fab-text {
-  font-weight: 600;
-}
+/* Note: New FAB styles moved to styles-platform.css for better organization */
+/* Old FAB button styles are deprecated in favor of expandable FAB */
 
 /* Expense Form */
 .expense-form {
@@ -2431,4 +2394,145 @@
   .settlement-arrow {
     transform: rotate(90deg);
   }
+}
+/* ===================================
+   LIGHT MODE SPECIFIC IMPROVEMENTS
+   =================================== */
+
+[data-theme="light"] .expense-card-compact {
+  background: white;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .expense-card-compact::before {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, transparent 50%);
+}
+
+[data-theme="light"] .expense-card-compact:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.12);
+}
+
+[data-theme="light"] .expense-header:hover {
+  background: rgba(102, 126, 234, 0.03);
+}
+
+[data-theme="light"] .expense-title-compact {
+  color: #0f172a;
+}
+
+[data-theme="light"] .expense-date-compact {
+  color: #64748b;
+}
+
+[data-theme="light"] .expense-details {
+  border-top-color: #e2e8f0;
+}
+
+[data-theme="light"] .expense-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .meta-item {
+  color: #64748b;
+}
+
+[data-theme="light"] .expense-notes {
+  background: rgba(102, 126, 234, 0.05);
+  color: #475569;
+  border-left-color: #667eea;
+}
+
+[data-theme="light"] .interaction-btn {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #64748b;
+}
+
+[data-theme="light"] .interaction-btn:hover {
+  background: #eff6ff;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+[data-theme="light"] .interaction-btn.active {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: #667eea;
+  color: #667eea;
+}
+
+[data-theme="light"] .comment-item {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .comment-text {
+  color: #0f172a;
+}
+
+[data-theme="light"] .comment-date {
+  color: #64748b;
+}
+
+[data-theme="light"] .balance-card {
+  background: white;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .expense-search-section {
+  background: white;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .search-input,
+[data-theme="light"] .date-filter-input {
+  background: white;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+[data-theme="light"] .search-input:focus,
+[data-theme="light"] .date-filter-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+[data-theme="light"] .search-input::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .filter-label {
+  color: #64748b;
+}
+
+[data-theme="light"] .member-card {
+  background: white;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .member-card:hover {
+  border-color: #667eea;
+}
+
+[data-theme="light"] .member-details h4 {
+  color: #0f172a;
+}
+
+[data-theme="light"] .member-email {
+  color: #64748b;
+}
+
+[data-theme="light"] .member-meta {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .invite-method-card {
+  background: white;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .invite-method-card h4 {
+  color: #0f172a;
 }

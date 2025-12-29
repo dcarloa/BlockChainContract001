@@ -347,7 +347,7 @@
                     </div>
                     
                     <div class="stat-card">
-                        <div class="stat-icon">�</div>
+                        <div class="stat-icon">💰</div>
                         <div class="stat-content">
                             <h3 id="totalValueLocked">$0.00</h3>
                             <p>Total Gastado (USD)</p>
@@ -398,6 +398,13 @@
                     <button class="filter-btn" data-filter="shared">
                         🤝 Compartidos (<span id="countShared">0</span>)
                     </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingGroups" class="loading-groups-state" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading your groups...</h3>
+                    <p>Please wait while we fetch your expense groups</p>
                 </div>
 
                 <!-- Funds Grid -->
@@ -996,10 +1003,21 @@
             </section>
 
             <!-- Floating Add Expense Button (Simple Mode only) -->
-            <button id="addExpenseBtn" class="fab-btn" style="display: none;" onclick="showAddExpenseModal()" title="Add Expense">
-                <span class="fab-icon">➕</span>
-                <span class="fab-text">Add Expense</span>
-            </button>
+            <div id="addExpenseBtn" class="fab-container" style="display: none;">
+                <button class="fab-main" onclick="toggleFabMenu()" title="Quick Actions">
+                    <span class="fab-icon">➕</span>
+                </button>
+                <div class="fab-menu" id="fabMenu" style="display: none;">
+                    <button class="fab-option" onclick="showAddExpenseModal()" title="Add Expense">
+                        <span class="fab-option-icon">💵</span>
+                        <span class="fab-option-text">Add Expense</span>
+                    </button>
+                    <button class="fab-option" onclick="showAddRecurringExpenseModal()" title="Recurring Expense">
+                        <span class="fab-option-icon">🔄</span>
+                        <span class="fab-option-text">Recurring Expense</span>
+                    </button>
+                </div>
+            </div>
 
             <!-- Add Expense Modal (Simple Mode) -->
             <div id="addExpenseModal" class="modal" style="display: none;">

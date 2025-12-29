@@ -1058,6 +1058,15 @@ Would you like to sign in now?`;
 
 async function loadUserFunds() {
     try {
+        // Show loading state
+        const loadingGroups = document.getElementById('loadingGroups');
+        const fundsGrid = document.getElementById('fundsGrid');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (loadingGroups) loadingGroups.style.display = 'flex';
+        if (fundsGrid) fundsGrid.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'none';
+        
         const fundMap = new Map();
         
         // Load Blockchain Mode funds (if wallet connected)
@@ -1163,12 +1172,18 @@ async function loadUserFunds() {
         // Actualizar estadísticas
         updateStats();
         
+        // Hide loading state
+        if (loadingGroups) loadingGroups.style.display = 'none';
+        
         // Mostrar fondos
         displayFunds();
         
     } catch (error) {
         console.error("Error loading user funds:", error);
         showToast("Error loading your funds", "error");
+        
+        // Hide loading state on error
+        if (loadingGroups) loadingGroups.style.display = 'none';
     }
 }
 
@@ -4190,8 +4205,45 @@ async function handlePaymentSubmission(event) {
 // SIMPLE MODE - ADD EXPENSE
 // ============================================
 
+// Toggle FAB menu
+function toggleFabMenu() {
+    const fabContainer = document.getElementById('addExpenseBtn');
+    const fabMenu = document.getElementById('fabMenu');
+    
+    if (!fabContainer || !fabMenu) return;
+    
+    const isActive = fabContainer.classList.toggle('active');
+    
+    if (isActive) {
+        fabMenu.style.display = 'flex';
+    } else {
+        fabMenu.style.display = 'none';
+    }
+}
+
+// Close FAB menu when clicking outside
+document.addEventListener('click', function(event) {
+    const fabContainer = document.getElementById('addExpenseBtn');
+    const fabMenu = document.getElementById('fabMenu');
+    
+    if (!fabContainer || !fabMenu) return;
+    
+    if (!fabContainer.contains(event.target) && fabContainer.classList.contains('active')) {
+        fabContainer.classList.remove('active');
+        fabMenu.style.display = 'none';
+    }
+});
+
 function showAddExpenseModal() {
     console.log('🔵 showAddExpenseModal called');
+    
+    // Close FAB menu if open
+    const fabContainer = document.getElementById('addExpenseBtn');
+    const fabMenu = document.getElementById('fabMenu');
+    if (fabContainer && fabMenu) {
+        fabContainer.classList.remove('active');
+        fabMenu.style.display = 'none';
+    }
     
     const modal = document.getElementById('addExpenseModal');
     if (!modal) {
@@ -4214,6 +4266,18 @@ function showAddExpenseModal() {
     // Show modal
     modal.style.display = 'flex';
     console.log('✅ Modal displayed');
+}
+
+function showAddRecurringExpenseModal() {
+    // Close FAB menu
+    const fabContainer = document.getElementById('addExpenseBtn');
+    const fabMenu = document.getElementById('fabMenu');
+    if (fabContainer && fabMenu) {
+        fabContainer.classList.remove('active');
+        fabMenu.style.display = 'none';
+    }
+    
+    showToast('Recurring expenses feature coming soon!', 'info');
 }
 
 function closeAddExpenseModal() {
