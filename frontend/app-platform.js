@@ -1635,9 +1635,9 @@ async function createFund(event) {
             return;
         }
         
-        // Validate wallet connection for blockchain mode
-        if (groupMode === 'blockchain' && !userAddress) {
-            showToast("⚠️ Please connect your wallet to create a Blockchain mode group", "warning");
+        // Blockchain mode disabled for soft launch
+        if (groupMode === 'blockchain') {
+            showToast("🚀 Blockchain Mode is coming soon! Please use Simple Mode for now.", "info");
             return;
         }
         
