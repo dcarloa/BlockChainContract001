@@ -167,6 +167,13 @@
                         </div>
                         <div class="session-status" id="sessionStatus"></div>
                     </div>
+                    
+                    <!-- Notifications Button -->
+                    <button id="notificationsBtn" class="notifications-btn" onclick="toggleNotificationsPanel()" title="Notifications" style="display: none;">
+                        <span class="bell-icon">🔔</span>
+                        <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+                    </button>
+                    
                     <button class="settings-btn-app" onclick="openAppSettings()" title="Settings">
                         ⚙️
                     </button>
@@ -190,6 +197,23 @@
             </div>
         </div>
     </header>
+
+    <!-- Notifications Panel -->
+    <div id="notificationsPanel" class="notifications-panel" style="display: none;">
+        <div class="notifications-header">
+            <h3>🔔 Notifications</h3>
+            <div class="notifications-header-actions">
+                <button class="btn-text" onclick="markAllNotificationsAsRead()" id="markAllReadBtn" style="display: none;">Mark all as read</button>
+                <button class="btn-icon-close" onclick="toggleNotificationsPanel()">&times;</button>
+            </div>
+        </div>
+        <div id="notificationsList" class="notifications-list">
+            <div class="empty-notifications">
+                <span class="empty-icon">🔕</span>
+                <p>No notifications yet</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Settings Modal -->
     <div id="appSettingsModal" class="modal-overlay" onclick="closeAppSettings(event)">

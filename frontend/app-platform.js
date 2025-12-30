@@ -3804,6 +3804,23 @@ async function deleteExpense(expenseId) {
         await window.FirebaseConfig.deleteDb(expensePath);
 
         showToast('Expense deleted', 'success');
+        
+        // 🔔 NOTIFICATION: Notify all group members about deleted expense
+        try {
+            const notificationData = {
+                type: 'expense_deleted',
+                title: '🗑️ Expense Deleted',
+                message: `${user.displayName || user.email} deleted: ${expense.description} - ${expense.currency || '$'}${expense.amount}`,
+                fundId: groupId
+            };
+            
+            if (typeof notifyGroupMembers === 'function') {
+                await notifyGroupMembers(groupId, user.uid, notificationData);
+            }
+        } catch (notifError) {
+            console.error('Error sending delete notification:', notifError);
+        }
+        
         await loadSimpleModeExpenses();
         await loadSimpleModeBalances(); // Update balances
         
@@ -3999,6 +4016,23 @@ async function handleGroupJoin(groupId) {
             joinedAt: Date.now()
         });
         console.log(`✅ User's group list updated`);
+        
+        // 🔔 NOTIFICATION: Notify all existing members that someone joined
+        try {
+            const userName = user.displayName || user.email;
+            const notificationData = {
+                type: 'member_joined',
+                title: '👥 New Member Joined',
+                message: `${userName} has joined ${groupName}`,
+                fundId: groupId
+            };
+            
+            if (typeof notifyGroupMembers === 'function') {
+                await notifyGroupMembers(groupId, user.uid, notificationData);
+            }
+        } catch (notifError) {
+            console.error('Error sending join notification:', notifError);
+        }
 
         showToast(`✅ Successfully joined "${groupName}"!`, 'success');
         
@@ -7846,4 +7880,333 @@ async function exportToCSV() {
 
 function exportToPDF() {
     showToast('PDF export coming soon!', 'info');
+}
+
+// ============================================
+// NOTIFICATION SYSTEM
+// ============================================
+
+let notificationsCache = [];
+let unreadCount = 0;
+
+/**
+ * Initialize notification system
+ */
+function initNotificationSystem() {
+    const notificationsBtn = document.getElementById('notificationsBtn');
+    const notificationsPanel = document.getElementById('notificationsPanel');
+    const closeNotificationsBtn = document.getElementById('closeNotificationsBtn');
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
+    
+    if (notificationsBtn) {
+        notificationsBtn.addEventListener('click', toggleNotificationsPanel);
+    }
+    
+    if (closeNotificationsBtn) {
+        closeNotificationsBtn.addEventListener('click', () => {
+            notificationsPanel.classList.add('hidden');
+        });
+    }
+    
+    if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', markAllNotificationsAsRead);
+    }
+    
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+        if (notificationsPanel && !notificationsPanel.classList.contains('hidden')) {
+            if (!notificationsPanel.contains(e.target) && !notificationsBtn.contains(e.target)) {
+                notificationsPanel.classList.add('hidden');
+            }
+        }
+    });
+    
+    // Load notifications if user is logged in
+    if (userAddress || firebase.auth().currentUser) {
+        loadNotifications();
+        // Refresh notifications every 30 seconds
+        setInterval(loadNotifications, 30000);
+    }
+}
+
+/**
+ * Toggle notifications panel visibility
+ */
+function toggleNotificationsPanel() {
+    const panel = document.getElementById('notificationsPanel');
+    if (panel) {
+        panel.classList.toggle('hidden');
+        
+        // Mark visible notifications as read after a delay
+        if (!panel.classList.contains('hidden')) {
+            setTimeout(() => {
+                const unreadNotifs = notificationsCache.filter(n => !n.read);
+                unreadNotifs.forEach(notif => {
+                    markNotificationAsRead(notif.id);
+                });
+            }, 2000);
+        }
+    }
+}
+
+/**
+ * Load user notifications from Firebase
+ */
+async function loadNotifications() {
+    try {
+        const userId = firebase.auth().currentUser?.uid || userAddress;
+        if (!userId) return;
+        
+        const notificationsRef = firebase.database().ref(`notifications/${userId}`);
+        
+        notificationsRef.orderByChild('timestamp').limitToLast(50).once('value', (snapshot) => {
+            const notifications = [];
+            
+            snapshot.forEach((childSnapshot) => {
+                const notification = {
+                    id: childSnapshot.key,
+                    ...childSnapshot.val()
+                };
+                notifications.unshift(notification); // Most recent first
+            });
+            
+            notificationsCache = notifications;
+            unreadCount = notifications.filter(n => !n.read).length;
+            
+            renderNotifications();
+            updateNotificationBadge();
+        });
+        
+    } catch (error) {
+        console.error('Error loading notifications:', error);
+    }
+}
+
+/**
+ * Render notifications in the panel
+ */
+function renderNotifications() {
+    const notificationsList = document.getElementById('notificationsList');
+    const emptyState = document.getElementById('emptyNotifications');
+    
+    if (!notificationsList) return;
+    
+    if (notificationsCache.length === 0) {
+        if (emptyState) emptyState.classList.remove('hidden');
+        notificationsList.innerHTML = '';
+        return;
+    }
+    
+    if (emptyState) emptyState.classList.add('hidden');
+    
+    notificationsList.innerHTML = notificationsCache.map(notif => {
+        const isUnread = !notif.read;
+        const timeAgo = getTimeAgo(notif.timestamp);
+        
+        return `
+            <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${notif.id}" onclick="handleNotificationClick('${notif.id}', '${notif.type}', '${notif.fundId || ''}', '${notif.expenseId || ''}')">
+                <div class="notification-header">
+                    <div class="notification-icon">${getNotificationIcon(notif.type)}</div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">${notif.title}</h4>
+                        <p class="notification-message">${notif.message}</p>
+                        <div class="notification-time">${timeAgo}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Get icon for notification type
+ */
+function getNotificationIcon(type) {
+    const icons = {
+        'expense_added': '💸',
+        'expense_deleted': '🗑️',
+        'payment_received': '💰',
+        'invitation': '📨',
+        'vote_required': '🗳️',
+        'proposal_approved': '✅',
+        'proposal_rejected': '❌',
+        'member_joined': '👥',
+        'fund_goal_reached': '🎯',
+        'default': '🔔'
+    };
+    return icons[type] || icons.default;
+}
+
+/**
+ * Get relative time string
+ */
+function getTimeAgo(timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+    
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 1) return 'Just now';
+    if (minutes === 1) return '1 minute ago';
+    if (minutes < 60) return `${minutes} minutes ago`;
+    if (hours === 1) return '1 hour ago';
+    if (hours < 24) return `${hours} hours ago`;
+    if (days === 1) return '1 day ago';
+    if (days < 7) return `${days} days ago`;
+    
+    return new Date(timestamp).toLocaleDateString();
+}
+
+/**
+ * Update notification badge count
+ */
+function updateNotificationBadge() {
+    const badge = document.getElementById('notificationBadge');
+    if (badge) {
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+}
+
+/**
+ * Mark notification as read
+ */
+async function markNotificationAsRead(notificationId) {
+    try {
+        const userId = firebase.auth().currentUser?.uid || userAddress;
+        if (!userId) return;
+        
+        await firebase.database().ref(`notifications/${userId}/${notificationId}`).update({
+            read: true
+        });
+        
+        // Update cache
+        const notif = notificationsCache.find(n => n.id === notificationId);
+        if (notif && !notif.read) {
+            notif.read = true;
+            unreadCount = Math.max(0, unreadCount - 1);
+            updateNotificationBadge();
+            renderNotifications();
+        }
+        
+    } catch (error) {
+        console.error('Error marking notification as read:', error);
+    }
+}
+
+/**
+ * Mark all notifications as read
+ */
+async function markAllNotificationsAsRead() {
+    try {
+        const userId = firebase.auth().currentUser?.uid || userAddress;
+        if (!userId) return;
+        
+        const updates = {};
+        notificationsCache.forEach(notif => {
+            if (!notif.read) {
+                updates[`notifications/${userId}/${notif.id}/read`] = true;
+            }
+        });
+        
+        if (Object.keys(updates).length > 0) {
+            await firebase.database().ref().update(updates);
+            
+            // Update cache
+            notificationsCache.forEach(notif => notif.read = true);
+            unreadCount = 0;
+            updateNotificationBadge();
+            renderNotifications();
+            
+            showToast('All notifications marked as read', 'success');
+        }
+        
+    } catch (error) {
+        console.error('Error marking all as read:', error);
+        showToast('Error updating notifications', 'error');
+    }
+}
+
+/**
+ * Handle notification click
+ */
+function handleNotificationClick(notificationId, type, fundId, expenseId) {
+    markNotificationAsRead(notificationId);
+    
+    // Navigate based on notification type
+    if (fundId && type.includes('expense')) {
+        // Find and show the fund
+        const fund = currentUserFunds.find(f => f.fundId === fundId);
+        if (fund) {
+            showFundDetail(fund);
+        }
+    }
+    
+    // Close panel
+    const panel = document.getElementById('notificationsPanel');
+    if (panel) {
+        panel.classList.add('hidden');
+    }
+}
+
+/**
+ * Create a new notification
+ */
+async function createNotification(userId, notificationData) {
+    try {
+        if (!userId) return;
+        
+        const notification = {
+            type: notificationData.type,
+            title: notificationData.title,
+            message: notificationData.message,
+            fundId: notificationData.fundId || null,
+            expenseId: notificationData.expenseId || null,
+            timestamp: Date.now(),
+            read: false
+        };
+        
+        await firebase.database().ref(`notifications/${userId}`).push(notification);
+        
+        console.log('Notification created for user:', userId);
+        
+    } catch (error) {
+        console.error('Error creating notification:', error);
+    }
+}
+
+/**
+ * Notify all group members except the actor
+ */
+async function notifyGroupMembers(fundId, excludeUserId, notificationData) {
+    try {
+        // Get all members of the fund
+        const membersSnapshot = await firebase.database().ref(`simpleModeFunds/${fundId}/members`).once('value');
+        const members = membersSnapshot.val() || {};
+        
+        // Create notification for each member except the one who performed the action
+        const notificationPromises = Object.keys(members).map(memberId => {
+            if (memberId !== excludeUserId && members[memberId].status === 'active') {
+                return createNotification(memberId, notificationData);
+            }
+        });
+        
+        await Promise.all(notificationPromises);
+        
+    } catch (error) {
+        console.error('Error notifying group members:', error);
+    }
+}
+
+// Initialize notification system when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNotificationSystem);
+} else {
+    initNotificationSystem();
 }

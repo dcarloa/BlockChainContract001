@@ -203,6 +203,29 @@ class ModeManager {
             );
             
             console.log("✅ Expense added:", expenseId);
+            
+            // 🔔 NOTIFICATION: Notify all group members about new expense
+            try {
+                const groupSnapshot = await window.FirebaseConfig.readDb(`groups/${this.currentGroupId}`);
+                const groupData = groupSnapshot || {};
+                
+                // Notify all members except the one who added the expense
+                const notificationData = {
+                    type: 'expense_added',
+                    title: '💸 New Expense Added',
+                    message: `${expense.paidByName} added ${expense.category}: ${expense.description} - ${expense.currency} ${expense.amount}`,
+                    fundId: this.currentGroupId,
+                    expenseId: expenseId
+                };
+                
+                if (typeof notifyGroupMembers === 'function') {
+                    await notifyGroupMembers(this.currentGroupId, user.uid, notificationData);
+                }
+            } catch (notifError) {
+                console.error('Error sending expense notification:', notifError);
+                // Don't fail the expense creation if notification fails
+            }
+            
             return expenseId;
             
         } catch (error) {
@@ -770,6 +793,29 @@ class ModeManager {
             );
             
             console.log("✅ Settlement recorded:", settlementId);
+            
+            // 🔔 NOTIFICATION: Notify the person who received the payment
+            try {
+                const groupSnapshot = await window.FirebaseConfig.readDb(`groups/${this.currentGroupId}`);
+                const groupData = groupSnapshot || {};
+                const fromMember = groupData.members?.[settlement.from];
+                const fromName = fromMember?.name || fromMember?.email || 'Someone';
+                
+                const notificationData = {
+                    type: 'payment_received',
+                    title: '💰 Payment Received',
+                    message: `${fromName} paid you ${settlement.amount} ${groupData.currency || 'USD'}`,
+                    fundId: this.currentGroupId
+                };
+                
+                if (typeof createNotification === 'function') {
+                    await createNotification(settlement.to, notificationData);
+                }
+            } catch (notifError) {
+                console.error('Error sending payment notification:', notifError);
+                // Don't fail the settlement if notification fails
+            }
+            
             return settlementId;
             
         } catch (error) {
