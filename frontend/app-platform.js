@@ -924,6 +924,11 @@ async function updateUIForFirebaseUser(user) {
         // Update unified session badge
         updateUnifiedSessionBadge();
         
+        // Initialize notification system now that Firebase is ready
+        if (typeof initNotificationSystem === 'function') {
+            initNotificationSystem();
+        }
+        
         // Check for pending group join
         const pendingGroupId = sessionStorage.getItem('pendingGroupJoin');
         if (pendingGroupId) {
@@ -7888,15 +7893,30 @@ function exportToPDF() {
 
 let notificationsCache = [];
 let unreadCount = 0;
+let notificationSystemInitialized = false;
+let notificationRefreshInterval = null;
 
 /**
  * Initialize notification system
  */
 function initNotificationSystem() {
+    // Prevent multiple initializations
+    if (notificationSystemInitialized) {
+        console.log('ℹ️ Notification system already initialized');
+        return;
+    }
+    
     const notificationsBtn = document.getElementById('notificationsBtn');
     const notificationsPanel = document.getElementById('notificationsPanel');
     const closeNotificationsBtn = document.getElementById('closeNotificationsBtn');
     const markAllReadBtn = document.getElementById('markAllReadBtn');
+    
+    if (!notificationsBtn || !notificationsPanel) {
+        console.error('❌ Notification elements not found in DOM');
+        return;
+    }
+    
+    console.log('🔔 Initializing notification system...');
     
     if (notificationsBtn) {
         notificationsBtn.addEventListener('click', toggleNotificationsPanel);
@@ -7925,8 +7945,14 @@ function initNotificationSystem() {
     if (userAddress || firebase.auth().currentUser) {
         loadNotifications();
         // Refresh notifications every 30 seconds
-        setInterval(loadNotifications, 30000);
+        if (notificationRefreshInterval) {
+            clearInterval(notificationRefreshInterval);
+        }
+        notificationRefreshInterval = setInterval(loadNotifications, 30000);
     }
+    
+    notificationSystemInitialized = true;
+    console.log('✅ Notification system initialized');
 }
 
 /**
@@ -8204,9 +8230,5 @@ async function notifyGroupMembers(fundId, excludeUserId, notificationData) {
     }
 }
 
-// Initialize notification system when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initNotificationSystem);
-} else {
-    initNotificationSystem();
-}
+// Notification system will be initialized after Firebase auth is ready
+// See firebase-config.js auth state listener
