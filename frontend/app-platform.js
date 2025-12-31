@@ -8448,13 +8448,32 @@ function renderNotifications() {
         const isUnread = !notif.read;
         const timeAgo = getTimeAgo(notif.timestamp);
         
+        // Handle both old format (message is object) and new format (message is string)
+        let title, message, type, fundId, expenseId;
+        
+        if (typeof notif.message === 'object' && notif.message !== null) {
+            // Old format: entire notification data was nested in message field
+            title = notif.message.title || 'Notificación';
+            message = notif.message.message || '';
+            type = notif.message.type || notif.type;
+            fundId = notif.message.fundId || notif.fundId;
+            expenseId = notif.message.expenseId || notif.expenseId;
+        } else {
+            // New format: proper structure
+            title = notif.title || 'Notificación';
+            message = notif.message || '';
+            type = notif.type;
+            fundId = notif.fundId;
+            expenseId = notif.expenseId;
+        }
+        
         return `
-            <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${notif.id}" onclick="handleNotificationClick('${notif.id}', '${notif.type}', '${notif.fundId || ''}', '${notif.expenseId || ''}')">
+            <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${notif.id}" onclick="handleNotificationClick('${notif.id}', '${type}', '${fundId || ''}', '${expenseId || ''}')">
                 <div class="notification-header">
-                    <div class="notification-icon">${getNotificationIcon(notif.type)}</div>
+                    <div class="notification-icon">${getNotificationIcon(type)}</div>
                     <div class="notification-content">
-                        <h4 class="notification-title">${notif.title || 'Notificación'}</h4>
-                        <p class="notification-message">${notif.message || ''}</p>
+                        <h4 class="notification-title">${title}</h4>
+                        <p class="notification-message">${message}</p>
                         <div class="notification-time">${timeAgo}</div>
                     </div>
                 </div>
