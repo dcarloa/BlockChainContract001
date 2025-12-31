@@ -3829,7 +3829,9 @@ async function requestDeleteExpense(expenseId) {
 
         // 🔔 NOTIFICATION: Notify expense creator(s) about deletion request
         if (expense) {
+            console.log('📧 Preparing deletion request notification');
             const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
+            console.log('👥 Expense paid by:', paidByArray);
             
             const notificationData = {
                 type: 'expense_delete_requested',
@@ -3839,14 +3841,27 @@ async function requestDeleteExpense(expenseId) {
                 expenseId: expenseId
             };
             
+            console.log('📬 Notification data:', notificationData);
+            console.log('🔍 createNotification function available:', typeof createNotification === 'function');
+            
             // Notify each payer who can delete the expense
             if (typeof createNotification === 'function') {
+                let notificationsSent = 0;
                 for (const payerId of paidByArray) {
                     if (payerId !== user.uid) { // Don't notify the requester
+                        console.log('📨 Sending notification to:', payerId);
                         await createNotification(payerId, notificationData);
+                        notificationsSent++;
+                    } else {
+                        console.log('⏭️ Skipping requester:', payerId);
                     }
                 }
+                console.log(`✅ Sent ${notificationsSent} deletion request notifications`);
+            } else {
+                console.error('❌ createNotification function not available');
             }
+        } else {
+            console.warn('⚠️ Expense not found, cannot send notification');
         }
 
         showToast('Deletion request sent', 'success');
