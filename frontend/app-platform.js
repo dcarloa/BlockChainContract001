@@ -3128,6 +3128,9 @@ function simplifyDebts(memberBalances) {
 // SMART SETTLEMENTS FUNCTIONS
 // ============================================
 
+// Store settlements for later use
+let currentSettlements = [];
+
 /**
  * Open Smart Settlements modal
  */
@@ -3179,6 +3182,9 @@ async function loadSmartSettlements() {
         
         // Simplify debts
         const settlements = simplifyDebts(memberBalances);
+        
+        // Store settlements globally for later use
+        currentSettlements = settlements;
         
         if (settlements.length === 0) {
             document.getElementById('noSettlements').style.display = 'flex';
@@ -3240,19 +3246,81 @@ async function loadSmartSettlements() {
 }
 
 /**
- * Mark a single settlement as complete
- */
-async function markSettlementComplete(index) {
-    const settlementEl = document.getElementById(`settlement-${index}`);
-    if (!settlementEl) return;
-    
-    // Add completed animation
-    settlementEl.classList.add('settlement-completed');
-    
-    // Wait for animation
-    setTimeout(() => {
-        settlementEl.style.opacity = '0.5';
-        settlementEl.style.transform = 'scale(0.95)';
+ * Mtry {
+        const settlementEl = document.getElementById(`settlement-${index}`);
+        if (!settlementEl) return;
+        
+        const settlement = currentSettlements[index];
+        if (!settlement) {
+            showToast('Settlement not found', 'error');
+            return;
+        }
+        
+        // Record settlement in Firebase
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const settlementInfo = {
+            from: settlement.from,
+            to: settlement.to,
+            amount: settlement.amount,
+            method: 'cash',
+            notes: `Settled via Smart Settlements on ${new Date().toLocaleDateString()}`
+        };
+    try {
+        const settlements = document.querySelectorAll('.settlement-item');
+        
+        if (settlements.length === 0) return;
+        
+        const confirmed = confirm(
+            `Record all ${currentSettlements.length} payments?\n\n` +
+            'This will register each payment in the group history and update balances.'
+        );
+        
+        if (!confirmed) return;
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        
+        // Record all settlements
+        for (let i = 0; i < currentSettlements.length; i++) {
+            const settlement = currentSettlements[i];
+            const settlementInfo = {
+                from: settlement.from,
+                to: settlement.to,
+                amount: settlement.amount,
+                method: 'cash',
+                notes: `Settled via Smart Settlements on ${new Date().toLocaleDateString()}`
+            };
+            
+            await window.modeManager.recordSettlement(settlementInfo);
+            
+            // Animate settlement
+            const settlementEl = document.getElementById(`settlement-${i}`);
+            if (settlementEl) {
+                settlementEl.classList.add('settlement-completed');
+            }
+        }
+        
+        // Wait for animations
+        setTimeout(async () => {
+            showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
+            closeSmartSettlements();
+            
+            // Reload data
+            await loadSimpleModeBalances();
+            await loadSimpleModeExpenses(); // Refresh history to show settlements
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error recording settlements:', error);
+        showToast('Error recording payments', 'error');
+    });
+            await loadSimpleModeBalances();
+            await loadSimpleModeExpenses(); // Refresh history to show settlement
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error recording settlement:', error);
+        showToast('Error recording payment', 'error');
+    }
     }, 300);
     
     showToast('Settlement marked as complete! 🎉', 'success');
