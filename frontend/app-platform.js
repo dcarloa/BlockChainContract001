@@ -1582,12 +1582,18 @@ async function deactivateFund(fundAddress, fundName) {
             await tx.wait();
         } else if (fund && fund.mode === 'simple') {
             // Simple mode - update in Firebase
-            const groupRef = ref(database, `groups/${fundAddress}`);
-            await update(groupRef, {
-                isActive: false,
-                pausedAt: Date.now(),
-                pausedBy: auth.currentUser.uid
-            });
+            await window.FirebaseConfig.writeDb(
+                `groups/${fundAddress}/isActive`,
+                false
+            );
+            await window.FirebaseConfig.writeDb(
+                `groups/${fundAddress}/pausedAt`,
+                Date.now()
+            );
+            await window.FirebaseConfig.writeDb(
+                `groups/${fundAddress}/pausedBy`,
+                window.FirebaseConfig.getCurrentUser().uid
+            );
         }
         
         // Notify all group members
@@ -1652,14 +1658,12 @@ async function hideFund(fundAddress, fundName) {
             
             // Remove group from each member's user data
             for (const memberId of Object.keys(members)) {
-                const memberGroupRef = ref(database, `users/${memberId}/groups/${fundAddress}`);
-                await remove(memberGroupRef);
+                await window.FirebaseConfig.deleteDb(`users/${memberId}/groups/${fundAddress}`);
                 console.log(`🗑️ Removed group from user ${memberId}`);
             }
             
             // Delete the entire group from Firebase
-            const groupRef = ref(database, `groups/${fundAddress}`);
-            await remove(groupRef);
+            await window.FirebaseConfig.deleteDb(`groups/${fundAddress}`);
             console.log(`🗑️ Group ${fundAddress} deleted from Firebase`);
             
             showToast("✅ Grupo eliminado correctamente", "success");
