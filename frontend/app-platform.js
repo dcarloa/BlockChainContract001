@@ -1137,6 +1137,7 @@ async function loadUserFunds() {
                     for (const [groupId, groupInfo] of Object.entries(userGroups)) {
                         const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
                         
+                        // Only load active groups that exist
                         if (groupData && groupData.isActive) {
                             const fundData = {
                                 fundAddress: groupId, // Use groupId as identifier
@@ -1563,7 +1564,8 @@ async function deactivateFund(fundAddress, fundName) {
             `• Bloqueará todas las transacciones (depósitos, propuestas, votos)\n` +
             `• El fondo seguirá visible en modo solo lectura\n` +
             `• Podrás ver el historial y balances\n` +
-            `• Solo el creador puede reactivarlo llamando al contrato\n\n` +
+            `• Solo el creador puede reactivarlo llamando al contrato\n` +
+            `• Se notificará a todos los miembros del grupo\n\n` +
             `¿Continuar?`
         );
         
@@ -1571,8 +1573,32 @@ async function deactivateFund(fundAddress, fundName) {
         
         showLoading("Desactivando fondo...");
         
-        const tx = await factoryContract.deactivateFund(fundAddress);
-        await tx.wait();
+        // Find the fund to get its mode
+        const fund = allUserFunds.find(f => f.fundAddress === fundAddress);
+        
+        if (fund && fund.mode === 'blockchain') {
+            // Blockchain mode - use smart contract
+            const tx = await factoryContract.deactivateFund(fundAddress);
+            await tx.wait();
+        } else if (fund && fund.mode === 'simple') {
+            // Simple mode - update in Firebase
+            const groupRef = ref(database, `groups/${fundAddress}`);
+            await update(groupRef, {
+                isActive: false,
+                pausedAt: Date.now(),
+                pausedBy: auth.currentUser.uid
+            });
+        }
+        
+        // Notify all group members
+        console.log("📢 Sending pause notifications to group members...");
+        await notifyGroupMembers(
+            fundAddress,
+            'group_paused',
+            `El grupo "${fundName}" ha sido pausado por el creador`,
+            { groupName: fundName }
+        );
+        console.log("✅ Pause notifications sent");
         
         // Refresh view to show deactivated state
         await refreshCurrentView();
@@ -1590,41 +1616,92 @@ async function deactivateFund(fundAddress, fundName) {
 
 async function hideFund(fundAddress, fundName) {
     try {
-        const confirmed = confirm(
-            `🗑️ ¿Ocultar el fondo "${fundName}"?\n\n` +
-            `Esta acción:\n` +
-            `• Ocultará el fondo de tu interfaz\n` +
-            `• El fondo seguirá existiendo en la blockchain\n` +
-            `• Los fondos NO se eliminarán del contrato\n` +
-            `• Solo se guardará tu preferencia localmente\n` +
-            `• Podrás volver a verlo limpiando el storage del navegador\n\n` +
-            `¿Continuar?`
-        );
+        // Find the fund to check its mode
+        const fund = allUserFunds.find(f => f.fundAddress === fundAddress);
         
-        if (!confirmed) return;
-        
-        showLoading("Ocultando fondo...");
-        
-        // Get hidden funds from localStorage
-        let hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
-        
-        // Add this fund to hidden list
-        if (!hiddenFunds.includes(fundAddress.toLowerCase())) {
-            hiddenFunds.push(fundAddress.toLowerCase());
-            localStorage.setItem('hiddenFunds', JSON.stringify(hiddenFunds));
+        if (fund && fund.mode === 'simple') {
+            // Simple Mode - delete group completely from Firebase
+            const confirmed = confirm(
+                `🗑️ ¿Eliminar el grupo "${fundName}"?\n\n` +
+                `Esta acción:\n` +
+                `• Eliminará PERMANENTEMENTE el grupo de Firebase\n` +
+                `• Se borrarán todos los gastos, pagos y datos\n` +
+                `• Esta acción NO se puede deshacer\n` +
+                `• Se notificará a todos los miembros\n` +
+                `• Todos los miembros perderán acceso\n\n` +
+                `¿Estás seguro de continuar?`
+            );
+            
+            if (!confirmed) return;
+            
+            showLoading("Eliminando grupo...");
+            
+            // Notify all group members BEFORE deleting
+            console.log("📢 Sending deletion notifications to group members...");
+            await notifyGroupMembers(
+                fundAddress,
+                'group_deleted',
+                `El grupo "${fundName}" ha sido eliminado por el creador`,
+                { groupName: fundName }
+            );
+            console.log("✅ Deletion notifications sent");
+            
+            // Get all members to remove group from their user data
+            const groupData = await window.FirebaseConfig.readDb(`groups/${fundAddress}`);
+            const members = groupData?.members || {};
+            
+            // Remove group from each member's user data
+            for (const memberId of Object.keys(members)) {
+                const memberGroupRef = ref(database, `users/${memberId}/groups/${fundAddress}`);
+                await remove(memberGroupRef);
+                console.log(`🗑️ Removed group from user ${memberId}`);
+            }
+            
+            // Delete the entire group from Firebase
+            const groupRef = ref(database, `groups/${fundAddress}`);
+            await remove(groupRef);
+            console.log(`🗑️ Group ${fundAddress} deleted from Firebase`);
+            
+            showToast("✅ Grupo eliminado correctamente", "success");
+            
+        } else {
+            // Blockchain mode - just hide locally
+            const confirmed = confirm(
+                `🗑️ ¿Ocultar el fondo "${fundName}"?\n\n` +
+                `Esta acción:\n` +
+                `• Ocultará el fondo de tu interfaz\n` +
+                `• El fondo seguirá existiendo en la blockchain\n` +
+                `• Los fondos NO se eliminarán del contrato\n` +
+                `• Solo se guardará tu preferencia localmente\n` +
+                `• Podrás volver a verlo limpiando el storage del navegador\n\n` +
+                `¿Continuar?`
+            );
+            
+            if (!confirmed) return;
+            
+            showLoading("Ocultando fondo...");
+            
+            // Get hidden funds from localStorage
+            let hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
+            
+            // Add this fund to hidden list
+            if (!hiddenFunds.includes(fundAddress.toLowerCase())) {
+                hiddenFunds.push(fundAddress.toLowerCase());
+                localStorage.setItem('hiddenFunds', JSON.stringify(hiddenFunds));
+            }
+            
+            showToast("✅ Fondo ocultado de tu vista", "success");
         }
         
         // Refresh view to hide the fund
         await refreshCurrentView();
-        
-        showToast("✅ Fondo ocultado de tu vista", "success");
         
         hideLoading();
         
     } catch (error) {
         hideLoading();
         console.error("Error hiding fund:", error);
-        showToast("Error al ocultar el fondo: " + error.message, "error");
+        showToast("Error al ocultar/archivar el fondo: " + error.message, "error");
     }
 }
 
@@ -8329,6 +8406,8 @@ function getNotificationIcon(type) {
         'expense_deleted': '🗑️',
         'expense_delete_requested': '⚠️',
         'payment_received': '💰',
+        'group_paused': '⏸️',
+        'group_deleted': '🗑️',
         'invitation': '📨',
         'vote_required': '🗳️',
         'proposal_approved': '✅',
