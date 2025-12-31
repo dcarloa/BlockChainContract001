@@ -8211,6 +8211,38 @@ async function markAllNotificationsAsRead() {
 window.markAllNotificationsAsRead = markAllNotificationsAsRead;
 
 /**
+ * Delete all notifications
+ */
+async function deleteAllNotifications() {
+    try {
+        const userId = firebase.auth().currentUser?.uid || userAddress;
+        if (!userId) {
+            console.error('No user logged in');
+            return;
+        }
+
+        console.log('🗑️ Deleting all notifications for user:', userId);
+        await firebase.database().ref(`notifications/${userId}`).remove();
+        
+        // Clear cache and UI
+        notificationsCache = [];
+        unreadCount = 0;
+        updateNotificationBadge();
+        renderNotifications();
+        
+        console.log('✅ All notifications deleted');
+        showToast('All notifications deleted', 'success');
+        
+    } catch (error) {
+        console.error('❌ Error deleting notifications:', error);
+        showToast('Error deleting notifications', 'error');
+    }
+}
+
+// Make function globally available
+window.deleteAllNotifications = deleteAllNotifications;
+
+/**
  * Handle notification click
  */
 function handleNotificationClick(notificationId, type, fundId, expenseId) {
@@ -8279,10 +8311,18 @@ async function notifyGroupMembers(fundId, excludeUserId, notificationData) {
         const members = membersSnapshot.val() || {};
         
         console.log('👥 Found members:', Object.keys(members));
+        console.log('👥 Members data:', members);
         
         // Create notification for each member except the one who performed the action
         const notificationPromises = Object.keys(members).map(memberId => {
-            if (memberId !== excludeUserId && members[memberId].status === 'active') {
+            const member = members[memberId];
+            console.log(`  🔍 Checking member ${memberId}:`, { 
+                status: member.status, 
+                isExcluded: memberId === excludeUserId,
+                isActive: member.status === 'active'
+            });
+            
+            if (memberId !== excludeUserId && member.status === 'active') {
                 console.log('  📬 Creating notification for:', memberId);
                 return createNotification(memberId, notificationData);
             }
