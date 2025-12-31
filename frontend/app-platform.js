@@ -7979,40 +7979,13 @@ function toggleNotificationsPanel() {
         }, 2000);
     }
 }
-    
-    // Debug: Log panel content
-    if (!panel.classList.contains('hidden')) {
-        const notificationsList = document.getElementById('notificationsList');
-        const emptyState = document.getElementById('emptyNotifications');
-        console.log('📋 Panel opened:');
-        console.log('  - notificationsList exists:', !!notificationsList);
-        console.log('  - emptyState exists:', !!emptyState);
-        console.log('  - emptyState is hidden:', emptyState?.classList.contains('hidden'));
-        console.log('  - notificationsList children:', notificationsList?.children.length);
-        console.log('  - Notifications cache:', notificationsCache.length);
-        if (notificationsCache.length > 0) {
-            console.log('  - Sample notification:', notificationsCache[0]);
-            console.log('  - Unread notifications:', notificationsCache.filter(n => !n.read).length);
-        }
-    }
-    
-    // Mark visible notifications as read after a delay
-    if (!panel.classList.contains('hidden')) {
-        const unreadCount = notificationsCache.filter(n => !n.read).length;
-        console.log(`📝 Will mark ${unreadCount} unread notifications as read in 2 seconds`);
-        setTimeout(() => {
-            const unreadNotifs = notificationsCache.filter(n => !n.read);
-            unreadNotifs.forEach(notif => {
-                markNotificationAsRead(notif.id);
-            });
-        }, 2000);
-    }
-}
 
 // Make function globally available
 window.toggleNotificationsPanel = toggleNotificationsPanel;
 
 /**
+ * Load user notifications from Firebase
+ */
  * Load user notifications from Firebase
  */
 async function loadNotifications() {
