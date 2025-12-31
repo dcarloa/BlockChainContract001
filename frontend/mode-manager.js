@@ -212,7 +212,7 @@ class ModeManager {
                 // Notify all members except the one who added the expense
                 const notificationData = {
                     type: 'expense_added',
-                    title: '💸 New Expense Added',
+                    title: 'New Expense Added',
                     message: `${expense.paidByName} added ${expense.category}: ${expense.description} - ${expense.currency} ${expense.amount}`,
                     fundId: this.currentGroupId,
                     expenseId: expenseId
@@ -823,7 +823,7 @@ class ModeManager {
                 
                 const notificationData = {
                     type: 'payment_received',
-                    title: '💰 Payment Received',
+                    title: 'Payment Received',
                     message: `${fromName} paid you ${settlement.amount} ${groupData.currency || 'USD'}`,
                     fundId: this.currentGroupId
                 };

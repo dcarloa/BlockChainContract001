@@ -4188,7 +4188,7 @@ async function deleteExpense(expenseId) {
         try {
             const notificationData = {
                 type: 'expense_deleted',
-                title: '🗑️ Expense Deleted',
+                title: 'Expense Deleted',
                 message: `${user.displayName || user.email} deleted: ${expense.description} - ${expense.currency || '$'}${expense.amount}`,
                 fundId: groupId
             };
