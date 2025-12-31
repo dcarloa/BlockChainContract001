@@ -7969,6 +7969,18 @@ function toggleNotificationsPanel() {
     panel.classList.toggle('hidden');
     console.log('Panel is now:', panel.classList.contains('hidden') ? 'hidden' : 'visible');
     
+    // Debug: Log panel content
+    if (!panel.classList.contains('hidden')) {
+        const notificationsList = document.getElementById('notificationsList');
+        const emptyState = document.getElementById('emptyNotifications');
+        console.log('📋 Panel opened:');
+        console.log('  - notificationsList exists:', !!notificationsList);
+        console.log('  - emptyState exists:', !!emptyState);
+        console.log('  - emptyState is hidden:', emptyState?.classList.contains('hidden'));
+        console.log('  - notificationsList children:', notificationsList?.children.length);
+        console.log('  - Notifications cache:', notificationsCache.length);
+    }
+    
     // Mark visible notifications as read after a delay
     if (!panel.classList.contains('hidden')) {
         console.log(`📝 Will mark ${notificationsCache.filter(n => !n.read).length} notifications as read in 2 seconds`);
