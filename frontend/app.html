@@ -199,12 +199,12 @@
     </header>
 
     <!-- Notifications Panel -->
-    <div id="notificationsPanel" class="notifications-panel" style="display: none;">
+    <div id="notificationsPanel" class="notifications-panel hidden">
         <div class="notifications-header">
             <h3>🔔 Notifications</h3>
             <div class="notifications-header-actions">
                 <button class="btn-text" onclick="markAllNotificationsAsRead()" id="markAllReadBtn" style="display: none;">Mark all as read</button>
-                <button class="btn-icon-close" onclick="toggleNotificationsPanel()">&times;</button>
+                <button id="closeNotificationsBtn" class="btn-icon-close">&times;</button>
             </div>
         </div>
         <div id="notificationsList" class="notifications-list">

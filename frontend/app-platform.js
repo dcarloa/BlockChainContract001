@@ -7956,21 +7956,33 @@ function initNotificationSystem() {
  * Toggle notifications panel visibility
  */
 function toggleNotificationsPanel() {
+    console.log('🔔 Toggle notifications panel clicked');
     const panel = document.getElementById('notificationsPanel');
-    if (panel) {
-        panel.classList.toggle('hidden');
-        
-        // Mark visible notifications as read after a delay
-        if (!panel.classList.contains('hidden')) {
-            setTimeout(() => {
-                const unreadNotifs = notificationsCache.filter(n => !n.read);
-                unreadNotifs.forEach(notif => {
-                    markNotificationAsRead(notif.id);
-                });
-            }, 2000);
-        }
+    if (!panel) {
+        console.error('❌ Notifications panel not found!');
+        return;
+    }
+    
+    const isHidden = panel.classList.contains('hidden');
+    console.log('Panel is currently:', isHidden ? 'hidden' : 'visible');
+    
+    panel.classList.toggle('hidden');
+    console.log('Panel is now:', panel.classList.contains('hidden') ? 'hidden' : 'visible');
+    
+    // Mark visible notifications as read after a delay
+    if (!panel.classList.contains('hidden')) {
+        console.log(`📝 Will mark ${notificationsCache.filter(n => !n.read).length} notifications as read in 2 seconds`);
+        setTimeout(() => {
+            const unreadNotifs = notificationsCache.filter(n => !n.read);
+            unreadNotifs.forEach(notif => {
+                markNotificationAsRead(notif.id);
+            });
+        }, 2000);
     }
 }
+
+// Make function globally available
+window.toggleNotificationsPanel = toggleNotificationsPanel;
 
 /**
  * Load user notifications from Firebase
@@ -8156,6 +8168,9 @@ async function markAllNotificationsAsRead() {
     }
 }
 
+// Make function globally available
+window.markAllNotificationsAsRead = markAllNotificationsAsRead;
+
 /**
  * Handle notification click
  */
@@ -8177,6 +8192,9 @@ function handleNotificationClick(notificationId, type, fundId, expenseId) {
         panel.classList.add('hidden');
     }
 }
+
+// Make function globally available
+window.handleNotificationClick = handleNotificationClick;
 
 /**
  * Create a new notification
