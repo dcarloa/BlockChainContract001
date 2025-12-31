@@ -2615,12 +2615,37 @@ async function loadSimpleModeExpenses() {
         return;
     }
     
-    if (!groupData || !groupData.expenses || Object.keys(groupData.expenses).length === 0) {
+    // Collect both expenses and settlements
+    const items = [];
+    
+    // Add expenses
+    if (groupData && groupData.expenses) {
+        Object.entries(groupData.expenses).forEach(([id, expense]) => {
+            items.push({
+                id,
+                type: 'expense',
+                ...expense
+            });
+        });
+    }
+    
+    // Add settlements (payments)
+    if (groupData && groupData.settlements) {
+        Object.entries(groupData.settlements).forEach(([id, settlement]) => {
+            items.push({
+                id,
+                type: 'settlement',
+                ...settlement
+            });
+        });
+    }
+    
+    if (items.length === 0) {
         if (searchSection) searchSection.style.display = 'none';
         historyContainer.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">📝</div>
-                <h4>No expenses yet</h4>
+                <h4>No transactions yet</h4>
                 <p>Add your first expense to start tracking</p>
                 <button class="btn btn-primary" onclick="showAddExpenseModal()">
                     <span class="btn-icon">➕</span>
@@ -2631,21 +2656,80 @@ async function loadSimpleModeExpenses() {
         return;
     }
     
-    // Show search section when there are expenses
+    // Show search section when there are items
     if (searchSection) searchSection.style.display = 'block';
     
-    // Show expenses
-    const expenses = Object.entries(groupData.expenses).map(([id, expense]) => ({
-        id,
-        ...expense
-    }));
-    
-    // Sort by date (newest first)
-    expenses.sort((a, b) => b.timestamp - a.timestamp);
+    // Sort by timestamp (newest first)
+    items.sort((a, b) => {
+        const timeA = a.recordedAt || a.timestamp || 0;
+        const timeB = b.recordedAt || b.timestamp || 0;
+        return timeB - timeA;
+    });
     
     const currentUserId = firebase.auth().currentUser?.uid;
     
-    historyContainer.innerHTML = expenses.map(expense => {
+    historyContainer.innerHTML = items.map(item => {
+        if (item.type === 'settlement') {
+            return renderSettlementItem(item, currentUserId, groupData);
+        } else {
+            return renderExpenseItem(item, currentUserId, groupData);
+        }
+    }).join('');
+}
+
+/**
+ * Render settlement item for history
+ */
+function renderSettlementItem(settlement, currentUserId, groupData) {
+    const dateStr = new Date(settlement.recordedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const currency = groupData.currency || 'USD';
+    const currencySymbol = getCurrencySymbol(currency);
+    const amountStr = `${currencySymbol}${settlement.amount}`;
+    
+    // Get member names
+    const fromMember = groupData.members?.[settlement.from];
+    const toMember = groupData.members?.[settlement.to];
+    const fromName = fromMember?.name || fromMember?.email || 'Unknown';
+    const toName = toMember?.name || toMember?.email || 'Unknown';
+    
+    const isCurrentUserInvolved = settlement.from === currentUserId || settlement.to === currentUserId;
+    
+    return `
+        <div class="expense-card-compact settlement-card" data-settlement-id="${settlement.id}">
+            <div class="expense-header">
+                <div class="expense-header-left">
+                    <h4 class="expense-title-compact">
+                        💸 Payment: ${fromName} → ${toName}
+                        <span class="expense-badge badge-payment">Paid</span>
+                    </h4>
+                    <span class="expense-date-compact">📅 ${dateStr}</span>
+                </div>
+                <div class="expense-header-right">
+                    <div class="expense-amount-large payment-amount">
+                        ${amountStr} <span class="currency-label">${currency}</span>
+                    </div>
+                </div>
+            </div>
+            ${settlement.notes ? `
+                <div class="expense-details" style="display: block; padding-top: 8px;">
+                    <p class="expense-notes">💬 ${settlement.notes}</p>
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+/**
+ * Render expense item for history
+ */
+function renderExpenseItem(expense, currentUserId, groupData) {
         // Format date properly
         let dateStr = 'No date';
         if (expense.date) {
@@ -2663,94 +2747,114 @@ async function loadSimpleModeExpenses() {
             });
         }
         
-        // Format amount - preserve full precision and show correct currency
-        const isNegative = expense.amount < 0;
-        const absAmount = Math.abs(expense.amount);
-        const currency = expense.currency || 'USD';
-        const currencySymbol = getCurrencySymbol(currency);
-        const amountStr = absAmount % 1 === 0 ? `${currencySymbol}${absAmount}` : `${currencySymbol}${absAmount.toFixed(2)}`;
-        // Show currency label for all currencies (including USD for debugging)
-        const currencyLabel = ` <span class="currency-label">${currency}</span>`;
-        const amountClass = isNegative ? 'expense-amount-negative' : 'expense-amount-large';
-        const amountPrefix = isNegative ? '-' : '';
-        
-        console.log(`💰 Expense "${expense.description}": amount=${expense.amount}, currency=${expense.currency || 'undefined'}, display=${amountStr} ${currency}`);
-        
-        // Check if current user created/paid this expense
-        const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
-        const isCreator = paidByArray.includes(currentUserId);
-        
-        // Format paidBy display
-        let paidByDisplay = expense.paidByName || '';
-        if (!paidByDisplay && paidByArray.length > 0) {
-            const names = paidByArray.map(uid => {
-                const member = currentFund.members?.[uid];
-                return member?.name || member?.email || uid;
-            });
-            paidByDisplay = names.join(' & ');
-        }
-        
-        // Count interactions
-        const likesCount = expense.likes ? Object.keys(expense.likes).length : 0;
-        const hasLiked = expense.likes && expense.likes[currentUserId];
-        const commentsCount = expense.comments ? Object.keys(expense.comments).length : 0;
-        const deleteRequestsCount = expense.deleteRequests ? Object.keys(expense.deleteRequests).length : 0;
-        
-        return `
-            <div class="expense-card-compact" data-expense-id="${expense.id}">
-                <div class="expense-header" onclick="toggleExpenseDetails('${expense.id}')">
-                    <div class="expense-header-left">
-                        <h4 class="expense-title-compact">
-                            ${isNegative ? '💰 ' : ''}${expense.description}
-                            ${isNegative ? '<span class="expense-badge badge-payment">Payment</span>' : ''}
-                        </h4>
-                        <span class="expense-date-compact">📅 ${dateStr}</span>
-                    </div>
-                    <div class="expense-header-right">
-                        <div class="${amountClass}">
-                            ${amountPrefix}${amountStr}${currencyLabel}
-                        </div>
-                        <span class="expand-icon">▼</span>
-                    </div>
+/**
+ * Render expense item for history
+ */
+function renderExpenseItem(expense, currentUserId, groupData) {
+    // Format date properly
+    let dateStr = 'No date';
+    if (expense.date) {
+        // If date is a string like "2025-12-13", parse it
+        dateStr = new Date(expense.date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } else if (expense.timestamp) {
+        dateStr = new Date(expense.timestamp).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+    
+    // Format amount - preserve full precision and show correct currency
+    const isNegative = expense.amount < 0;
+    const absAmount = Math.abs(expense.amount);
+    const currency = expense.currency || 'USD';
+    const currencySymbol = getCurrencySymbol(currency);
+    const amountStr = absAmount % 1 === 0 ? `${currencySymbol}${absAmount}` : `${currencySymbol}${absAmount.toFixed(2)}`;
+    // Show currency label for all currencies (including USD for debugging)
+    const currencyLabel = ` <span class="currency-label">${currency}</span>`;
+    const amountClass = isNegative ? 'expense-amount-negative' : 'expense-amount-large';
+    const amountPrefix = isNegative ? '-' : '';
+    
+    console.log(`💰 Expense "${expense.description}": amount=${expense.amount}, currency=${expense.currency || 'undefined'}, display=${amountStr} ${currency}`);
+    
+    // Check if current user created/paid this expense
+    const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
+    const isCreator = paidByArray.includes(currentUserId);
+    
+    // Format paidBy display
+    let paidByDisplay = expense.paidByName || '';
+    if (!paidByDisplay && paidByArray.length > 0) {
+        const names = paidByArray.map(uid => {
+            const member = groupData.members?.[uid];
+            return member?.name || member?.email || uid;
+        });
+        paidByDisplay = names.join(' & ');
+    }
+    
+    // Count interactions
+    const likesCount = expense.likes ? Object.keys(expense.likes).length : 0;
+    const hasLiked = expense.likes && expense.likes[currentUserId];
+    const commentsCount = expense.comments ? Object.keys(expense.comments).length : 0;
+    const deleteRequestsCount = expense.deleteRequests ? Object.keys(expense.deleteRequests).length : 0;
+    
+    return `
+        <div class="expense-card-compact" data-expense-id="${expense.id}">
+            <div class="expense-header" onclick="toggleExpenseDetails('${expense.id}')">
+                <div class="expense-header-left">
+                    <h4 class="expense-title-compact">
+                        ${isNegative ? '💰 ' : ''}${expense.description}
+                        ${isNegative ? '<span class="expense-badge badge-payment">Payment</span>' : ''}
+                    </h4>
+                    <span class="expense-date-compact">📅 ${dateStr}</span>
                 </div>
-                
-                <div class="expense-details" style="display: none;">
-                    <div class="expense-meta">
-                        <span class="meta-item">👤 ${paidByDisplay}</span>
-                        <span class="meta-item">👥 ${expense.splitBetween.length} people</span>
+                <div class="expense-header-right">
+                    <div class="${amountClass}">
+                        ${amountPrefix}${amountStr}${currencyLabel}
                     </div>
-                    ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
-                    
-                    <!-- Interaction Bar -->
-                    <div class="expense-interactions">
-                    <button class="interaction-btn ${hasLiked ? 'active' : ''}" onclick="toggleLikeExpense('${expense.id}')" title="Like">
-                        ${hasLiked ? '❤️' : '🤍'} ${likesCount > 0 ? likesCount : ''}
-                    </button>
-                    <button class="interaction-btn" onclick="showExpenseComments('${expense.id}')" title="Comments">
-                        💬 ${commentsCount > 0 ? commentsCount : ''}
-                    </button>
-                    ${!isCreator ? `
-                        <button class="interaction-btn ${deleteRequestsCount > 0 ? 'active' : ''}" onclick="requestDeleteExpense('${expense.id}')" title="Request deletion">
-                            ⚠️ ${deleteRequestsCount > 0 ? deleteRequestsCount : ''}
-                        </button>
-                    ` : `
-                        <button class="interaction-btn btn-delete" onclick="deleteExpense('${expense.id}')" title="Delete expense">
-                            🗑️ Delete
-                        </button>
-                    `}
-                </div>
-                
-                    ${deleteRequestsCount > 0 && isCreator ? `
-                        <div class="expense-alert">
-                            <span class="alert-icon">⚠️</span>
-                            <span>${deleteRequestsCount} member${deleteRequestsCount > 1 ? 's' : ''} requested deletion of this expense</span>
-                            <button class="btn-link" onclick="showDeleteRequests('${expense.id}')">View requests</button>
-                        </div>
-                    ` : ''}
+                    <span class="expand-icon">▼</span>
                 </div>
             </div>
-        `;
-    }).join('');
+            
+            <div class="expense-details" style="display: none;">
+                <div class="expense-meta">
+                    <span class="meta-item">👤 ${paidByDisplay}</span>
+                    <span class="meta-item">👥 ${expense.splitBetween.length} people</span>
+                </div>
+                ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
+                
+                <!-- Interaction Bar -->
+                <div class="expense-interactions">
+                <button class="interaction-btn ${hasLiked ? 'active' : ''}" onclick="toggleLikeExpense('${expense.id}')" title="Like">
+                    ${hasLiked ? '❤️' : '🤍'} ${likesCount > 0 ? likesCount : ''}
+                </button>
+                <button class="interaction-btn" onclick="showExpenseComments('${expense.id}')" title="Comments">
+                    💬 ${commentsCount > 0 ? commentsCount : ''}
+                </button>
+                ${!isCreator ? `
+                    <button class="interaction-btn ${deleteRequestsCount > 0 ? 'active' : ''}" onclick="requestDeleteExpense('${expense.id}')" title="Request deletion">
+                        ⚠️ ${deleteRequestsCount > 0 ? deleteRequestsCount : ''}
+                    </button>
+                ` : `
+                    <button class="interaction-btn btn-delete" onclick="deleteExpense('${expense.id}')" title="Delete expense">
+                        🗑️ Delete
+                    </button>
+                `}
+            </div>
+            
+                ${deleteRequestsCount > 0 && isCreator ? `
+                    <div class="expense-alert">
+                        <span class="alert-icon">⚠️</span>
+                        <span>${deleteRequestsCount} member${deleteRequestsCount > 1 ? 's' : ''} requested deletion of this expense</span>
+                        <button class="btn-link" onclick="showDeleteRequests('${expense.id}')">View requests</button>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
 }
 
 /**

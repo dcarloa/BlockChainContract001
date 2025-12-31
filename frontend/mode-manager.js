@@ -731,7 +731,27 @@ class ModeManager {
             
             // Convert to array format
             const balanceArray = [];
-            console.log('📊 Raw balances:', balances);
+            console.log('📊 Raw balances before settlements:', balances);
+            
+            // Now subtract settlements (payments already made)
+            const settlementsData = await window.FirebaseConfig.readDb(
+                `groups/${this.currentGroupId}/settlements`
+            );
+            
+            if (settlementsData) {
+                console.log('💸 Processing settlements:', Object.keys(settlementsData).length);
+                for (const settlement of Object.values(settlementsData)) {
+                    const amount = Number(settlement.amount);
+                    console.log(`  💰 Settlement: ${settlement.from} paid ${settlement.to} $${amount}`);
+                    
+                    // Person who paid increases their balance (they're owed more or owe less)
+                    balances[settlement.from] = Math.round((balances[settlement.from] + amount) * 100) / 100;
+                    
+                    // Person who received decreases their balance (they owe more or are owed less)
+                    balances[settlement.to] = Math.round((balances[settlement.to] - amount) * 100) / 100;
+                }
+                console.log('📊 Balances after settlements:', balances);
+            }
             
             for (const [memberId, balance] of Object.entries(balances)) {
                 console.log(`  Member ${memberId}: balance = ${balance}`);

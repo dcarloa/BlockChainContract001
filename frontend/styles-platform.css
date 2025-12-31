@@ -5147,3 +5147,37 @@ header,
   background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
+
+/* Settlement Card Styles */
+.settlement-card {
+  border-left: 4px solid #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+}
+
+.settlement-card .expense-header {
+  background: transparent;
+}
+
+.payment-amount {
+  color: #10b981 !important;
+  font-weight: 600;
+}
+
+.badge-payment {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+[data-theme="light"] .settlement-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.08) 100%);
+  border-left-color: #059669;
+}
+
+[data-theme="light"] .payment-amount {
+  color: #059669 !important;
+}
