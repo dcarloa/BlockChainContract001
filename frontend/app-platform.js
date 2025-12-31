@@ -3330,24 +3330,78 @@ async function loadSmartSettlements() {
  * Mark all settlements as complete
  */
 async function markAllSettled() {
-    const settlements = document.querySelectorAll('.settlement-item');
-    
-    if (settlements.length === 0) return;
-    
-    // Animate all settlements
-    settlements.forEach((settlement, index) => {
-        setTimeout(() => {
-            settlement.classList.add('settlement-completed');
-        }, index * 100);
-    });
-    
-    // Wait for animations
-    setTimeout(() => {
-        closeSmartSettlements();
-        showToast(`All ${settlements.length} payments marked as settled! 🎉`, 'success');
-        // Reload balances
-        loadSimpleModeBalances();
-    }, settlements.length * 100 + 500);
+    try {
+        console.log('🎯 Mark All Settled clicked');
+        console.log('📊 Current settlements:', currentSettlements);
+        
+        const settlements = document.querySelectorAll('.settlement-item');
+        console.log('📋 Settlement items in DOM:', settlements.length);
+        
+        if (settlements.length === 0) {
+            console.warn('⚠️ No settlements to mark');
+            return;
+        }
+        
+        if (currentSettlements.length === 0) {
+            console.warn('⚠️ No settlements data available');
+            return;
+        }
+        
+        const confirmed = confirm(
+            `Record all ${currentSettlements.length} payments?\n\n` +
+            'This will register each payment in the group history and update balances.'
+        );
+        
+        if (!confirmed) {
+            console.log('❌ User cancelled');
+            return;
+        }
+        
+        console.log('✅ Recording settlements...');
+        window.modeManager.currentGroupId = currentFund.fundId;
+        
+        // Record all settlements
+        for (let i = 0; i < currentSettlements.length; i++) {
+            const settlement = currentSettlements[i];
+            console.log(`📝 Recording settlement ${i + 1}/${currentSettlements.length}:`, settlement);
+            
+            const settlementInfo = {
+                from: settlement.from,
+                to: settlement.to,
+                amount: settlement.amount,
+                method: 'cash',
+                notes: `Settled via Smart Settlements on ${new Date().toLocaleDateString()}`
+            };
+            
+            await window.modeManager.recordSettlement(settlementInfo);
+            console.log(`✅ Settlement ${i + 1} recorded`);
+            
+            // Animate settlement
+            const settlementEl = document.getElementById(`settlement-${i}`);
+            if (settlementEl) {
+                settlementEl.classList.add('settlement-completed');
+            }
+        }
+        
+        console.log('🎉 All settlements recorded successfully');
+        
+        // Wait for animations
+        setTimeout(async () => {
+            showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
+            closeSmartSettlements();
+            
+            console.log('🔄 Refreshing data...');
+            // Reload data
+            await loadSimpleModeBalances();
+            await loadSimpleModeExpenses(); // Refresh history to show settlements
+            console.log('✅ Data refreshed');
+        }, 500);
+        
+    } catch (error) {
+        console.error('❌ Error recording settlements:', error);
+        console.error('Stack:', error.stack);
+        showToast('Error recording payments: ' + error.message, 'error');
+    }
 }
 
 // ============================================
