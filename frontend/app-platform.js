@@ -2730,27 +2730,6 @@ function renderSettlementItem(settlement, currentUserId, groupData) {
  * Render expense item for history
  */
 function renderExpenseItem(expense, currentUserId, groupData) {
-        // Format date properly
-        let dateStr = 'No date';
-        if (expense.date) {
-            // If date is a string like "2025-12-13", parse it
-            dateStr = new Date(expense.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        } else if (expense.timestamp) {
-            dateStr = new Date(expense.timestamp).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-        
-/**
- * Render expense item for history
- */
-function renderExpenseItem(expense, currentUserId, groupData) {
     // Format date properly
     let dateStr = 'No date';
     if (expense.date) {
