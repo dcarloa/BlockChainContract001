@@ -7918,10 +7918,7 @@ function initNotificationSystem() {
     
     console.log('🔔 Initializing notification system...');
     
-    if (notificationsBtn) {
-        notificationsBtn.addEventListener('click', toggleNotificationsPanel);
-    }
-    
+    // Event listeners for close and mark all read buttons (not for main button, it uses onclick)
     if (closeNotificationsBtn) {
         closeNotificationsBtn.addEventListener('click', () => {
             notificationsPanel.classList.add('hidden');
