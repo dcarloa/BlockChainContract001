@@ -3712,12 +3712,38 @@ async function requestDeleteExpense(expenseId) {
         const groupId = currentFund.fundId || currentFund.fundAddress;
         const requestPath = `groups/${groupId}/expenses/${expenseId}/deleteRequests/${user.uid}`;
 
+        // Get expense details to notify creator
+        const expensePath = `groups/${groupId}/expenses/${expenseId}`;
+        const expense = await window.FirebaseConfig.readDb(expensePath);
+
         await window.FirebaseConfig.updateDb(requestPath, {
             userId: user.uid,
             userName: user.displayName || user.email,
             reason: 'User requested deletion',
             timestamp: Date.now()
         });
+
+        // 🔔 NOTIFICATION: Notify expense creator(s) about deletion request
+        if (expense) {
+            const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
+            
+            const notificationData = {
+                type: 'expense_delete_requested',
+                title: '🗑️ Delete Request',
+                message: `${user.displayName || user.email} requested to delete: ${expense.description} - ${expense.currency || '$'}${expense.amount}`,
+                fundId: groupId,
+                expenseId: expenseId
+            };
+            
+            // Notify each payer who can delete the expense
+            if (typeof createNotification === 'function') {
+                for (const payerId of paidByArray) {
+                    if (payerId !== user.uid) { // Don't notify the requester
+                        await createNotification(payerId, notificationData);
+                    }
+                }
+            }
+        }
 
         showToast('Deletion request sent', 'success');
         await loadSimpleModeExpenses();
@@ -8081,6 +8107,7 @@ function getNotificationIcon(type) {
     const icons = {
         'expense_added': '💸',
         'expense_deleted': '🗑️',
+        'expense_delete_requested': '⚠️',
         'payment_received': '💰',
         'invitation': '📨',
         'vote_required': '🗳️',
