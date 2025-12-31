@@ -7979,11 +7979,16 @@ function toggleNotificationsPanel() {
         console.log('  - emptyState is hidden:', emptyState?.classList.contains('hidden'));
         console.log('  - notificationsList children:', notificationsList?.children.length);
         console.log('  - Notifications cache:', notificationsCache.length);
+        if (notificationsCache.length > 0) {
+            console.log('  - Sample notification:', notificationsCache[0]);
+            console.log('  - Unread notifications:', notificationsCache.filter(n => !n.read).length);
+        }
     }
     
     // Mark visible notifications as read after a delay
     if (!panel.classList.contains('hidden')) {
-        console.log(`📝 Will mark ${notificationsCache.filter(n => !n.read).length} notifications as read in 2 seconds`);
+        const unreadCount = notificationsCache.filter(n => !n.read).length;
+        console.log(`📝 Will mark ${unreadCount} unread notifications as read in 2 seconds`);
         setTimeout(() => {
             const unreadNotifs = notificationsCache.filter(n => !n.read);
             unreadNotifs.forEach(notif => {
@@ -8209,14 +8214,17 @@ window.markAllNotificationsAsRead = markAllNotificationsAsRead;
  * Handle notification click
  */
 function handleNotificationClick(notificationId, type, fundId, expenseId) {
+    console.log('📬 Notification clicked:', { notificationId, type, fundId, expenseId });
     markNotificationAsRead(notificationId);
     
     // Navigate based on notification type
-    if (fundId && type.includes('expense')) {
-        // Find and show the fund
-        const fund = currentUserFunds.find(f => f.fundId === fundId);
-        if (fund) {
-            showFundDetail(fund);
+    if (fundId && fundId !== 'test') {
+        console.log('🔍 Opening fund:', fundId);
+        // Use openFund which handles both blockchain and simple mode funds
+        if (typeof openFund === 'function') {
+            openFund(fundId);
+        } else {
+            console.warn('⚠️ openFund function not available');
         }
     }
     
