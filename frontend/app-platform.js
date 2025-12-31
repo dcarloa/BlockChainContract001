@@ -7986,8 +7986,6 @@ window.toggleNotificationsPanel = toggleNotificationsPanel;
 /**
  * Load user notifications from Firebase
  */
- * Load user notifications from Firebase
- */
 async function loadNotifications() {
     try {
         const userId = firebase.auth().currentUser?.uid || userAddress;
