@@ -1137,15 +1137,15 @@ async function loadUserFunds() {
                     for (const [groupId, groupInfo] of Object.entries(userGroups)) {
                         const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
                         
-                        // Only load active groups that exist
-                        if (groupData && groupData.isActive) {
+                        // Load all groups (active and paused)
+                        if (groupData) {
                             const fundData = {
                                 fundAddress: groupId, // Use groupId as identifier
                                 creator: groupData.createdByEmail,
                                 fundName: groupData.name,
                                 fundType: 3, // Other type for Simple Mode
                                 createdAt: groupData.createdAt,
-                                isActive: true,
+                                isActive: groupData.isActive !== false, // Default to true if not set
                                 isCreator: groupInfo.role === 'creator',
                                 isParticipant: true,
                                 mode: 'simple',
@@ -1398,11 +1398,15 @@ function createFundCard(fund) {
                 ${fund.isCreator ? `
                 <div class="fund-actions">
                     ${fund.isActive ? `
-                    <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Pausar fondo (desactivar transacciones)">
+                    <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Pausar grupo">
                         ⏸️
                     </button>
-                    ` : ''}
-                    <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${fund.fundName}')" title="Ocultar de mi vista">
+                    ` : `
+                    <button class="fund-action-btn fund-resume-btn" onclick="event.stopPropagation(); reactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Reactivar grupo">
+                        ▶️
+                    </button>
+                    `}
+                    <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${fund.fundName}')" title="Eliminar grupo">
                         🚫
                     </button>
                 </div>
@@ -1480,6 +1484,12 @@ async function openFund(fundAddress) {
         }
         
         console.log("Fund found:", currentFund);
+        
+        // Check if group is paused
+        if (!currentFund.isActive) {
+            console.log("⚠️ Group is paused - read-only mode");
+            showToast("⏸️ Este grupo está pausado. Solo lectura disponible.", "warning");
+        }
         
         // Validate access based on fund mode
         if (currentFund.mode === 'blockchain' && !hasBlockchainAccess()) {
@@ -1619,6 +1629,37 @@ async function deactivateFund(fundAddress, fundName) {
         showToast("Error al desactivar el fondo: " + error.message, "error");
     }
 }
+
+async function reactivateFund(fundAddress, fundName) {
+    try {
+        const confirmed = confirm(`▶️ ¿Reactivar el grupo "${fundName}"?\n\nEsta acción habilitará nuevamente el grupo y se notificará a todos los miembros.`);
+        if (!confirmed) return;
+        
+        showLoading("Reactivando grupo...");
+        
+        const fund = allUserFunds.find(f => f.fundAddress === fundAddress);
+        
+        if (fund && fund.mode === 'simple') {
+            await window.FirebaseConfig.writeDb(`groups/${fundAddress}/isActive`, true);
+            await window.FirebaseConfig.writeDb(`groups/${fundAddress}/reactivatedAt`, Date.now());
+            await window.FirebaseConfig.writeDb(`groups/${fundAddress}/reactivatedBy`, window.FirebaseConfig.getCurrentUser().uid);
+        }
+        
+        console.log("📢 Sending reactivation notifications...");
+        await notifyGroupMembers(fundAddress, 'group_reactivated', `El grupo "${fundName}" ha sido reactivado`, { groupName: fundName });
+        console.log("✅ Reactivation notifications sent");
+        
+        await refreshCurrentView();
+        showToast("✅ Grupo reactivado correctamente", "success");
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        console.error("Error reactivating fund:", error);
+        showToast("Error al reactivar el grupo: " + error.message, "error");
+    }
+}
+
 
 async function hideFund(fundAddress, fundName) {
     try {
@@ -2614,11 +2655,12 @@ async function loadSimpleModeDetailView() {
             }
         }
         
-        // Show Add Expense FAB button ONLY if we're in detail view
+        // Show Add Expense FAB button ONLY if we're in detail view and group is active
         const fabBtn = document.getElementById('addExpenseBtn');
         const detailSection = document.getElementById('fundDetailSection');
         if (fabBtn && detailSection && detailSection.classList.contains('active')) {
-            fabBtn.style.display = 'flex';
+            // Hide FAB if group is paused
+            fabBtn.style.display = (currentFund && !currentFund.isActive) ? 'none' : 'flex';
             
             // Remove any existing listeners to avoid duplicates
             const newFabBtn = fabBtn.cloneNode(true);
@@ -3412,6 +3454,11 @@ async function loadSmartSettlements() {
  */
 async function markAllSettled() {
     try {
+        if (currentFund && !currentFund.isActive) {
+            showToast("⏸️ El grupo está pausado. No puedes registrar pagos.", "error");
+            return;
+        }
+        
         console.log('🎯 Mark All Settled clicked');
         console.log('📊 Current settlements:', currentSettlements);
         
@@ -4606,6 +4653,12 @@ document.addEventListener('click', function(event) {
 function showAddExpenseModal() {
     console.log('🔵 showAddExpenseModal called');
     
+    // Check if group is paused
+    if (currentFund && !currentFund.isActive) {
+        showToast("⏸️ El grupo está pausado. No puedes agregar gastos.", "error");
+        return;
+    }
+    
     // Close FAB menu if open
     const fabContainer = document.getElementById('addExpenseBtn');
     const fabMenu = document.getElementById('fabMenu');
@@ -5070,6 +5123,11 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 async function approveExpense(expenseId) {
     try {
+        if (currentFund && !currentFund.isActive) {
+            showToast("⏸️ El grupo está pausado. No puedes aprobar gastos.", "error");
+            return;
+        }
+        
         const user = firebase.auth().currentUser;
         if (!user) {
             showToast('You must be signed in to approve expenses', 'error');
@@ -5101,6 +5159,11 @@ async function approveExpense(expenseId) {
  */
 async function rejectExpense(expenseId) {
     try {
+        if (currentFund && !currentFund.isActive) {
+            showToast("⏸️ El grupo está pausado. No puedes rechazar gastos.", "error");
+            return;
+        }
+        
         const user = firebase.auth().currentUser;
         if (!user) {
             showToast('You must be signed in to reject expenses', 'error');
@@ -8411,6 +8474,7 @@ function getNotificationIcon(type) {
         'expense_delete_requested': '⚠️',
         'payment_received': '💰',
         'group_paused': '⏸️',
+        'group_reactivated': '▶️',
         'group_deleted': '🗑️',
         'invitation': '📨',
         'vote_required': '🗳️',
@@ -8644,13 +8708,19 @@ window.createNotification = createNotification;
 /**
  * Notify all group members except the actor
  */
-async function notifyGroupMembers(fundId, excludeUserId, notificationData) {
+async function notifyGroupMembers(fundId, type, message, extraData = {}) {
     try {
         const membersSnapshot = await firebase.database().ref(`groups/${fundId}/members`).once('value');
         const members = membersSnapshot.val() || {};
         
         const notificationPromises = Object.keys(members).map(memberId => {
-            if (memberId !== excludeUserId && members[memberId]) {
+            if (members[memberId]) {
+                const notificationData = {
+                    type: type,
+                    message: message,
+                    fundId: fundId,
+                    ...extraData
+                };
                 return createNotification(memberId, notificationData);
             }
         }).filter(Boolean);
