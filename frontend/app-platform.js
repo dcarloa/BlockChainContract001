@@ -8448,13 +8448,21 @@ function renderNotifications() {
         const isUnread = !notif.read;
         const timeAgo = getTimeAgo(notif.timestamp);
         
+        // Debug log to see what's in the notification
+        if (typeof notif.message !== 'string') {
+            console.warn('⚠️ Non-string message found:', notif);
+        }
+        
+        const message = typeof notif.message === 'string' ? notif.message : JSON.stringify(notif.message);
+        const title = typeof notif.title === 'string' ? notif.title : 'Notificación';
+        
         return `
             <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${notif.id}" onclick="handleNotificationClick('${notif.id}', '${notif.type}', '${notif.fundId || ''}', '${notif.expenseId || ''}')">
                 <div class="notification-header">
                     <div class="notification-icon">${getNotificationIcon(notif.type)}</div>
                     <div class="notification-content">
-                        <h4 class="notification-title">${notif.title}</h4>
-                        <p class="notification-message">${notif.message}</p>
+                        <h4 class="notification-title">${title}</h4>
+                        <p class="notification-message">${message}</p>
                         <div class="notification-time">${timeAgo}</div>
                     </div>
                 </div>
