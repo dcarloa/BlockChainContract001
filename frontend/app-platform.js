@@ -8257,35 +8257,47 @@ async function createNotification(userId, notificationData) {
         
         await firebase.database().ref(`notifications/${userId}`).push(notification);
         
-        console.log('Notification created for user:', userId);
+        console.log('✅ Notification created for user:', userId, 'Type:', notificationData.type);
         
     } catch (error) {
-        console.error('Error creating notification:', error);
+        console.error('❌ Error creating notification:', error);
     }
 }
+
+// Make function globally available
+window.createNotification = createNotification;
 
 /**
  * Notify all group members except the actor
  */
 async function notifyGroupMembers(fundId, excludeUserId, notificationData) {
     try {
+        console.log('📢 Notifying group members of fund:', fundId, 'excluding:', excludeUserId);
+        
         // Get all members of the fund
-        const membersSnapshot = await firebase.database().ref(`simpleModeFunds/${fundId}/members`).once('value');
+        const membersSnapshot = await firebase.database().ref(`groups/${fundId}/members`).once('value');
         const members = membersSnapshot.val() || {};
+        
+        console.log('👥 Found members:', Object.keys(members));
         
         // Create notification for each member except the one who performed the action
         const notificationPromises = Object.keys(members).map(memberId => {
             if (memberId !== excludeUserId && members[memberId].status === 'active') {
+                console.log('  📬 Creating notification for:', memberId);
                 return createNotification(memberId, notificationData);
             }
-        });
+        }).filter(Boolean);
         
         await Promise.all(notificationPromises);
+        console.log(`✅ Sent ${notificationPromises.length} notifications`);
         
     } catch (error) {
-        console.error('Error notifying group members:', error);
+        console.error('❌ Error notifying group members:', error);
     }
 }
+
+// Make function globally available
+window.notifyGroupMembers = notifyGroupMembers;
 
 // Notification system will be initialized after Firebase auth is ready
 // See firebase-config.js auth state listener
