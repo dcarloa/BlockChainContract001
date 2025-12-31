@@ -7956,18 +7956,29 @@ function initNotificationSystem() {
  * Toggle notifications panel visibility
  */
 function toggleNotificationsPanel() {
-    console.log('🔔 Toggle notifications panel clicked');
     const panel = document.getElementById('notificationsPanel');
     if (!panel) {
-        console.error('❌ Notifications panel not found!');
+        console.error('Notifications panel not found!');
         return;
     }
     
-    const isHidden = panel.classList.contains('hidden');
-    console.log('Panel is currently:', isHidden ? 'hidden' : 'visible');
-    
+    const wasHidden = panel.classList.contains('hidden');
     panel.classList.toggle('hidden');
-    console.log('Panel is now:', panel.classList.contains('hidden') ? 'hidden' : 'visible');
+    
+    if (wasHidden) {
+        closeNotificationBanner();
+    }
+    
+    // Mark visible notifications as read after a delay
+    if (!panel.classList.contains('hidden')) {
+        setTimeout(() => {
+            const unreadNotifs = notificationsCache.filter(n => !n.read);
+            unreadNotifs.forEach(notif => {
+                markNotificationAsRead(notif.id);
+            });
+        }, 2000);
+    }
+}
     
     // Debug: Log panel content
     if (!panel.classList.contains('hidden')) {
@@ -8146,6 +8157,7 @@ function updateNotificationBadge() {
             badge.classList.add('hidden');
         }
     }
+    updateNotificationBanner();
 }
 
 /**
@@ -8243,10 +8255,39 @@ async function deleteAllNotifications() {
 window.deleteAllNotifications = deleteAllNotifications;
 
 /**
+ * Close notification banner
+ */
+function closeNotificationBanner() {
+    const banner = document.getElementById('notificationBanner');
+    if (banner) {
+        banner.classList.add('hidden');
+    }
+}
+
+// Make function globally available
+window.closeNotificationBanner = closeNotificationBanner;
+
+/**
+ * Update notification banner on main page
+ */
+function updateNotificationBanner() {
+    const banner = document.getElementById('notificationBanner');
+    const bannerText = document.getElementById('notificationBannerText');
+    
+    if (!banner || !bannerText) return;
+    
+    if (unreadCount > 0) {
+        bannerText.textContent = `You have ${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}`;
+        banner.classList.remove('hidden');
+    } else {
+        banner.classList.add('hidden');
+    }
+}
+
+/**
  * Handle notification click
  */
 function handleNotificationClick(notificationId, type, fundId, expenseId) {
-    console.log('📬 Notification clicked:', { notificationId, type, fundId, expenseId });
     markNotificationAsRead(notificationId);
     
     // Navigate based on notification type
@@ -8304,36 +8345,19 @@ window.createNotification = createNotification;
  */
 async function notifyGroupMembers(fundId, excludeUserId, notificationData) {
     try {
-        console.log('📢 Notifying group members of fund:', fundId, 'excluding:', excludeUserId);
-        
-        // Get all members of the fund
         const membersSnapshot = await firebase.database().ref(`groups/${fundId}/members`).once('value');
         const members = membersSnapshot.val() || {};
         
-        console.log('👥 Found members:', Object.keys(members));
-        console.log('👥 Members data:', members);
-        
-        // Create notification for each member except the one who performed the action
         const notificationPromises = Object.keys(members).map(memberId => {
-            const member = members[memberId];
-            console.log(`  🔍 Checking member ${memberId}:`, { 
-                memberData: member,
-                isExcluded: memberId === excludeUserId
-            });
-            
-            // Check if member exists and is not the excluded user
-            // Members in Simple Mode might just be true or an object without status field
-            if (memberId !== excludeUserId && member) {
-                console.log('  📬 Creating notification for:', memberId);
+            if (memberId !== excludeUserId && members[memberId]) {
                 return createNotification(memberId, notificationData);
             }
         }).filter(Boolean);
         
         await Promise.all(notificationPromises);
-        console.log(`✅ Sent ${notificationPromises.length} notifications`);
         
     } catch (error) {
-        console.error('❌ Error notifying group members:', error);
+        console.error('Error notifying group members:', error);
     }
 }
 

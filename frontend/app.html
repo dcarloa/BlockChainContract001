@@ -198,6 +198,16 @@
         </div>
     </header>
 
+    <!-- Notification Banner (Main Page) -->
+    <div id="notificationBanner" class="notification-banner hidden">
+        <div class="notification-banner-content">
+            <span class="notification-banner-icon">🔔</span>
+            <span id="notificationBannerText">You have unread notifications</span>
+            <button class="notification-banner-btn" onclick="toggleNotificationsPanel()">View</button>
+            <button class="notification-banner-close" onclick="closeNotificationBanner()">&times;</button>
+        </div>
+    </div>
+
     <!-- Notifications Panel -->
     <div id="notificationsPanel" class="notifications-panel hidden">
         <div class="notifications-header">
