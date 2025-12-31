@@ -210,16 +210,13 @@ class ModeManager {
                 const groupData = groupSnapshot || {};
                 
                 // Notify all members except the one who added the expense
-                const notificationData = {
-                    type: 'expense_added',
-                    title: 'New Expense Added',
-                    message: `${expense.paidByName} added ${expense.category}: ${expense.description} - ${expense.currency} ${expense.amount}`,
-                    fundId: this.currentGroupId,
-                    expenseId: expenseId
-                };
+                const message = `${user.displayName || user.email} added ${expense.category}: ${expense.description} - ${expense.currency} ${expense.amount}`;
                 
                 if (typeof notifyGroupMembers === 'function') {
-                    await notifyGroupMembers(this.currentGroupId, user.uid, notificationData);
+                    await notifyGroupMembers(this.currentGroupId, 'expense_added', message, { 
+                        groupName: this.currentGroupData?.fundName,
+                        expenseId: expenseId
+                    });
                 }
             } catch (notifError) {
                 console.error('Error sending expense notification:', notifError);

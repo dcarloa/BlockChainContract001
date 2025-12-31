@@ -4064,7 +4064,7 @@ async function requestDeleteExpense(expenseId) {
             
             const notificationData = {
                 type: 'expense_delete_requested',
-                title: '🗑️ Delete Request',
+                title: 'Delete Request',
                 message: `${user.displayName || user.email} requested to delete: ${expense.description} - ${expense.currency || '$'}${expense.amount}`,
                 fundId: groupId,
                 expenseId: expenseId
@@ -4186,15 +4186,10 @@ async function deleteExpense(expenseId) {
         
         // 🔔 NOTIFICATION: Notify all group members about deleted expense
         try {
-            const notificationData = {
-                type: 'expense_deleted',
-                title: 'Expense Deleted',
-                message: `${user.displayName || user.email} deleted: ${expense.description} - ${expense.currency || '$'}${expense.amount}`,
-                fundId: groupId
-            };
+            const message = `${user.displayName || user.email} deleted: ${expense.description} - ${expense.currency || '$'}${expense.amount}`;
             
             if (typeof notifyGroupMembers === 'function') {
-                await notifyGroupMembers(groupId, user.uid, notificationData);
+                await notifyGroupMembers(groupId, 'expense_deleted', message, { groupName: currentFund?.fundName });
             }
         } catch (notifError) {
             console.error('Error sending delete notification:', notifError);
@@ -4399,15 +4394,10 @@ async function handleGroupJoin(groupId) {
         // 🔔 NOTIFICATION: Notify all existing members that someone joined
         try {
             const userName = user.displayName || user.email;
-            const notificationData = {
-                type: 'member_joined',
-                title: '👥 New Member Joined',
-                message: `${userName} has joined ${groupName}`,
-                fundId: groupId
-            };
+            const message = `${userName} has joined ${groupName}`;
             
             if (typeof notifyGroupMembers === 'function') {
-                await notifyGroupMembers(groupId, user.uid, notificationData);
+                await notifyGroupMembers(groupId, 'member_joined', message, { groupName });
             }
         } catch (notifError) {
             console.error('Error sending join notification:', notifError);
@@ -8507,6 +8497,29 @@ function getNotificationIcon(type) {
 }
 
 /**
+ * Get notification title by type
+ */
+function getNotificationTitle(type) {
+    const titles = {
+        'expense_added': 'New Expense Added',
+        'expense_deleted': 'Expense Deleted',
+        'expense_delete_requested': 'Delete Request',
+        'payment_received': 'Payment Received',
+        'group_paused': 'Group Paused',
+        'group_reactivated': 'Group Reactivated',
+        'group_deleted': 'Group Deleted',
+        'invitation': 'Invitation',
+        'vote_required': 'Vote Required',
+        'proposal_approved': 'Proposal Approved',
+        'proposal_rejected': 'Proposal Rejected',
+        'member_joined': 'New Member Joined',
+        'fund_goal_reached': 'Goal Reached',
+        'default': 'Notification'
+    };
+    return titles[type] || titles.default;
+}
+
+/**
  * Get relative time string
  */
 function getTimeAgo(timestamp) {
@@ -8736,7 +8749,7 @@ async function notifyGroupMembers(fundId, type, message, extraData = {}) {
             if (members[memberId]) {
                 const notificationData = {
                     type: type,
-                    title: extraData.groupName || 'Group Update',
+                    title: getNotificationTitle(type),
                     message: message,
                     fundId: fundId,
                     expenseId: extraData.expenseId || null
