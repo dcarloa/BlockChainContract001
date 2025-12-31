@@ -8317,12 +8317,13 @@ async function notifyGroupMembers(fundId, excludeUserId, notificationData) {
         const notificationPromises = Object.keys(members).map(memberId => {
             const member = members[memberId];
             console.log(`  🔍 Checking member ${memberId}:`, { 
-                status: member.status, 
-                isExcluded: memberId === excludeUserId,
-                isActive: member.status === 'active'
+                memberData: member,
+                isExcluded: memberId === excludeUserId
             });
             
-            if (memberId !== excludeUserId && member.status === 'active') {
+            // Check if member exists and is not the excluded user
+            // Members in Simple Mode might just be true or an object without status field
+            if (memberId !== excludeUserId && member) {
                 console.log('  📬 Creating notification for:', memberId);
                 return createNotification(memberId, notificationData);
             }
