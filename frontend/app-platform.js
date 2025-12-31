@@ -7990,9 +7990,14 @@ window.toggleNotificationsPanel = toggleNotificationsPanel;
 async function loadNotifications() {
     try {
         const userId = firebase.auth().currentUser?.uid || userAddress;
-        if (!userId) return;
+        console.log('📥 Loading notifications for user:', userId);
+        if (!userId) {
+            console.log('⚠️ No user ID, skipping notification load');
+            return;
+        }
         
         const notificationsRef = firebase.database().ref(`notifications/${userId}`);
+        console.log('🔍 Querying notifications path:', `notifications/${userId}`);
         
         notificationsRef.orderByChild('timestamp').limitToLast(50).once('value', (snapshot) => {
             const notifications = [];
@@ -8005,8 +8010,14 @@ async function loadNotifications() {
                 notifications.unshift(notification); // Most recent first
             });
             
+            console.log(`✅ Loaded ${notifications.length} notifications`);
+            if (notifications.length > 0) {
+                console.log('First notification:', notifications[0]);
+            }
+            
             notificationsCache = notifications;
             unreadCount = notifications.filter(n => !n.read).length;
+            console.log(`📊 Unread count: ${unreadCount}`);
             
             renderNotifications();
             updateNotificationBadge();
@@ -8021,17 +8032,27 @@ async function loadNotifications() {
  * Render notifications in the panel
  */
 function renderNotifications() {
+    console.log('🎨 Rendering notifications, count:', notificationsCache.length);
     const notificationsList = document.getElementById('notificationsList');
     const emptyState = document.getElementById('emptyNotifications');
     
-    if (!notificationsList) return;
+    if (!notificationsList) {
+        console.error('❌ notificationsList element not found!');
+        return;
+    }
     
     if (notificationsCache.length === 0) {
-        if (emptyState) emptyState.classList.remove('hidden');
+        console.log('📭 No notifications, showing empty state');
+        if (emptyState) {
+            emptyState.classList.remove('hidden');
+        } else {
+            console.warn('⚠️ emptyNotifications element not found');
+        }
         notificationsList.innerHTML = '';
         return;
     }
     
+    console.log('📬 Rendering notification items');
     if (emptyState) emptyState.classList.add('hidden');
     
     notificationsList.innerHTML = notificationsCache.map(notif => {
@@ -8051,6 +8072,7 @@ function renderNotifications() {
             </div>
         `;
     }).join('');
+    console.log(`✅ Rendered ${notificationsCache.length} notification items`);
 }
 
 /**

@@ -37,7 +37,8 @@
     "notifications": {
       "$userId": {
         ".read": "auth != null && auth.uid === $userId",
-        ".write": "auth != null"
+        ".write": "auth != null",
+        ".indexOn": ["timestamp"]
       }
     }
   }
