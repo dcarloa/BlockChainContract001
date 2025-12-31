@@ -8717,6 +8717,7 @@ async function notifyGroupMembers(fundId, type, message, extraData = {}) {
             if (members[memberId]) {
                 const notificationData = {
                     type: type,
+                    title: extraData.groupName || 'Group Update',
                     message: message,
                     fundId: fundId,
                     ...extraData
