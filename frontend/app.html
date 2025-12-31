@@ -203,8 +203,8 @@
         <div class="notification-banner-content">
             <span class="notification-banner-icon">🔔</span>
             <span id="notificationBannerText">You have unread notifications</span>
-            <button class="notification-banner-btn" onclick="toggleNotificationsPanel()">View</button>
-            <button class="notification-banner-close" onclick="closeNotificationBanner()">&times;</button>
+            <button class="notification-banner-btn" onclick="event.stopPropagation(); toggleNotificationsPanel();">View</button>
+            <button class="notification-banner-close" onclick="event.stopPropagation(); closeNotificationBanner();">&times;</button>
         </div>
     </div>
 
