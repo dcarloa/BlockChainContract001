@@ -4137,8 +4137,8 @@ async function approveRemovalRequest(requestId) {
 
         // Update request status
         await window.FirebaseConfig.updateDb(
-            `groups/${groupId}/removalRequests/${requestId}/status`,
-            'approved'
+            `groups/${groupId}/removalRequests/${requestId}`,
+            { status: 'approved' }
         );
 
         // Notify the removed member
@@ -4210,8 +4210,8 @@ async function rejectRemovalRequest(requestId) {
 
         // Update request status
         await window.FirebaseConfig.updateDb(
-            `groups/${groupId}/removalRequests/${requestId}/status`,
-            'rejected'
+            `groups/${groupId}/removalRequests/${requestId}`,
+            { status: 'rejected' }
         );
 
         // Notify the requester
