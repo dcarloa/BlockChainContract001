@@ -149,33 +149,48 @@ window.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const joinGroupId = urlParams.get('join');
     
+    console.log('🔗 Checking for join parameter:', joinGroupId);
+    
     if (joinGroupId) {
+        console.log('📨 Join group ID found, handling join flow');
         // Save group ID to join after sign in
         sessionStorage.setItem('pendingGroupJoin', joinGroupId);
         
         // If not signed in, prompt to sign in
         if (!window.FirebaseConfig || !window.FirebaseConfig.getCurrentUser()) {
+            console.log('⚠️ User not signed in, showing sign in prompt');
             showToast('Please sign in to join the group', 'info');
             setTimeout(() => {
                 openSignInModal();
             }, 1000);
         } else {
             // If already signed in, join immediately
+            console.log('✅ User signed in, joining group immediately');
             await handleGroupJoin(joinGroupId);
         }
+    } else {
+        console.log('✅ No join parameter, normal flow');
     }
     
     // Show Sign In button if user is not signed in with Firebase
     // (independent of wallet availability)
+    console.log('🔍 Checking if user is signed in for UI update');
     if (!window.FirebaseConfig || !window.FirebaseConfig.getCurrentUser()) {
+        console.log('👤 User not signed in, showing sign in button');
         document.getElementById('signInSimpleMode').style.display = 'flex';
+    } else {
+        console.log('👤 User signed in:', window.FirebaseConfig.getCurrentUser()?.email);
     }
     
     // Show dashboard anyway
+    console.log('📊 About to call showDashboard()');
     showDashboard();
+    console.log('📊 showDashboard() completed');
     
     // Load user funds (both Simple and Blockchain modes)
+    console.log('💰 About to load user funds');
     await loadUserFunds();
+    console.log('💰 User funds loaded');
 });
 
 function setupEventListeners() {
