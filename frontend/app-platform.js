@@ -139,11 +139,14 @@ window.addEventListener('DOMContentLoaded', async () => {
         console.log("🔄 Iniciando proceso de auto-reconexión...");
         await autoReconnectWallet();
         console.log("✅ Proceso de auto-reconexión completado");
+        console.log("🎯 Continuando con el flujo de inicialización...");
     } else {
         console.log("ℹ️ No wallet detected - Simple Mode only");
         // Hide wallet button if no wallet available
         document.getElementById('connectWallet').style.display = 'none';
     }
+    
+    console.log("🚀 Después del bloque de wallet, continuando...");
     
     // Check for invite link in URL
     const urlParams = new URLSearchParams(window.location.search);
