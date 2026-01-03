@@ -1322,10 +1322,12 @@ function updateStats() {
 }
 
 function displayFunds() {
+    console.log('📊 displayFunds called, allUserFunds:', allUserFunds.length);
     filterFunds();
 }
 
 function filterFunds() {
+    console.log('🔍 filterFunds called, currentFilter:', currentFilter);
     let filteredFunds = [...allUserFunds];
     
     switch(currentFilter) {
@@ -1349,10 +1351,18 @@ function filterFunds() {
     const fundsGrid = document.getElementById('fundsGrid');
     const emptyState = document.getElementById('emptyState');
     
+    console.log('📋 Filtered funds count:', filteredFunds.length);
+    console.log('📦 Elements found - fundsGrid:', !!fundsGrid, 'emptyState:', !!emptyState);
+    
     if (filteredFunds.length === 0) {
-        fundsGrid.innerHTML = '';
-        fundsGrid.style.display = 'none';
-        emptyState.style.display = 'flex';
+        console.log('✅ No funds, showing empty state');
+        if (fundsGrid) {
+            fundsGrid.innerHTML = '';
+            fundsGrid.style.display = 'none';
+        }
+        if (emptyState) {
+            emptyState.style.display = 'flex';
+        }
     } else {
         emptyState.style.display = 'none';
         
