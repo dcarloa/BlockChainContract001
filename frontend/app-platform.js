@@ -892,6 +892,7 @@ window.openInvitedFund = async function(fundAddress) {
 }
 
 function showDashboard() {
+    console.log('📊 showDashboard() called');
     // Hide FAB button and action card when showing dashboard
     const fabBtn = document.getElementById('addExpenseBtn');
     if (fabBtn) fabBtn.style.display = 'none';
@@ -900,8 +901,19 @@ function showDashboard() {
     if (addExpenseCard) addExpenseCard.style.display = 'none';
     
     // Make sure dashboard section is visible
-    document.getElementById('dashboardSection').classList.add('active');
-    document.getElementById('fundDetailSection').classList.remove('active');
+    const dashboardSection = document.getElementById('dashboardSection');
+    const fundDetailSection = document.getElementById('fundDetailSection');
+    
+    console.log('📦 Dashboard section found:', !!dashboardSection);
+    console.log('📦 Fund detail section found:', !!fundDetailSection);
+    
+    if (dashboardSection) {
+        dashboardSection.classList.add('active');
+        console.log('✅ Dashboard section activated');
+    }
+    if (fundDetailSection) {
+        fundDetailSection.classList.remove('active');
+    }
     
     // Enable create fund button for both modes
     const createBtn = document.getElementById('createFundBtn');
