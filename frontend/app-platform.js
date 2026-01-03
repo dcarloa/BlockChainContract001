@@ -86,7 +86,8 @@ let currentFilter = 'all';
 // ============================================
 
 window.addEventListener('DOMContentLoaded', async () => {
-    console.log("🚀 FundHub Platform iniciando...");
+    try {
+        console.log("🚀 FundHub Platform iniciando...");
     
     // Setup MetaMask provider (usar referencia directa como en V2)
     if (window.ethereum) {
@@ -194,6 +195,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log('💰 About to load user funds');
     await loadUserFunds();
     console.log('💰 User funds loaded');
+    
+    } catch (error) {
+        console.error('❌ CRITICAL ERROR in DOMContentLoaded:', error);
+        console.error('Stack trace:', error.stack);
+        showToast('Application initialization error. Please refresh the page.', 'error');
+    }
 });
 
 function setupEventListeners() {
@@ -410,9 +417,11 @@ async function autoReconnectWallet() {
         console.log("📱 Usando proveedor:", metamaskProviderDirect ? "MetaMask directo" : "window.ethereum");
 
         // Intentar obtener cuentas sin solicitar permiso
+        console.log("🔄 Solicitando cuentas...");
         const accounts = await ethereumProvider.request({ 
             method: 'eth_accounts' 
         });
+        console.log("📋 Cuentas obtenidas:", accounts ? accounts.length : 'null');
 
         if (!accounts || accounts.length === 0) {
             console.log("ℹ️ No hay cuentas conectadas previamente");
