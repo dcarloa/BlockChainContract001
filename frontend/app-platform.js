@@ -1141,7 +1141,8 @@ async function loadUserFunds() {
                         if (groupData) {
                             const fundData = {
                                 fundAddress: groupId, // Use groupId as identifier
-                                creator: groupData.createdByEmail,
+                                creator: groupData.createdBy || groupData.createdByEmail, // Use UID, fallback to email for old groups
+                                creatorEmail: groupData.createdByEmail, // Keep email for display
                                 fundName: groupData.name,
                                 fundType: 3, // Other type for Simple Mode
                                 createdAt: groupData.createdAt,
