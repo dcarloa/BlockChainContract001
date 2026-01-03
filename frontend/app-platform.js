@@ -3747,12 +3747,22 @@ function loadSimpleModeMembers() {
         const isCreator = uid === currentFund.creator;
 
         let actionsHtml = '';
-        if (isAdmin && !isCurrentUser && !isCreator) {
-            actionsHtml = `
-                <button class="btn btn-danger btn-small" onclick="removeMember('${uid}')">
-                    <span>❌ Remove</span>
-                </button>
-            `;
+        if (!isCurrentUser && !isCreator) {
+            if (isAdmin) {
+                // Admin can remove directly
+                actionsHtml = `
+                    <button class="btn btn-danger btn-sm" onclick="removeMemberWithValidation('${uid}')">
+                        <span>🚫 Remove</span>
+                    </button>
+                `;
+            } else {
+                // Regular members can only request removal
+                actionsHtml = `
+                    <button class="btn btn-warning btn-sm" onclick="requestMemberRemoval('${uid}')">
+                        <span>⚠️ Request Removal</span>
+                    </button>
+                `;
+            }
         }
 
         return `
@@ -3775,12 +3785,89 @@ function loadSimpleModeMembers() {
             </div>
         `;
     }).join('');
+    
+    // Load removal requests if user is admin
+    if (isAdmin) {
+        loadRemovalRequests();
+    }
 }
 
 /**
- * Remove a member from Simple Mode group
+ * Check if a member has pending balance
  */
-async function removeMember(memberId) {
+async function checkMemberBalance(memberId) {
+    try {
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        
+        // Calculate balances
+        const balances = {};
+        
+        // Initialize all members
+        const members = Object.keys(currentFund.members);
+        members.forEach(mid => {
+            balances[mid] = 0;
+        });
+        
+        // Get expenses
+        const expensesData = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses`);
+        
+        if (expensesData) {
+            const expenses = Object.values(expensesData);
+            
+            // Process each expense
+            for (const expense of expenses) {
+                const paidBy = expense.paidBy;
+                let amount = Number(expense.amount);
+                
+                // Convert to USD if needed
+                const currency = expense.currency || 'USD';
+                if (currency !== 'USD' && window.convertToUSD) {
+                    amount = await window.convertToUSD(amount, currency);
+                }
+                
+                const splitBetween = expense.splitBetween || [paidBy];
+                const perPerson = Math.round((amount / splitBetween.length) * 100) / 100;
+                
+                const paidByArray = Array.isArray(paidBy) ? paidBy : [paidBy];
+                const amountPerPayer = Math.round((amount / paidByArray.length) * 100) / 100;
+                
+                paidByArray.forEach(payerId => {
+                    balances[payerId] = Math.round((balances[payerId] + amountPerPayer) * 100) / 100;
+                });
+                
+                splitBetween.forEach(mid => {
+                    balances[mid] = Math.round((balances[mid] - perPerson) * 100) / 100;
+                });
+            }
+        }
+        
+        // Subtract settlements
+        const settlementsData = await window.FirebaseConfig.readDb(`groups/${groupId}/settlements`);
+        
+        if (settlementsData) {
+            for (const settlement of Object.values(settlementsData)) {
+                const amount = Number(settlement.amount);
+                balances[settlement.from] = Math.round((balances[settlement.from] + amount) * 100) / 100;
+                balances[settlement.to] = Math.round((balances[settlement.to] - amount) * 100) / 100;
+            }
+        }
+        
+        const memberBalance = balances[memberId] || 0;
+        return {
+            hasBalance: Math.abs(memberBalance) > 0.01,
+            balance: memberBalance
+        };
+        
+    } catch (error) {
+        console.error('Error checking member balance:', error);
+        return { hasBalance: false, balance: 0 };
+    }
+}
+
+/**
+ * Remove a member from Simple Mode group with validation
+ */
+async function removeMemberWithValidation(memberId) {
     try {
         const user = firebase.auth().currentUser;
         if (!user) {
@@ -3797,21 +3884,65 @@ async function removeMember(memberId) {
         const member = currentFund.members[memberId];
         const memberName = member?.name || member?.email || memberId;
 
+        // Check if member has pending balance
+        showToast('Checking member balance...', 'info');
+        const balanceCheck = await checkMemberBalance(memberId);
+        
+        if (balanceCheck.hasBalance) {
+            const balanceText = balanceCheck.balance > 0 
+                ? `is owed $${balanceCheck.balance.toFixed(2)}` 
+                : `owes $${Math.abs(balanceCheck.balance).toFixed(2)}`;
+            
+            showToast(
+                `Cannot remove ${memberName}: Member ${balanceText}. Settle all balances first.`,
+                'error',
+                5000
+            );
+            return;
+        }
+
         const confirmed = confirm(
             `Remove ${memberName} from the group?\n\n` +
+            `✅ Member has no pending balances\n\n` +
             `This will:\n` +
-            `- Remove them from all future expenses\n` +
-            `- They won't be able to add or approve expenses\n` +
-            `- Past expenses they were part of will remain unchanged`
+            `- Remove them from the group permanently\n` +
+            `- They won't be able to access this group\n` +
+            `- Past expenses they were part of will remain unchanged\n` +
+            `- They will be notified of their removal`
         );
 
         if (!confirmed) return;
 
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const groupName = currentFund.fundName;
+
         // Remove member from Firebase
         await window.FirebaseConfig.updateDb(
-            `groups/${currentFund.fundId}/members/${memberId}`,
+            `groups/${groupId}/members/${memberId}`,
             null
         );
+
+        // Notify the removed member
+        if (typeof createNotification === 'function') {
+            await createNotification(memberId, {
+                type: 'member_removed',
+                title: 'Removed from Group',
+                message: `You have been removed from "${groupName}" by the group creator`,
+                fundId: groupId,
+                timestamp: Date.now(),
+                read: false
+            });
+        }
+
+        // Notify other group members
+        if (typeof notifyGroupMembers === 'function') {
+            await notifyGroupMembers(
+                groupId,
+                'member_removed',
+                `${memberName} was removed from the group by ${user.displayName || user.email}`,
+                { groupName }
+            );
+        }
 
         showToast(`${memberName} removed from group`, 'success');
 
@@ -3823,6 +3954,284 @@ async function removeMember(memberId) {
 
     } catch (error) {
         console.error('Error removing member:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Request member removal (for non-admin members)
+ */
+async function requestMemberRemoval(targetMemberId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('You must be signed in', 'error');
+            return;
+        }
+
+        const targetMember = currentFund.members[targetMemberId];
+        const targetMemberName = targetMember?.name || targetMember?.email || targetMemberId;
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const groupName = currentFund.fundName;
+
+        const confirmed = confirm(
+            `Request removal of ${targetMemberName}?\n\n` +
+            `The group creator will review your request and decide whether to remove this member.`
+        );
+
+        if (!confirmed) return;
+
+        // Create removal request
+        const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const requestData = {
+            requestedBy: user.uid,
+            requestedByName: user.displayName || user.email,
+            targetMember: targetMemberId,
+            targetMemberName: targetMemberName,
+            groupId: groupId,
+            groupName: groupName,
+            timestamp: Date.now(),
+            status: 'pending'
+        };
+
+        await window.FirebaseConfig.writeDb(
+            `groups/${groupId}/removalRequests/${requestId}`,
+            requestData
+        );
+
+        // Notify the group creator
+        if (typeof createNotification === 'function') {
+            await createNotification(currentFund.creator, {
+                type: 'removal_requested',
+                title: 'Member Removal Request',
+                message: `${user.displayName || user.email} requested to remove ${targetMemberName} from "${groupName}"`,
+                fundId: groupId,
+                requestId: requestId,
+                timestamp: Date.now(),
+                read: false
+            });
+        }
+
+        showToast('Removal request sent to group creator', 'success');
+
+    } catch (error) {
+        console.error('Error requesting member removal:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Legacy function - redirects to new function
+ */
+async function removeMember(memberId) {
+    await removeMemberWithValidation(memberId);
+}
+
+/**
+ * Load removal requests for group creator
+ */
+async function loadRemovalRequests() {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user || currentFund.creator !== user.uid) {
+            return;
+        }
+
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const requestsData = await window.FirebaseConfig.readDb(`groups/${groupId}/removalRequests`);
+        
+        const requestsSection = document.getElementById('removalRequestsSection');
+        const requestsList = document.getElementById('removalRequestsList');
+        
+        if (!requestsData) {
+            if (requestsSection) requestsSection.style.display = 'none';
+            return;
+        }
+
+        const pendingRequests = Object.entries(requestsData)
+            .filter(([_, req]) => req.status === 'pending')
+            .map(([id, req]) => ({ id, ...req }));
+
+        if (pendingRequests.length === 0) {
+            if (requestsSection) requestsSection.style.display = 'none';
+            return;
+        }
+
+        if (requestsSection) requestsSection.style.display = 'block';
+        if (requestsList) {
+            requestsList.innerHTML = pendingRequests.map(req => {
+                const timeAgo = getTimeAgo(req.timestamp);
+                return `
+                    <div class="removal-request-card" style="background: rgba(255, 193, 7, 0.1); border: 1px solid var(--warning); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                        <div class="request-info">
+                            <p class="request-message" style="margin-bottom: 0.25rem;">
+                                <strong>${req.requestedByName}</strong> requested to remove 
+                                <strong>${req.targetMemberName}</strong>
+                            </p>
+                            <p class="request-time" style="font-size: 0.75rem; color: var(--text-muted);">${timeAgo}</p>
+                        </div>
+                        <div class="request-actions" style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+                            <button class="btn btn-success btn-sm" onclick="approveRemovalRequest('${req.id}')" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
+                                ✅ Approve
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="rejectRemovalRequest('${req.id}')" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
+                                ❌ Reject
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+    } catch (error) {
+        console.error('Error loading removal requests:', error);
+    }
+}
+
+/**
+ * Approve a member removal request
+ */
+async function approveRemovalRequest(requestId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const request = await window.FirebaseConfig.readDb(`groups/${groupId}/removalRequests/${requestId}`);
+        
+        if (!request) {
+            showToast('Request not found', 'error');
+            return;
+        }
+
+        // Check if target member still has balance
+        const balanceCheck = await checkMemberBalance(request.targetMember);
+        
+        if (balanceCheck.hasBalance) {
+            const balanceText = balanceCheck.balance > 0 
+                ? `is owed $${balanceCheck.balance.toFixed(2)}` 
+                : `owes $${Math.abs(balanceCheck.balance).toFixed(2)}`;
+            
+            showToast(
+                `Cannot remove ${request.targetMemberName}: Member ${balanceText}. Settle all balances first.`,
+                'error',
+                5000
+            );
+            return;
+        }
+
+        const confirmed = confirm(
+            `Approve removal of ${request.targetMemberName}?\n\n` +
+            `✅ Member has no pending balances\n\n` +
+            `This will remove them from the group permanently.`
+        );
+
+        if (!confirmed) return;
+
+        // Remove member
+        await window.FirebaseConfig.updateDb(
+            `groups/${groupId}/members/${request.targetMember}`,
+            null
+        );
+
+        // Update request status
+        await window.FirebaseConfig.updateDb(
+            `groups/${groupId}/removalRequests/${requestId}/status`,
+            'approved'
+        );
+
+        // Notify the removed member
+        if (typeof createNotification === 'function') {
+            await createNotification(request.targetMember, {
+                type: 'member_removed',
+                title: 'Removed from Group',
+                message: `You have been removed from "${request.groupName}" (request by ${request.requestedByName})`,
+                fundId: groupId,
+                timestamp: Date.now(),
+                read: false
+            });
+        }
+
+        // Notify the requester
+        if (typeof createNotification === 'function') {
+            await createNotification(request.requestedBy, {
+                type: 'removal_requested',
+                title: 'Removal Request Approved',
+                message: `Your request to remove ${request.targetMemberName} from "${request.groupName}" was approved`,
+                fundId: groupId,
+                timestamp: Date.now(),
+                read: false
+            });
+        }
+
+        // Notify other members
+        if (typeof notifyGroupMembers === 'function') {
+            await notifyGroupMembers(
+                groupId,
+                'member_removed',
+                `${request.targetMemberName} was removed from the group`,
+                { groupName: request.groupName }
+            );
+        }
+
+        showToast(`${request.targetMemberName} removed from group`, 'success');
+
+        // Update local data
+        delete currentFund.members[request.targetMember];
+
+        // Reload
+        loadSimpleModeMembers();
+
+    } catch (error) {
+        console.error('Error approving removal request:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Reject a member removal request
+ */
+async function rejectRemovalRequest(requestId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        const request = await window.FirebaseConfig.readDb(`groups/${groupId}/removalRequests/${requestId}`);
+        
+        if (!request) {
+            showToast('Request not found', 'error');
+            return;
+        }
+
+        const confirmed = confirm(`Reject removal request for ${request.targetMemberName}?`);
+        if (!confirmed) return;
+
+        // Update request status
+        await window.FirebaseConfig.updateDb(
+            `groups/${groupId}/removalRequests/${requestId}/status`,
+            'rejected'
+        );
+
+        // Notify the requester
+        if (typeof createNotification === 'function') {
+            await createNotification(request.requestedBy, {
+                type: 'removal_requested',
+                title: 'Removal Request Rejected',
+                message: `Your request to remove ${request.targetMemberName} from "${request.groupName}" was rejected by the group creator`,
+                fundId: groupId,
+                timestamp: Date.now(),
+                read: false
+            });
+        }
+
+        showToast('Request rejected', 'success');
+
+        // Reload
+        loadRemovalRequests();
+
+    } catch (error) {
+        console.error('Error rejecting removal request:', error);
         showToast(`Error: ${error.message}`, 'error');
     }
 }
@@ -8490,6 +8899,8 @@ function getNotificationIcon(type) {
         'proposal_approved': '✅',
         'proposal_rejected': '❌',
         'member_joined': '👥',
+        'member_removed': '🚫',
+        'removal_requested': '⚠️',
         'fund_goal_reached': '🎯',
         'default': '🔔'
     };
@@ -8513,6 +8924,8 @@ function getNotificationTitle(type) {
         'proposal_approved': 'Proposal Approved',
         'proposal_rejected': 'Proposal Rejected',
         'member_joined': 'New Member Joined',
+        'member_removed': 'Member Removed',
+        'removal_requested': 'Removal Request',
         'fund_goal_reached': 'Goal Reached',
         'default': 'Notification'
     };
