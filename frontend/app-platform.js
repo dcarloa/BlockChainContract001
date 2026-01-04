@@ -8217,8 +8217,11 @@ async function loadBudgetStatus() {
         
         const progressWidth = Math.min(status.percentage, 100);
         
+        // Check and send notifications based on budget thresholds
+        await checkBudgetThresholdNotifications(status);
+        
         budgetContent.innerHTML = `
-            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; border-left: 4px solid ${progressColor};">
+            <div class="budget-container" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; border-left: 4px solid ${progressColor};">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <div style="flex: 1;">
                         <p style="margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
@@ -8250,14 +8253,14 @@ async function loadBudgetStatus() {
                 </div>
                 
                 ${status.status === 'exceeded' ? 
-                    `<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 3px solid #ef4444;">
+                    `<div class="budget-exceeded" style="margin-top: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 3px solid #ef4444;">
                         <strong style="color: #ef4444;">⚠️ Budget Exceeded!</strong>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
                             You've spent ${formatCurrency(status.spent - status.budget, status.currency)} over budget.
                         </p>
                     </div>` : 
                 status.status === 'warning' ?
-                    `<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 3px solid #f59e0b;">
+                    `<div class="budget-warning" style="margin-top: 1rem; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 3px solid #f59e0b;">
                         <strong style="color: #f59e0b;">⚡ Warning: Approaching Limit</strong>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
                             You're at ${status.percentage.toFixed(0)}% of your budget. Consider slowing down spending.
@@ -8268,6 +8271,75 @@ async function loadBudgetStatus() {
         
     } catch (error) {
         console.error('Error loading budget status:', error);
+    }
+}
+
+/**
+ * Check budget thresholds and send notifications
+ */
+async function checkBudgetThresholdNotifications(status) {
+    try {
+        if (!currentFund || !currentFund.fundId || !status || !status.alertThresholds) return;
+        
+        const fundId = currentFund.fundId;
+        const percentage = status.percentage;
+        
+        // Get the last notified threshold from localStorage
+        const storageKey = `budget_notified_${fundId}`;
+        const lastNotified = parseInt(localStorage.getItem(storageKey) || '0');
+        
+        // Find the highest threshold that has been crossed
+        let thresholdToNotify = 0;
+        for (const threshold of status.alertThresholds.sort((a, b) => a - b)) {
+            if (percentage >= threshold && threshold > lastNotified) {
+                thresholdToNotify = threshold;
+            }
+        }
+        
+        // If we found a new threshold to notify about
+        if (thresholdToNotify > 0) {
+            const currentUser = firebase.auth().currentUser;
+            if (!currentUser) return;
+            
+            // Determine notification type and message
+            let notificationType, notificationTitle, notificationMessage;
+            
+            if (thresholdToNotify >= 100) {
+                notificationType = 'budget_exceeded';
+                notificationTitle = '🚨 Budget Exceeded!';
+                notificationMessage = `Group "${currentFund.name}" has exceeded its budget. Spent: ${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)} (${percentage.toFixed(0)}%)`;
+            } else if (thresholdToNotify >= 80) {
+                notificationType = 'budget_warning';
+                notificationTitle = '⚠️ Budget Warning';
+                notificationMessage = `Group "${currentFund.name}" is at ${percentage.toFixed(0)}% of budget (${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)})`;
+            } else {
+                notificationType = 'budget_alert';
+                notificationTitle = '💰 Budget Alert';
+                notificationMessage = `Group "${currentFund.name}" has reached ${thresholdToNotify}% of budget (${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)})`;
+            }
+            
+            // Notify all group members
+            if (currentFund.members && Array.isArray(currentFund.members)) {
+                for (const member of currentFund.members) {
+                    if (typeof createNotification === 'function') {
+                        await createNotification(member, {
+                            type: notificationType,
+                            title: notificationTitle,
+                            message: notificationMessage,
+                            fundId: fundId
+                        });
+                    }
+                }
+            }
+            
+            // Update the last notified threshold
+            localStorage.setItem(storageKey, thresholdToNotify.toString());
+            
+            console.log(`✅ Budget threshold notification sent: ${thresholdToNotify}%`);
+        }
+        
+    } catch (error) {
+        console.error('Error checking budget threshold notifications:', error);
     }
 }
 
