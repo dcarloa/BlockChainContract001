@@ -159,7 +159,7 @@
                 <!-- Header Actions Section -->
                 <div class="header-actions">
                     <!-- User Session Badge (Desktop Only) -->
-                    <div id="unifiedSessionBadge" class="unified-session-badge" style="display: none;">
+                    <div id="unifiedSessionBadge" class="unified-session-badge" style="display: none; cursor: pointer;" onclick="openProfilePanel()" title="Open Profile">
                         <div class="session-info">
                             <div class="session-auth" id="sessionAuthDisplay">
                                 <span class="session-icon">👤</span>
@@ -175,6 +175,11 @@
                     
                     <!-- Action Buttons Group -->
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <!-- Profile Button (Mobile) -->
+                        <button id="profileBtnMobile" class="settings-btn-app" onclick="openProfilePanel()" title="Profile" style="display: none;">
+                            👤
+                        </button>
+                        
                         <!-- Notifications -->
                         <button id="notificationsBtn" class="notifications-btn" onclick="toggleNotificationsPanel()" title="Notifications">
                             <span class="bell-icon">🔔</span>
@@ -236,6 +241,231 @@
             <p>No notifications yet</p>
         </div>
         <div id="notificationsList" class="notifications-list">
+        </div>
+    </div>
+
+    <!-- Profile Panel -->
+    <div id="profilePanel" class="profile-panel hidden">
+        <div class="profile-panel-overlay" onclick="closeProfilePanel()"></div>
+        <div class="profile-panel-content">
+            <!-- Header -->
+            <div class="profile-header">
+                <div class="profile-header-top">
+                    <h2>👤 My Profile</h2>
+                    <button class="btn-icon-close" onclick="closeProfilePanel()">&times;</button>
+                </div>
+                <div class="profile-user-info">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <span id="profileAvatarText">U</span>
+                    </div>
+                    <div class="profile-details">
+                        <h3 id="profileUserName">User Name</h3>
+                        <p id="profileUserEmail">user@email.com</p>
+                        <div class="profile-badges">
+                            <span class="profile-badge" id="profileAuthBadge">
+                                <span class="badge-icon">🔐</span>
+                                <span class="badge-text">Firebase Auth</span>
+                            </span>
+                            <span class="profile-badge" id="profileWalletBadge" style="display: none;">
+                                <span class="badge-icon">🦊</span>
+                                <span class="badge-text" id="profileWalletText">Not Connected</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="profile-stats">
+                <div class="profile-stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="profileStatsGroups">0</div>
+                        <div class="stat-label">Groups</div>
+                    </div>
+                </div>
+                <div class="profile-stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="profileStatsExpenses">$0</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                </div>
+                <div class="profile-stat-card">
+                    <div class="stat-icon">🧾</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="profileStatsTransactions">0</div>
+                        <div class="stat-label">Transactions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="profile-tabs">
+                <button class="profile-tab active" data-tab="overview" onclick="switchProfileTab('overview')">
+                    <span>📊</span> Overview
+                </button>
+                <button class="profile-tab" data-tab="groups" onclick="switchProfileTab('groups')">
+                    <span>👥</span> Groups
+                </button>
+                <button class="profile-tab" data-tab="subscription" onclick="switchProfileTab('subscription')">
+                    <span>💎</span> Plan
+                </button>
+                <button class="profile-tab" data-tab="settings" onclick="switchProfileTab('settings')">
+                    <span>⚙️</span> Settings
+                </button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="profile-tab-content">
+                <!-- Overview Tab -->
+                <div id="profileTabOverview" class="profile-tab-panel active">
+                    <div class="profile-section">
+                        <h4>Account Information</h4>
+                        <div class="profile-info-grid">
+                            <div class="profile-info-item">
+                                <label>Email</label>
+                                <span id="profileInfoEmail">-</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <label>User ID</label>
+                                <span id="profileInfoUID" style="font-family: monospace; font-size: 0.85rem;">-</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <label>Member Since</label>
+                                <span id="profileInfoMemberSince">-</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <label>Last Login</label>
+                                <span id="profileInfoLastLogin">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h4>Recent Activity</h4>
+                        <div id="profileRecentActivity" class="profile-activity-list">
+                            <p class="empty-state-text">No recent activity</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Groups Tab -->
+                <div id="profileTabGroups" class="profile-tab-panel">
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h4>My Groups</h4>
+                            <button class="btn btn-sm btn-primary" onclick="closeProfilePanel(); document.getElementById('createFundBtn').click();">
+                                <span>➕</span> New Group
+                            </button>
+                        </div>
+                        <div id="profileGroupsList" class="profile-groups-list">
+                            <p class="empty-state-text">No groups yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subscription Tab -->
+                <div id="profileTabSubscription" class="profile-tab-panel">
+                    <div class="profile-section">
+                        <h4>Current Plan</h4>
+                        <div class="subscription-card">
+                            <div class="subscription-badge">
+                                <span class="plan-icon">🆓</span>
+                                <div class="plan-info">
+                                    <h3>Free Plan</h3>
+                                    <p>Perfect for personal use</p>
+                                </div>
+                            </div>
+                            <div class="plan-features">
+                                <div class="feature-item">
+                                    <span class="feature-icon">✅</span>
+                                    <span>Unlimited groups</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">✅</span>
+                                    <span>Simple Mode & Blockchain Mode</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">✅</span>
+                                    <span>Multi-currency support</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">✅</span>
+                                    <span>Real-time notifications</span>
+                                </div>
+                                <div class="feature-item disabled">
+                                    <span class="feature-icon">🔒</span>
+                                    <span>Advanced analytics (Coming soon)</span>
+                                </div>
+                                <div class="feature-item disabled">
+                                    <span class="feature-icon">🔒</span>
+                                    <span>Priority support (Coming soon)</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-block" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                Premium Plans Coming Soon
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="profileTabSettings" class="profile-tab-panel">
+                    <div class="profile-section">
+                        <h4>Preferences</h4>
+                        <div class="settings-list">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">🌙 Dark Mode</div>
+                                    <div class="setting-description">Toggle dark theme</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="settingDarkMode" onchange="toggleDarkMode()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">🔔 Notifications</div>
+                                    <div class="setting-description">Enable push notifications</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="settingNotifications" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-label">💱 Preferred Currency</div>
+                                    <div class="setting-description">Default currency for new groups</div>
+                                </div>
+                                <select class="setting-select" id="settingPreferredCurrency">
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="MXN">MXN - Mexican Peso</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h4>Account Actions</h4>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary btn-block" onclick="closeProfilePanel(); openAppSettings();">
+                                <span>⚙️</span> App Settings
+                            </button>
+                            <button class="btn btn-secondary btn-block" onclick="exportUserData();">
+                                <span>📥</span> Export My Data
+                            </button>
+                            <button class="btn btn-danger btn-block" onclick="confirmSignOut();">
+                                <span>🚪</span> Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

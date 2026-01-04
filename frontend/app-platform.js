@@ -1015,11 +1015,19 @@ function updateUnifiedSessionBadge() {
     // If no authentication at all, hide badge
     if (!firebaseUser && !hasWallet) {
         badge.style.display = 'none';
+        const profileBtnMobile = document.getElementById('profileBtnMobile');
+        if (profileBtnMobile) profileBtnMobile.style.display = 'none';
         return;
     }
     
     // Show badge
     badge.style.display = 'flex';
+    
+    // Show mobile profile button if authenticated
+    const profileBtnMobile = document.getElementById('profileBtnMobile');
+    if (profileBtnMobile && firebaseUser) {
+        profileBtnMobile.style.display = 'flex';
+    }
     
     // Update auth display
     if (firebaseUser) {
@@ -9149,6 +9157,376 @@ function updateNotificationBanner() {
         banner.classList.add('hidden');
     }
 }
+
+// ============================================
+// PROFILE PANEL MANAGEMENT
+// ============================================
+
+/**
+ * Open profile panel
+ */
+function openProfilePanel() {
+    const panel = document.getElementById('profilePanel');
+    if (!panel) return;
+
+    panel.classList.remove('hidden');
+    
+    // Load profile data
+    loadProfileData();
+    
+    // Close notifications panel if open
+    const notificationsPanel = document.getElementById('notificationsPanel');
+    if (notificationsPanel && !notificationsPanel.classList.contains('hidden')) {
+        toggleNotificationsPanel();
+    }
+}
+
+/**
+ * Close profile panel
+ */
+function closeProfilePanel() {
+    const panel = document.getElementById('profilePanel');
+    if (panel) {
+        panel.classList.add('hidden');
+    }
+}
+
+/**
+ * Switch between profile tabs
+ */
+function switchProfileTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.profile-tab[data-tab="${tabName}"]`)?.classList.add('active');
+    
+    // Update tab panels
+    document.querySelectorAll('.profile-tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    document.getElementById(`profileTab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`)?.classList.add('active');
+    
+    // Load specific tab data
+    if (tabName === 'groups') {
+        loadProfileGroups();
+    }
+}
+
+/**
+ * Load profile data
+ */
+async function loadProfileData() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    try {
+        // Update avatar
+        const avatarText = document.getElementById('profileAvatarText');
+        if (avatarText) {
+            const displayName = user.displayName || user.email;
+            avatarText.textContent = displayName.charAt(0).toUpperCase();
+        }
+
+        // Update user info in header
+        const userName = document.getElementById('profileUserName');
+        const userEmail = document.getElementById('profileUserEmail');
+        if (userName) userName.textContent = user.displayName || user.email.split('@')[0];
+        if (userEmail) userEmail.textContent = user.email;
+
+        // Update auth badge
+        const authBadge = document.getElementById('profileAuthBadge');
+        if (authBadge) {
+            const badgeText = authBadge.querySelector('.badge-text');
+            if (user.providerData[0]) {
+                const providerId = user.providerData[0].providerId;
+                if (providerId === 'google.com') {
+                    badgeText.textContent = 'Google';
+                } else if (providerId === 'password') {
+                    badgeText.textContent = 'Email/Password';
+                } else {
+                    badgeText.textContent = 'Firebase Auth';
+                }
+            }
+        }
+
+        // Update wallet badge if connected
+        const walletBadge = document.getElementById('profileWalletBadge');
+        const walletText = document.getElementById('profileWalletText');
+        if (walletBadge && walletText) {
+            if (userAddress) {
+                walletBadge.style.display = 'inline-flex';
+                walletText.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+            } else {
+                walletBadge.style.display = 'none';
+            }
+        }
+
+        // Load stats
+        await loadProfileStats();
+
+        // Load overview tab data
+        loadProfileOverview();
+
+    } catch (error) {
+        console.error('Error loading profile data:', error);
+    }
+}
+
+/**
+ * Load profile statistics
+ */
+async function loadProfileStats() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    try {
+        // Count groups
+        const userGroupsData = await window.FirebaseConfig.readDb(`users/${user.uid}/groups`);
+        const groupCount = userGroupsData ? Object.keys(userGroupsData).length : 0;
+        document.getElementById('profileStatsGroups').textContent = groupCount;
+
+        // Calculate total expenses and transactions
+        let totalExpenses = 0;
+        let totalTransactions = 0;
+
+        if (userGroupsData) {
+            for (const groupId of Object.keys(userGroupsData)) {
+                const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+                if (groupData && groupData.expenses) {
+                    const expenses = Object.values(groupData.expenses);
+                    totalTransactions += expenses.length;
+                    
+                    // Sum expenses where user was the payer
+                    expenses.forEach(expense => {
+                        if (expense.paidBy === user.uid) {
+                            totalExpenses += parseFloat(expense.amountUSD || expense.amount || 0);
+                        }
+                    });
+                }
+            }
+        }
+
+        document.getElementById('profileStatsExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+        document.getElementById('profileStatsTransactions').textContent = totalTransactions;
+
+    } catch (error) {
+        console.error('Error loading profile stats:', error);
+    }
+}
+
+/**
+ * Load overview tab data
+ */
+function loadProfileOverview() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    // Account info
+    document.getElementById('profileInfoEmail').textContent = user.email;
+    document.getElementById('profileInfoUID').textContent = user.uid;
+    
+    // Member since
+    const creationDate = new Date(user.metadata.creationTime);
+    document.getElementById('profileInfoMemberSince').textContent = creationDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    // Last login
+    const lastLoginDate = new Date(user.metadata.lastSignInTime);
+    document.getElementById('profileInfoLastLogin').textContent = getTimeAgo(lastLoginDate.getTime());
+}
+
+/**
+ * Load user groups in profile
+ */
+async function loadProfileGroups() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    const groupsList = document.getElementById('profileGroupsList');
+    if (!groupsList) return;
+
+    try {
+        const userGroupsData = await window.FirebaseConfig.readDb(`users/${user.uid}/groups`);
+        
+        if (!userGroupsData || Object.keys(userGroupsData).length === 0) {
+            groupsList.innerHTML = '<p class="empty-state-text">No groups yet. Create your first group!</p>';
+            return;
+        }
+
+        const groupsHTML = [];
+        for (const [groupId, groupRef] of Object.entries(userGroupsData)) {
+            const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+            if (!groupData) continue;
+
+            const groupName = groupData.name || groupData.fundName || 'Unnamed Group';
+            const memberCount = groupData.members ? Object.keys(groupData.members).length : 0;
+            const isCreator = groupData.creator === user.uid || groupData.createdBy === user.email;
+            const role = isCreator ? 'Creator' : 'Member';
+
+            groupsHTML.push(`
+                <div class="profile-group-card" onclick="openGroupFromProfile('${groupId}')">
+                    <div class="group-card-info">
+                        <div class="group-card-name">${groupName}</div>
+                        <div class="group-card-meta">
+                            ${role} • ${memberCount} member${memberCount !== 1 ? 's' : ''}
+                        </div>
+                    </div>
+                    <div class="group-card-icon">👥</div>
+                </div>
+            `);
+        }
+
+        groupsList.innerHTML = groupsHTML.join('');
+
+    } catch (error) {
+        console.error('Error loading profile groups:', error);
+        groupsList.innerHTML = '<p class="empty-state-text">Error loading groups</p>';
+    }
+}
+
+/**
+ * Open a group from profile panel
+ */
+async function openGroupFromProfile(groupId) {
+    closeProfilePanel();
+    
+    try {
+        showLoading('Loading group...');
+        
+        const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+        if (!groupData) {
+            hideLoading();
+            showToast('Group not found', 'error');
+            return;
+        }
+
+        currentFund = {
+            fundId: groupId,
+            fundAddress: groupId,
+            fundName: groupData.name || groupData.fundName,
+            fundType: groupData.fundType || 0,
+            isSimpleMode: true,
+            members: groupData.members,
+            creator: groupData.creator || groupData.createdBy,
+            name: groupData.name || groupData.fundName,
+            ...groupData
+        };
+
+        // Hide dashboard, show detail
+        document.getElementById('dashboardSection').classList.remove('active');
+        document.getElementById('fundDetailSection').classList.add('active');
+
+        await loadSimpleModeDetailView();
+        hideLoading();
+
+    } catch (error) {
+        hideLoading();
+        console.error('Error opening group:', error);
+        showToast('Error opening group', 'error');
+    }
+}
+
+/**
+ * Export user data
+ */
+async function exportUserData() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    try {
+        showToast('Preparing export...', 'info');
+
+        const userData = {
+            profile: {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+                createdAt: user.metadata.creationTime,
+                lastLogin: user.metadata.lastSignInTime
+            },
+            groups: [],
+            expenses: []
+        };
+
+        // Get all user groups
+        const userGroupsData = await window.FirebaseConfig.readDb(`users/${user.uid}/groups`);
+        if (userGroupsData) {
+            for (const groupId of Object.keys(userGroupsData)) {
+                const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+                if (groupData) {
+                    userData.groups.push({
+                        id: groupId,
+                        name: groupData.name || groupData.fundName,
+                        createdAt: groupData.createdAt,
+                        members: groupData.members,
+                        expenses: groupData.expenses || {}
+                    });
+
+                    // Add expenses
+                    if (groupData.expenses) {
+                        Object.entries(groupData.expenses).forEach(([expenseId, expense]) => {
+                            userData.expenses.push({
+                                groupId,
+                                groupName: groupData.name || groupData.fundName,
+                                ...expense
+                            });
+                        });
+                    }
+                }
+            }
+        }
+
+        // Create and download JSON file
+        const dataStr = JSON.stringify(userData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `antpool-data-${user.uid}-${Date.now()}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        showToast('Data exported successfully', 'success');
+
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        showToast('Error exporting data', 'error');
+    }
+}
+
+/**
+ * Confirm sign out
+ */
+function confirmSignOut() {
+    if (confirm('Are you sure you want to sign out?')) {
+        signOutFromFirebase();
+        closeProfilePanel();
+    }
+}
+
+/**
+ * Toggle dark mode
+ */
+function toggleDarkMode() {
+    const isDark = document.getElementById('settingDarkMode').checked;
+    document.body.classList.toggle('dark-mode', isDark);
+    localStorage.setItem('darkMode', isDark);
+    showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled', 'success');
+}
+
+// Make functions globally available
+window.openProfilePanel = openProfilePanel;
+window.closeProfilePanel = closeProfilePanel;
+window.switchProfileTab = switchProfileTab;
+window.openGroupFromProfile = openGroupFromProfile;
+window.exportUserData = exportUserData;
+window.confirmSignOut = confirmSignOut;
+window.toggleDarkMode = toggleDarkMode;
+
 
 /**
  * Handle notification click
