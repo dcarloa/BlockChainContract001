@@ -1,21 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('consent', 'default', {
+            'analytics_storage': 'denied'
+        });
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self'; 
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com;
-        script-src-elem 'self' https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://www.googletagmanager.com https://*.google-analytics.com;
+        script-src-elem 'self' https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://www.googletagmanager.com https://*.google-analytics.com;
         style-src 'self' 'unsafe-inline'; 
         img-src 'self' data: https:; 
         media-src 'self' blob:;
         font-src 'self' https://fonts.gstatic.com;
         frame-src 'self' https://*.firebaseapp.com https://accounts.google.com;
-        connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org https://www.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com https://accounts.google.com https://api.exchangerate-api.com https://api.openai.com;
+        connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org https://www.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com https://accounts.google.com https://api.exchangerate-api.com https://api.openai.com https://www.googletagmanager.com https://*.google-analytics.com;
     ">
     <title>Ant Pool - Cooperative Finance Colony</title>
     <meta name="description" content="Work together like ants. Share expenses the simple way or use blockchain for automatic payments. Your choice.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
     <link rel="icon" type="image/x-icon" href="/assets/ant_pool_icon.ico">
     <link rel="stylesheet" href="styles-platform.css">
     <link rel="stylesheet" href="wallet-connector.css">
@@ -2693,6 +2707,40 @@
             </div>
         </div>
     </div>
+
+    <!-- Cookie Consent -->
+    <script src="cookie-consent.js"></script>
+    
+    <!-- Analytics Events -->
+    <script>
+        // Track key user actions
+        function trackEvent(eventName, eventParams = {}) {
+            if (typeof gtag !== 'undefined' && window.CookieConsent && window.CookieConsent.isAnalyticsEnabled()) {
+                gtag('event', eventName, eventParams);
+            }
+        }
+        
+        // Track group creation
+        window.addEventListener('groupCreated', function(e) {
+            trackEvent('group_created', {
+                'group_type': e.detail.type || 'unknown'
+            });
+        });
+        
+        // Track expense added
+        window.addEventListener('expenseAdded', function(e) {
+            trackEvent('expense_added', {
+                'amount_usd': e.detail.amount || 0
+            });
+        });
+        
+        // Track wallet connection
+        window.addEventListener('walletConnected', function(e) {
+            trackEvent('wallet_connected', {
+                'wallet_type': e.detail.wallet || 'unknown'
+            });
+        });
+    </script>
 
 </body>
 </html>

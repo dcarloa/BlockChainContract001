@@ -1,0 +1,18 @@
+# Ant Pool - Robots.txt
+# Allow all search engines to index the site
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://blockchaincontract001.web.app/sitemap.xml
+
+# Disallow private/internal files
+Disallow: /firebase-credentials.js
+Disallow: /firebase-config.js
+Disallow: /contract-address.json
+Disallow: /contract-info.json
+Disallow: /factory-info.json
+
+# Crawl delay (be nice to smaller bots)
+Crawl-delay: 1

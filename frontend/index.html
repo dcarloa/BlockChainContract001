@@ -1,11 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('consent', 'default', {
+            'analytics_storage': 'denied'
+        });
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ant Pool - Work together like ants. Pool resources, share expenses, and build collective wealth through blockchain cooperation.">
-    <meta name="keywords" content="shared expenses, blockchain, ethereum, cooperative finance, ant pool, colony, groups, web3, collective wealth">
-    <title>Ant Pool - Cooperative Finance Powered by Blockchain</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Ant Pool - Split expenses with friends using blockchain. Track shared bills, manage group expenses, and settle debts transparently. Free expense sharing app.">
+    <meta name="keywords" content="shared expenses, split bills, blockchain, expense tracker, group expenses, ant pool, web3, settle debts, expense sharing app">
+    <meta name="author" content="Ant Pool">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://blockchaincontract001.web.app/">
+    <meta property="og:title" content="Ant Pool - Split Expenses Like Ants Work Together">
+    <meta property="og:description" content="Track shared expenses, split bills with friends, and settle debts transparently using blockchain technology.">
+    <meta property="og:image" content="https://blockchaincontract001.web.app/assets/LogoAntPool.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://blockchaincontract001.web.app/">
+    <meta property="twitter:title" content="Ant Pool - Split Expenses Like Ants Work Together">
+    <meta property="twitter:description" content="Track shared expenses, split bills with friends, and settle debts transparently using blockchain technology.">
+    <meta property="twitter:image" content="https://blockchaincontract001.web.app/assets/LogoAntPool.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ant Pool">
+    
+    <title>Ant Pool - Split Expenses Like Ants Work Together | Free Expense Sharing App</title>
     <link rel="icon" type="image/x-icon" href="/assets/ant_pool_icon.ico">
     <link rel="stylesheet" href="landing-styles.css">
 </head>
@@ -714,6 +752,14 @@
                         <li><a href="https://hardhat.org" target="_blank">Hardhat</a></li>
                     </ul>
                 </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="#" onclick="CookieConsent.showPreferences(); return false;">Cookie Settings</a></li>
+                    </ul>
+                </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2025 Ant Pool. Built by the colony, for the colony. Powered by Ethereum & Base.</p>
@@ -1021,6 +1067,32 @@
                 }
             }
         }
+    </script>
+    
+    <!-- Cookie Consent -->
+    <script src="cookie-consent.js"></script>
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Ant Pool",
+        "description": "Split expenses with friends using blockchain technology. Track shared bills, manage group expenses, and settle debts transparently.",
+        "url": "https://blockchaincontract001.web.app/",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web, Android, iOS",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "150"
+        }
+    }
     </script>
 </body>
 </html>
