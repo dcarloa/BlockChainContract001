@@ -1419,10 +1419,18 @@ function filterAndSortGroups() {
     
     switch(sortOrder) {
         case 'recent':
-            filteredFunds.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            filteredFunds.sort((a, b) => {
+                const aTime = Number(a.createdAt || 0);
+                const bTime = Number(b.createdAt || 0);
+                return bTime - aTime;
+            });
             break;
         case 'oldest':
-            filteredFunds.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+            filteredFunds.sort((a, b) => {
+                const aTime = Number(a.createdAt || 0);
+                const bTime = Number(b.createdAt || 0);
+                return aTime - bTime;
+            });
             break;
         case 'name-asc':
             filteredFunds.sort((a, b) => a.fundName.localeCompare(b.fundName));
