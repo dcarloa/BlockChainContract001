@@ -929,6 +929,87 @@ header,
   border-color: transparent;
 }
 
+/* Search and Sort Bar */
+.search-sort-bar {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.search-box-container {
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all var(--transition-base);
+  backdrop-filter: blur(10px);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.sort-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sort-select {
+  padding: 0.75rem 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  backdrop-filter: blur(10px);
+  min-width: 160px;
+}
+
+.sort-select:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.sort-select option {
+  background: #1a1a2e;
+  color: var(--text-primary);
+  padding: 0.5rem;
+}
+
 /* Funds Grid */
 .funds-grid {
   display: grid;
@@ -2478,6 +2559,27 @@ header,
 @media (max-width: 480px) {
   .logo {
     font-size: 1.25rem;
+  }
+  
+  /* Search and Sort Bar - Mobile */
+  .search-sort-bar {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .search-box-container {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .sort-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .sort-select {
+    flex: 1;
+    min-width: unset;
   }
   
   /* Make fund cards more compact */

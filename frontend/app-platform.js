@@ -1380,13 +1380,14 @@ function updateStats() {
 
 function displayFunds() {
     console.log('📊 displayFunds called, allUserFunds:', allUserFunds.length);
-    filterFunds();
+    filterAndSortGroups();
 }
 
-function filterFunds() {
-    console.log('🔍 filterFunds called, currentFilter:', currentFilter);
+function filterAndSortGroups() {
+    console.log('🔍 filterAndSortGroups called, currentFilter:', currentFilter);
     let filteredFunds = [...allUserFunds];
     
+    // Apply category filter
     switch(currentFilter) {
         case 'created':
             filteredFunds = filteredFunds.filter(f => f.isCreator);
@@ -1402,10 +1403,39 @@ function filterFunds() {
             break;
     }
     
+    // Apply search filter
+    const searchInput = document.getElementById('groupSearchInput');
+    if (searchInput && searchInput.value.trim()) {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        filteredFunds = filteredFunds.filter(fund => 
+            fund.fundName.toLowerCase().includes(searchTerm) ||
+            (fund.description && fund.description.toLowerCase().includes(searchTerm))
+        );
+    }
+    
+    // Apply sort order
+    const sortSelect = document.getElementById('sortOrder');
+    const sortOrder = sortSelect ? sortSelect.value : 'recent';
+    
+    switch(sortOrder) {
+        case 'recent':
+            filteredFunds.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            break;
+        case 'oldest':
+            filteredFunds.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+            break;
+        case 'name-asc':
+            filteredFunds.sort((a, b) => a.fundName.localeCompare(b.fundName));
+            break;
+        case 'name-desc':
+            filteredFunds.sort((a, b) => b.fundName.localeCompare(a.fundName));
+            break;
+    }
+    
     const fundsGrid = document.getElementById('fundsGrid');
     const emptyState = document.getElementById('emptyState');
     
-    console.log('📋 Filtered funds count:', filteredFunds.length);
+    console.log('📋 Filtered and sorted funds count:', filteredFunds.length);
     console.log('📦 Elements found - fundsGrid:', !!fundsGrid, 'emptyState:', !!emptyState);
     
     if (filteredFunds.length === 0) {
@@ -1443,6 +1473,11 @@ function filterFunds() {
             fundsGrid.innerHTML = visibleFunds.map(fund => createFundCard(fund)).join('');
         }
     }
+}
+
+function filterFunds() {
+    // Redirect to new function for backwards compatibility
+    filterAndSortGroups();
 }
 
 function createFundCard(fund) {

@@ -659,6 +659,28 @@
                     </button>
                 </div>
 
+                <!-- Search and Sort Bar -->
+                <div class="search-sort-bar">
+                    <div class="search-box-container">
+                        <input 
+                            type="text" 
+                            id="groupSearchInput" 
+                            class="search-input" 
+                            placeholder="🔍 Search groups by name..."
+                            onkeyup="filterAndSortGroups()"
+                        />
+                    </div>
+                    <div class="sort-controls">
+                        <label for="sortOrder" class="sort-label">Sort by:</label>
+                        <select id="sortOrder" class="sort-select" onchange="filterAndSortGroups()">
+                            <option value="recent">📅 Most Recent</option>
+                            <option value="oldest">📅 Oldest First</option>
+                            <option value="name-asc">🔤 A → Z</option>
+                            <option value="name-desc">🔤 Z → A</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Loading State -->
                 <div id="loadingGroups" class="loading-groups-state" style="display: none;">
                     <div class="loading-spinner"></div>
