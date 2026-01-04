@@ -3975,9 +3975,8 @@ async function removeMemberWithValidation(memberId) {
         const groupName = currentFund.fundName;
 
         // Remove member from Firebase
-        await window.FirebaseConfig.updateDb(
-            `groups/${groupId}/members/${memberId}`,
-            null
+        await window.FirebaseConfig.deleteDb(
+            `groups/${groupId}/members/${memberId}`
         );
 
         // Notify the removed member
@@ -4187,9 +4186,8 @@ async function approveRemovalRequest(requestId) {
         if (!confirmed) return;
 
         // Remove member
-        await window.FirebaseConfig.updateDb(
-            `groups/${groupId}/members/${request.targetMember}`,
-            null
+        await window.FirebaseConfig.deleteDb(
+            `groups/${groupId}/members/${request.targetMember}`
         );
 
         // Update request status
