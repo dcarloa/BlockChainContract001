@@ -1368,12 +1368,14 @@ function updateStats() {
     document.getElementById('totalValueLocked').textContent = `$${totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     
     // Update filter counts
+    const simpleCount = allUserFunds.filter(f => f.mode === 'simple').length;
+    const blockchainCount = allUserFunds.filter(f => f.mode === 'blockchain').length;
+    
     document.getElementById('countAll').textContent = allUserFunds.length;
     document.getElementById('countCreated').textContent = createdCount;
     document.getElementById('countParticipating').textContent = participatingCount;
-    document.getElementById('countTravel').textContent = allUserFunds.filter(f => f.fundType === 0n).length;
-    document.getElementById('countSavings').textContent = allUserFunds.filter(f => f.fundType === 1n).length;
-    document.getElementById('countShared').textContent = allUserFunds.filter(f => f.fundType === 2n).length;
+    document.getElementById('countSimple').textContent = simpleCount;
+    document.getElementById('countBlockchain').textContent = blockchainCount;
 }
 
 function displayFunds() {
@@ -1392,14 +1394,11 @@ function filterFunds() {
         case 'participating':
             filteredFunds = filteredFunds.filter(f => f.isParticipant);
             break;
-        case 'travel':
-            filteredFunds = filteredFunds.filter(f => f.fundType === 0n);
+        case 'simple':
+            filteredFunds = filteredFunds.filter(f => f.mode === 'simple');
             break;
-        case 'savings':
-            filteredFunds = filteredFunds.filter(f => f.fundType === 1n);
-            break;
-        case 'shared':
-            filteredFunds = filteredFunds.filter(f => f.fundType === 2n);
+        case 'blockchain':
+            filteredFunds = filteredFunds.filter(f => f.mode === 'blockchain');
             break;
     }
     
