@@ -417,7 +417,7 @@
                                     <div class="setting-description">Toggle dark theme</div>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox" id="settingDarkMode" onchange="toggleDarkMode()">
+                                    <input type="checkbox" id="settingDarkMode" onchange="toggleDarkModeSetting(this)">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -427,21 +427,9 @@
                                     <div class="setting-description">Enable push notifications</div>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox" id="settingNotifications" checked>
+                                    <input type="checkbox" id="settingNotifications" checked onchange="toggleNotificationsSetting(this)">
                                     <span class="toggle-slider"></span>
                                 </label>
-                            </div>
-                            <div class="setting-item">
-                                <div class="setting-info">
-                                    <div class="setting-label">💱 Preferred Currency</div>
-                                    <div class="setting-description">Default currency for new groups</div>
-                                </div>
-                                <select class="setting-select" id="settingPreferredCurrency">
-                                    <option value="USD">USD - US Dollar</option>
-                                    <option value="EUR">EUR - Euro</option>
-                                    <option value="MXN">MXN - Mexican Peso</option>
-                                    <option value="GBP">GBP - British Pound</option>
-                                </select>
                             </div>
                         </div>
                     </div>

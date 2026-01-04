@@ -9267,6 +9267,9 @@ async function loadProfileData() {
 
         // Load overview tab data
         loadProfileOverview();
+        
+        // Load saved preferences
+        loadProfilePreferences();
 
     } catch (error) {
         console.error('Error loading profile data:', error);
@@ -9517,6 +9520,44 @@ function toggleDarkMode() {
     showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled', 'success');
 }
 
+/**
+ * Toggle dark mode from settings
+ */
+function toggleDarkModeSetting(checkbox) {
+    const isDark = checkbox.checked;
+    document.body.classList.toggle('dark-mode', isDark);
+    localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+    showToast(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', 'success');
+}
+
+/**
+ * Toggle notifications setting
+ */
+function toggleNotificationsSetting(checkbox) {
+    const isEnabled = checkbox.checked;
+    localStorage.setItem('notificationsEnabled', isEnabled ? 'true' : 'false');
+    showToast(isEnabled ? '🔔 Notifications enabled' : '🔕 Notifications disabled', 'success');
+}
+
+/**
+ * Load saved preferences
+ */
+function loadProfilePreferences() {
+    // Load dark mode preference
+    const darkMode = localStorage.getItem('darkMode');
+    const darkModeCheckbox = document.getElementById('settingDarkMode');
+    if (darkModeCheckbox && darkMode === 'true') {
+        darkModeCheckbox.checked = true;
+    }
+    
+    // Load notifications preference
+    const notificationsEnabled = localStorage.getItem('notificationsEnabled');
+    const notificationsCheckbox = document.getElementById('settingNotifications');
+    if (notificationsCheckbox) {
+        notificationsCheckbox.checked = notificationsEnabled !== 'false';
+    }
+}
+
 // Make functions globally available
 window.openProfilePanel = openProfilePanel;
 window.closeProfilePanel = closeProfilePanel;
@@ -9525,6 +9566,8 @@ window.openGroupFromProfile = openGroupFromProfile;
 window.exportUserData = exportUserData;
 window.confirmSignOut = confirmSignOut;
 window.toggleDarkMode = toggleDarkMode;
+window.toggleDarkModeSetting = toggleDarkModeSetting;
+window.toggleNotificationsSetting = toggleNotificationsSetting;
 
 
 /**
