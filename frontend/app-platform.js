@@ -416,10 +416,14 @@ async function autoReconnectWallet() {
         const ethereumProvider = metamaskProviderDirect || window.ethereum;
         console.log("📱 Usando proveedor:", metamaskProviderDirect ? "MetaMask directo" : "window.ethereum");
 
-        // Intentar obtener cuentas sin solicitar permiso
+        // Intentar obtener cuentas sin solicitar permiso, con timeout de 2 segundos
         console.log("🔄 Solicitando cuentas...");
-        const accounts = await ethereumProvider.request({ 
-            method: 'eth_accounts' 
+        const accounts = await Promise.race([
+            ethereumProvider.request({ method: 'eth_accounts' }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Wallet timeout')), 2000))
+        ]).catch(error => {
+            console.log("⏱️ Timeout o error al obtener cuentas:", error.message);
+            return null;
         });
         console.log("📋 Cuentas obtenidas:", accounts ? accounts.length : 'null');
 
