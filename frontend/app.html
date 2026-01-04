@@ -147,13 +147,18 @@
     <header class="app-header">
         <div class="container">
             <div class="header-content">
+                <!-- Logo Section -->
                 <div class="logo" onclick="goToHome()" style="cursor: pointer;" title="Go to Home">
-                    <h1><img src="/assets/LogoAntPool.png" alt="Ant Pool" style="height: 36px; vertical-align: middle; margin-right: 10px;">Ant Pool</h1>
+                    <h1>
+                        <img src="/assets/LogoAntPool.png" alt="Ant Pool" style="height: 36px; vertical-align: middle; margin-right: 10px;">
+                        Ant Pool
+                    </h1>
                     <span class="version-badge">🐜 Simple Mode or Blockchain - You Choose</span>
                 </div>
                 
+                <!-- Header Actions Section -->
                 <div class="header-actions">
-                    <!-- Unified Session Badge -->
+                    <!-- User Session Badge (Desktop Only) -->
                     <div id="unifiedSessionBadge" class="unified-session-badge" style="display: none;">
                         <div class="session-info">
                             <div class="session-auth" id="sessionAuthDisplay">
@@ -168,31 +173,39 @@
                         <div class="session-status" id="sessionStatus"></div>
                     </div>
                     
-                    <!-- Notifications Button -->
-                    <button id="notificationsBtn" class="notifications-btn" onclick="toggleNotificationsPanel()" title="Notifications">
-                        <span class="bell-icon">🔔</span>
-                        <span id="notificationBadge" class="notification-badge hidden">0</span>
-                    </button>
-                    
-                    <button class="settings-btn-app" onclick="openAppSettings()" title="Settings">
-                        ⚙️
-                    </button>
-                    <button id="signOutFirebase" class="btn btn-secondary" style="display: none;" onclick="signOutFromFirebase()" title="Sign out from Google/Email">
-                        <span class="btn-icon">🚪</span>
-                        <span>Sign Out</span>
-                    </button>
-                    <button id="signInSimpleMode" class="btn btn-secondary" style="display: none;" onclick="showSignInModal()">
-                        <span class="btn-icon">🔐</span>
-                        <span>Sign In</span>
-                    </button>
-                    <button id="connectWallet" class="btn btn-primary">
-                        <span class="btn-icon">🦊</span>
-                        <span>Conectar Wallet</span>
-                    </button>
-                    <button id="disconnectWallet" class="btn btn-secondary" style="display: none;">
-                        <span class="btn-icon">🚪</span>
-                        <span>Desconectar</span>
-                    </button>
+                    <!-- Action Buttons Group -->
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <!-- Notifications -->
+                        <button id="notificationsBtn" class="notifications-btn" onclick="toggleNotificationsPanel()" title="Notifications">
+                            <span class="bell-icon">🔔</span>
+                            <span id="notificationBadge" class="notification-badge hidden">0</span>
+                        </button>
+                        
+                        <!-- Settings -->
+                        <button class="settings-btn-app" onclick="openAppSettings()" title="Settings">⚙️</button>
+                        
+                        <!-- Auth Buttons -->
+                        <button id="signInSimpleMode" class="btn btn-secondary" style="display: none;" onclick="showSignInModal()">
+                            <span class="btn-icon">🔐</span>
+                            <span>Sign In</span>
+                        </button>
+                        
+                        <button id="signOutFirebase" class="btn btn-secondary" style="display: none;" onclick="signOutFromFirebase()" title="Sign out">
+                            <span class="btn-icon">🚪</span>
+                            <span>Sign Out</span>
+                        </button>
+                        
+                        <!-- Wallet Buttons -->
+                        <button id="connectWallet" class="btn btn-primary">
+                            <span class="btn-icon">🦊</span>
+                            <span>Connect</span>
+                        </button>
+                        
+                        <button id="disconnectWallet" class="btn btn-secondary" style="display: none;">
+                            <span class="btn-icon">🚪</span>
+                            <span>Disconnect</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
