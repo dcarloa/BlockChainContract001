@@ -9324,7 +9324,6 @@ function loadProfileOverview() {
 
     // Account info
     document.getElementById('profileInfoEmail').textContent = user.email;
-    document.getElementById('profileInfoUID').textContent = user.uid;
     
     // Member since
     const creationDate = new Date(user.metadata.creationTime);
