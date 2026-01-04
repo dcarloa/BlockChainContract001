@@ -563,26 +563,26 @@
             <!-- Nickname Setup Modal (first time users) -->
             <div id="nicknameModal" class="modal" style="display: none;">
                 <div class="modal-content">
-                    <h2>👋 ¡Bienvenido a Ant Pool!</h2>
-                    <p>Comparte gastos de forma simple o usa blockchain para pagos automáticos. <strong>No necesitas wallet para empezar.</strong></p>
-                    <p>Primero, establece un <strong>nickname</strong> para identificarte en los grupos.</p>
+                    <h2>👋 Welcome to Ant Pool!</h2>
+                    <p>Share expenses simply or use blockchain for automatic payments. <strong>No wallet needed to start.</strong></p>
+                    <p>First, set a <strong>nickname</strong> to identify yourself in groups.</p>
                     
                     <div class="form-group">
-                        <label for="nicknameInput">Tu Nickname *</label>
+                        <label for="nicknameInput">Your Nickname *</label>
                         <input 
                             type="text" 
                             id="nicknameInput" 
-                            placeholder="Ej: Juan, Maria123, etc."
+                            placeholder="Ex: John, Maria123, etc."
                             minlength="3"
                             maxlength="32"
                             pattern="[a-zA-Z0-9]+"
                             required
                         >
-                        <small>3-32 caracteres, solo letras y números. Te identificará en todos tus grupos.</small>
+                        <small>3-32 characters, letters and numbers only. It will identify you in all your groups.</small>
                     </div>
                     
                     <button id="setNicknameBtn" class="btn btn-primary btn-block">
-                        Establecer Nickname y Continuar
+                        Set Nickname and Continue
                     </button>
                 </div>
             </div>
@@ -674,11 +674,11 @@
                 <!-- Empty State -->
                 <div id="emptyState" class="empty-state" style="display: none;">
                     <div class="empty-icon">🚀</div>
-                    <h3>¡Comienza tu primera aventura!</h3>
-                    <p>Crea tu primer grupo para gestionar gastos compartidos. <strong>Sin wallet necesaria</strong> - empieza con Simple Mode o usa blockchain para pagos automáticos.</p>
+                    <h3>Start your first adventure!</h3>
+                    <p>Create your first group to manage shared expenses. <strong>No wallet needed</strong> - start with Simple Mode or use blockchain for automatic payments.</p>
                     <button class="btn btn-primary" onclick="document.getElementById('createFundBtn').click()">
                         <span class="btn-icon">✨</span>
-                        <span>Crear Mi Primer Grupo</span>
+                        <span>Create My First Group</span>
                     </button>
                 </div>
 
@@ -732,7 +732,7 @@
                         <p>You have a pending invitation for this fund</p>
                     </div>
                     <button id="acceptInvitationBtn" class="btn btn-primary">
-                        Aceptar Invitación
+                        Accept Invitation
                     </button>
                 </div>
 
@@ -741,8 +741,8 @@
                     <div class="closed-fund-content">
                         <span class="closed-fund-icon">🔒</span>
                         <div>
-                            <h4>Grupo Cerrado</h4>
-                            <p>Este grupo ha sido cerrado permanentemente. Los fondos fueron distribuidos proporcionalmente entre todos los miembros.</p>
+                            <h4>Closed Group</h4>
+                            <p>This group has been permanently closed. Funds were distributed proportionally among all members.</p>
                         </div>
                     </div>
                 </div>
@@ -751,23 +751,23 @@
                 <div class="fund-tabs">
                     <button class="fund-tab-btn active" data-tab="deposit">
                         <span class="tab-icon">💵</span>
-                        <span>Depositar</span>
+                        <span>Deposit</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="invite">
                         <span class="tab-icon">🎫</span>
-                        <span>Invitar</span>
+                        <span>Invite</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="propose">
                         <span class="tab-icon">📝</span>
-                        <span>Proponer Gasto</span>
+                        <span>Propose</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="vote">
                         <span class="tab-icon">🗳️</span>
-                        <span>Votar</span>
+                        <span>Vote</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="history">
                         <span class="tab-icon">📜</span>
-                        <span>Historial</span>
+                        <span>History</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="balances">
                         <span class="tab-icon">⚖️</span>
@@ -775,11 +775,11 @@
                     </button>
                     <button class="fund-tab-btn" data-tab="members">
                         <span class="tab-icon">👥</span>
-                        <span>Miembros</span>
+                        <span>Members</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="manage">
                         <span class="tab-icon">⚙️</span>
-                        <span>Gestionar</span>
+                        <span>Manage</span>
                     </button>
                 </div>
 
@@ -789,20 +789,20 @@
                     <!-- Deposit Tab -->
                     <div id="depositTab" class="tab-pane active">
                         <div class="tab-card">
-                            <h3>💰 Aportar al Bote Común</h3>
-                            <p>Deposita dinero al grupo. Útil para gastos futuros o para equilibrar balances.</p>
+                            <h3>💰 Contribute to the Pot</h3>
+                            <p>Deposit money to the group. Useful for future expenses or to balance contributions.</p>
                             
                             <div class="form-group">
-                                <label for="depositAmount">Monto a Depositar (ETH)</label>
+                                <label for="depositAmount">Amount to Deposit (ETH)</label>
                                 <input type="number" id="depositAmount" placeholder="0.0" step="0.01" min="0.01">
                             </div>
                             
                             <div class="contribution-info">
-                                <span>Tu contribución actual: <strong id="userContribution">0 ETH</strong></span>
+                                <span>Your current contribution: <strong id="userContribution">0 ETH</strong></span>
                             </div>
                             
                             <button id="depositBtn" class="btn btn-primary btn-block">
-                                Aportar al Bote
+                                Deposit to Pot
                             </button>
                         </div>
                     </div>
@@ -810,27 +810,27 @@
                     <!-- Invite Tab -->
                     <div id="inviteTab" class="tab-pane">
                         <div class="tab-card">
-                            <h3>🎫 Invitar Miembros</h3>
-                            <p>Invita amigos para que se unan al grupo. Ellos deberán aceptar la invitación.</p>
+                            <h3>🎫 Invite Members</h3>
+                            <p>Invite friends to join the group. They must accept the invitation.</p>
                             
                             <div class="invite-info-box">
-                                <p><strong>ℹ️ Información:</strong></p>
+                                <p><strong>ℹ️ Information:</strong></p>
                                 <ul>
-                                    <li>Solo el creador del grupo puede invitar</li>
-                                    <li>Los invitados verán la invitación en su dashboard</li>
-                                    <li>Deben aceptar antes de poder registrar gastos</li>
-                                    <li>No puedes invitarte a ti mismo</li>
+                                    <li>Only the group creator can invite</li>
+                                    <li>Invitees will see the invitation in their dashboard</li>
+                                    <li>They must accept before they can register expenses</li>
+                                    <li>You cannot invite yourself</li>
                                 </ul>
                             </div>
                             
                             <div class="form-group">
-                                <label for="inviteAddress">Nickname o Dirección</label>
-                                <input type="text" id="inviteAddress" placeholder="Ej: Bob o 0x123...">
-                                <small>Ingresa el nickname del usuario o su dirección Ethereum</small>
+                                <label for="inviteAddress">Nickname or Address</label>
+                                <input type="text" id="inviteAddress" placeholder="E.g: Bob or 0x123...">
+                                <small>Enter the user's nickname or their Ethereum address</small>
                             </div>
                             
                             <button id="inviteBtn" class="btn btn-primary btn-block">
-                                Enviar Invitación
+                                Send Invitation
                             </button>
                         </div>
                     </div>
@@ -838,44 +838,44 @@
                     <!-- Propose Tab -->
                     <div id="proposeTab" class="tab-pane">
                         <div class="tab-card">
-                            <h3>📝 Proponer Gasto</h3>
-                            <p>Propón usar dinero del bote común para pagar a un proveedor externo. El grupo votará si aprueba.</p>
+                            <h3>📝 Propose Expense</h3>
+                            <p>Propose using money from the common pot to pay an external provider. The group will vote whether to approve.</p>
                             
                             <div class="info-box">
-                                <p><strong>💡 Cómo funciona:</strong></p>
+                                <p><strong>💡 How it works:</strong></p>
                                 <ul>
-                                    <li>Propón pagar un gasto desde el bote común (hotel, restaurante, etc.)</li>
-                                    <li>Indica a quién se le pagará (proveedor externo con su dirección)</li>
-                                    <li>El grupo vota si aprueba o rechaza usar el dinero del bote</li>
-                                    <li>Si se aprueba, el dinero se envía directo del bote al proveedor</li>
+                                    <li>Propose paying an expense from the common pot (hotel, restaurant, etc.)</li>
+                                    <li>Indicate who will be paid (external provider with their address)</li>
+                                    <li>The group votes whether to approve or reject using money from the pot</li>
+                                    <li>If approved, the money is sent directly from the pot to the provider</li>
                                 </ul>
                             </div>
                             
                             <div class="form-group">
-                                <label for="proposalRecipient">A quién se le pagará (Dirección del proveedor)</label>
+                                <label for="proposalRecipient">Who will be paid (Provider's address)</label>
                                 <div class="input-with-button">
-                                    <input type="text" id="proposalRecipient" placeholder="0x123... (dirección del hotel, restaurante, etc.)">
+                                    <input type="text" id="proposalRecipient" placeholder="0x123... (hotel, restaurant, etc. address)">
                                     <button type="button" id="openQRScannerBtn" class="btn-qr-scan" title="Scan QR Code">
                                         📷
                                     </button>
                                 </div>
-                                <small>Dirección Ethereum del agente externo que recibirá el pago</small>
+                                <small>Ethereum address of the external agent who will receive payment</small>
                             </div>
                             
                             <div class="form-group">
-                                <label for="proposalAmount">Monto a Pagar (ETH)</label>
+                                <label for="proposalAmount">Amount to Pay (ETH)</label>
                                 <input type="number" id="proposalAmount" placeholder="0.0" step="0.01" min="0.01">
-                                <small>Cantidad que se pagará del bote común al proveedor</small>
+                                <small>Amount that will be paid from the common pot to the provider</small>
                             </div>
                             
                             <div class="form-group">
-                                <label for="proposalDescription">Descripción del Gasto</label>
-                                <textarea id="proposalDescription" rows="3" placeholder="Ej: Hotel 3 noches en Cancún - Pago a Marriott, Cena grupal en Restaurante La Costa..."></textarea>
-                                <small>Explica el motivo del gasto y a quién se le pagará</small>
+                                <label for="proposalDescription">Expense Description</label>
+                                <textarea id="proposalDescription" rows="3" placeholder="E.g: 3-night hotel in Cancun - Payment to Marriott, Group dinner at La Costa Restaurant..."></textarea>
+                                <small>Explain the reason for the expense and who will be paid</small>
                             </div>
                             
                             <div class="form-group">
-                                <label for="involvedMembers">¿Quiénes están involucrados en este gasto?</label>
+                                <label for="involvedMembers">Who is involved in this expense?</label>
                                 <div class="info-box warning" style="margin-bottom: 1rem; background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.3);">
                                     <p><strong>⚠️ IMPORTANTE:</strong></p>
                                     <ul style="margin: 0.5rem 0 0 1.2rem; font-size: 0.9rem;">
@@ -893,20 +893,20 @@
                                 </div>
                                 <div class="members-selection-actions">
                                     <button type="button" id="selectAllMembersBtn" class="btn-select-action">
-                                        ✓ Seleccionar Todos
+                                        ✓ Select All
                                     </button>
                                     <button type="button" id="deselectAllMembersBtn" class="btn-select-action">
-                                        ✗ Deseleccionar Todos
+                                        ✗ Deselect All
                                     </button>
                                 </div>
                                 <div id="involvedMembersList" class="members-checkbox-list">
                                     <!-- Member checkboxes will be loaded here -->
                                 </div>
-                                <small>Selecciona los miembros que compartirán este gasto. Usa los botones +/− para ajustar cuántas porciones del gasto corresponden a cada miembro.</small>
+                                <small>Select the members who will share this expense. Use the +/− buttons to adjust how many portions of the expense correspond to each member.</small>
                             </div>
                             
                             <button id="createProposalBtn" class="btn btn-primary btn-block">
-                                📝 Proponer Uso de Fondos
+                                📝 Propose Use of Funds
                             </button>
                         </div>
                     </div>
@@ -915,8 +915,8 @@
                     <div id="voteTab" class="tab-pane">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <div>
-                                <h3>🗳️ Votar Propuestas</h3>
-                                <p class="tab-description">Propuestas de uso de fondos. Vota si apruebas o rechazas pagar a cada proveedor.</p>
+                                <h3>🗳️ Vote on Proposals</h3>
+                                <p class="tab-description">Proposals to use funds. Vote whether you approve or reject paying each provider.</p>
                             </div>
                             <button onclick="refreshCurrentView()" class="btn btn-secondary" style="height: fit-content;" title="Refresh proposals from blockchain">
                                 🔄 Refresh
@@ -927,8 +927,8 @@
                         </div>
                         <div id="noProposals" class="empty-state" style="display: none;">
                             <div class="empty-icon">📋</div>
-                            <h4>No hay propuestas activas</h4>
-                            <p>Crea la primera propuesta para este fondo</p>
+                            <h4>No active proposals</h4>
+                            <p>Create the first proposal for this fund</p>
                         </div>
                     </div>
 
@@ -1174,11 +1174,11 @@
 
                     <!-- Members Tab -->
                     <div id="membersTab" class="tab-pane">
-                        <h3>👥 Miembros del Fondo</h3>
+                        <h3>👥 Fund Members</h3>
                         
                         <!-- Removal Requests Section (Only for creator) -->
                         <div id="removalRequestsSection" style="display: none; margin-bottom: 2rem;">
-                            <h4 style="color: var(--warning); margin-bottom: 1rem;">⚠️ Solicitudes de Expulsión Pendientes</h4>
+                            <h4 style="color: var(--warning); margin-bottom: 1rem;">⚠️ Pending Removal Requests</h4>
                             <div id="removalRequestsList">
                                 <!-- Removal requests will be loaded here -->
                             </div>
@@ -1189,32 +1189,32 @@
                         </div>
                         <div id="noMembers" class="empty-state" style="display: none;">
                             <div class="empty-icon">👤</div>
-                            <h4>No hay miembros aún</h4>
+                            <h4>No members yet</h4>
                         </div>
                     </div>
 
                     <!-- Manage Tab -->
                     <div id="manageTab" class="tab-pane">
                         <div class="tab-card">
-                            <h3>⚙️ Gestión del Fondo</h3>
-                            <p>Opciones avanzadas para administrar el fondo.</p>
+                            <h3>⚙️ Fund Management</h3>
+                            <p>Advanced options to manage the fund.</p>
                             
                             <div class="manage-section">
                                 <!-- Kick Member Section -->
                                 <div class="member-management-section">
-                                    <h4>👥 Gestión de Miembros</h4>
-                                    <p><strong>Expulsar Miembro</strong></p>
+                                    <h4>👥 Member Management</h4>
+                                    <p><strong>Remove Member</strong></p>
                                     <p class="help-text">
-                                        Expulsa a un miembro del grupo devolviéndole su parte proporcional de los fondos actuales.
+                                        Remove a member from the group by returning their proportional share of current funds.
                                     </p>
                                     
                                     <div class="info-box">
-                                        <p><strong>💡 Cómo funciona:</strong></p>
+                                        <p><strong>💡 How it works:</strong></p>
                                         <ul>
-                                            <li>El miembro es removido del grupo permanentemente</li>
-                                            <li>Recibe: (Su aportación / Total aportaciones) × Balance actual</li>
-                                            <li>No podrá participar en votaciones futuras</li>
-                                            <li>Sus votos anteriores quedan registrados</li>
+                                            <li>The member is permanently removed from the group</li>
+                                            <li>Receives: (Their contribution / Total contributions) × Current balance</li>
+                                            <li>Cannot participate in future votes</li>
+                                            <li>Their previous votes remain recorded</li>
                                         </ul>
                                     </div>
                                     
@@ -1224,41 +1224,41 @@
                                     
                                     <div id="noMembersToKick" class="empty-state" style="display: none;">
                                         <div class="empty-icon">👥</div>
-                                        <h4>No hay miembros para expulsar</h4>
-                                        <p>Solo hay un miembro en el grupo o no eres el creador</p>
+                                        <h4>No members to remove</h4>
+                                        <p>There is only one member in the group or you are not the creator</p>
                                     </div>
                                 </div>
                                 
                                 <div class="danger-zone">
-                                    <h4>🚨 Zona de Peligro</h4>
-                                    <p><strong>Cerrar y Distribuir Fondo</strong></p>
+                                    <h4>🚨 Danger Zone</h4>
+                                    <p><strong>Close and Distribute Fund</strong></p>
                                     <p class="help-text">
-                                        Esta acción cerrará permanentemente el fondo y distribuirá todos los fondos restantes 
-                                        proporcionalmente entre los contribuyentes según su aportación.
+                                        This action will permanently close the fund and distribute all remaining funds 
+                                        proportionally among contributors according to their contribution.
                                     </p>
                                     
                                     <div class="info-box warning-box">
-                                        <p><strong>⚠️ Advertencia:</strong></p>
+                                        <p><strong>⚠️ Warning:</strong></p>
                                         <ul>
-                                            <li>Esta acción es <strong>irreversible</strong></li>
-                                            <li>Solo el creador del fondo puede ejecutarla</li>
-                                            <li>Cada contribuyente recibirá: (su aportación / total) × balance actual</li>
-                                            <li>El fondo quedará cerrado permanentemente</li>
-                                            <li>No se podrán hacer más depósitos ni propuestas</li>
+                                            <li>This action is <strong>irreversible</strong></li>
+                                            <li>Only the fund creator can execute it</li>
+                                            <li>Each contributor will receive: (their contribution / total) × current balance</li>
+                                            <li>The fund will be permanently closed</li>
+                                            <li>No more deposits or proposals can be made</li>
                                         </ul>
                                     </div>
                                     
                                     <div id="closeFundPreview" class="distribution-preview" style="display: none;">
-                                        <h5>📊 Vista Previa de Distribución</h5>
+                                        <h5>📊 Distribution Preview</h5>
                                         <div id="distributionList"></div>
                                     </div>
                                     
                                     <div class="button-group">
                                         <button id="previewCloseFundBtn" class="btn btn-secondary">
-                                            📊 Vista Previa de Distribución
+                                            📊 Distribution Preview
                                         </button>
                                         <button id="closeFundBtn" class="btn btn-danger">
-                                            🔒 Cerrar y Distribuir Fondo
+                                            🔒 Close and Distribute Fund
                                         </button>
                                     </div>
                                 </div>
@@ -1544,7 +1544,7 @@
             <div id="createFundModal" class="modal" style="display: none;">
                 <div class="modal-content modal-large create-group-modal">
                     <div class="modal-header">
-                        <h2>✨ Crear Nuevo Grupo</h2>
+                        <h2>✨ Create New Group</h2>
                         <button class="modal-close" onclick="closeCreateFundModal()">&times;</button>
                     </div>
                     
@@ -1553,49 +1553,49 @@
                         <div class="step-indicator">
                             <div class="step active" data-step="1">
                                 <div class="step-number">1</div>
-                                <div class="step-label">Básico</div>
+                                <div class="step-label">Basic</div>
                                 <div class="step-connector"></div>
                             </div>
                             <div class="step" data-step="2">
                                 <div class="step-number">2</div>
-                                <div class="step-label">Tipo</div>
+                                <div class="step-label">Type</div>
                                 <div class="step-connector"></div>
                             </div>
                             <div class="step" data-step="3">
                                 <div class="step-number">3</div>
-                                <div class="step-label">Modo</div>
+                                <div class="step-label">Mode</div>
                             </div>
                         </div>
 
                         <!-- Step 1: Basic Info -->
                         <div class="form-step" data-step="1" style="display: block;">
-                            <h3>📝 ¿Cómo se llama tu grupo?</h3>
-                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Dale un nombre que todos reconozcan fácilmente</p>
+                            <h3>📝 What's your group name?</h3>
+                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Give it a name everyone will easily recognize</p>
                             
                             <div class="form-group">
                                 <label for="fundName">
-                                    <span class="label-text">Nombre del Grupo</span>
+                                    <span class="label-text">Group Name</span>
                                     <span class="label-required">*</span>
                                 </label>
                                 <input 
                                     type="text" 
                                     id="fundName" 
-                                    placeholder="Ej: Gastos del Xolo, Viaje a Cancún, Roommates 2025" 
+                                    placeholder="E.g: Dog Expenses, Cancun Trip, Roommates 2025" 
                                     required 
                                     class="input-modern input-large"
                                 />
-                                <small class="form-hint">💡 Usa un nombre claro y descriptivo</small>
+                                <small class="form-hint">💡 Use a clear and descriptive name</small>
                             </div>
 
                             <div class="form-group">
                                 <label for="fundDescription">
-                                    <span class="label-text">Descripción</span>
-                                    <span class="label-badge">Opcional</span>
+                                    <span class="label-text">Description</span>
+                                    <span class="label-badge">Optional</span>
                                 </label>
                                 <textarea 
                                     id="fundDescription" 
                                     rows="3" 
-                                    placeholder="Ej: Gastos compartidos de comida, paseos y cuidados del perro"
+                                    placeholder="E.g: Shared expenses for food, walks, and pet care"
                                     class="input-modern"
                                 ></textarea>
                             </div>
@@ -1606,35 +1606,35 @@
                             
                             <div class="form-step-buttons">
                                 <button type="button" class="btn-step btn-step-back" onclick="closeCreateFundModal()">
-                                    Cancelar
+                                    Cancel
                                 </button>
                                 <button type="button" class="btn-step btn-step-next" onclick="nextStep(2)">
-                                    Siguiente →
+                                    Next →
                                 </button>
                             </div>
                         </div>
 
                         <!-- Step 2: Mode Selection -->
                         <div class="form-step" data-step="2" style="display: none;">
-                            <h3>⚡ ¿Cómo quieres manejar los gastos?</h3>
-                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Elige el modo que mejor se adapte a tu grupo</p>
+                            <h3>⚡ How do you want to manage expenses?</h3>
+                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Choose the mode that best fits your group</p>
                             
                             <div class="mode-selection-grid">
                                 <label class="mode-card">
                                     <input type="radio" name="groupMode" value="simple" checked />
-                                    <span class="mode-recommended">✨ Recomendado</span>
+                                    <span class="mode-recommended">✨ Recommended</span>
                                     <div class="mode-title">
                                         <span>📝</span>
-                                        <span>Modo Simple</span>
+                                        <span>Simple Mode</span>
                                     </div>
                                     <div class="mode-description">
-                                        Perfecto para empezar. Sin billetera necesaria. Registra gastos y divide cuentas fácilmente.
+                                        Perfect to get started. No wallet needed. Easily track expenses and split bills.
                                     </div>
                                     <ul class="mode-features">
-                                        <li>Inicio con Google o Email</li>
-                                        <li>Seguimiento de deudas</li>
-                                        <li>Aprobación colaborativa</li>
-                                        <li>Liquidar fuera de la app</li>
+                                        <li>Login with Google or Email</li>
+                                        <li>Track debts</li>
+                                        <li>Collaborative approval</li>
+                                        <li>Settle outside the app</li>
                                     </ul>
                                 </label>
                                 
@@ -1643,18 +1643,18 @@
                                     <span class="mode-recommended" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">🚀 Coming Soon</span>
                                     <div class="mode-title">
                                         <span>⛓️</span>
-                                        <span>Modo Blockchain</span>
+                                        <span>Blockchain Mode</span>
                                     </div>
                                     <div class="mode-description">
-                                        Contratos inteligentes automáticos. Votación on-chain y transparencia total.
+                                        Automatic smart contracts. On-chain voting and total transparency.
                                     </div>
                                     <ul class="mode-features">
-                                        <li>Requiere Wallet cripto</li>
-                                        <li>Pagos automáticos</li>
-                                        <li>Votación en blockchain</li>
-                                        <li>Ejecución sin confianza</li>
+                                        <li>Requires crypto wallet</li>
+                                        <li>Automatic payments</li>
+                                        <li>Blockchain voting</li>
+                                        <li>Trustless execution</li>
                                     </ul>
-                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: #f59e0b; white-space: nowrap;">EN DESARROLLO</div>
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: #f59e0b; white-space: nowrap;">IN DEVELOPMENT</div>
                                 </label>
                             </div>
 
@@ -1673,10 +1673,10 @@
                             
                             <div class="form-step-buttons">
                                 <button type="button" class="btn-step btn-step-back" onclick="previousStep(1)">
-                                    ← Atrás
+                                    ← Back
                                 </button>
                                 <button type="submit" class="btn-step btn-step-submit">
-                                    🚀 Crear Grupo
+                                    🚀 Create Group
                                 </button>
                             </div>
                         </div>

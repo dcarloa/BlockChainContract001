@@ -362,7 +362,7 @@ async function disconnectWallet() {
         // Reset UI
         document.getElementById('connectWallet').innerHTML = `
             <span class="btn-icon">🦊</span>
-            <span>Conectar Wallet</span>
+            <span>Connect Wallet</span>
         `;
         document.getElementById('connectWallet').style.display = 'inline-flex';
         document.getElementById('connectWallet').disabled = false;
@@ -508,7 +508,7 @@ async function autoReconnectWallet() {
             // Restaurar UI a estado inicial
             document.getElementById('connectWallet').innerHTML = `
                 <span class="btn-icon">🦊</span>
-                <span>Conectar Wallet</span>
+                <span>Connect Wallet</span>
             `;
             document.getElementById('connectWallet').style.display = 'inline-flex';
             document.getElementById('disconnectWallet').style.display = 'none';
@@ -535,7 +535,7 @@ async function autoReconnectWallet() {
         // Restaurar UI a estado inicial
         document.getElementById('connectWallet').innerHTML = `
             <span class="btn-icon">🦊</span>
-            <span>Conectar Wallet</span>
+            <span>Connect Wallet</span>
         `;
         document.getElementById('connectWallet').style.display = 'inline-flex';
         document.getElementById('disconnectWallet').style.display = 'none';
@@ -799,10 +799,10 @@ async function loadPendingInvitations() {
                         </div>
                         <div class="invitation-item-actions">
                             <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fundAddress}', '${fundName}')">
-                                ✅ Aceptar
+                                ✅ Accept
                             </button>
                             <button class="btn btn-secondary btn-sm" onclick="openInvitedFund('${fundAddress}')">
-                                👁️ Ver
+                                👁️ View
                             </button>
                         </div>
                     `;
