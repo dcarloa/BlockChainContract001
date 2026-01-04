@@ -1484,7 +1484,6 @@ function createFundCard(fund) {
                         <h3>${fund.fundName}</h3>
                         <div class="fund-badges">
                             ${fund.mode === 'simple' ? `<span class="badge badge-mode mode-simple">📝 Simple</span>` : `<span class="badge badge-mode mode-blockchain">⛓️ Blockchain</span>`}
-                            <span class="badge badge-type type-${typeKey}">${typeName}</span>
                             ${isInactive ? `<span class="badge badge-status status-inactive">${t.app.dashboard.card.inactive}</span>` : ''}
                             ${fund.isCreator ? `<span class="badge badge-creator">👑 ${t.app.fundDetail.badges.creator}</span>` : ''}
                         </div>
@@ -1497,13 +1496,15 @@ function createFundCard(fund) {
                         <span class="fund-stat-value">${fund.mode === 'simple' ? `$${fund.balance || 0} ${fund.primaryCurrency || 'USD'}` : `${formatEth(fund.balance || 0)} ETH`}</span>
                         ${fund.mode === 'simple' && fund.currencies && fund.currencies.length > 1 ? `<small class="fund-stat-hint">+${fund.currencies.length - 1} more</small>` : ''}
                     </div>
+                    ${fund.mode === 'blockchain' && parseFloat(fund.target || 0) > 0 ? `
                     <div class="fund-stat">
-                        <span class="fund-stat-label">${parseFloat(fund.target || 0) > 0 ? t.app.fundDetail.info.target : t.app.fundDetail.info.target}</span>
-                        <span class="fund-stat-value">${parseFloat(fund.target || 0) > 0 ? (fund.mode === 'simple' ? `$${fund.target}` : formatEth(fund.target) + ' ETH') : t.app.fundDetail.info.noLimit}</span>
+                        <span class="fund-stat-label">${t.app.fundDetail.info.target}</span>
+                        <span class="fund-stat-value">${formatEth(fund.target) + ' ETH'}</span>
                     </div>
+                    ` : ''}
                 </div>
                 
-                ${parseFloat(fund.target || 0) > 0 ? `
+                ${fund.mode === 'blockchain' && parseFloat(fund.target || 0) > 0 ? `
                 <div class="fund-progress">
                     <div class="fund-progress-label">
                         <span>${t.app.fundDetail.info.progress}</span>
@@ -1517,7 +1518,7 @@ function createFundCard(fund) {
                 
                 <div class="fund-meta">
                     <span>👥 ${fund.contributors || 0} ${t.app.dashboard.card.members}</span>
-                    <span>📊 ${fund.proposals || 0} ${t.app.fundDetail.info.proposals.toLowerCase()}</span>
+                    <span>${fund.mode === 'simple' ? '💳' : '📊'} ${fund.proposals || 0} ${fund.mode === 'simple' ? 'expenses' : t.app.fundDetail.info.proposals.toLowerCase()}</span>
                 </div>
             </div>
         </div>
