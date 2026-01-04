@@ -5419,6 +5419,31 @@ header,
   transition: transform 0.3s ease;
 }
 
+/* Custom Scrollbar for Profile Panel */
+.profile-panel-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.profile-panel-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.profile-panel-content::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.profile-panel-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
+}
+
+/* Firefox */
+.profile-panel-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+}
+
 .profile-panel:not(.hidden) .profile-panel-content {
   transform: translateX(0);
 }
