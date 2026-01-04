@@ -418,9 +418,13 @@ async function autoReconnectWallet() {
 
         // Intentar obtener cuentas sin solicitar permiso, con timeout de 2 segundos
         console.log("🔄 Solicitando cuentas...");
+        console.log("⏰ Iniciando Promise.race con timeout de 2s...");
         const accounts = await Promise.race([
             ethereumProvider.request({ method: 'eth_accounts' }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Wallet timeout')), 2000))
+            new Promise((_, reject) => setTimeout(() => {
+                console.log("⏱️ TIMEOUT EJECUTADO - rechazando promise");
+                reject(new Error('Wallet timeout'));
+            }, 2000))
         ]).catch(error => {
             console.log("⏱️ Timeout o error al obtener cuentas:", error.message);
             return null;
