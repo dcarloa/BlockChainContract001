@@ -5409,7 +5409,7 @@ header,
 .profile-panel-content {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width: 550px;
   background: var(--bg-primary);
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
   display: flex;
@@ -5452,7 +5452,7 @@ header,
 .profile-header {
   background: var(--glass-bg);
   border-bottom: 1px solid var(--glass-border);
-  padding: 1.5rem;
+  padding: 2rem;
 }
 
 .profile-header-top {
@@ -5475,18 +5475,18 @@ header,
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   background: var(--primary-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: white;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
 }
 
 .profile-details {
@@ -5495,15 +5495,15 @@ header,
 }
 
 .profile-details h3 {
-  margin: 0 0 0.25rem 0;
-  font-size: 1.25rem;
+  margin: 0 0 0.35rem 0;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .profile-details p {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
   color: var(--text-muted);
 }
 
@@ -5533,8 +5533,8 @@ header,
 .profile-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  padding: 1.5rem;
+  gap: 1.25rem;
+  padding: 2rem;
   background: var(--bg-primary);
   border-bottom: 1px solid var(--glass-border);
 }
@@ -5543,7 +5543,7 @@ header,
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -5619,7 +5619,7 @@ header,
 .profile-tab-content {
   flex: 1;
   overflow-y: auto;
-  padding: 1.5rem;
+  padding: 2rem;
 }
 
 .profile-tab-panel {
@@ -5631,7 +5631,7 @@ header,
 }
 
 .profile-section {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .profile-section:last-child {
@@ -5639,9 +5639,9 @@ header,
 }
 
 .profile-section h4 {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  margin: 0 0 1rem 0;
+  margin: 0 0 1.25rem 0;
   color: var(--text-primary);
 }
 
@@ -5667,7 +5667,7 @@ header,
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
 .profile-info-item label {
