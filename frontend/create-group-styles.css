@@ -494,3 +494,76 @@
     padding: 0.65rem;
   }
 }
+
+/* ===================================
+   ICON SELECTION GRID
+   =================================== */
+
+.icon-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.icon-selection-grid input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.icon-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  font-size: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.icon-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(102, 126, 234, 0.5);
+  transform: scale(1.05);
+}
+
+.icon-selection-grid input[type="radio"]:checked + .icon-option {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  transform: scale(1.1);
+}
+
+.icon-selection-grid input[type="radio"]:checked + .icon-option:hover {
+  transform: scale(1.15);
+}
+
+@media (max-width: 768px) {
+  .icon-selection-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .icon-option {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .icon-selection-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .icon-option {
+    font-size: 1.5rem;
+    border-radius: 8px;
+  }
+}
+

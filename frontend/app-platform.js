@@ -1452,7 +1452,8 @@ function createFundCard(fund) {
     const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
     const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
     
-    const icon = fundTypeIcons[Number(fund.fundType)] || '🎯';
+    // Use custom icon if available, otherwise fall back to type-based icon
+    const icon = fund.icon || fundTypeIcons[Number(fund.fundType)] || '🎯';
     const typeKey = fundTypeKeys[Number(fund.fundType)] || 'other';
     const typeName = t.app.fundDetail.badges[typeKey];
     const isInactive = !fund.isActive;
@@ -1635,14 +1636,14 @@ function goToHome() {
 async function deactivateFund(fundAddress, fundName) {
     try {
         const confirmed = confirm(
-            `⏸️ ¿Pausar el fondo "${fundName}"?\n\n` +
-            `Esta acción:\n` +
-            `• Bloqueará todas las transacciones (depósitos, propuestas, votos)\n` +
-            `• El fondo seguirá visible en modo solo lectura\n` +
-            `• Podrás ver el historial y balances\n` +
-            `• Solo el creador puede reactivarlo llamando al contrato\n` +
-            `• Se notificará a todos los miembros del grupo\n\n` +
-            `¿Continuar?`
+            `⏸️ Pause fund "${fundName}"?\n\n` +
+            `This action:\n` +
+            `• Will block all transactions (deposits, proposals, votes)\n` +
+            `• The fund will remain visible in read-only mode\n` +
+            `• You can view history and balances\n` +
+            `• Only the creator can reactivate it by calling the contract\n` +
+            `• All group members will be notified\n\n` +
+            `Continue?`
         );
         
         if (!confirmed) return;
@@ -1677,7 +1678,7 @@ async function deactivateFund(fundAddress, fundName) {
         await notifyGroupMembers(
             fundAddress,
             'group_paused',
-            `El grupo "${fundName}" ha sido pausado por el creador`,
+            `The group "${fundName}" has been paused by the creator`,
             { groupName: fundName }
         );
         console.log("✅ Pause notifications sent");
@@ -1692,13 +1693,13 @@ async function deactivateFund(fundAddress, fundName) {
     } catch (error) {
         hideLoading();
         console.error("Error deactivating fund:", error);
-        showToast("Error al desactivar el fondo: " + error.message, "error");
+        showToast("Error deactivating fund: " + error.message, "error");
     }
 }
 
 async function reactivateFund(fundAddress, fundName) {
     try {
-        const confirmed = confirm(`▶️ ¿Reactivar el grupo "${fundName}"?\n\nEsta acción habilitará nuevamente el grupo y se notificará a todos los miembros.`);
+        const confirmed = confirm(`▶️ Reactivate group "${fundName}"?\n\nThis action will enable the group again and all members will be notified.`);
         if (!confirmed) return;
         
         showLoading("Reactivando grupo...");
@@ -1712,17 +1713,17 @@ async function reactivateFund(fundAddress, fundName) {
         }
         
         console.log("📢 Sending reactivation notifications...");
-        await notifyGroupMembers(fundAddress, 'group_reactivated', `El grupo "${fundName}" ha sido reactivado`, { groupName: fundName });
+        await notifyGroupMembers(fundAddress, 'group_reactivated', `The group "${fundName}" has been reactivated`, { groupName: fundName });
         console.log("✅ Reactivation notifications sent");
         
         await refreshCurrentView();
-        showToast("✅ Grupo reactivado correctamente", "success");
+        showToast("✅ Group reactivated successfully", "success");
         hideLoading();
         
     } catch (error) {
         hideLoading();
         console.error("Error reactivating fund:", error);
-        showToast("Error al reactivar el grupo: " + error.message, "error");
+        showToast("Error reactivating group: " + error.message, "error");
     }
 }
 
@@ -1735,14 +1736,14 @@ async function hideFund(fundAddress, fundName) {
         if (fund && fund.mode === 'simple') {
             // Simple Mode - delete group completely from Firebase
             const confirmed = confirm(
-                `🗑️ ¿Eliminar el grupo "${fundName}"?\n\n` +
-                `Esta acción:\n` +
-                `• Eliminará PERMANENTEMENTE el grupo de Firebase\n` +
-                `• Se borrarán todos los gastos, pagos y datos\n` +
-                `• Esta acción NO se puede deshacer\n` +
-                `• Se notificará a todos los miembros\n` +
-                `• Todos los miembros perderán acceso\n\n` +
-                `¿Estás seguro de continuar?`
+                `🗑️ Delete group "${fundName}"?\n\n` +
+                `This action:\n` +
+                `• Will PERMANENTLY delete the group from Firebase\n` +
+                `• All expenses, payments and data will be deleted\n` +
+                `• This action CANNOT be undone\n` +
+                `• All members will be notified\n` +
+                `• All members will lose access\n\n` +
+                `Are you sure you want to continue?`
             );
             
             if (!confirmed) return;
@@ -1871,6 +1872,7 @@ async function createFund(event) {
         const minimumVotes = document.getElementById('minimumVotes').value;
         const fundType = document.getElementById('fundType').value; // Hidden field with default 0
         const groupMode = document.querySelector('input[name="groupMode"]:checked').value;
+        const groupIcon = document.querySelector('input[name="groupIcon"]:checked')?.value || '🐕'; // Default to dog icon
         
         if (!fundName) {
             showToast("Please enter the fund name", "warning");
@@ -1898,7 +1900,8 @@ async function createFund(event) {
                 isPrivate: isPrivate,
                 approvalPercentage: parseInt(approvalPercentage),
                 minimumVotes: parseInt(minimumVotes),
-                fundType: parseInt(fundType)
+                fundType: parseInt(fundType),
+                icon: groupIcon
             });
         } else {
             // BLOCKCHAIN MODE - Smart Contract
@@ -1909,7 +1912,8 @@ async function createFund(event) {
                 isPrivate: isPrivate,
                 approvalPercentage: parseInt(approvalPercentage),
                 minimumVotes: parseInt(minimumVotes),
-                fundType: parseInt(fundType)
+                fundType: parseInt(fundType),
+                icon: groupIcon
             });
         }
         
@@ -1959,7 +1963,8 @@ async function createSimpleFund(fundInfo) {
             name: fundInfo.name,
             description: fundInfo.description,
             targetAmount: fundInfo.targetAmount,
-            currency: 'USD' // Can be changed later
+            currency: 'USD', // Can be changed later
+            icon: fundInfo.icon || '🐕'
         });
         
         console.log("✅ Simple group created:", groupId);
@@ -5118,7 +5123,7 @@ function showAddExpenseModal() {
     
     // Check if group is paused
     if (currentFund && !currentFund.isActive) {
-        showToast("⏸️ El grupo está pausado. No puedes agregar gastos.", "error");
+        showToast("⏸️ The group is paused. You cannot add expenses.", "error");
         return;
     }
     
@@ -5587,7 +5592,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function approveExpense(expenseId) {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("⏸️ El grupo está pausado. No puedes aprobar gastos.", "error");
+            showToast("⏸️ The group is paused. You cannot approve expenses.", "error");
             return;
         }
         
@@ -5623,7 +5628,7 @@ async function approveExpense(expenseId) {
 async function rejectExpense(expenseId) {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("⏸️ El grupo está pausado. No puedes rechazar gastos.", "error");
+            showToast("⏸️ The group is paused. You cannot reject expenses.", "error");
             return;
         }
         
@@ -5835,7 +5840,7 @@ async function inviteMember() {
         } else if (error.message.includes("Nickname not found")) {
             errorMsg = "Nickname not found";
         } else if (error.message.includes("Only creator")) {
-            errorMsg = "Solo el creador puede invitar miembros";
+            errorMsg = "Only the creator can invite members";
         }
         
         showToast(errorMsg, "error");
@@ -6083,7 +6088,7 @@ async function loadInvolvedMembersCheckboxes() {
         if (!container) return;
         
         if (addresses.length === 0) {
-            container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No hay miembros disponibles</p>';
+            container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No members available</p>';
             return;
         }
         
@@ -6880,17 +6885,17 @@ async function loadKickMembersList() {
 async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
     try {
         const confirmed = confirm(
-            `⚠️ ¿Expulsar a ${memberNickname}?\n\n` +
-            `Esta acción:\n` +
-            `• Removerá permanentemente al miembro del grupo\n` +
-            `• Le devolverá ${refundAmount.toFixed(4)} ETH\n` +
-            `• No podrá votar ni participar más\n\n` +
-            `¿Continuar?`
+            `⚠️ Remove ${memberNickname}?\n\n` +
+            `This action:\n` +
+            `• Will permanently remove the member from the group\n` +
+            `• Will refund ${refundAmount.toFixed(4)} ETH\n` +
+            `• They will no longer be able to vote or participate\n\n` +
+            `Continue?`
         );
         
         if (!confirmed) return;
         
-        showLoading("Expulsando miembro...");
+        showLoading("Removing member...");
         
         const tx = await currentFundContract.kickMember(memberAddress);
         await tx.wait();
@@ -6899,12 +6904,12 @@ async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
         await refreshCurrentView();
         
         hideLoading();
-        showToast(`✅ ${memberNickname} ha sido expulsado del grupo`, "success");
+        showToast(`✅ ${memberNickname} has been removed from the group`, "success");
         
     } catch (error) {
         hideLoading();
         console.error("Error kicking member:", error);
-        showToast("Error al expulsar miembro: " + error.message, "error");
+        showToast("Error removing member: " + error.message, "error");
     }
 }
 
@@ -6917,7 +6922,7 @@ async function previewCloseFund() {
         const [addresses, nicknames, amounts] = await currentFundContract.getContributorsWithNicknames();
         
         if (addresses.length === 0) {
-            showToast("No hay contribuyentes en este fondo", "warning");
+            showToast("No contributors in this fund", "warning");
             hideLoading();
             return;
         }
@@ -6932,7 +6937,7 @@ async function previewCloseFund() {
         
         // Build distribution preview
         let distributionHTML = '<div class="distribution-table">';
-        distributionHTML += '<table><thead><tr><th>Miembro</th><th>Aportación</th><th>%</th><th>Recibirá</th></tr></thead><tbody>';
+        distributionHTML += '<table><thead><tr><th>Member</th><th>Contribution</th><th>%</th><th>Will Receive</th></tr></thead><tbody>';
         
         for (let i = 0; i < addresses.length; i++) {
             const contribution = amounts[i];
@@ -6992,9 +6997,9 @@ async function closeFund() {
         
         // Double confirmation
         const doubleConfirmed = confirm(
-            "🚨 ÚLTIMA CONFIRMACIÓN\n\n" +
-            "Esta es tu última oportunidad para cancelar.\n\n" +
-            "¿Realmente deseas cerrar y distribuir el fondo?"
+            "🚨 FINAL CONFIRMATION\n\n" +
+            "This is your last chance to cancel.\n\n" +
+            "Do you really want to close and distribute the fund?"
         );
         
         if (!doubleConfirmed) return;
