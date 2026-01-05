@@ -3087,8 +3087,7 @@ async function loadSimpleModeBalances() {
         
         let html = '';
         
-        // Determine currency to display - use group's currency if only one is used
-        const displayCurrency = currencies.length === 1 ? currencies[0] : 'USD';
+        // Use displayCurrency already determined above (line 3074)
         const currencySymbol = getCurrencySymbol(displayCurrency);
         const showCurrencyCode = true; // Always show currency code for clarity
         
