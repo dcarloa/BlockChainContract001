@@ -7148,8 +7148,8 @@ function updateAppSettingsUI() {
 function changeLanguage(lang) {
     if (typeof setLanguage === 'function') {
         setLanguage(lang);
-    } else {
-        console.error('setLanguage function not found');
+        // After reload, applyAppTranslations will be called by DOMContentLoaded
+        // No need to call it here as setLanguage does location.reload()
     }
 }
 
