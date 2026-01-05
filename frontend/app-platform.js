@@ -3749,7 +3749,14 @@ function loadSimpleModeMembers() {
         const isCreator = uid === currentFund.creator;
 
         let actionsHtml = '';
-        if (!isCurrentUser && !isCreator) {
+        if (isCurrentUser && !isCreator) {
+            // Current user can leave group (if not creator)
+            actionsHtml = `
+                <button class="btn btn-warning btn-sm" onclick="leaveGroup()">
+                    <span>🚪 Leave Group</span>
+                </button>
+            `;
+        } else if (!isCurrentUser && !isCreator) {
             if (isAdmin) {
                 // Admin can remove directly
                 actionsHtml = `
@@ -3863,6 +3870,88 @@ async function checkMemberBalance(memberId) {
     } catch (error) {
         console.error('Error checking member balance:', error);
         return { hasBalance: false, balance: 0 };
+    }
+}
+
+/**
+ * Leave current group (for non-creator members)
+ */
+async function leaveGroup() {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('You must be signed in', 'error');
+            return;
+        }
+
+        // Check if user is the creator
+        if (currentFund.creator === user.uid) {
+            showToast('Group creators cannot leave. Transfer ownership or delete the group instead.', 'error');
+            return;
+        }
+
+        // Check if user has pending balance
+        showToast('Checking your balance...', 'info');
+        const balanceCheck = await checkMemberBalance(user.uid);
+        
+        if (balanceCheck.hasBalance) {
+            const balanceText = balanceCheck.balance > 0 
+                ? `You are owed $${balanceCheck.balance.toFixed(2)}` 
+                : `You owe $${Math.abs(balanceCheck.balance).toFixed(2)}`;
+            
+            showToast(
+                `Cannot leave group: ${balanceText}. Settle all balances first.`,
+                'error',
+                5000
+            );
+            return;
+        }
+
+        const groupName = currentFund.fundName || currentFund.name;
+        const confirmed = confirm(
+            `Leave "${groupName}"?\n\n` +
+            `✅ You have no pending balances\n\n` +
+            `This will:\n` +
+            `- Remove you from the group permanently\n` +
+            `- You won't be able to access this group\n` +
+            `- Past expenses you were part of will remain unchanged\n` +
+            `- Group members will be notified of your departure`
+        );
+
+        if (!confirmed) return;
+
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+
+        // Remove user from group members
+        await window.FirebaseConfig.deleteDb(
+            `groups/${groupId}/members/${user.uid}`
+        );
+
+        // Remove group from user's groups list
+        await window.FirebaseConfig.deleteDb(
+            `users/${user.uid}/groups/${groupId}`
+        );
+
+        // Notify group creator
+        if (typeof createNotification === 'function') {
+            await createNotification(currentFund.creator, {
+                type: 'member_left',
+                title: 'Member Left Group',
+                message: `${user.displayName || user.email} left the group "${groupName}"`,
+                fundId: groupId
+            });
+        }
+
+        showToast(`You have left "${groupName}"`, 'success');
+        
+        // Return to groups list
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+
+    } catch (error) {
+        console.error('Error leaving group:', error);
+        showToast(`Error leaving group: ${error.message}`, 'error');
     }
 }
 
@@ -8997,6 +9086,7 @@ function getNotificationIcon(type) {
         'proposal_rejected': '❌',
         'member_joined': '👥',
         'member_removed': '🚫',
+        'member_left': '🚪',
         'removal_requested': '⚠️',
         'fund_goal_reached': '🎯',
         'default': '🔔'
@@ -9022,6 +9112,7 @@ function getNotificationTitle(type) {
         'proposal_rejected': 'Proposal Rejected',
         'member_joined': 'New Member Joined',
         'member_removed': 'Member Removed',
+        'member_left': 'Member Left Group',
         'removal_requested': 'Removal Request',
         'fund_goal_reached': 'Goal Reached',
         'default': 'Notification'
