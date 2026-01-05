@@ -9651,8 +9651,17 @@ function toggleDarkMode() {
  */
 function toggleDarkModeSetting(checkbox) {
     const isDark = checkbox.checked;
-    document.body.classList.toggle('dark-mode', isDark);
-    localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+    const theme = isDark ? 'dark' : 'light';
+    
+    // Use the theme system from theme.js
+    if (typeof setTheme === 'function') {
+        setTheme(theme);
+    } else {
+        // Fallback if theme.js not loaded
+        localStorage.setItem('theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+    
     showToast(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', 'success');
 }
 
@@ -9669,11 +9678,11 @@ function toggleNotificationsSetting(checkbox) {
  * Load saved preferences
  */
 function loadProfilePreferences() {
-    // Load dark mode preference
-    const darkMode = localStorage.getItem('darkMode');
+    // Load dark mode preference from theme system
+    const currentTheme = typeof getCurrentTheme === 'function' ? getCurrentTheme() : (localStorage.getItem('theme') || 'dark');
     const darkModeCheckbox = document.getElementById('settingDarkMode');
-    if (darkModeCheckbox && darkMode === 'true') {
-        darkModeCheckbox.checked = true;
+    if (darkModeCheckbox) {
+        darkModeCheckbox.checked = (currentTheme === 'dark');
     }
     
     // Load notifications preference
