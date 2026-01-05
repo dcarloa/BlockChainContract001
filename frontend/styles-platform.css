@@ -5619,14 +5619,14 @@ header,
 
 /* PAID BY checkbox options - Light Mode */
 [data-theme="light"] .checkbox-option {
-  background: white;
-  border: 3px solid #94a3b8;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   margin-bottom: 0.75rem;
-  padding: 0.875rem;
-  border-radius: 12px;
+  padding: 1rem;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   display: flex;
   align-items: center;
@@ -5634,34 +5634,37 @@ header,
 
 [data-theme="light"] .checkbox-option:hover {
   background: #f8fafc;
-  border-color: #64748b;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
+/* SELECTED STATE - Diseño profesional con contraste óptimo */
 [data-theme="light"] .checkbox-option:has(input:checked) {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border: 4px solid #1e40af;
-  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.5), 
-              inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  background: #f0f9ff;
+  border: 3px solid #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15),
+              0 4px 12px rgba(59, 130, 246, 0.25);
+  transform: scale(1.02);
 }
 
 [data-theme="light"] .checkbox-option:has(input:checked) label {
-  color: white;
+  color: #1e40af;
   font-weight: 700;
 }
 
 [data-theme="light"] .checkbox-option:has(input:checked) .member-name {
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  color: #1e3a8a;
   font-size: 1.05rem;
+  font-weight: 700;
 }
 
 [data-theme="light"] .checkbox-option:has(input:checked) .member-avatar {
-  background: white;
-  color: #1e40af;
-  border: 2px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: 3px solid #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  transform: scale(1.1);
   font-weight: 800;
 }
 
@@ -5698,30 +5701,33 @@ header,
 }
 
 [data-theme="light"] .checkbox-option input[type="checkbox"] {
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
-  margin-right: 0.75rem;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  margin-right: 1rem;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   background: white;
-  border: 3px solid #0f172a;
-  border-radius: 8px;
+  border: 2px solid #94a3b8;
+  border-radius: 10px;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
 }
 
 [data-theme="light"] .checkbox-option input[type="checkbox"]:hover {
-  border-color: #1e40af;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1),
+              inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="light"] .checkbox-option input[type="checkbox"]:checked {
-  background: #10b981;
-  border-color: #059669;
-  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.5);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2),
+              0 4px 8px rgba(59, 130, 246, 0.3);
 }
 
 [data-theme="light"] .checkbox-option input[type="checkbox"]:checked::after {
@@ -5731,15 +5737,16 @@ header,
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   line-height: 1;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="light"] .checkbox-option input[type="checkbox"]:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25),
+              inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* ===================================
