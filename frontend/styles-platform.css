@@ -5630,6 +5630,8 @@ header,
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 [data-theme="light"] .checkbox-option:hover {
@@ -5662,6 +5664,7 @@ header,
   color: #1e40af;
   border: 2px solid white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-weight: 800;
 }
 
 [data-theme="light"] .checkbox-option label {
@@ -5671,6 +5674,7 @@ header,
   cursor: pointer;
   margin: 0;
   padding: 0;
+  flex: 1;
 }
 
 [data-theme="light"] .checkbox-option .member-name {
@@ -5696,14 +5700,48 @@ header,
 }
 
 [data-theme="light"] .checkbox-option input[type="checkbox"] {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background: white;
+  border: 3px solid #0f172a;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .checkbox-option input[type="checkbox"]:hover {
+  border-color: #1e40af;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .checkbox-option input[type="checkbox"]:checked {
+  background: #10b981;
+  border-color: #059669;
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.5);
+}
+
+[data-theme="light"] .checkbox-option input[type="checkbox"]:checked::after {
+  content: '✓';
   position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="light"] .checkbox-option input[type="checkbox"]:focus {
   outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 /* ===================================
