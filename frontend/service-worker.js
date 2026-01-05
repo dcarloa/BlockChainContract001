@@ -1,4 +1,6 @@
 // Service Worker para Ant Pool PWA
+// Dominio Principal: https://antpool.cloud
+// Dominio Secundario: https://blockchaincontract001.web.app
 // Versión del cache - incrementar cuando actualices recursos
 const CACHE_VERSION = 'ant-pool-v1.0.0';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;

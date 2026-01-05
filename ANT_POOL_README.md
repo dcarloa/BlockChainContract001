@@ -20,7 +20,8 @@ Ants individually are small. Collectively they move mountains. Ant Pool brings t
 ## 🚀 Quick Start
 
 ### Live Application
-👉 **[https://blockchaincontract001.web.app](https://blockchaincontract001.web.app)**
+👉 **Primary Domain:** [https://antpool.cloud](https://antpool.cloud)  
+👉 **Secondary Domain:** [https://blockchaincontract001.web.app](https://blockchaincontract001.web.app)
 
 ### Local Development
 
@@ -216,7 +217,8 @@ Built by the colony, for the colony.
 
 ## 🌐 Links
 
-- **Website:** https://blockchaincontract001.web.app
+- **Website:** https://antpool.cloud
+- **Secondary:** https://blockchaincontract001.web.app
 - **GitHub:** https://github.com/dcarloa/BlockChainContract001
 - **Base Network:** https://base.org
 - **Documentation:** https://docs.base.org

@@ -2,6 +2,10 @@
 
 ¡Bienvenido! **SplitExpense** es una plataforma descentralizada para gestionar gastos compartidos en grupo, similar a Splitwise pero construida sobre Ethereum.
 
+**🌐 Producción:**
+- Primary: https://antpool.cloud
+- Secondary: https://blockchaincontract001.web.app
+
 ## 🎯 ¿Qué es SplitExpense?
 
 Una plataforma para administrar gastos compartidos de forma transparente y justa:
