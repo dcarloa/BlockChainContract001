@@ -785,6 +785,12 @@ class ModeManager {
             // In Simple Mode, ALL expenses count (no approval needed)
             const expenses = Object.values(expensesData);
             
+            // Detect if group uses single currency
+            const currencies = new Set(expenses.map(e => e.currency || 'USD'));
+            const useSingleCurrency = currencies.size === 1;
+            const groupCurrency = useSingleCurrency ? Array.from(currencies)[0] : 'USD';
+            
+            console.log(`💱 Balance calculation: ${currencies.size === 1 ? 'Single currency' : 'Multiple currencies'} (${Array.from(currencies).join(', ')})`);
             
             // Calculate net balances
             const balances = {};
@@ -800,10 +806,11 @@ class ModeManager {
                 const paidBy = expense.paidBy;
                 let amount = Number(expense.amount);
                 
-                // Convert amount to USD if needed
+                // Only convert to USD if group has multiple currencies
                 const currency = expense.currency || 'USD';
-                if (currency !== 'USD' && window.convertToUSD) {
+                if (!useSingleCurrency && currency !== 'USD' && window.convertToUSD) {
                     amount = await window.convertToUSD(amount, currency);
+                    console.log(`💱 Converting ${expense.amount} ${currency} to ${amount.toFixed(2)} USD`);
                 }
                 
                 const splitBetween = expense.splitBetween;
