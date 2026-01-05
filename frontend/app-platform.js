@@ -2623,6 +2623,9 @@ async function loadSimpleModeDetailView() {
         await loadRecurringExpenses();
         await loadBudgetStatus();
         
+        // Start recurring expenses processing timer
+        startRecurringExpensesTimer();
+        
         // Show quick actions
         const quickActions = document.getElementById('simpleQuickActions');
         if (quickActions) {
@@ -7597,6 +7600,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+/**
+ * Check and process recurring expenses
+ * This function is called periodically to create expenses from recurring templates
+ */
+let recurringProcessTimer = null;
+
+async function checkAndProcessRecurring() {
+    try {
+        if (!currentFund || !currentFund.fundId) return;
+        if (currentFund.mode !== 'simple') return; // Only for Simple Mode
+        
+        console.log('🔄 Checking recurring expenses...');
+        
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const createdCount = await window.modeManager.processRecurringExpenses();
+        
+        if (createdCount > 0) {
+            // Reload history to show new expenses
+            await loadSimpleModeHistory();
+            // Reload recurring list to update nextDue display
+            await loadRecurringExpenses();
+            
+            showToast(`✅ ${createdCount} recurring expense(s) created automatically`, 'success');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error processing recurring expenses:', error);
+    }
+}
+
+/**
+ * Start recurring expenses timer
+ * Checks every 5 minutes for due recurring expenses
+ */
+function startRecurringExpensesTimer() {
+    // Clear existing timer
+    if (recurringProcessTimer) {
+        clearInterval(recurringProcessTimer);
+    }
+    
+    // Check immediately
+    checkAndProcessRecurring();
+    
+    // Then check every 5 minutes
+    recurringProcessTimer = setInterval(() => {
+        checkAndProcessRecurring();
+    }, 5 * 60 * 1000); // 5 minutes
+    
+    console.log('⏰ Recurring expenses timer started (checks every 5 minutes)');
+}
+
+/**
+ * Stop recurring expenses timer
+ */
+function stopRecurringExpensesTimer() {
+    if (recurringProcessTimer) {
+        clearInterval(recurringProcessTimer);
+        recurringProcessTimer = null;
+        console.log('⏸️ Recurring expenses timer stopped');
+    }
+}
+
 async function loadRecurringExpenses() {
     try {
         if (!currentFund || !currentFund.fundId) return;
@@ -7620,22 +7685,26 @@ async function loadRecurringExpenses() {
             const frequencyIcons = { daily: '📅', weekly: '📆', monthly: '🗓️' };
             const icon = frequencyIcons[rec.frequency] || '🔄';
             const nextDue = new Date(rec.nextDue).toLocaleDateString();
+            const nextDueTime = new Date(rec.nextDue).toLocaleString();
+            const isOverdue = rec.nextDue < Date.now();
             
             return `
-                <div class="recurring-card" style="background: rgba(102, 126, 234, 0.1); border-left: 3px solid #667eea; padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem;">
+                <div class="recurring-card" style="background: ${isOverdue ? 'rgba(239, 68, 68, 0.1)' : 'rgba(102, 126, 234, 0.1)'}; border-left: 3px solid ${isOverdue ? '#ef4444' : '#667eea'}; padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                                 <span style="font-size: 1.2rem;">${icon}</span>
                                 <strong style="font-size: 1rem;">${rec.description}</strong>
+                                ${isOverdue ? '<span style="background: #ef4444; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">⚠️ OVERDUE</span>' : ''}
                             </div>
                             <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
-                                <span style="color: #667eea; font-weight: bold;">${formatCurrency(rec.amount, rec.currency)}</span>
+                                <span style="color: ${isOverdue ? '#ef4444' : '#667eea'}; font-weight: bold;">${formatCurrency(rec.amount, rec.currency)}</span>
                                 • ${capitalizeFirst(rec.frequency)}
-                                • Next: ${nextDue}
+                                • Next: <span title="${nextDueTime}">${nextDue}</span>
                             </div>
                             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.25rem;">
                                 Paid by: ${rec.paidByName}
+                                ${rec.lastCreated ? ` • Last created: ${new Date(rec.lastCreated).toLocaleDateString()}` : ''}
                             </div>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">

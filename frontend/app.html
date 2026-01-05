@@ -1046,7 +1046,10 @@
                                 <span id="recurringContentToggle" style="font-size: 1.2rem; transition: transform 0.3s ease;">▼</span>
                             </div>
                             <div id="recurringContent" class="collapsible-content" style="display: none; margin-top: 0.5rem;">
-                                <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <button class="btn btn-primary btn-small" onclick="checkAndProcessRecurring()" title="Check and process due recurring expenses now" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                        🔄 Process Now
+                                    </button>
                                     <button class="btn btn-secondary btn-small" onclick="showManageRecurringModal()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
                                         📋 View All
                                     </button>

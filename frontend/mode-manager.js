@@ -373,6 +373,102 @@ class ModeManager {
         }
     }
     
+    /**
+     * Process recurring expenses that are due
+     * Creates actual expenses from recurring templates when nextDue has passed
+     * @returns {Promise<number>} Number of expenses created
+     */
+    async processRecurringExpenses() {
+        try {
+            console.log('🔄 Processing recurring expenses for group:', this.currentGroupId);
+            
+            const recurring = await this.loadRecurringExpenses();
+            const now = Date.now();
+            let createdCount = 0;
+            
+            for (const rec of recurring) {
+                // Check if it's time to create the expense
+                if (rec.nextDue <= now && rec.isActive) {
+                    console.log('⏰ Recurring expense is due:', {
+                        id: rec.id,
+                        description: rec.description,
+                        nextDue: new Date(rec.nextDue).toISOString(),
+                        now: new Date(now).toISOString()
+                    });
+                    
+                    try {
+                        // Create the actual expense
+                        const expenseId = await this.addSimpleExpense({
+                            description: `${rec.description} (Recurring)`,
+                            amount: rec.amount,
+                            currency: rec.currency,
+                            category: rec.category,
+                            paidBy: rec.paidBy,
+                            paidByName: rec.paidByName,
+                            splitBetween: rec.splitBetween,
+                            notes: `Auto-generated from recurring expense on ${new Date().toLocaleDateString()}`
+                        });
+                        
+                        console.log('✅ Created recurring expense:', expenseId);
+                        
+                        // Calculate next due date
+                        const nextDue = this.calculateNextDue(
+                            rec.frequency,
+                            rec.dayOfMonth,
+                            rec.dayOfWeek
+                        );
+                        
+                        // Update recurring expense record
+                        await this.updateRecurringExpense(rec.id, {
+                            lastCreated: now,
+                            nextDue: nextDue
+                        });
+                        
+                        console.log('📅 Updated nextDue to:', new Date(nextDue).toISOString());
+                        
+                        createdCount++;
+                        
+                        // Notify group members about auto-created expense
+                        try {
+                            const groupData = await window.FirebaseConfig.readDb(`groups/${this.currentGroupId}`);
+                            const message = `Recurring expense created: ${rec.description} - ${rec.currency} ${rec.amount}`;
+                            
+                            if (typeof notifyGroupMembers === 'function') {
+                                await notifyGroupMembers(
+                                    this.currentGroupId,
+                                    'recurring_expense_created',
+                                    message,
+                                    {
+                                        groupName: groupData?.name,
+                                        expenseId: expenseId,
+                                        recurringId: rec.id
+                                    }
+                                );
+                            }
+                        } catch (notifError) {
+                            console.error('❌ Failed to send notification:', notifError);
+                        }
+                        
+                    } catch (expenseError) {
+                        console.error('❌ Failed to create expense from recurring:', expenseError);
+                    }
+                }
+            }
+            
+            if (createdCount > 0) {
+                console.log(`✅ Created ${createdCount} recurring expense(s)`);
+            } else {
+                console.log('ℹ️ No recurring expenses due at this time');
+            }
+            
+            return createdCount;
+            
+        } catch (error) {
+            console.error("❌ Failed to process recurring expenses:", error);
+            return 0;
+        }
+    }
+    
     // ============================================
     // GROUP BUDGET
     // ============================================
