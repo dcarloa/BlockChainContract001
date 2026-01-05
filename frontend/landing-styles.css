@@ -1730,6 +1730,32 @@ body {
     background: #0f172a;
 }
 
+/* Settings Button Light Mode */
+[data-theme="light"] .settings-btn {
+    background: rgba(99, 102, 241, 0.15);
+    border: 2px solid #6366f1;
+    color: #4f46e5;
+}
+
+[data-theme="light"] .settings-btn:hover {
+    background: #6366f1;
+    color: white;
+    border-color: #4f46e5;
+}
+
+/* Launch App Button Light Mode */
+[data-theme="light"] .nav-links .btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.5);
+    font-weight: 700;
+}
+
+[data-theme="light"] .nav-links .btn-primary:hover {
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.7);
+    transform: translateY(-2px);
+}
+
 /* Responsive Settings Modal */
 @media (max-width: 640px) {
     .settings-modal {
