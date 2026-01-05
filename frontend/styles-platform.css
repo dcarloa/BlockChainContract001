@@ -5468,6 +5468,48 @@ header,
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   margin-top: 0.25rem;
+}
+
+/* Member Share Items Light Mode */
+[data-theme="light"] .member-share-item {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .member-share-item:hover {
+  background: #eff6ff;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .member-share-item.selected {
+  background: rgba(102, 126, 234, 0.08);
+  border-color: #667eea;
+}
+
+[data-theme="light"] .member-share-name {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+[data-theme="light"] .member-share-address {
+  color: #64748b;
+}
+
+[data-theme="light"] .share-btn {
+  background: #eff6ff;
+  border: 2px solid #667eea;
+  color: #667eea;
+}
+
+[data-theme="light"] .share-btn:hover {
+  background: #667eea;
+  color: white;
+}
+
+[data-theme="light"] .share-count {
+  color: #0f172a;
+  font-weight: 700;
+}
   display: inline-block;
 }
 

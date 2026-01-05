@@ -5532,24 +5532,30 @@ async function handleExpenseSubmission(event) {
         // Get selected members who paid (can be multiple)
         const paidBy = Array.from(form.querySelectorAll('input[name="paidBy"]:checked'))
             .map(cb => cb.value);
+        console.log('💳 Paid by members:', paidBy);
 
         // Get selected members for split with share multipliers
         const splitItems = document.querySelectorAll('.member-share-item');
+        console.log('🔍 Found split items:', splitItems.length);
         const splitBetween = [];
         splitItems.forEach(item => {
             const checkbox = item.querySelector('input[type="checkbox"]');
+            console.log('📦 Checkbox:', checkbox, 'Checked:', checkbox?.checked, 'Value:', checkbox?.value);
             if (checkbox && checkbox.checked) {
                 const uid = checkbox.value;
                 const shares = parseInt(item.dataset.shares) || 1;
+                console.log('✅ Adding member:', uid, 'with shares:', shares);
                 // Add the member multiple times based on shares
                 for (let i = 0; i < shares; i++) {
                     splitBetween.push(uid);
                 }
             }
         });
+        console.log('📊 Split between:', splitBetween);
 
         // Validate
         if (!description || !amount || paidBy.length === 0 || splitBetween.length === 0) {
+            console.log('❌ Validation failed:', { description, amount, paidBy, splitBetween });
             showToast('Please fill all required fields', 'error');
             return;
         }
