@@ -1,8 +1,13 @@
 // Service Worker para Ant Pool PWA
 // Dominio Principal: https://antpool.cloud
 // Dominio Secundario: https://blockchaincontract001.web.app
+
+// Import Firebase Messaging for background notifications
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+
 // Versión del cache - incrementar cuando actualices recursos
-const CACHE_VERSION = 'ant-pool-v1.0.0';
+const CACHE_VERSION = 'ant-pool-v1.1.0';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 const API_CACHE = `api-${CACHE_VERSION}`;
@@ -253,4 +258,91 @@ self.addEventListener('message', (event) => {
 // Notificar al cliente cuando hay una actualización disponible
 self.addEventListener('controllerchange', () => {
     console.log('[Service Worker] Controller changed - new version active');
+});
+
+// ============================================
+// FIREBASE CLOUD MESSAGING - PUSH NOTIFICATIONS
+// ============================================
+
+// Initialize Firebase in Service Worker
+// IMPORTANT: Replace these with your actual Firebase config
+firebase.initializeApp({
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+});
+
+const messaging = firebase.messaging();
+
+// Handle background messages
+messaging.onBackgroundMessage((payload) => {
+    console.log('[Service Worker] Received background message:', payload);
+
+    const notificationTitle = payload.notification?.title || 'Ant Pool';
+    const notificationOptions = {
+        body: payload.notification?.body || 'You have a new notification',
+        icon: '/assets/web-app-manifest-192x192.png',
+        badge: '/assets/favicon-96x96.png',
+        tag: payload.data?.type || 'general',
+        data: payload.data || {},
+        vibrate: [200, 100, 200],
+        requireInteraction: false,
+        actions: [
+            {
+                action: 'open',
+                title: 'Open',
+                icon: '/assets/favicon-96x96.png'
+            },
+            {
+                action: 'close',
+                title: 'Dismiss'
+            }
+        ]
+    };
+
+    return self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
+    console.log('[Service Worker] Notification clicked:', event);
+    
+    event.notification.close();
+
+    if (event.action === 'close') {
+        return;
+    }
+
+    // Open app when notification is clicked
+    const urlToOpen = event.notification.data?.click_action || '/app.html';
+    
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then((clientList) => {
+                // Check if app is already open
+                for (const client of clientList) {
+                    if (client.url.includes('/app.html') && 'focus' in client) {
+                        return client.focus().then(() => {
+                            // Navigate to specific fund if provided
+                            if (event.notification.data?.fundId) {
+                                client.postMessage({
+                                    type: 'NAVIGATE_TO_FUND',
+                                    fundId: event.notification.data.fundId
+                                });
+                            }
+                            return client;
+                        });
+                    }
+                }
+                
+                // App not open, open new window
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen);
+                }
+            })
+    );
 });

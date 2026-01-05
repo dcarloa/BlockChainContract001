@@ -118,6 +118,19 @@ window.addEventListener('DOMContentLoaded', async () => {
             // Setup Firebase auth state listener
             window.FirebaseConfig.onAuthStateChanged = (user) => {
                 updateUIForFirebaseUser(user);
+                
+                // Initialize Firebase Messaging when user logs in
+                if (user && typeof initializeMessaging === 'function') {
+                    initializeMessaging().then(() => {
+                        // Auto-request push notification permission if previously enabled
+                        const pushEnabled = localStorage.getItem('pushNotificationsEnabled');
+                        if (pushEnabled === 'true') {
+                            requestNotificationPermission().catch(err => {
+                                console.error('Error auto-requesting notification permission:', err);
+                            });
+                        }
+                    });
+                }
             };
         } else {
             console.error("❌ Firebase initialization failed");
@@ -9616,12 +9629,45 @@ function toggleDarkModeSetting(checkbox) {
 }
 
 /**
- * Toggle notifications setting
+ * Toggle push notifications setting
+ */
+async function togglePushNotifications(checkbox) {
+    const isEnabled = checkbox.checked;
+    
+    if (isEnabled) {
+        try {
+            // Request permission and get token
+            const token = await requestNotificationPermission();
+            
+            if (token) {
+                localStorage.setItem('pushNotificationsEnabled', 'true');
+                showToast('✅ Push notifications enabled', 'success');
+            } else {
+                // Permission denied, uncheck
+                checkbox.checked = false;
+                localStorage.setItem('pushNotificationsEnabled', 'false');
+                showToast('❌ Notification permission denied', 'error');
+            }
+        } catch (error) {
+            console.error('Error enabling push notifications:', error);
+            checkbox.checked = false;
+            showToast('❌ Failed to enable push notifications', 'error');
+        }
+    } else {
+        // Disable push notifications
+        await removeFCMToken();
+        localStorage.setItem('pushNotificationsEnabled', 'false');
+        showToast('🔕 Push notifications disabled', 'success');
+    }
+}
+
+/**
+ * Toggle in-app notifications setting
  */
 function toggleNotificationsSetting(checkbox) {
     const isEnabled = checkbox.checked;
     localStorage.setItem('notificationsEnabled', isEnabled ? 'true' : 'false');
-    showToast(isEnabled ? '🔔 Notifications enabled' : '🔕 Notifications disabled', 'success');
+    showToast(isEnabled ? '🔔 In-app notifications enabled' : '🔕 In-app notifications disabled', 'success');
 }
 
 /**
@@ -9635,17 +9681,25 @@ function loadProfilePreferences() {
         darkModeCheckbox.checked = (currentTheme === 'dark');
     }
     
-    // Load notifications preference
+    // Load in-app notifications preference
     const notificationsEnabled = localStorage.getItem('notificationsEnabled');
     const notificationsCheckbox = document.getElementById('settingNotifications');
     if (notificationsCheckbox) {
         notificationsCheckbox.checked = notificationsEnabled !== 'false';
     }
+    
+    // Load push notifications preference
+    const pushEnabled = localStorage.getItem('pushNotificationsEnabled');
+    const pushCheckbox = document.getElementById('settingPushNotifications');
+    if (pushCheckbox) {
+        pushCheckbox.checked = pushEnabled === 'true';
+    }
 }
 
 // Make functions globally available
 window.openProfilePanel = openProfilePanel;
-window.closeProfilePanel = closeProfilePanel;
+window.closePPushNotifications = togglePushNotifications;
+window.togglerofilePanel = closeProfilePanel;
 window.switchProfileTab = switchProfileTab;
 window.openGroupFromProfile = openGroupFromProfile;
 window.exportUserData = exportUserData;
