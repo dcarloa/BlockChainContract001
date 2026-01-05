@@ -1645,12 +1645,80 @@ body {
     background: #ffffff;
 }
 
+[data-theme="light"] .modes-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+}
+
+[data-theme="light"] .how-it-works {
+    background: linear-gradient(135deg, #fef3f2 0%, #fff7ed 100%);
+}
+
+[data-theme="light"] .use-cases {
+    background: linear-gradient(135deg, #f0fdf4 0%, #f0fdfa 100%);
+}
+
+[data-theme="light"] .faq {
+    background: linear-gradient(135deg, #faf5ff 0%, #fef2f2 100%);
+}
+
 [data-theme="light"] .section-title {
     color: #0f172a;
 }
 
 [data-theme="light"] .section-subtitle {
     color: #475569;
+}
+
+/* Mode Cards Light Mode */
+[data-theme="light"] .mode-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .mode-card.simple-mode {
+    border-color: #86efac;
+}
+
+[data-theme="light"] .mode-card.simple-mode:hover {
+    border-color: #22c55e;
+    box-shadow: 0 20px 40px rgba(34, 197, 94, 0.15);
+}
+
+[data-theme="light"] .mode-card.blockchain-mode {
+    border-color: #c7d2fe;
+}
+
+[data-theme="light"] .mode-card.blockchain-mode:hover {
+    border-color: #6366f1;
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+}
+
+/* Use Case Cards Light Mode */
+[data-theme="light"] .use-case-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .use-case-card:hover {
+    border-color: #6366f1;
+    box-shadow: 0 12px 24px rgba(99, 102, 241, 0.12);
+}
+
+[data-theme="light"] .use-case-card h3 {
+    color: #0f172a;
+}
+
+[data-theme="light"] .use-case-card p {
+    color: #64748b;
+}
+
+/* How It Works Light Mode */
+[data-theme="light"] .visual-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* FAQ Light Mode */
