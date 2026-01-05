@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Ant Pool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .offline-container {
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .offline-icon {
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .retry-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .retry-btn:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .info p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .info ul {
+            list-style: none;
+            text-align: left;
+            display: inline-block;
+        }
+
+        .info li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .info li:before {
+            content: "🐜";
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        <h1>You're Offline</h1>
+        <p>No internet connection detected. The ant colony needs connectivity to function!</p>
+        
+        <button class="retry-btn" onclick="window.location.reload()">
+            Try Again
+        </button>
+
+        <div class="info">
+            <p><strong>What you can do:</strong></p>
+            <ul>
+                <li>Check your internet connection</li>
+                <li>Turn off airplane mode</li>
+                <li>Reconnect to Wi-Fi</li>
+                <li>Try mobile data if available</li>
+            </ul>
+        </div>
+
+        <p style="margin-top: 40px; font-size: 0.9rem; opacity: 0.7;">
+            Some features may be available offline once you've visited them before.
+        </p>
+    </div>
+
+    <script>
+        // Auto-retry when back online
+        window.addEventListener('online', () => {
+            console.log('Connection restored!');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+
+        // Check connection status
+        if (navigator.onLine) {
+            console.log('Actually online, reloading...');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

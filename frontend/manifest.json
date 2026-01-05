@@ -2,7 +2,8 @@
   "name": "Ant Pool - Split Expenses Like Ants Work Together",
   "short_name": "Ant Pool",
   "description": "Manage shared expenses with friends using blockchain technology. Split bills, track balances, and settle debts transparently.",
-  "start_url": "/index.html",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#667eea",
@@ -35,7 +36,22 @@
   ],
   "categories": ["finance", "utilities", "productivity"],
   "screenshots": [],
-  "shortcuts": [],
+  "shortcuts": [
+    {
+      "name": "Create Group",
+      "short_name": "New Group",
+      "description": "Create a new expense sharing group",
+      "url": "/app.html?action=create",
+      "icons": [{ "src": "/assets/favicon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "My Groups",
+      "short_name": "Groups",
+      "description": "View your expense groups",
+      "url": "/app.html",
+      "icons": [{ "src": "/assets/favicon-96x96.png", "sizes": "96x96" }]
+    }
+  ],
   "related_applications": [],
   "prefer_related_applications": false
 }

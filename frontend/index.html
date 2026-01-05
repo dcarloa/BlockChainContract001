@@ -613,7 +613,7 @@
                     <p>Organize epic gatherings. From weddings to festivals - collective resources for collective joy.</p>
                 </div>
                 <div class="use-case-card">
-                    <div class="use-case-icon">🐜💼¼</div>
+                    <div class="use-case-icon">🐜💼</div>
                     <h3>Business Colonies</h3>
                     <p>Build enterprises like anthills. Startup funds, investments, projects - transparent cooperation wins.</p>
                 </div>
@@ -1098,6 +1098,54 @@
             "ratingCount": "150"
         }
     }
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered successfully:', registration.scope);
+                        
+                        // Detectar actualizaciones del Service Worker
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            console.log('🔄 New Service Worker version found, installing...');
+                            
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Nueva versión disponible
+                                    console.log('✨ New version available! Reload to update.');
+                                    
+                                    // Opcional: Mostrar notificación al usuario
+                                    if (confirm('Nueva versión de Ant Pool disponible. ¿Recargar ahora?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                        
+                        // Verificar actualizaciones cada hora
+                        setInterval(() => {
+                            registration.update();
+                        }, 60 * 60 * 1000);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker registration failed:', error);
+                    });
+                
+                // Manejar cambios en el controlador
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    console.log('🔄 Service Worker controller changed - reloading page');
+                    window.location.reload();
+                });
+            });
+        } else {
+            console.warn('⚠️ Service Workers not supported in this browser');
+        }
     </script>
 </body>
 </html>
