@@ -5618,6 +5618,56 @@ header,
 [data-theme="light"] .member-checkbox-item.selected .member-checkbox-address {
   color: #dbeafe;
 }
+
+/* PAID BY checkbox options - Light Mode */
+[data-theme="light"] .checkbox-option {
+  background: #dbeafe;
+  border: 3px solid #0f172a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .checkbox-option:hover {
+  background: #bfdbfe;
+  border-color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+[data-theme="light"] .checkbox-option:has(input:checked) {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-color: #000000;
+  border-width: 4px;
+  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] .checkbox-option:has(input:checked) label {
+  color: white;
+  font-weight: 700;
+}
+
+[data-theme="light"] .checkbox-option:has(input:checked) .member-name {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .checkbox-option label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  margin: 0;
+}
+
+[data-theme="light"] .checkbox-option .member-name {
+  color: #0f172a;
+  font-weight: 500;
+}
+
 /* ===================================
    NOTIFICATIONS SYSTEM
    =================================== */
