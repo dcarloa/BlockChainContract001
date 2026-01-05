@@ -8224,15 +8224,22 @@ async function checkBudgetThresholdNotifications(status) {
             }
             
             // Notify all group members
-            if (currentFund.members && Array.isArray(currentFund.members)) {
-                for (const member of currentFund.members) {
+            if (currentFund.members) {
+                const memberIds = Array.isArray(currentFund.members) 
+                    ? currentFund.members 
+                    : Object.keys(currentFund.members);
+                
+                console.log(`📣 Sending budget notifications to ${memberIds.length} members`);
+                
+                for (const memberId of memberIds) {
                     if (typeof createNotification === 'function') {
-                        await createNotification(member, {
+                        await createNotification(memberId, {
                             type: notificationType,
                             title: notificationTitle,
                             message: notificationMessage,
                             fundId: fundId
                         });
+                        console.log(`✅ Notification sent to member: ${memberId}`);
                     }
                 }
             }
