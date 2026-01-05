@@ -3039,7 +3039,7 @@ async function loadSimpleModeBalances() {
         if (currencies.length === 1) {
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
-            totalText = `${symbol}${currencyTotals[currency].toFixed(2)}`;
+            totalText = `${symbol}${currencyTotals[currency].toFixed(2)} ${currency}`;
         } else if (currencies.length > 1) {
             // Show USD equivalent with original currencies
             const currencyList = currencies.map(curr => 
@@ -3047,7 +3047,7 @@ async function loadSimpleModeBalances() {
             ).join(' + ');
             totalText = `$${totalExpensesUSD.toFixed(2)} USD (${currencyList})`;
         } else {
-            totalText = '$0.00';
+            totalText = '$0.00 USD';
         }
         
         document.getElementById('simpleModeTotalExpenses').textContent = totalText;
@@ -3063,15 +3063,18 @@ async function loadSimpleModeBalances() {
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
             const perPerson = memberCount > 0 ? currencyTotals[currency] / memberCount : 0;
-            document.getElementById('simpleModePerPerson').textContent = `${symbol}${perPerson.toFixed(2)}`;
+            document.getElementById('simpleModePerPerson').textContent = `${symbol}${perPerson.toFixed(2)} ${currency}`;
         } else {
-            document.getElementById('simpleModePerPerson').textContent = '$0.00';
+            document.getElementById('simpleModePerPerson').textContent = '$0.00 USD';
         }
         
         document.getElementById('simpleModeActiveMembers').textContent = memberCount;
         
-        // Render balance chart
-        renderBalanceChart(memberBalances);
+        // Determine display currency before rendering chart
+        const displayCurrency = currencies.length === 1 ? currencies[0] : 'USD';
+        
+        // Render balance chart with currency
+        renderBalanceChart(memberBalances, displayCurrency);
         
         const currentUserId = firebase.auth().currentUser?.uid;
         
@@ -3084,12 +3087,20 @@ async function loadSimpleModeBalances() {
         
         let html = '';
         
+        // Determine currency to display - use group's currency if only one is used
+        const displayCurrency = currencies.length === 1 ? currencies[0] : 'USD';
+        const currencySymbol = getCurrencySymbol(displayCurrency);
+        const showCurrencyCode = true; // Always show currency code for clarity
+        
         // Show debts I owe
         if (iOwe.length > 0) {
             html += '<h4 class="balance-section-title balance-owes">💸 You owe:</h4>';
             iOwe.forEach(debt => {
                 const toMember = currentFund.members[debt.to];
                 const toName = toMember?.name || toMember?.email || debt.to;
+                const amountText = showCurrencyCode 
+                    ? `${currencySymbol}${debt.amount.toFixed(2)} ${displayCurrency}`
+                    : `${currencySymbol}${debt.amount.toFixed(2)}`;
                 html += `
                     <div class="balance-card-simple owes">
                         <div class="balance-card-content">
@@ -3101,7 +3112,7 @@ async function loadSimpleModeBalances() {
                                 </div>
                             </div>
                             <div class="balance-amount-display owes">
-                                $${debt.amount.toFixed(2)}
+                                ${amountText}
                             </div>
                         </div>
                         <button class="btn btn-primary btn-record-payment" onclick="showRecordPaymentModal('${debt.to}', ${debt.amount})">
@@ -3119,6 +3130,9 @@ async function loadSimpleModeBalances() {
             owesMe.forEach(debt => {
                 const fromMember = currentFund.members[debt.from];
                 const fromName = fromMember?.name || fromMember?.email || debt.from;
+                const amountText = showCurrencyCode 
+                    ? `${currencySymbol}${debt.amount.toFixed(2)} ${displayCurrency}`
+                    : `${currencySymbol}${debt.amount.toFixed(2)}`;
                 html += `
                     <div class="balance-card-simple owed">
                         <div class="balance-card-content">
@@ -3130,7 +3144,7 @@ async function loadSimpleModeBalances() {
                                 </div>
                             </div>
                             <div class="balance-amount-display owed">
-                                $${debt.amount.toFixed(2)}
+                                ${amountText}
                             </div>
                         </div>
                     </div>
@@ -3160,9 +3174,11 @@ async function loadSimpleModeBalances() {
 /**
  * Render visual balance chart
  */
-function renderBalanceChart(memberBalances) {
+function renderBalanceChart(memberBalances, currency = 'USD') {
     const chartContainer = document.getElementById('balanceChart');
     if (!chartContainer) return;
+    
+    const currencySymbol = getCurrencySymbol(currency);
     
     // Find max absolute balance for scaling
     const maxBalance = Math.max(...memberBalances.map(m => Math.abs(m.balance)));
@@ -3189,11 +3205,11 @@ function renderBalanceChart(memberBalances) {
                 <div class="chart-bar-container">
                     <div class="chart-bar ${isPositive ? 'positive' : isNegative ? 'negative' : 'neutral'}" 
                          style="width: ${percentage}%"
-                         title="${memberName}: $${member.balance.toFixed(2)}">
+                         title="${memberName}: ${currencySymbol}${member.balance.toFixed(2)} ${currency}">
                     </div>
                 </div>
                 <div class="chart-bar-value ${isPositive ? 'positive' : isNegative ? 'negative' : ''}">
-                    ${isPositive ? '+' : ''}$${Math.abs(member.balance).toFixed(2)}
+                    ${isPositive ? '+' : ''}${currencySymbol}${Math.abs(member.balance).toFixed(2)} ${currency}
                 </div>
             </div>
         `;
