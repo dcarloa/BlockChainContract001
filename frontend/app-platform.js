@@ -2816,8 +2816,12 @@ function renderSettlementItem(settlement, currentUserId, groupData) {
     
     const isCurrentUserInvolved = settlement.from === currentUserId || settlement.to === currentUserId;
     
+    // Store ISO date and members for filtering
+    const isoDate = settlement.recordedAt ? new Date(settlement.recordedAt).toISOString().split('T')[0] : '';
+    const allMembers = `${settlement.from},${settlement.to}`;
+    
     return `
-        <div class="expense-card-compact settlement-card" data-settlement-id="${settlement.id}">
+        <div class="expense-card-compact settlement-card" data-settlement-id="${settlement.id}" data-date="${isoDate}" data-members="${allMembers}">
             <div class="expense-header">
                 <div class="expense-header-left">
                     <h4 class="expense-title-compact">
@@ -2894,8 +2898,12 @@ function renderExpenseItem(expense, currentUserId, groupData) {
     const commentsCount = expense.comments ? Object.keys(expense.comments).length : 0;
     const deleteRequestsCount = expense.deleteRequests ? Object.keys(expense.deleteRequests).length : 0;
     
+    // Store ISO date and members for filtering
+    const isoDate = expense.date || (expense.timestamp ? new Date(expense.timestamp).toISOString().split('T')[0] : '');
+    const allMembers = [...paidByArray, ...expense.splitBetween].join(',');
+    
     return `
-        <div class="expense-card-compact" data-expense-id="${expense.id}">
+        <div class="expense-card-compact" data-expense-id="${expense.id}" data-date="${isoDate}" data-members="${allMembers}">
             <div class="expense-header" onclick="toggleExpenseDetails('${expense.id}')">
                 <div class="expense-header-left">
                     <h4 class="expense-title-compact">
@@ -7185,52 +7193,106 @@ function filterExpenses() {
     const searchTerm = document.getElementById('expenseSearchInput')?.value.toLowerCase() || '';
     const startDate = document.getElementById('expenseFilterStart')?.value || '';
     const endDate = document.getElementById('expenseFilterEnd')?.value || '';
+    const onlyMyExpenses = document.getElementById('expenseFilterMyExpenses')?.checked || false;
+    
+    console.log('🔍 Filter Expenses - Parameters:', {
+        searchTerm,
+        startDate,
+        endDate,
+        onlyMyExpenses,
+        currentUserId: userAddress
+    });
     
     const expenseCards = document.querySelectorAll('.expense-card-compact');
     let visibleCount = 0;
     
     expenseCards.forEach(card => {
-        const title = card.querySelector('.expense-title')?.textContent.toLowerCase() || '';
+        const title = card.querySelector('.expense-title-compact')?.textContent.toLowerCase() || '';
         const notes = card.querySelector('.expense-notes')?.textContent.toLowerCase() || '';
-        const dateElement = card.querySelector('.meta-item:nth-child(3)')?.textContent || '';
+        
+        // Get ISO date from data attribute (more reliable)
+        const isoDate = card.getAttribute('data-date') || '';
+        const membersStr = card.getAttribute('data-members') || '';
+        
+        console.log('📋 Checking card:', {
+            expenseId: card.getAttribute('data-expense-id'),
+            title: title.substring(0, 30),
+            isoDate,
+            members: membersStr
+        });
         
         // Check if search term matches
         const matchesSearch = !searchTerm || title.includes(searchTerm) || notes.includes(searchTerm);
         
-        // Check if date is in range
+        // Check if date is in range (using data-date attribute)
         let matchesDate = true;
-        if (startDate || endDate) {
-            // Extract date from element - it's in format "📅 Dec 13, 2025"
-            const dateMatch = dateElement.match(/(\w+)\s+(\d+),\s+(\d+)/);
-            if (dateMatch) {
-                const [, month, day, year] = dateMatch;
-                const months = {
-                    'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-                    'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-                };
-                const expenseDate = new Date(year, months[month], day);
+        if ((startDate || endDate) && isoDate) {
+            const expenseDate = new Date(isoDate);
+            
+            console.log('📅 Date comparison:', {
+                isoDate,
+                expenseDate: expenseDate.toISOString(),
+                startDate,
+                endDate
+            });
+            
+            if (startDate) {
+                const start = new Date(startDate);
+                start.setHours(0, 0, 0, 0);
+                expenseDate.setHours(0, 0, 0, 0);
                 
-                if (startDate) {
-                    const start = new Date(startDate);
-                    if (expenseDate < start) matchesDate = false;
+                if (expenseDate < start) {
+                    matchesDate = false;
+                    console.log('❌ Date before start:', expenseDate, '<', start);
                 }
+            }
+            
+            if (endDate && matchesDate) {
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999);
+                const checkDate = new Date(isoDate);
+                checkDate.setHours(23, 59, 59, 999);
                 
-                if (endDate) {
-                    const end = new Date(endDate);
-                    end.setHours(23, 59, 59, 999);
-                    if (expenseDate > end) matchesDate = false;
+                if (checkDate > end) {
+                    matchesDate = false;
+                    console.log('❌ Date after end:', checkDate, '>', end);
                 }
             }
         }
         
-        // Show/hide card based on filters
-        if (matchesSearch && matchesDate) {
+        // Check if user is involved (paid or split with)
+        let matchesMyExpenses = true;
+        if (onlyMyExpenses && userAddress) {
+            const members = membersStr.split(',').filter(m => m);
+            matchesMyExpenses = members.includes(userAddress);
+            
+            console.log('👤 My expenses check:', {
+                userAddress,
+                members,
+                isInvolved: matchesMyExpenses
+            });
+        }
+        
+        // Show/hide card based on ALL filters
+        const shouldShow = matchesSearch && matchesDate && matchesMyExpenses;
+        
+        console.log('✅ Filter result:', {
+            expenseId: card.getAttribute('data-expense-id'),
+            matchesSearch,
+            matchesDate,
+            matchesMyExpenses,
+            shouldShow
+        });
+        
+        if (shouldShow) {
             card.style.display = 'block';
             visibleCount++;
         } else {
             card.style.display = 'none';
         }
     });
+    
+    console.log('📊 Total visible expenses:', visibleCount, 'of', expenseCards.length);
     
     // Show message if no results
     const historyList = document.getElementById('historyList');
@@ -7259,10 +7321,14 @@ function clearExpenseFilters() {
     const searchInput = document.getElementById('expenseSearchInput');
     const startDate = document.getElementById('expenseFilterStart');
     const endDate = document.getElementById('expenseFilterEnd');
+    const myExpenses = document.getElementById('expenseFilterMyExpenses');
     
     if (searchInput) searchInput.value = '';
     if (startDate) startDate.value = '';
     if (endDate) endDate.value = '';
+    if (myExpenses) myExpenses.checked = false;
+    
+    console.log('🧹 Filters cleared');
     
     filterExpenses();
 }
