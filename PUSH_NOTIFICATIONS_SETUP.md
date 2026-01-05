@@ -12,7 +12,10 @@
 6. Ingresa información de pago (tarjeta de crédito)
 7. ✅ Confirma upgrade
 
-**Costo esperado:** ~$5-10/mes con uso normal
+**Costo esperado:** $0.00/mes para uso normal (tier gratuito cubre hasta 2M invocaciones)
+- Cloud Functions: Primeras 2M invocaciones GRATIS
+- Cloud Messaging: GRATIS ilimitado
+- Solo pagas si excedes límites (muy poco probable con grupos pequeños)
 
 ---
 
