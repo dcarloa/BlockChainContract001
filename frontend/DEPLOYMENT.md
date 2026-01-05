@@ -1,19 +1,18 @@
-# SplitExpense - Deployment Info
+﻿# SplitExpense - Deployment Info
 
-## 🌐 Live URL
-https://blockchaincontract001.web.app
+##  Live URLs
+**Primary:** https://antpool.cloud  
+**Secondary:** https://blockchaincontract001.web.app
 
-## 🔗 Supported Networks
+##  Supported Networks
 
 ### Development
 - **Hardhat Local**: Chain ID 31337
 - RPC: http://127.0.0.1:8545
 
-### Production (Coming Soon)
+### Production (Base L2)
 - **Base Mainnet**: Chain ID 8453
-- **Polygon PoS**: Chain ID 137
+- RPC: https://mainnet.base.org
+- Explorer: https://basescan.org
 
-## 📝 Notes
-- Frontend deployed on Firebase Hosting
-- Smart contracts currently on localhost (development)
-- Update `factory-info.json` with production contract addresses before mainnet deployment
+**Note**: The app automatically detects the network and adjusts accordingly.

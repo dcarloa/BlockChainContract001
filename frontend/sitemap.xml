@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
@@ -6,7 +6,7 @@
     
     <!-- Landing Page -->
     <url>
-        <loc>https://blockchaincontract001.web.app/</loc>
+        <loc>https://antpool.cloud/</loc>
         <lastmod>2026-01-03</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
@@ -14,7 +14,7 @@
     
     <!-- Main App -->
     <url>
-        <loc>https://blockchaincontract001.web.app/app.html</loc>
+        <loc>https://antpool.cloud/app.html</loc>
         <lastmod>2026-01-03</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
@@ -22,14 +22,14 @@
     
     <!-- Legal Pages -->
     <url>
-        <loc>https://blockchaincontract001.web.app/privacy-policy.html</loc>
+        <loc>https://antpool.cloud/privacy-policy.html</loc>
         <lastmod>2026-01-03</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     
     <url>
-        <loc>https://blockchaincontract001.web.app/terms-of-service.html</loc>
+        <loc>https://antpool.cloud/terms-of-service.html</loc>
         <lastmod>2026-01-03</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
