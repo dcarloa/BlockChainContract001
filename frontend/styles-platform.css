@@ -5641,31 +5641,27 @@ header,
 
 /* SELECTED STATE - Diseño profesional con contraste óptimo */
 [data-theme="light"] .checkbox-option:has(input:checked) {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  border: 3px solid #1e3a8a;
-  box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2),
-              0 8px 16px rgba(30, 58, 138, 0.35);
-  transform: scale(1.02);
+  background: #dbeafe;
+  border: 3px solid #1e40af;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
 }
 
 [data-theme="light"] .checkbox-option:has(input:checked) label {
-  color: white;
+  color: #0f172a;
   font-weight: 700;
 }
 
 [data-theme="light"] .checkbox-option:has(input:checked) .member-name {
-  color: white;
+  color: #0f172a;
   font-size: 1.05rem;
   font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="light"] .checkbox-option:has(input:checked) .member-avatar {
-  background: white;
-  color: #1e3a8a;
-  border: 3px solid white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transform: scale(1.1);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  color: white;
+  border: 3px solid #1e40af;
+  box-shadow: 0 3px 8px rgba(30, 64, 175, 0.3);
   font-weight: 800;
 }
 
@@ -5726,9 +5722,8 @@ header,
 
 [data-theme="light"] .checkbox-option input[type="checkbox"]:checked {
   background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  border-color: #1e3a8a;
-  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.25),
-              0 4px 8px rgba(30, 58, 138, 0.4);
+  border-color: #1e40af;
+  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.35);
 }
 
 [data-theme="light"] .checkbox-option input[type="checkbox"]:checked::after {
