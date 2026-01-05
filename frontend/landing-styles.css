@@ -26,12 +26,12 @@
 
 /* Light Theme Variables */
 [data-theme="light"] {
-    --bg-dark: #ffffff;
-    --bg-card: #f8fafc;
+    --bg-dark: linear-gradient(135deg, #f0f4ff 0%, #e9f0ff 50%, #fff5f8 100%);
+    --bg-card: #ffffff;
     --text-primary: #0f172a;
     --text-secondary: #475569;
-    --dark: #f8fafc;
-    --dark-light: #f1f5f9;
+    --dark: #ffffff;
+    --dark-light: #f8fafc;
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
@@ -1477,6 +1477,257 @@ body {
 
 .setting-option.active .option-check {
     opacity: 1;
+}
+
+/* ============================================ */
+/* LIGHT MODE ENHANCEMENTS */
+/* ============================================ */
+
+/* Hero Section Light Mode */
+[data-theme="light"] .hero {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e9f0ff 50%, #fff5f8 100%);
+}
+
+[data-theme="light"] .hero-shape {
+    opacity: 0.15;
+}
+
+[data-theme="light"] .shape-1 {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+[data-theme="light"] .shape-2 {
+    background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+}
+
+[data-theme="light"] .shape-3 {
+    background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+}
+
+/* Text Enhancements Light Mode */
+[data-theme="light"] .hero-title {
+    color: #0f172a;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .hero-subtitle {
+    color: #475569;
+}
+
+[data-theme="light"] .gradient-text {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Stats Light Mode */
+[data-theme="light"] .stat-value {
+    color: #6366f1;
+    font-weight: 800;
+}
+
+[data-theme="light"] .stat-label {
+    color: #64748b;
+}
+
+/* Buttons Light Mode */
+[data-theme="light"] .btn-secondary {
+    background: #ffffff;
+    color: #6366f1;
+    border: 2px solid #6366f1;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+[data-theme="light"] .btn-secondary:hover {
+    background: #f0f4ff;
+    border-color: #4f46e5;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+}
+
+/* Phone Mockup Light Mode */
+[data-theme="light"] .phone-mockup {
+    background: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 100%);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .phone-notch {
+    background: #94a3b8;
+}
+
+[data-theme="light"] .phone-screen {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+/* Feature Cards Light Mode */
+[data-theme="light"] .feature-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .feature-card:hover {
+    border-color: #c7d2fe;
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+    transform: translateY(-8px);
+}
+
+[data-theme="light"] .feature-icon {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+}
+
+[data-theme="light"] .feature-title {
+    color: #0f172a;
+}
+
+[data-theme="light"] .feature-description {
+    color: #475569;
+}
+
+/* How It Works Light Mode */
+[data-theme="light"] .how-it-works {
+    background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+}
+
+[data-theme="light"] .step-number {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="light"] .step-title {
+    color: #0f172a;
+}
+
+[data-theme="light"] .step-description {
+    color: #475569;
+}
+
+/* Benefits Light Mode */
+[data-theme="light"] .benefit-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .benefit-card:hover {
+    border-color: #c7d2fe;
+    box-shadow: 0 12px 24px rgba(99, 102, 241, 0.12);
+}
+
+[data-theme="light"] .benefit-emoji {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+}
+
+/* CTA Section Light Mode */
+[data-theme="light"] .cta {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+}
+
+[data-theme="light"] .cta h2,
+[data-theme="light"] .cta p {
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer Light Mode */
+[data-theme="light"] .footer {
+    background: #0f172a;
+}
+
+/* Sections Light Mode */
+[data-theme="light"] .features,
+[data-theme="light"] .benefits {
+    background: #ffffff;
+}
+
+[data-theme="light"] .section-title {
+    color: #0f172a;
+}
+
+[data-theme="light"] .section-subtitle {
+    color: #475569;
+}
+
+/* FAQ Light Mode */
+[data-theme="light"] .faq-item {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .faq-item.active {
+    border-color: #6366f1;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .faq-question {
+    color: #0f172a;
+}
+
+[data-theme="light"] .faq-answer {
+    color: #475569;
+}
+
+/* Preview Elements Light Mode */
+[data-theme="light"] .preview-header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .preview-name {
+    color: #0f172a;
+}
+
+[data-theme="light"] .preview-meta {
+    color: #64748b;
+}
+
+[data-theme="light"] .preview-stats {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .stat-value {
+    color: #6366f1;
+}
+
+[data-theme="light"] .stat-label {
+    color: #64748b;
+}
+
+[data-theme="light"] .action-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .action-card:hover {
+    background: #f0f4ff;
+    border-color: #c7d2fe;
+}
+
+[data-theme="light"] .action-label {
+    color: #475569;
+}
+
+[data-theme="light"] .preview-transactions {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .transaction-header {
+    color: #64748b;
+}
+
+[data-theme="light"] .progress-bar {
+    background: #e2e8f0;
+}
+
+/* Mobile Menu Light Mode */
+[data-theme="light"] .mobile-menu-btn span {
+    background: #0f172a;
 }
 
 /* Responsive Settings Modal */
