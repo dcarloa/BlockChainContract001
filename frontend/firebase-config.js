@@ -1,4 +1,4 @@
-// Firebase Configuration and Initialization
+﻿// Firebase Configuration and Initialization
 // Manages connection to Firebase services for Simple Mode
 
 // Firebase SDK imports (loaded via CDN in HTML)
@@ -44,7 +44,6 @@ let currentUser = null;
  */
 async function initializeFirebase() {
     try {
-        console.log("🔥 Initializing Firebase...");
         
         // Check if Firebase SDK is loaded
         if (typeof firebase === 'undefined') {
@@ -54,7 +53,6 @@ async function initializeFirebase() {
         
         // Check if already initialized
         if (firebaseApp) {
-            console.log("ℹ️ Firebase already initialized");
             return true;
         }
         
@@ -67,15 +65,12 @@ async function initializeFirebase() {
         firebaseAuth.onAuthStateChanged((user) => {
             currentUser = user;
             if (user) {
-                console.log("✅ Firebase user authenticated:", user.email);
                 onFirebaseUserChange(user);
             } else {
-                console.log("🚪 No Firebase user authenticated");
                 onFirebaseUserChange(null);
             }
         });
         
-        console.log("✅ Firebase initialized successfully");
         return true;
     } catch (error) {
         console.error("❌ Firebase initialization failed:", error);
@@ -96,13 +91,11 @@ async function signInWithGoogle() {
         
         // Check if Firebase is initialized
         if (!firebaseAuth) {
-            console.log("⚠️ Firebase not initialized, initializing now...");
             await initializeFirebase();
         }
         
         const provider = new firebase.auth.GoogleAuthProvider();
         const result = await firebaseAuth.signInWithPopup(provider);
-        console.log("✅ Google sign-in successful:", result.user.email);
         return result.user;
     } catch (error) {
         console.error("❌ Google sign-in failed:", error);
@@ -120,12 +113,10 @@ async function signInWithEmail(email, password) {
     try {
         // Check if Firebase is initialized
         if (!firebaseAuth) {
-            console.log("⚠️ Firebase not initialized, initializing now...");
             await initializeFirebase();
         }
         
         const result = await firebaseAuth.signInWithEmailAndPassword(email, password);
-        console.log("✅ Email sign-in successful:", result.user.email);
         return result.user;
     } catch (error) {
         console.error("❌ Email sign-in failed:", error);
@@ -144,7 +135,6 @@ async function createAccount(email, password, displayName) {
     try {
         // Check if Firebase is initialized
         if (!firebaseAuth) {
-            console.log("⚠️ Firebase not initialized, initializing now...");
             await initializeFirebase();
         }
         
@@ -155,7 +145,6 @@ async function createAccount(email, password, displayName) {
             displayName: displayName
         });
         
-        console.log("✅ Account created successfully:", result.user.email);
         return result.user;
     } catch (error) {
         console.error("❌ Account creation failed:", error);
@@ -170,7 +159,6 @@ async function createAccount(email, password, displayName) {
 async function signOut() {
     try {
         await firebaseAuth.signOut();
-        console.log("✅ User signed out");
     } catch (error) {
         console.error("❌ Sign out failed:", error);
         throw error;
@@ -202,7 +190,6 @@ function onFirebaseUserChange(user) {
     if (typeof window.FirebaseConfig.onAuthStateChanged === 'function') {
         window.FirebaseConfig.onAuthStateChanged(user);
     }
-    console.log("Auth state changed:", user ? user.email : "No user");
 }
 
 // ============================================
@@ -227,7 +214,6 @@ function getDbRef(path) {
 async function writeDb(path, data) {
     try {
         await firebaseDatabase.ref(path).set(data);
-        console.log(`✅ Data written to ${path}`);
     } catch (error) {
         console.error(`❌ Failed to write to ${path}:`, error);
         throw error;
@@ -243,7 +229,6 @@ async function writeDb(path, data) {
 async function updateDb(path, updates) {
     try {
         await firebaseDatabase.ref(path).update(updates);
-        console.log(`✅ Data updated at ${path}`);
     } catch (error) {
         console.error(`❌ Failed to update ${path}:`, error);
         throw error;
@@ -273,7 +258,6 @@ async function readDb(path) {
 async function deleteDb(path) {
     try {
         await firebaseDatabase.ref(path).remove();
-        console.log(`✅ Data deleted from ${path}`);
     } catch (error) {
         console.error(`❌ Failed to delete from ${path}:`, error);
         throw error;
@@ -289,7 +273,6 @@ async function deleteDb(path) {
 async function pushDb(path, data) {
     try {
         const ref = await firebaseDatabase.ref(path).push(data);
-        console.log(`✅ Data pushed to ${path} with key ${ref.key}`);
         return ref.key;
     } catch (error) {
         console.error(`❌ Failed to push to ${path}:`, error);

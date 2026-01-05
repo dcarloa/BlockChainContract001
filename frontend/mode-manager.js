@@ -1,4 +1,4 @@
-// Mode Manager - Hybrid OFF-chain/ON-chain Architecture
+﻿// Mode Manager - Hybrid OFF-chain/ON-chain Architecture
 // Manages switching between Simple Mode (Firebase) and Blockchain Mode (Smart Contracts)
 
 // ============================================
@@ -46,7 +46,6 @@ class ModeManager {
             this.currentGroupId = groupId;
             this.currentMode = this.detectMode(groupId);
             
-            console.log(`🎯 Initialized ${this.currentMode} mode for group:`, groupId);
             
             if (this.currentMode === MODE_TYPES.SIMPLE) {
                 // Load simple mode data from Firebase
@@ -129,7 +128,6 @@ class ModeManager {
                 joinedAt: Date.now()
             });
             
-            console.log("✅ Simple group created:", groupId);
             return groupId;
             
         } catch (error) {
@@ -202,7 +200,6 @@ class ModeManager {
                 expense
             );
             
-            console.log("✅ Expense added:", expenseId);
             
             // 🔔 NOTIFICATION: Notify all group members about new expense
             try {
@@ -271,7 +268,6 @@ class ModeManager {
                 recurring
             );
             
-            console.log("✅ Recurring expense created:", recurringId);
             return recurringId;
             
         } catch (error) {
@@ -318,7 +314,6 @@ class ModeManager {
                 `groups/${this.currentGroupId}/recurringExpenses/${recurringId}`,
                 updates
             );
-            console.log("✅ Recurring expense updated");
             return true;
         } catch (error) {
             console.error("❌ Failed to update recurring expense:", error);
@@ -335,7 +330,6 @@ class ModeManager {
                 `groups/${this.currentGroupId}/recurringExpenses/${recurringId}`,
                 { isActive: false }
             );
-            console.log("✅ Recurring expense deactivated");
             return true;
         } catch (error) {
             console.error("❌ Failed to delete recurring expense:", error);
@@ -387,7 +381,6 @@ class ModeManager {
                 budget
             );
             
-            console.log("✅ Budget set:", budget);
             return true;
         } catch (error) {
             console.error("❌ Failed to set budget:", error);
@@ -606,7 +599,6 @@ class ModeManager {
                 );
             }
             
-            console.log("✅ Expense approval recorded");
             return true;
             
         } catch (error) {
@@ -661,37 +653,30 @@ class ModeManager {
      */
     async calculateSimpleBalances() {
         try {
-            console.log('🔍 Calculating balances for group:', this.currentGroupId);
-            console.log('👥 Group data:', this.groupData);
             
             // Load all approved expenses
             const expensesData = await window.FirebaseConfig.readDb(
                 `groups/${this.currentGroupId}/expenses`
             );
             
-            console.log('💸 Expenses data:', expensesData);
             
             if (!expensesData) {
-                console.log('⚠️ No expenses found');
                 return [];
             }
             
             // Log all expense statuses
             Object.entries(expensesData).forEach(([id, exp]) => {
-                console.log(`📝 Expense ${id.slice(-8)}: status="${exp.status}", amount=$${exp.amount}, desc="${exp.description}"`);
             });
             
             // In Simple Mode, ALL expenses count (no approval needed)
             const expenses = Object.values(expensesData);
             
-            console.log('✅ Total expenses to process:', expenses.length);
             
             // Calculate net balances
             const balances = {};
             
             // Initialize all members
             const members = Object.keys(this.groupData.members);
-            console.log('👥 Members to initialize:', members);
             members.forEach(memberId => {
                 balances[memberId] = 0;
             });
@@ -705,7 +690,6 @@ class ModeManager {
                 const currency = expense.currency || 'USD';
                 if (currency !== 'USD' && window.convertToUSD) {
                     amount = await window.convertToUSD(amount, currency);
-                    console.log(`💱 Converted ${expense.amount} ${currency} to ${amount.toFixed(2)} USD for balance calculation`);
                 }
                 
                 const splitBetween = expense.splitBetween;
@@ -728,7 +712,6 @@ class ModeManager {
             
             // Convert to array format
             const balanceArray = [];
-            console.log('📊 Raw balances before settlements:', balances);
             
             // Now subtract settlements (payments already made)
             const settlementsData = await window.FirebaseConfig.readDb(
@@ -736,10 +719,8 @@ class ModeManager {
             );
             
             if (settlementsData) {
-                console.log('💸 Processing settlements:', Object.keys(settlementsData).length);
                 for (const settlement of Object.values(settlementsData)) {
                     const amount = Number(settlement.amount);
-                    console.log(`  💰 Settlement: ${settlement.from} paid ${settlement.to} $${amount}`);
                     
                     // Person who paid increases their balance (they're owed more or owe less)
                     balances[settlement.from] = Math.round((balances[settlement.from] + amount) * 100) / 100;
@@ -747,11 +728,9 @@ class ModeManager {
                     // Person who received decreases their balance (they owe more or are owed less)
                     balances[settlement.to] = Math.round((balances[settlement.to] - amount) * 100) / 100;
                 }
-                console.log('📊 Balances after settlements:', balances);
             }
             
             for (const [memberId, balance] of Object.entries(balances)) {
-                console.log(`  Member ${memberId}: balance = ${balance}`);
                 if (Math.abs(balance) > 0.01) { // Ignore negligible amounts
                     const member = this.groupData.members[memberId];
                     balanceArray.push({
@@ -764,8 +743,6 @@ class ModeManager {
                 }
             }
             
-            console.log("✅ Balances calculated:", balanceArray.length, "members with non-zero balance");
-            console.log("📋 Balance array:", balanceArray);
             return balanceArray;
             
         } catch (error) {
@@ -809,7 +786,6 @@ class ModeManager {
                 settlement
             );
             
-            console.log("✅ Settlement recorded:", settlementId);
             
             // 🔔 NOTIFICATION: Notify the person who received the payment
             try {
@@ -878,7 +854,6 @@ class ModeManager {
                 throw new Error("Can only upgrade Simple Mode groups");
             }
             
-            console.log("🚀 Starting migration to blockchain...");
             
             // Check if user has wallet connected
             if (!window.ethereum) {
@@ -890,7 +865,6 @@ class ModeManager {
             
             // This will call existing createFund function from app-platform.js
             // We'll need to integrate this later
-            console.log("📝 Group ready for migration:", groupData);
             
             throw new Error("Migration feature coming soon");
             
@@ -934,4 +908,3 @@ class ModeManager {
 // ============================================
 
 window.modeManager = new ModeManager();
-console.log("✅ Mode Manager initialized");

@@ -1,4 +1,4 @@
-// FundHub Platform - Multi-Fund Management
+﻿// FundHub Platform - Multi-Fund Management
 // Este archivo gestiona la interfaz principal con múltiples fondos
 
 // ============================================
@@ -87,12 +87,10 @@ let currentFilter = 'all';
 
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        console.log("🚀 FundHub Platform iniciando...");
     
     // Setup MetaMask provider (usar referencia directa como en V2)
     if (window.ethereum) {
         if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
-            console.log(`📦 Detectados ${window.ethereum.providers.length} proveedores`);
             
             metamaskProviderDirect = window.ethereum.providers.find(p => {
                 return p.isMetaMask && !p.isCoinbaseWallet && !p.overrideIsMetaMask;
@@ -103,11 +101,9 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
             
             if (metamaskProviderDirect) {
-                console.log("✅ MetaMask encontrado en array de proveedores");
             }
         } else if (window.ethereum.isMetaMask) {
             metamaskProviderDirect = window.ethereum;
-            console.log("✅ MetaMask detectado como proveedor único");
         }
     }
     
@@ -137,64 +133,47 @@ window.addEventListener('DOMContentLoaded', async () => {
         await loadFactoryInfo();
         
         // Intentar reconectar wallet automáticamente si ya estaba conectada
-        console.log("🔄 Iniciando proceso de auto-reconexión...");
         await autoReconnectWallet();
-        console.log("✅ Proceso de auto-reconexión completado");
-        console.log("🎯 Continuando con el flujo de inicialización...");
     } else {
-        console.log("ℹ️ No wallet detected - Simple Mode only");
         // Hide wallet button if no wallet available
         document.getElementById('connectWallet').style.display = 'none';
     }
     
-    console.log("🚀 Después del bloque de wallet, continuando...");
     
     // Check for invite link in URL
     const urlParams = new URLSearchParams(window.location.search);
     const joinGroupId = urlParams.get('join');
     
-    console.log('🔗 Checking for join parameter:', joinGroupId);
     
     if (joinGroupId) {
-        console.log('📨 Join group ID found, handling join flow');
         // Save group ID to join after sign in
         sessionStorage.setItem('pendingGroupJoin', joinGroupId);
         
         // If not signed in, prompt to sign in
         if (!window.FirebaseConfig || !window.FirebaseConfig.getCurrentUser()) {
-            console.log('⚠️ User not signed in, showing sign in prompt');
             showToast('Please sign in to join the group', 'info');
             setTimeout(() => {
                 openSignInModal();
             }, 1000);
         } else {
             // If already signed in, join immediately
-            console.log('✅ User signed in, joining group immediately');
             await handleGroupJoin(joinGroupId);
         }
     } else {
-        console.log('✅ No join parameter, normal flow');
     }
     
     // Show Sign In button if user is not signed in with Firebase
     // (independent of wallet availability)
-    console.log('🔍 Checking if user is signed in for UI update');
     if (!window.FirebaseConfig || !window.FirebaseConfig.getCurrentUser()) {
-        console.log('👤 User not signed in, showing sign in button');
         document.getElementById('signInSimpleMode').style.display = 'flex';
     } else {
-        console.log('👤 User signed in:', window.FirebaseConfig.getCurrentUser()?.email);
     }
     
     // Show dashboard anyway
-    console.log('📊 About to call showDashboard()');
     showDashboard();
-    console.log('📊 showDashboard() completed');
     
     // Load user funds (both Simple and Blockchain modes)
-    console.log('💰 About to load user funds');
     await loadUserFunds();
-    console.log('💰 User funds loaded');
     
     } catch (error) {
         console.error('❌ CRITICAL ERROR in DOMContentLoaded:', error);
@@ -247,7 +226,6 @@ async function connectWallet() {
     try {
         const t = translations[getCurrentLanguage()];
         showLoading(t.app.loading.selectWallet);
-        console.log("🔌 Iniciando conexión multi-wallet...");
         
         // Clear disconnect flag when manually connecting
         localStorage.removeItem('walletDisconnected');
@@ -255,7 +233,6 @@ async function connectWallet() {
         // Use the wallet connector to show selector and connect
         const walletResult = await window.walletConnector.showWalletSelector();
         
-        console.log("✅ Wallet conectada:", walletResult.walletName, walletResult.address);
         showLoading(`${t.app.loading.connecting} ${walletResult.walletName}...`);
         
         // Create provider and signer from selected wallet
@@ -265,7 +242,6 @@ async function connectWallet() {
         
         // Verify network
         const network = await provider.getNetwork();
-        console.log("🌐 Red detectada:", network.chainId);
         
         // Check if on correct network (Base Sepolia)
         if (network.chainId !== 84532n) {
@@ -400,65 +376,48 @@ async function autoReconnectWallet() {
         // Check if user manually disconnected
         const wasDisconnected = localStorage.getItem('walletDisconnected');
         if (wasDisconnected === 'true') {
-            console.log("🚫 Usuario desconectó manualmente - no auto-reconectar");
             return;
         }
         
         // Verificar si hay una conexión previa guardada
         if (!window.ethereum) {
-            console.log("⚠️ No hay wallet disponible");
             return;
         }
 
-        console.log("🔍 Verificando conexión previa...");
 
         // Usar el proveedor de MetaMask directamente si está disponible
         const ethereumProvider = metamaskProviderDirect || window.ethereum;
-        console.log("📱 Usando proveedor:", metamaskProviderDirect ? "MetaMask directo" : "window.ethereum");
 
         // Intentar obtener cuentas sin solicitar permiso, con timeout de 2 segundos
-        console.log("🔄 Solicitando cuentas...");
-        console.log("⏰ Iniciando Promise.race con timeout de 2s...");
         const accounts = await Promise.race([
             ethereumProvider.request({ method: 'eth_accounts' }),
             new Promise((_, reject) => setTimeout(() => {
-                console.log("⏱️ TIMEOUT EJECUTADO - rechazando promise");
                 reject(new Error('Wallet timeout'));
             }, 2000))
         ]).catch(error => {
-            console.log("⏱️ Timeout o error al obtener cuentas:", error.message);
             return null;
         });
-        console.log("📋 Cuentas obtenidas:", accounts ? accounts.length : 'null');
 
         if (!accounts || accounts.length === 0) {
-            console.log("ℹ️ No hay cuentas conectadas previamente");
             return;
         }
 
-        console.log("🔄 Reconectando wallet automáticamente...");
-        console.log("📍 Cuenta encontrada:", accounts[0]);
         
         // Reconectar silenciosamente usando el mismo proveedor
         provider = new ethers.BrowserProvider(ethereumProvider);
         
-        console.log("🔗 Provider creado");
         
         signer = await provider.getSigner();
         userAddress = accounts[0];
 
-        console.log("✍️ Signer obtenido");
 
         // Verificar red
         const network = await provider.getNetwork();
-        console.log("🌐 Red detectada - Chain ID:", network.chainId);
         
         if (network.chainId !== 84532n) {
-            console.log("⚠️ Red incorrecta (esperada: 84532), no se reconectará automáticamente");
             return;
         }
 
-        console.log("✅ Red correcta (Base Sepolia)");
 
         // Actualizar UI
         const walletIcon = '🦊'; // Por defecto MetaMask
@@ -469,35 +428,28 @@ async function autoReconnectWallet() {
         document.getElementById('connectWallet').style.display = 'none';
         document.getElementById('disconnectWallet').style.display = 'inline-flex';
 
-        console.log("🎨 UI actualizada");
 
         // Cargar factory contract
-        console.log("📦 Cargando factory contract...");
         await loadFactoryContract();
 
         // Verificar si tiene nickname - SOLO reconectar si tiene nickname
-        console.log("👤 Verificando nickname para cuenta:", userAddress);
         const nickname = await factoryContract.getNickname(userAddress);
-        console.log("🏷️  Nickname obtenido:", nickname);
         
         if (nickname.toLowerCase() !== userAddress.toLowerCase()) {
             // Usuario tiene nickname - cargar dashboard automáticamente
             userNickname = nickname;
-            console.log("✅ Usuario tiene nickname:", userNickname);
             
             // Update unified session badge
             updateUnifiedSessionBadge();
             
             try {
                 await loadDashboard();
-                console.log("✅ Wallet reconectada y dashboard cargado automáticamente");
             } catch (dashboardError) {
                 console.error("❌ Error cargando dashboard:", dashboardError);
                 throw dashboardError; // Re-lanzar para que el catch general limpie el estado
             }
         } else {
             // Usuario NO tiene nickname - NO reconectar automáticamente
-            console.log("ℹ️ Usuario NO tiene nickname, cancelando auto-reconnect");
             
             // Limpiar estado
             provider = null;
@@ -516,11 +468,9 @@ async function autoReconnectWallet() {
             // Update unified session badge
             updateUnifiedSessionBadge();
             
-            console.log("🔄 Auto-reconnect cancelado - usuario debe conectar manualmente y establecer nickname");
             return; // Salir sin completar el reconnect
         }
 
-        console.log("✅ Proceso de auto-reconexión completado");
     } catch (error) {
         console.error("❌ Error en auto-reconnect:", error);
         console.error("   Mensaje:", error.message);
@@ -547,7 +497,6 @@ async function autoReconnectWallet() {
         const connectBtn = document.getElementById('connectWallet');
         connectBtn.onclick = connectWallet;
         
-        console.log("🔄 Estado restaurado después de error en auto-reconnect");
     }
 }
 
@@ -555,7 +504,6 @@ async function loadFactoryInfo() {
     try {
         const response = await fetch('/factory-info.json');
         const factoryInfo = await response.json();
-        console.log("📄 Factory info cargada:", factoryInfo.address);
         return factoryInfo;
     } catch (error) {
         console.error("Error cargando factory info:", error);
@@ -576,7 +524,6 @@ async function loadFactoryContract() {
             signer
         );
         
-        console.log("✅ Factory contract conectado:", factoryInfo.address);
     } catch (error) {
         console.error("Error loading factory contract:", error);
         showToast("Error cargando el contrato Factory", "error");
@@ -740,7 +687,6 @@ async function loadPendingInvitations() {
         
         // Get total number of funds
         const totalFunds = await factoryContract.getTotalFunds();
-        console.log(`🔍 Buscando invitaciones en ${totalFunds} fondos totales...`);
         
         if (totalFunds === 0n) {
             pendingSection.style.display = 'none';
@@ -752,7 +698,6 @@ async function loadPendingInvitations() {
         const fundsToCheck = Number(totalFunds) > batchSize ? batchSize : Number(totalFunds);
         const allFunds = await factoryContract.getAllFunds(0, fundsToCheck);
         
-        console.log(`📋 Revisando ${allFunds.length} fondos para invitaciones...`);
         
         // Check each fund for pending invitations
         for (const fund of allFunds) {
@@ -774,7 +719,6 @@ async function loadPendingInvitations() {
                     const creator = fund.creator || fund[1];
                     const fundType = fund.fundType !== undefined ? fund.fundType : (fund[3] || 0n);
                     
-                    console.log(`🎫 Invitación encontrada: ${fundName}`);
                     
                     // Try to get creator nickname
                     let creatorDisplay = `${creator.slice(0, 6)}...${creator.slice(-4)}`;
@@ -810,12 +754,10 @@ async function loadPendingInvitations() {
                     invitationsList.appendChild(invitationItem);
                 }
             } catch (error) {
-                console.log(`⚠️ Error checking fund ${fund.fundAddress}:`, error.message);
                 // Continue with next fund
             }
         }
         
-        console.log(`✅ ${pendingCount} invitaciones pendientes encontradas`);
         
         if (pendingCount > 0) {
             pendingSection.style.display = 'block';
@@ -845,13 +787,11 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
         await tx.wait();
         
         // BUG 4 FIX: Register participant in Factory after accepting invitation
-        console.log("🔗 Registering participant in Factory...");
         try {
             const fundIndex = await findFundIndex(fundAddress);
             if (fundIndex !== null) {
                 const registerTx = await factoryContract.registerParticipant(userAddress, fundIndex);
                 await registerTx.wait();
-                console.log("✅ Participant registered in Factory");
             }
         } catch (regError) {
             console.warn("⚠️ Could not register participant in Factory:", regError.message);
@@ -927,7 +867,6 @@ window.openInvitedFund = async function(fundAddress) {
 }
 
 function showDashboard() {
-    console.log('📊 showDashboard() called');
     // Hide FAB button and action card when showing dashboard
     const fabBtn = document.getElementById('addExpenseBtn');
     if (fabBtn) fabBtn.style.display = 'none';
@@ -939,12 +878,9 @@ function showDashboard() {
     const dashboardSection = document.getElementById('dashboardSection');
     const fundDetailSection = document.getElementById('fundDetailSection');
     
-    console.log('📦 Dashboard section found:', !!dashboardSection);
-    console.log('📦 Fund detail section found:', !!fundDetailSection);
     
     if (dashboardSection) {
         dashboardSection.classList.add('active');
-        console.log('✅ Dashboard section activated');
     }
     if (fundDetailSection) {
         fundDetailSection.classList.remove('active');
@@ -964,7 +900,6 @@ async function updateUIForFirebaseUser(user) {
     
     if (user) {
         // User is signed in
-        console.log("✅ Firebase user signed in:", user.email);
         if (signInBtn) signInBtn.style.display = 'none';
         if (signOutBtn) signOutBtn.style.display = 'flex';
         
@@ -986,7 +921,6 @@ async function updateUIForFirebaseUser(user) {
         loadUserFunds();
     } else {
         // User is signed out
-        console.log("🚪 Firebase user signed out");
         if (signOutBtn) signOutBtn.style.display = 'none';
         // Always show Sign In button when Firebase user is logged out
         if (signInBtn) {
@@ -1137,8 +1071,6 @@ async function loadUserFunds() {
             // Obtener fondos donde participa
             const fundsParticipating = await factoryContract.getFundsByParticipant(userAddress);
             
-            console.log("Blockchain funds created:", fundsCreated.length);
-            console.log("Blockchain funds participating:", fundsParticipating.length);
             
             // Add created funds
             for (const fund of fundsCreated) {
@@ -1153,7 +1085,6 @@ async function loadUserFunds() {
                     isParticipant: true,
                     mode: 'blockchain'
                 };
-                console.log("Blockchain fund created:", fundData);
                 fundMap.set(fundData.fundAddress, fundData);
             }
             
@@ -1174,7 +1105,6 @@ async function loadUserFunds() {
                         isParticipant: true,
                         mode: 'blockchain'
                     };
-                    console.log("Blockchain fund participating:", fundData);
                     fundMap.set(fundData.fundAddress, fundData);
                 }
             }
@@ -1187,7 +1117,6 @@ async function loadUserFunds() {
                 const userGroups = await window.FirebaseConfig.readDb(`users/${currentUser.uid}/groups`);
                 
                 if (userGroups) {
-                    console.log("Simple mode groups found:", Object.keys(userGroups).length);
                     
                     for (const [groupId, groupInfo] of Object.entries(userGroups)) {
                         const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
@@ -1212,7 +1141,6 @@ async function loadUserFunds() {
                                 memberCount: Object.keys(groupData.members || {}).length
                             };
                             
-                            console.log("Simple mode group:", fundData);
                             fundMap.set(groupId, fundData);
                         }
                     }
@@ -1226,7 +1154,6 @@ async function loadUserFunds() {
         const totalFunds = fundMap.size;
         
         allUserFunds = Array.from(fundMap.values());
-        console.log("Total funds loaded (both modes):", allUserFunds.length, allUserFunds);
         
         // Cargar detalles de cada fondo
         await loadAllFundsDetails();
@@ -1379,12 +1306,10 @@ function updateStats() {
 }
 
 function displayFunds() {
-    console.log('📊 displayFunds called, allUserFunds:', allUserFunds.length);
     filterAndSortGroups();
 }
 
 function filterAndSortGroups() {
-    console.log('🔍 filterAndSortGroups called, currentFilter:', currentFilter);
     let filteredFunds = [...allUserFunds];
     
     // Apply category filter
@@ -1443,11 +1368,8 @@ function filterAndSortGroups() {
     const fundsGrid = document.getElementById('fundsGrid');
     const emptyState = document.getElementById('emptyState');
     
-    console.log('📋 Filtered and sorted funds count:', filteredFunds.length);
-    console.log('📦 Elements found - fundsGrid:', !!fundsGrid, 'emptyState:', !!emptyState);
     
     if (filteredFunds.length === 0) {
-        console.log('✅ No funds, showing empty state');
         if (fundsGrid) {
             fundsGrid.innerHTML = '';
             fundsGrid.style.display = 'none';
@@ -1460,17 +1382,14 @@ function filterAndSortGroups() {
         
         // Filter out hidden funds from localStorage
         const hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
-        console.log(`🔍 Filtering ${filteredFunds.length} funds. Hidden funds:`, hiddenFunds);
         
         const visibleFunds = filteredFunds.filter(fund => {
             const isHidden = hiddenFunds.includes(fund.fundAddress.toLowerCase());
             if (isHidden) {
-                console.log(`⚠️ Fund ${fund.fundName} (${fund.fundAddress}) is hidden`);
             }
             return !isHidden;
         });
         
-        console.log(`✅ Showing ${visibleFunds.length} visible funds out of ${filteredFunds.length} total`);
         
         if (visibleFunds.length === 0) {
             fundsGrid.innerHTML = '';
@@ -1574,8 +1493,6 @@ let currentFundContract = null;
 async function openFund(fundAddress) {
     try {
         const t = translations[getCurrentLanguage()];
-        console.log("openFund called with:", fundAddress);
-        console.log("allUserFunds:", allUserFunds);
         showLoading(t.app.loading.loadingFund);
         
         if (!fundAddress || fundAddress === 'undefined') {
@@ -1584,7 +1501,6 @@ async function openFund(fundAddress) {
         
         // Find current fund
         currentFund = allUserFunds.find(f => {
-            console.log("Searching:", f.fundAddress, "vs", fundAddress);
             return f.fundAddress && f.fundAddress.toLowerCase() === fundAddress.toLowerCase();
         });
         
@@ -1593,11 +1509,9 @@ async function openFund(fundAddress) {
             throw new Error("Fund not found in your list");
         }
         
-        console.log("Fund found:", currentFund);
         
         // Check if group is paused
         if (!currentFund.isActive) {
-            console.log("⚠️ Group is paused - read-only mode");
             showToast("⏸️ Este grupo está pausado. Solo lectura disponible.", "warning");
         }
         
@@ -1717,14 +1631,12 @@ async function deactivateFund(fundAddress, fundName) {
         }
         
         // Notify all group members
-        console.log("📢 Sending pause notifications to group members...");
         await notifyGroupMembers(
             fundAddress,
             'group_paused',
             `The group "${fundName}" has been paused by the creator`,
             { groupName: fundName }
         );
-        console.log("✅ Pause notifications sent");
         
         // Refresh view to show deactivated state
         await refreshCurrentView();
@@ -1755,9 +1667,7 @@ async function reactivateFund(fundAddress, fundName) {
             await window.FirebaseConfig.writeDb(`groups/${fundAddress}/reactivatedBy`, window.FirebaseConfig.getCurrentUser().uid);
         }
         
-        console.log("📢 Sending reactivation notifications...");
         await notifyGroupMembers(fundAddress, 'group_reactivated', `The group "${fundName}" has been reactivated`, { groupName: fundName });
-        console.log("✅ Reactivation notifications sent");
         
         await refreshCurrentView();
         showToast("✅ Group reactivated successfully", "success");
@@ -1794,14 +1704,12 @@ async function hideFund(fundAddress, fundName) {
             showLoading("Eliminando grupo...");
             
             // Notify all group members BEFORE deleting
-            console.log("📢 Sending deletion notifications to group members...");
             await notifyGroupMembers(
                 fundAddress,
                 'group_deleted',
                 `El grupo "${fundName}" ha sido eliminado por el creador`,
                 { groupName: fundName }
             );
-            console.log("✅ Deletion notifications sent");
             
             // Get all members to remove group from their user data
             const groupData = await window.FirebaseConfig.readDb(`groups/${fundAddress}`);
@@ -1810,12 +1718,10 @@ async function hideFund(fundAddress, fundName) {
             // Remove group from each member's user data
             for (const memberId of Object.keys(members)) {
                 await window.FirebaseConfig.deleteDb(`users/${memberId}/groups/${fundAddress}`);
-                console.log(`🗑️ Removed group from user ${memberId}`);
             }
             
             // Delete the entire group from Firebase
             await window.FirebaseConfig.deleteDb(`groups/${fundAddress}`);
-            console.log(`🗑️ Group ${fundAddress} deleted from Firebase`);
             
             showToast("✅ Grupo eliminado correctamente", "success");
             
@@ -2010,7 +1916,6 @@ async function createSimpleFund(fundInfo) {
             icon: fundInfo.icon || '🐕'
         });
         
-        console.log("✅ Simple group created:", groupId);
         showToast(`✅ Group "${fundInfo.name}" created successfully!`, "success");
         
         // Reload funds list
@@ -2071,9 +1976,7 @@ async function createBlockchainFund(fundInfo) {
             fundInfo.fundType
         );
         
-        console.log("Transaction sent:", tx.hash);
         const receipt = await tx.wait();
-        console.log("✅ Transaction confirmed:", receipt.hash);
         
         showToast(`✅ Fund "${fundInfo.name}" created successfully!`, "success");
         
@@ -2110,7 +2013,6 @@ async function createBlockchainFund(fundInfo) {
 async function findFundIndex(fundAddress) {
     try {
         const totalFunds = await factoryContract.getTotalFunds();
-        console.log(`🔍 Searching for fund ${fundAddress} in ${totalFunds} total funds...`);
         
         // Get all funds at once (more efficient than calling allFunds(i) individually)
         const allFunds = await factoryContract.getAllFunds(0, Number(totalFunds));
@@ -2121,12 +2023,10 @@ async function findFundIndex(fundAddress) {
             const addr = fund.fundAddress || fund[0];
             
             if (addr.toLowerCase() === fundAddress.toLowerCase()) {
-                console.log(`✅ Fund found at index ${i}`);
                 return i;
             }
         }
         
-        console.log(`❌ Fund not found`);
         return null;
     } catch (error) {
         console.error("Error finding fund index:", error);
@@ -2229,7 +2129,6 @@ async function signInWithGoogleOnly() {
         
         showLoading("Signing in with Google...");
         const user = await window.FirebaseConfig.signInWithGoogle();
-        console.log("✅ Signed in:", user.email);
         showToast(`Welcome ${user.displayName || user.email}!`, "success");
         closeSignInModal();
         hideLoading();
@@ -2283,7 +2182,6 @@ async function handleEmailSignIn(event) {
         
         showLoading("Signing in...");
         const user = await window.FirebaseConfig.signInWithEmail(email, password);
-        console.log("✅ Signed in:", user.email);
         showToast(`Welcome back!`, "success");
         closeSignInModal();
         hideLoading();
@@ -2325,7 +2223,6 @@ async function handleCreateAccount(event) {
         
         showLoading("Creating account...");
         const user = await window.FirebaseConfig.createAccount(email, password, name);
-        console.log("✅ Account created:", user.email);
         showToast(`Welcome ${name}!`, "success");
         closeSignInModal();
         hideLoading();
@@ -2403,14 +2300,12 @@ async function refreshCurrentView() {
     try {
         if (currentFund && document.getElementById('fundDetailSection').classList.contains('active')) {
             // Estamos en la vista de detalle de un fondo
-            console.log("🔄 Refrescando vista de fondo...");
             await loadFundDetailView();
             
             // Recargar también la pestaña activa específica
             const activeTab = document.querySelector('.tab-pane.active');
             if (activeTab) {
                 const tabId = activeTab.id;
-                console.log("🔄 Recargando pestaña activa:", tabId);
                 
                 if (tabId === 'voteTab') {
                     await loadProposals();
@@ -2424,7 +2319,6 @@ async function refreshCurrentView() {
             }
         } else if (document.getElementById('dashboardSection').classList.contains('active')) {
             // Estamos en el dashboard
-            console.log("🔄 Refrescando dashboard...");
             await loadUserFunds();
         }
     } catch (error) {
@@ -2597,8 +2491,6 @@ function switchFundTab(tabName) {
  */
 async function loadSimpleModeDetailView() {
     try {
-        console.log("📖 Loading Simple Mode detail view for:", currentFund);
-        console.log("📍 Step 1: Updating header icons...");
         
         const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
         
@@ -2613,12 +2505,10 @@ async function loadSimpleModeDetailView() {
             detailName.textContent = currentFund.fundName || currentFund.name;
         }
         
-        console.log("📍 Step 2: Reading Firebase data for group:", currentFund.fundAddress);
         
         // Get group data from Firebase
         const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
         
-        console.log("📍 Step 3: Firebase data received:", groupData ? "✅ YES" : "❌ NO");
         
         if (!groupData) {
             throw new Error("Group not found in Firebase");
@@ -2632,7 +2522,6 @@ async function loadSimpleModeDetailView() {
             isSimpleMode: true
         };
         
-        console.log("📍 Step 4: Updating UI elements...");
         
         // Helper function to safely update element
         const safeUpdate = (id, property, value) => {
@@ -2694,7 +2583,6 @@ async function loadSimpleModeDetailView() {
             : `You owe $${Math.abs(myBalance).toFixed(2)}`;
         safeUpdate('userContribution', 'textContent', userBalanceText);
         
-        console.log("📍 Step 5: Hiding blockchain-specific elements...");
         
         // Hide blockchain-specific elements safely
         const inviteBanner = document.getElementById('invitationBanner');
@@ -2725,15 +2613,12 @@ async function loadSimpleModeDetailView() {
         if (balancesTab) balancesTab.style.display = 'flex';
         if (manageTab) manageTab.style.display = 'none'; // Hide for now
         
-        console.log("📍 Step 6: Loading invite UI...");
         // Load Simple Mode invite UI
         loadSimpleModeInviteUI();
         
-        console.log("📍 Step 7: Loading expenses...");
         // Load expenses (acts as "history" tab)
         await loadSimpleModeExpenses();
         
-        console.log("📍 Step 7.5: Loading new features...");
         // Load new features: recurring expenses, budget status
         await loadRecurringExpenses();
         await loadBudgetStatus();
@@ -2744,11 +2629,9 @@ async function loadSimpleModeDetailView() {
             quickActions.style.display = 'grid';
         }
         
-        console.log("📍 Step 8: Switching to history tab...");
         // Switch to expenses tab by default
         switchFundTab('history');
         
-        console.log("📍 Step 9: Showing Add Expense UI elements...");
         
         // Show Add Expense Action Card
         const addExpenseCard = document.getElementById('simpleAddExpenseCard');
@@ -2763,7 +2646,6 @@ async function loadSimpleModeDetailView() {
                 cardBtn.parentNode.replaceChild(newCardBtn, cardBtn);
                 
                 newCardBtn.addEventListener('click', function() {
-                    console.log('🖱️ Action card button clicked!');
                     showAddExpenseModal();
                 });
             }
@@ -2782,16 +2664,12 @@ async function loadSimpleModeDetailView() {
             
             // Add click listener
             newFabBtn.addEventListener('click', function() {
-                console.log('🖱️ FAB button clicked!');
                 showAddExpenseModal();
             });
             
-            console.log("✅ FAB button shown and click listener attached");
         } else {
-            console.log("⚠️ FAB button not shown - element not found or section not active");
         }
         
-        console.log("✅ Simple Mode detail view loaded successfully!");
         
     } catch (error) {
         console.error("❌ Error loading Simple Mode detail:", error);
@@ -2995,7 +2873,6 @@ function renderExpenseItem(expense, currentUserId, groupData) {
     const amountClass = isNegative ? 'expense-amount-negative' : 'expense-amount-large';
     const amountPrefix = isNegative ? '-' : '';
     
-    console.log(`💰 Expense "${expense.description}": amount=${expense.amount}, currency=${expense.currency || 'undefined'}, display=${amountStr} ${currency}`);
     
     // Check if current user created/paid this expense
     const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
@@ -3078,8 +2955,6 @@ function renderExpenseItem(expense, currentUserId, groupData) {
  */
 async function loadSimpleModeBalances() {
     try {
-        console.log('⚖️ Loading Simple Mode balances...');
-        console.log('📊 Current fund:', currentFund);
         
         // Set current group ID for mode manager  
         window.modeManager.currentGroupId = currentFund.fundId;
@@ -3088,7 +2963,6 @@ async function loadSimpleModeBalances() {
         // Calculate balances using mode manager
         const memberBalances = await window.modeManager.calculateSimpleBalances();
         
-        console.log('💰 Member balances calculated:', memberBalances);
         
         const balancesList = document.getElementById('balancesList');
         const noBalances = document.getElementById('noBalances');
@@ -3097,7 +2971,6 @@ async function loadSimpleModeBalances() {
         const smartSettlementsSection = document.getElementById('smartSettlementsSection');
         
         if (!memberBalances || memberBalances.length === 0) {
-            console.log('⚠️ No balances to display');
             if (balancesList) balancesList.innerHTML = '';
             if (noBalances) noBalances.style.display = 'flex';
             if (dashboard) dashboard.style.display = 'none';
@@ -3396,7 +3269,6 @@ function closeSmartSettlements(event) {
  */
 async function loadSmartSettlements() {
     try {
-        console.log('🎯 Loading smart settlements...');
         
         if (!currentFund) {
             showToast('No group selected', 'error');
@@ -3573,11 +3445,8 @@ async function markAllSettled() {
             return;
         }
         
-        console.log('🎯 Mark All Settled clicked');
-        console.log('📊 Current settlements:', currentSettlements);
         
         const settlements = document.querySelectorAll('.settlement-item');
-        console.log('📋 Settlement items in DOM:', settlements.length);
         
         if (settlements.length === 0) {
             console.warn('⚠️ No settlements to mark');
@@ -3595,17 +3464,14 @@ async function markAllSettled() {
         );
         
         if (!confirmed) {
-            console.log('❌ User cancelled');
             return;
         }
         
-        console.log('✅ Recording settlements...');
         window.modeManager.currentGroupId = currentFund.fundId;
         
         // Record all settlements
         for (let i = 0; i < currentSettlements.length; i++) {
             const settlement = currentSettlements[i];
-            console.log(`📝 Recording settlement ${i + 1}/${currentSettlements.length}:`, settlement);
             
             const settlementInfo = {
                 from: settlement.from,
@@ -3616,7 +3482,6 @@ async function markAllSettled() {
             };
             
             await window.modeManager.recordSettlement(settlementInfo);
-            console.log(`✅ Settlement ${i + 1} recorded`);
             
             // Animate settlement
             const settlementEl = document.getElementById(`settlement-${i}`);
@@ -3625,18 +3490,15 @@ async function markAllSettled() {
             }
         }
         
-        console.log('🎉 All settlements recorded successfully');
         
         // Wait for animations
         setTimeout(async () => {
             showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
             closeSmartSettlements();
             
-            console.log('🔄 Refreshing data...');
             // Reload data
             await loadSimpleModeBalances();
             await loadSimpleModeExpenses(); // Refresh history to show settlements
-            console.log('✅ Data refreshed');
         }, 500);
         
     } catch (error) {
@@ -3678,7 +3540,6 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
         const timelineContainer = document.getElementById('expenseTimeline');
         if (!timelineContainer || !currentFund) return;
         
-        console.log('📅 Loading expense timeline...');
         
         // Get expenses from Firebase
         const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
@@ -4393,8 +4254,6 @@ async function toggleLikeExpense(expenseId) {
  */
 async function showExpenseComments(expenseId) {
     try {
-        console.log('💬 Opening comments for expense:', expenseId);
-        console.log('📂 Current fund:', currentFund);
         
         const user = firebase.auth().currentUser;
         if (!user) {
@@ -4405,7 +4264,6 @@ async function showExpenseComments(expenseId) {
         // Get expense data - use fundId instead of fundAddress for Simple Mode
         const groupId = currentFund.fundId || currentFund.fundAddress;
         const expensePath = `groups/${groupId}/expenses/${expenseId}`;
-        console.log('📍 Reading expense from:', expensePath);
         
         const expense = await window.FirebaseConfig.readDb(expensePath);
         
@@ -4415,7 +4273,6 @@ async function showExpenseComments(expenseId) {
             return;
         }
 
-        console.log('✅ Expense loaded:', expense);
 
         // Create modal
         const modal = document.createElement('div');
@@ -4459,7 +4316,6 @@ async function showExpenseComments(expenseId) {
         `;
 
         document.body.appendChild(modal);
-        console.log('✅ Comments modal opened');
 
     } catch (error) {
         console.error('❌ Error showing comments:', error);
@@ -4579,9 +4435,7 @@ async function requestDeleteExpense(expenseId) {
 
         // 🔔 NOTIFICATION: Notify expense creator(s) about deletion request
         if (expense) {
-            console.log('📧 Preparing deletion request notification');
             const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
-            console.log('👥 Expense paid by:', paidByArray);
             
             const notificationData = {
                 type: 'expense_delete_requested',
@@ -4591,22 +4445,17 @@ async function requestDeleteExpense(expenseId) {
                 expenseId: expenseId
             };
             
-            console.log('📬 Notification data:', notificationData);
-            console.log('🔍 createNotification function available:', typeof createNotification === 'function');
             
             // Notify each payer who can delete the expense
             if (typeof createNotification === 'function') {
                 let notificationsSent = 0;
                 for (const payerId of paidByArray) {
                     if (payerId !== user.uid) { // Don't notify the requester
-                        console.log('📨 Sending notification to:', payerId);
                         await createNotification(payerId, notificationData);
                         notificationsSent++;
                     } else {
-                        console.log('⏭️ Skipping requester:', payerId);
                     }
                 }
-                console.log(`✅ Sent ${notificationsSent} deletion request notifications`);
             } else {
                 console.error('❌ createNotification function not available');
             }
@@ -4809,7 +4658,6 @@ function copyInviteLink() {
  */
 async function handleGroupJoin(groupId) {
     try {
-        console.log(`🔗 handleGroupJoin called for group: ${groupId}`);
         
         const user = firebase.auth().currentUser;
         if (!user) {
@@ -4817,7 +4665,6 @@ async function handleGroupJoin(groupId) {
             return;
         }
 
-        console.log(`👤 Current user: ${user.email} (UID: ${user.uid})`);
 
         // Check if group exists
         const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
@@ -4830,20 +4677,15 @@ async function handleGroupJoin(groupId) {
         }
 
         const groupName = groupData.name || groupData.fundName || 'the group';
-        console.log(`📋 Group found: "${groupName}"`);
-        console.log(`👥 Group members:`, groupData.members ? Object.keys(groupData.members) : 'none');
-        console.log(`🔍 Checking if ${user.uid} is a member...`);
         
         // Check if already a member
         if (groupData.members && groupData.members[user.uid]) {
-            console.log(`✅ User IS already a member of "${groupName}"`);
             try {
                 showLoading(`Opening "${groupName}"...`);
                 
                 // IMPORTANT: Ensure user's groups list has this group (repair if missing)
                 const userGroupRef = await window.FirebaseConfig.readDb(`users/${user.uid}/groups/${groupId}`);
                 if (!userGroupRef) {
-                    console.log(`⚠️ Repairing missing user group reference for ${groupId}`);
                     await window.FirebaseConfig.updateDb(`users/${user.uid}/groups/${groupId}`, {
                         role: groupData.createdBy === user.email || groupData.creator === user.uid ? 'creator' : 'member',
                         joinedAt: Date.now()
@@ -4892,25 +4734,20 @@ async function handleGroupJoin(groupId) {
             }
         }
 
-        console.log(`❌ User is NOT a member yet. Adding to group...`);
 
         // Add user to group members
-        console.log(`📝 Writing to groups/${groupId}/members/${user.uid}`);
         await window.FirebaseConfig.updateDb(`groups/${groupId}/members/${user.uid}`, {
             email: user.email,
             name: user.displayName || user.email,
             joinedAt: Date.now(),
             status: 'active'
         });
-        console.log(`✅ User added to group members`);
 
         // Add group to user's groups list (CRITICAL for loadUserFunds to work)
-        console.log(`📝 Writing to users/${user.uid}/groups/${groupId}`);
         await window.FirebaseConfig.updateDb(`users/${user.uid}/groups/${groupId}`, {
             role: 'member',
             joinedAt: Date.now()
         });
-        console.log(`✅ User's group list updated`);
         
         // 🔔 NOTIFICATION: Notify all existing members that someone joined
         try {
@@ -4960,7 +4797,6 @@ async function handleGroupJoin(groupId) {
                 ...updatedGroupData
             };
             
-            console.log('📖 Opening group after join:', currentFund);
             
             // Hide dashboard, show detail
             document.getElementById('dashboardSection').classList.remove('active');
@@ -5162,7 +4998,6 @@ document.addEventListener('click', function(event) {
 });
 
 function showAddExpenseModal() {
-    console.log('🔵 showAddExpenseModal called');
     
     // Check if group is paused
     if (currentFund && !currentFund.isActive) {
@@ -5184,8 +5019,6 @@ function showAddExpenseModal() {
         return;
     }
 
-    console.log('📦 Current fund:', currentFund);
-    console.log('👥 Current fund members:', currentFund ? currentFund.members : 'NO FUND');
 
     // Populate members
     populateExpenseMembers();
@@ -5198,7 +5031,6 @@ function showAddExpenseModal() {
 
     // Show modal
     modal.style.display = 'flex';
-    console.log('✅ Modal displayed');
 }
 
 function showAddRecurringExpenseModal() {
@@ -5227,7 +5059,6 @@ function populateExpenseMembers() {
     const paidByContainer = document.getElementById('expensePaidBy');
     const splitContainer = document.getElementById('expenseSplitBetween');
 
-    console.log('📋 Populating expense members:', Object.keys(currentFund.members).length, 'members');
 
     if (!paidByContainer) {
         console.error('❌ Paid by container not found');
@@ -5256,7 +5087,6 @@ function populateExpenseMembers() {
             </label>
         `;
         paidByContainer.appendChild(paidByDiv);
-        console.log('✅ Added member to paid by:', member.name || member.email);
 
         // Add to "Split between" with share counter
         const splitDiv = document.createElement('div');
@@ -5290,7 +5120,6 @@ function populateExpenseMembers() {
         memberIndex++;
     });
 
-    console.log('✅ Members populated successfully');
 }
 
 // ============================================
@@ -5409,11 +5238,9 @@ async function fetchExchangeRates() {
         // Check cache first
         if (exchangeRatesCache && exchangeRatesCacheTime && 
             (Date.now() - exchangeRatesCacheTime < CACHE_DURATION)) {
-            console.log('💱 Using cached exchange rates');
             return exchangeRatesCache;
         }
 
-        console.log('💱 Fetching exchange rates from API...');
         const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
         
         if (!response.ok) {
@@ -5424,7 +5251,6 @@ async function fetchExchangeRates() {
         exchangeRatesCache = data.rates;
         exchangeRatesCacheTime = Date.now();
         
-        console.log('✅ Exchange rates updated:', Object.keys(exchangeRatesCache).length, 'currencies');
         return exchangeRatesCache;
 
     } catch (error) {
@@ -5469,7 +5295,6 @@ async function convertToUSD(amount, fromCurrency = 'USD') {
 
         // Convert to USD: divide by the rate (since rates are from USD)
         const converted = amount / rate;
-        console.log(`💱 Converted ${amount} ${fromCurrency} to ${converted.toFixed(2)} USD (rate: ${rate})`);
         return converted;
 
     } catch (error) {
@@ -5506,14 +5331,11 @@ function getCurrencySymbol(currency) {
 // ============================================
 
 async function handleExpenseSubmission(event) {
-    console.log('🚀 handleExpenseSubmission CALLED!', event);
     event.preventDefault();
 
     const form = event.target;
     const formData = new FormData(form);
 
-    console.log('📋 Form element:', form);
-    console.log('📦 FormData created');
 
     try {
         // Get form values
@@ -5524,38 +5346,28 @@ async function handleExpenseSubmission(event) {
         const notes = formData.get('notes') || '';
         const currency = formData.get('currency') || 'USD';
 
-        console.log('💰 Form submission - Amount:', rawAmount, '→ Parsed:', amount);
-        console.log('💱 Form submission - Currency from form:', formData.get('currency'), '→ Final:', currency);
-        console.log('📝 Form submission - Description:', description);
-        console.log('🔍 All form data:', Array.from(formData.entries()));
 
         // Get selected members who paid (can be multiple)
         const paidBy = Array.from(form.querySelectorAll('input[name="paidBy"]:checked'))
             .map(cb => cb.value);
-        console.log('💳 Paid by members:', paidBy);
 
         // Get selected members for split with share multipliers
         const splitItems = document.querySelectorAll('.member-share-item');
-        console.log('🔍 Found split items:', splitItems.length);
         const splitBetween = [];
         splitItems.forEach(item => {
             const checkbox = item.querySelector('input[type="checkbox"]');
-            console.log('📦 Checkbox:', checkbox, 'Checked:', checkbox?.checked, 'Value:', checkbox?.value);
             if (checkbox && checkbox.checked) {
                 const uid = checkbox.value;
                 const shares = parseInt(item.dataset.shares) || 1;
-                console.log('✅ Adding member:', uid, 'with shares:', shares);
                 // Add the member multiple times based on shares
                 for (let i = 0; i < shares; i++) {
                     splitBetween.push(uid);
                 }
             }
         });
-        console.log('📊 Split between:', splitBetween);
 
         // Validate
         if (!description || !amount || paidBy.length === 0 || splitBetween.length === 0) {
-            console.log('❌ Validation failed:', { description, amount, paidBy, splitBetween });
             showToast('Please fill all required fields', 'error');
             return;
         }
@@ -5623,7 +5435,6 @@ async function handleExpenseSubmission(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const expenseForm = document.getElementById('addExpenseForm');
     if (expenseForm) {
-        console.log('✅ Attaching submit handler to addExpenseForm');
         expenseForm.addEventListener('submit', handleExpenseSubmission);
     } else {
         console.error('❌ addExpenseForm not found in DOM');
@@ -5724,31 +5535,22 @@ async function depositToFund() {
         }
         
         // BUG 1 FIX: Add extensive debugging to understand validation failure
-        console.log("🔍 DEBUG - Checking deposit permissions...");
-        console.log("  Current fund address:", currentFund.fundAddress);
-        console.log("  User address:", userAddress);
-        console.log("  Current fund contract:", currentFundContract.target);
         
         // Check authorization before attempting deposit
         const memberStatus = await currentFundContract.memberStatus(userAddress);
         const isPrivate = await currentFundContract.isPrivate();
         
-        console.log("  Member status:", memberStatus, "(0=None, 1=Invited, 2=Active)");
-        console.log("  Is private:", isPrivate);
         
         if (isPrivate && memberStatus === 0n) {
-            console.log("❌ BLOCKED: User has no invitation");
             showToast("⚠️ This is a private fund. You need an invitation from the creator to participate.", "warning");
             return;
         }
         
         if (isPrivate && memberStatus === 1n) {
-            console.log("❌ BLOCKED: User has pending invitation");
             showToast("⚠️ You have a pending invitation. Accept it first in the 'Invite' tab before depositing.", "warning");
             return;
         }
         
-        console.log("✅ ALLOWED: User can deposit");
         
         // Show message BEFORE MetaMask popup
         showToast("🐜 Confirm the deposit in your wallet...", "info");
@@ -5759,7 +5561,6 @@ async function depositToFund() {
         // Now show loading after user confirmed
         showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
-        console.log("✅ Deposit confirmed - tx:", receipt.hash);
         
         showToast(`✅ Deposit of ${amount} ETH successful!`, "success");
         
@@ -5828,11 +5629,6 @@ async function inviteMember() {
         const memberStatus = await currentFundContract.memberStatus(targetAddress);
         
         // 🔍 DEBUG: Verificar estado del destinatario
-        console.log("🔍 DEBUG - Verificando permiso para invitar...");
-        console.log("  Invitador (tú):", userAddress);
-        console.log("  Destinatario:", targetAddress);
-        console.log("  Fondo:", currentFundContract.target);
-        console.log("  memberStatus del destinatario:", memberStatus, "(0=NotInvited, 1=Invited, 2=Active)");
         
         if (memberStatus === 1n) {
             showToast(`⚠️ ${addressOrNickname} already has a pending invitation`, "warning");
@@ -5845,8 +5641,6 @@ async function inviteMember() {
         try {
             const isContrib = await currentFundContract.isContributor(userAddress);
             const myContribution = await currentFundContract.contributions(userAddress);
-            console.log("  isContributor:", isContrib);
-            console.log("  Tu contribución:", ethers.formatEther(myContribution), "ETH");
         } catch (e) {
             console.error("  Error verificando isContributor:", e);
         }
@@ -5863,7 +5657,6 @@ async function inviteMember() {
         }
         
         const receipt = await tx.wait();
-        console.log("✅ Invitation sent - tx:", receipt.hash);
         
         showToast(`✅ Invitation sent to ${addressOrNickname}!`, "success");
         
@@ -5905,13 +5698,11 @@ async function acceptInvitation() {
         await tx.wait();
         
         // BUG 4 FIX: Register participant in Factory after accepting invitation
-        console.log("🔗 Registering participant in Factory...");
         try {
             const fundIndex = await findFundIndex(currentFund.fundAddress);
             if (fundIndex !== null) {
                 const registerTx = await factoryContract.registerParticipant(userAddress, fundIndex);
                 await registerTx.wait();
-                console.log("✅ Participant registered in Factory");
             }
         } catch (regError) {
             console.warn("⚠️ Could not register participant in Factory:", regError.message);
@@ -5925,13 +5716,11 @@ async function acceptInvitation() {
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         // BUG 2 FIX: Force complete dashboard reload
-        console.log("🔄 Reloading dashboard after accepting invitation...");
         allUserFunds = [];
         await loadUserFunds();
         await loadPendingInvitations();
         
         // PROBLEM 1 FIX: Navigate back to dashboard so user sees fund appear
-        console.log("📍 Navigating back to dashboard to show updated funds list");
         hideLoading();
         backToDashboard();
         
@@ -6044,7 +5833,6 @@ async function createProposal() {
             recipientAddress = await factoryContract.getAddressByNickname(recipientInput);
         }
         
-        console.log("Creating proposal with involved members:", selectedMembers);
         
         // Show message BEFORE MetaMask popup
         showToast("🐜 Confirm the transaction in your wallet...", "info");
@@ -6059,7 +5847,6 @@ async function createProposal() {
         // Now show loading after user confirmed
         showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
-        console.log("✅ Propuesta creada - tx:", receipt.hash);
         
         showToast(t.app.fundDetail.propose.success, "success");
         
@@ -6291,28 +6078,22 @@ async function loadMembers() {
 
 async function loadProposals() {
     try {
-        console.log("🔍 BUG 3 DEBUG - Loading proposals...");
         const proposalCount = await currentFundContract.proposalCount();
-        console.log("  Proposal count:", proposalCount.toString());
         
         const proposalsList = document.getElementById('proposalsList');
         const noProposals = document.getElementById('noProposals');
         
         if (proposalCount === 0n) {
-            console.log("  No proposals found, showing empty state");
             proposalsList.innerHTML = '';
             noProposals.style.display = 'flex';
         } else {
-            console.log("  Loading", proposalCount.toString(), "proposals...");
             noProposals.style.display = 'none';
             
             const proposals = [];
             // PROBLEM 2 FIX: Proposals are 1-indexed, not 0-indexed
             for (let i = 1; i <= Number(proposalCount); i++) {
                 try {
-                    console.log(`  Loading proposal ${i}...`);
                     const proposal = await currentFundContract.getProposal(i);
-                    console.log(`    Proposal ${i} data:`, proposal);
                     
                     // PROBLEM 2 FIX: Use hasUserVoted instead of hasVoted
                     const hasVoted = await currentFundContract.hasUserVoted(i, userAddress);
@@ -6348,8 +6129,6 @@ async function loadProposals() {
                         isInvolved: isUserInvolved
                     };
                     
-                    console.log(`    Proposer: ${proposalData.proposerNickname}, Recipient: ${proposalData.recipientNickname}`);
-                    console.log(`    Executed: ${proposalData.executed}, Cancelled: ${proposalData.cancelled}`);
                     
                     proposals.push(proposalData);
                 } catch (err) {
@@ -6357,13 +6136,10 @@ async function loadProposals() {
                 }
             }
             
-            console.log(`  Total proposals loaded: ${proposals.length}`);
             const activeProposals = proposals.filter(p => !p.executed && !p.cancelled);
-            console.log(`  Active proposals (not executed/cancelled): ${activeProposals.length}`);
             
             // PROBLEM 2 FIX: Check if there are active proposals
             if (activeProposals.length === 0) {
-                console.log("  No active proposals to display");
                 proposalsList.innerHTML = '';
                 noProposals.style.display = 'flex';
                 return;
@@ -6474,7 +6250,6 @@ async function voteProposal(proposalId, inFavor) {
         // Now show loading after user confirmed
         showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
-        console.log("✅ Voto registrado - tx:", receipt.hash);
         
         showToast(`✅ Vote ${inFavor ? 'for' : 'against'} registered!`, "success");
         
@@ -6521,7 +6296,6 @@ async function executeProposal(proposalId) {
         // Now show loading after user confirmed
         showLoading("⏳ Waiting for blockchain confirmation...");
         const receipt = await tx.wait();
-        console.log("✅ Proposal executed - tx:", receipt.hash);
         
         showToast("✅ Proposal executed! Funds transferred.", "success");
         
@@ -6660,7 +6434,6 @@ async function loadHistory() {
 
 async function loadBalances() {
     try {
-        console.log("📊 Calculating balances...");
         
         // Get all members and their contributions
         const [addresses, nicknames, contributions] = await currentFundContract.getContributorsWithNicknames();
@@ -6695,8 +6468,6 @@ async function loadBalances() {
             }
         }
         
-        console.log(`Total executed expenses: ${executedExpenses.length}`);
-        console.log(`Total spent: ${ethers.formatEther(totalSpent)} ETH`);
         
         // Calculate total contributions
         let totalContributed = 0n;
@@ -6708,7 +6479,6 @@ async function loadBalances() {
         const memberCount = BigInt(addresses.length);
         const fairSharePerPerson = memberCount > 0n ? totalSpent / memberCount : 0n;
         
-        console.log(`Fair share per person: ${ethers.formatEther(fairSharePerPerson)} ETH`);
         
         // Calculate balance for each member
         const balances = [];
@@ -6801,7 +6571,6 @@ async function loadBalances() {
             `;
         }).join('');
         
-        console.log("✅ Balances calculated and displayed");
         
     } catch (error) {
         console.error("Error loading balances:", error);
@@ -6833,7 +6602,6 @@ function settleDebt(amount) {
         // Show informative message
         showToast(`💳 Amount pre-filled: ${amount.toFixed(4)} ETH. Confirm to settle your debt.`, 'info');
         
-        console.log(`💸 Debt settlement initiated: ${amount} ETH`);
     } catch (error) {
         console.error("Error in settleDebt:", error);
         showToast("Error preparing debt settlement", "error");
@@ -7023,12 +6791,6 @@ async function closeFund() {
     try {
         // Debug: Check creator from contract
         const contractCreator = await currentFundContract.creator();
-        console.log("🔍 DEBUG closeFund:");
-        console.log("  Contract address:", currentFundContract.target);
-        console.log("  Contract creator:", contractCreator);
-        console.log("  Current user:", userAddress);
-        console.log("  currentFund.creator:", currentFund.creator);
-        console.log("  Match:", contractCreator.toLowerCase() === userAddress.toLowerCase());
         
         if (contractCreator.toLowerCase() !== userAddress.toLowerCase()) {
             showToast("⚠️ Solo el creador del fondo puede cerrarlo", "error");
@@ -7127,7 +6889,6 @@ function openQRScanner() {
         onScanError
     ).then(() => {
         isScannerRunning = true;
-        console.log("QR Scanner started successfully");
     }).catch(err => {
         console.error("Error starting QR scanner:", err);
         isScannerRunning = false;
@@ -7140,12 +6901,10 @@ function openQRScanner() {
 function onScanSuccess(decodedText, decodedResult) {
     // Prevent multiple scan processing
     if (isProcessingScan) {
-        console.log("Already processing a scan, ignoring...");
         return;
     }
     
     isProcessingScan = true;
-    console.log("QR Code detected:", decodedText);
     
     // Extract ethereum address from QR code
     let address = decodedText.trim();
@@ -7166,7 +6925,6 @@ function onScanSuccess(decodedText, decodedResult) {
     // Stop scanner if it's running
     if (html5QrCode && isScannerRunning) {
         html5QrCode.stop().then(() => {
-            console.log("QR Scanner stopped after successful scan");
             isScannerRunning = false;
             scannedAddressValue = address;
             displayScannedAddress(address);
@@ -7236,7 +6994,6 @@ function closeQRScanner() {
     // Stop scanner if running
     if (html5QrCode && isScannerRunning) {
         html5QrCode.stop().then(() => {
-            console.log("QR Scanner stopped on close");
             html5QrCode.clear();
             html5QrCode = null;
             isScannerRunning = false;
@@ -7383,7 +7140,6 @@ function updateAppSettingsUI() {
         }
     });
     
-    console.log('⚙️ Settings modal opened - Lang:', currentLang, 'Theme:', currentTheme);
 }
 
 /**
@@ -8341,7 +8097,6 @@ async function checkBudgetThresholdNotifications(status) {
             // Update the last notified threshold
             localStorage.setItem(storageKey, thresholdToNotify.toString());
             
-            console.log(`✅ Budget threshold notification sent: ${thresholdToNotify}%`);
         }
         
     } catch (error) {
@@ -8564,7 +8319,6 @@ If you cannot find some information, use null for that field. Be as accurate as 
         const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
         const parsed = JSON.parse(jsonStr);
         
-        console.log('Extracted receipt data:', parsed);
         return parsed;
     } catch (parseError) {
         console.error('Failed to parse OpenAI response:', content);
@@ -8881,7 +8635,6 @@ let notificationRefreshInterval = null;
 function initNotificationSystem() {
     // Prevent multiple initializations
     if (notificationSystemInitialized) {
-        console.log('ℹ️ Notification system already initialized');
         return;
     }
     
@@ -8895,7 +8648,6 @@ function initNotificationSystem() {
         return;
     }
     
-    console.log('🔔 Initializing notification system...');
     
     // Event listeners for close and mark all read buttons (not for main button, it uses onclick)
     if (closeNotificationsBtn) {
@@ -8928,7 +8680,6 @@ function initNotificationSystem() {
     }
     
     notificationSystemInitialized = true;
-    console.log('✅ Notification system initialized');
 }
 
 /**
@@ -8968,14 +8719,11 @@ window.toggleNotificationsPanel = toggleNotificationsPanel;
 async function loadNotifications() {
     try {
         const userId = firebase.auth().currentUser?.uid || userAddress;
-        console.log('📥 Loading notifications for user:', userId);
         if (!userId) {
-            console.log('⚠️ No user ID, skipping notification load');
             return;
         }
         
         const notificationsRef = firebase.database().ref(`notifications/${userId}`);
-        console.log('🔍 Querying notifications path:', `notifications/${userId}`);
         
         notificationsRef.orderByChild('timestamp').limitToLast(50).once('value', (snapshot) => {
             const notifications = [];
@@ -8988,14 +8736,11 @@ async function loadNotifications() {
                 notifications.unshift(notification); // Most recent first
             });
             
-            console.log(`✅ Loaded ${notifications.length} notifications`);
             if (notifications.length > 0) {
-                console.log('First notification:', notifications[0]);
             }
             
             notificationsCache = notifications;
             unreadCount = notifications.filter(n => !n.read).length;
-            console.log(`📊 Unread count: ${unreadCount}`);
             
             renderNotifications();
             updateNotificationBadge();
@@ -9010,7 +8755,6 @@ async function loadNotifications() {
  * Render notifications in the panel
  */
 function renderNotifications() {
-    console.log('🎨 Rendering notifications, count:', notificationsCache.length);
     const notificationsList = document.getElementById('notificationsList');
     const emptyState = document.getElementById('emptyNotifications');
     
@@ -9020,7 +8764,6 @@ function renderNotifications() {
     }
     
     if (notificationsCache.length === 0) {
-        console.log('📭 No notifications, showing empty state');
         if (emptyState) {
             emptyState.classList.remove('hidden');
         } else {
@@ -9030,7 +8773,6 @@ function renderNotifications() {
         return;
     }
     
-    console.log('📬 Rendering notification items');
     if (emptyState) emptyState.classList.add('hidden');
     
     notificationsList.innerHTML = notificationsCache.map(notif => {
@@ -9069,7 +8811,6 @@ function renderNotifications() {
             </div>
         `;
     }).join('');
-    console.log(`✅ Rendered ${notificationsCache.length} notification items`);
 }
 
 /**
@@ -9233,7 +8974,6 @@ async function deleteAllNotifications() {
             return;
         }
 
-        console.log('🗑️ Deleting all notifications for user:', userId);
         await firebase.database().ref(`notifications/${userId}`).remove();
         
         // Clear cache and UI
@@ -9242,7 +8982,6 @@ async function deleteAllNotifications() {
         updateNotificationBadge();
         renderNotifications();
         
-        console.log('✅ All notifications deleted');
         showToast('All notifications deleted', 'success');
         
     } catch (error) {
@@ -9713,7 +9452,6 @@ function handleNotificationClick(notificationId, type, fundId, expenseId) {
     
     // Navigate based on notification type
     if (fundId && fundId !== 'test') {
-        console.log('🔍 Opening fund:', fundId);
         // Use openFund which handles both blockchain and simple mode funds
         if (typeof openFund === 'function') {
             openFund(fundId);
@@ -9751,7 +9489,6 @@ async function createNotification(userId, notificationData) {
         
         await firebase.database().ref(`notifications/${userId}`).push(notification);
         
-        console.log('✅ Notification created for user:', userId, 'Type:', notificationData.type);
         
     } catch (error) {
         console.error('❌ Error creating notification:', error);
