@@ -5535,8 +5535,6 @@ header,
   color: #0f172a;
   font-weight: 700;
 }
-  display: inline-block;
-}
 
 /* Dividers and separators */
 [data-theme="light"] hr,
