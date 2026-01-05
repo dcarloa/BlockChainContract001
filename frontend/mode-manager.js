@@ -380,8 +380,6 @@ class ModeManager {
      */
     async processRecurringExpenses() {
         try {
-            console.log('🔄 Processing recurring expenses for group:', this.currentGroupId);
-            
             const recurring = await this.loadRecurringExpenses();
             const now = Date.now();
             let createdCount = 0;
@@ -389,12 +387,6 @@ class ModeManager {
             for (const rec of recurring) {
                 // Check if it's time to create the expense
                 if (rec.nextDue <= now && rec.isActive) {
-                    console.log('⏰ Recurring expense is due:', {
-                        id: rec.id,
-                        description: rec.description,
-                        nextDue: new Date(rec.nextDue).toISOString(),
-                        now: new Date(now).toISOString()
-                    });
                     
                     try {
                         // Create the actual expense
@@ -409,8 +401,6 @@ class ModeManager {
                             notes: `Auto-generated from recurring expense on ${new Date().toLocaleDateString()}`
                         });
                         
-                        console.log('✅ Created recurring expense:', expenseId);
-                        
                         // Calculate next due date
                         const nextDue = this.calculateNextDue(
                             rec.frequency,
@@ -423,8 +413,6 @@ class ModeManager {
                             lastCreated: now,
                             nextDue: nextDue
                         });
-                        
-                        console.log('📅 Updated nextDue to:', new Date(nextDue).toISOString());
                         
                         createdCount++;
                         
@@ -453,12 +441,6 @@ class ModeManager {
                         console.error('❌ Failed to create expense from recurring:', expenseError);
                     }
                 }
-            }
-            
-            if (createdCount > 0) {
-                console.log(`✅ Created ${createdCount} recurring expense(s)`);
-            } else {
-                console.log('ℹ️ No recurring expenses due at this time');
             }
             
             return createdCount;
@@ -790,8 +772,6 @@ class ModeManager {
             const useSingleCurrency = currencies.size === 1;
             const groupCurrency = useSingleCurrency ? Array.from(currencies)[0] : 'USD';
             
-            console.log(`💱 Balance calculation: ${currencies.size === 1 ? 'Single currency' : 'Multiple currencies'} (${Array.from(currencies).join(', ')})`);
-            
             // Calculate net balances
             const balances = {};
             
@@ -810,7 +790,6 @@ class ModeManager {
                 const currency = expense.currency || 'USD';
                 if (!useSingleCurrency && currency !== 'USD' && window.convertToUSD) {
                     amount = await window.convertToUSD(amount, currency);
-                    console.log(`💱 Converting ${expense.amount} ${currency} to ${amount.toFixed(2)} USD`);
                 }
                 
                 const splitBetween = expense.splitBetween;

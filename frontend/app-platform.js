@@ -7302,14 +7302,6 @@ function filterExpenses() {
     const endDate = document.getElementById('expenseFilterEnd')?.value || '';
     const onlyMyExpenses = document.getElementById('expenseFilterMyExpenses')?.checked || false;
     
-    console.log('🔍 Filter Expenses - Parameters:', {
-        searchTerm,
-        startDate,
-        endDate,
-        onlyMyExpenses,
-        currentUserId: userAddress
-    });
-    
     const expenseCards = document.querySelectorAll('.expense-card-compact');
     let visibleCount = 0;
     
@@ -7321,13 +7313,6 @@ function filterExpenses() {
         const isoDate = card.getAttribute('data-date') || '';
         const membersStr = card.getAttribute('data-members') || '';
         
-        console.log('📋 Checking card:', {
-            expenseId: card.getAttribute('data-expense-id'),
-            title: title.substring(0, 30),
-            isoDate,
-            members: membersStr
-        });
-        
         // Check if search term matches
         const matchesSearch = !searchTerm || title.includes(searchTerm) || notes.includes(searchTerm);
         
@@ -7336,13 +7321,6 @@ function filterExpenses() {
         if ((startDate || endDate) && isoDate) {
             const expenseDate = new Date(isoDate);
             
-            console.log('📅 Date comparison:', {
-                isoDate,
-                expenseDate: expenseDate.toISOString(),
-                startDate,
-                endDate
-            });
-            
             if (startDate) {
                 const start = new Date(startDate);
                 start.setHours(0, 0, 0, 0);
@@ -7350,7 +7328,6 @@ function filterExpenses() {
                 
                 if (expenseDate < start) {
                     matchesDate = false;
-                    console.log('❌ Date before start:', expenseDate, '<', start);
                 }
             }
             
@@ -7362,7 +7339,6 @@ function filterExpenses() {
                 
                 if (checkDate > end) {
                     matchesDate = false;
-                    console.log('❌ Date after end:', checkDate, '>', end);
                 }
             }
         }
@@ -7372,24 +7348,10 @@ function filterExpenses() {
         if (onlyMyExpenses && userAddress) {
             const members = membersStr.split(',').filter(m => m);
             matchesMyExpenses = members.includes(userAddress);
-            
-            console.log('👤 My expenses check:', {
-                userAddress,
-                members,
-                isInvolved: matchesMyExpenses
-            });
         }
         
         // Show/hide card based on ALL filters
         const shouldShow = matchesSearch && matchesDate && matchesMyExpenses;
-        
-        console.log('✅ Filter result:', {
-            expenseId: card.getAttribute('data-expense-id'),
-            matchesSearch,
-            matchesDate,
-            matchesMyExpenses,
-            shouldShow
-        });
         
         if (shouldShow) {
             card.style.display = 'block';
@@ -7398,8 +7360,6 @@ function filterExpenses() {
             card.style.display = 'none';
         }
     });
-    
-    console.log('📊 Total visible expenses:', visibleCount, 'of', expenseCards.length);
     
     // Show message if no results
     const historyList = document.getElementById('historyList');
@@ -7714,8 +7674,6 @@ async function checkAndProcessRecurring() {
     try {
         if (!currentFund || !currentFund.fundId) return;
         if (currentFund.mode !== 'simple') return; // Only for Simple Mode
-        
-        console.log('🔄 Checking recurring expenses...');
         
         window.modeManager.currentGroupId = currentFund.fundId;
         const createdCount = await window.modeManager.processRecurringExpenses();
@@ -8333,8 +8291,6 @@ async function checkBudgetThresholdNotifications(status) {
                     ? currentFund.members 
                     : Object.keys(currentFund.members);
                 
-                console.log(`📣 Sending budget notifications to ${memberIds.length} members`);
-                
                 for (const memberId of memberIds) {
                     if (typeof createNotification === 'function') {
                         await createNotification(memberId, {
@@ -8343,7 +8299,6 @@ async function checkBudgetThresholdNotifications(status) {
                             message: notificationMessage,
                             fundId: fundId
                         });
-                        console.log(`✅ Notification sent to member: ${memberId}`);
                     }
                 }
             }
