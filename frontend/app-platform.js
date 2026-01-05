@@ -7146,11 +7146,19 @@ function updateAppSettingsUI() {
  * Change language
  */
 function changeLanguage(lang) {
-    if (typeof setLanguage === 'function') {
-        setLanguage(lang);
-        // After reload, applyAppTranslations will be called by DOMContentLoaded
-        // No need to call it here as setLanguage does location.reload()
+    // Save language to localStorage
+    localStorage.setItem('language', lang);
+    
+    // Apply translations immediately
+    if (typeof applyAppTranslations === 'function') {
+        applyAppTranslations();
     }
+    
+    // Update settings UI to show active language
+    updateAppSettingsUI();
+    
+    // Close settings modal
+    closeAppSettings();
 }
 
 /**
