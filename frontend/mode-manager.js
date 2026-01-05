@@ -77,21 +77,27 @@ class ModeManager {
                 throw new Error("User must be authenticated to create group");
             }
             
+            // ✅ RATE LIMITING: Prevenir spam de creación de grupos
+            await window.checkRateLimit('createGroup');
+            
+            // ✅ VALIDACIÓN Y SANITIZACIÓN: Proteger contra inputs maliciosos
+            const validatedInfo = window.Validators.validateGroupInfo(groupInfo);
+            
             const user = window.FirebaseConfig.getCurrentUser();
             const groupId = this.generateGroupId();
             
             const groupData = {
                 id: groupId,
-                name: groupInfo.name,
-                description: groupInfo.description || '',
+                name: validatedInfo.name,
+                description: validatedInfo.description || '',
                 mode: MODE_TYPES.SIMPLE,
                 createdBy: user.uid,
                 createdByEmail: user.email,
                 createdByName: user.displayName || user.email,
                 createdAt: Date.now(),
                 isActive: true,
-                targetAmount: groupInfo.targetAmount || 0,
-                currency: groupInfo.currency || 'USD',
+                targetAmount: validatedInfo.targetAmount || 0,
+                currency: validatedInfo.currency || 'USD',
                 
                 // Members
                 members: {
@@ -123,10 +129,13 @@ class ModeManager {
             
             // Add to user's groups list
             await window.FirebaseConfig.updateDb(`users/${user.uid}/groups/${groupId}`, {
-                name: groupInfo.name,
+                name: validatedInfo.name,
                 role: 'creator',
                 joinedAt: Date.now()
             });
+            
+            // ✅ REGISTRAR ACCIÓN: Para rate limiting
+            await window.recordRateLimitAction('createGroup');
             
             return groupId;
             
@@ -169,29 +178,35 @@ class ModeManager {
                 throw new Error("User must be authenticated");
             }
             
+            // ✅ RATE LIMITING: Prevenir spam de gastos
+            await window.checkRateLimit('addExpense');
+            
+            // ✅ VALIDACIÓN Y SANITIZACIÓN: Proteger contra inputs maliciosos
+            const validatedInfo = window.Validators.validateExpenseInfo(expenseInfo);
+            
             const user = window.FirebaseConfig.getCurrentUser();
             const expenseId = this.generateExpenseId();
             const timestamp = Date.now();
             
             const expense = {
                 id: expenseId,
-                description: expenseInfo.description,
-                amount: expenseInfo.amount,
+                description: validatedInfo.description,
+                amount: validatedInfo.amount,
                 paidBy: expenseInfo.paidBy || user.uid,
                 paidByName: expenseInfo.paidByName || user.displayName || user.email,
                 splitBetween: expenseInfo.splitBetween, // Array of user IDs
                 timestamp: timestamp,
                 createdAt: timestamp,
                 date: expenseInfo.date || new Date().toISOString().split('T')[0],
-                currency: expenseInfo.currency || 'USD', // Add currency field
+                currency: validatedInfo.currency || 'USD', // Add currency field
                 
                 // No approval system - expenses are immediately accepted
                 status: 'approved',
                 
                 // Metadata
-                category: expenseInfo.category || 'other',
+                category: validatedInfo.category || 'other',
                 receipt: expenseInfo.receipt || null,
-                notes: expenseInfo.notes || ''
+                notes: validatedInfo.notes || ''
             };
             
             // Write expense to Firebase
@@ -219,6 +234,9 @@ class ModeManager {
                 console.error('Error sending expense notification:', notifError);
                 // Don't fail the expense creation if notification fails
             }
+            
+            // ✅ REGISTRAR ACCIÓN: Para rate limiting
+            await window.recordRateLimitAction('addExpense');
             
             return expenseId;
             
@@ -766,18 +784,24 @@ class ModeManager {
                 throw new Error("User must be authenticated");
             }
             
+            // ✅ RATE LIMITING: Prevenir spam de pagos
+            await window.checkRateLimit('recordSettlement');
+            
+            // ✅ VALIDACIÓN Y SANITIZACIÓN: Proteger contra inputs maliciosos
+            const validatedInfo = window.Validators.validateSettlementInfo(settlementInfo);
+            
             const user = window.FirebaseConfig.getCurrentUser();
             const settlementId = this.generateSettlementId();
             
             const settlement = {
                 id: settlementId,
-                from: settlementInfo.from,
-                to: settlementInfo.to,
-                amount: settlementInfo.amount,
+                from: validatedInfo.from,
+                to: validatedInfo.to,
+                amount: validatedInfo.amount,
                 recordedBy: user.uid,
                 recordedAt: Date.now(),
-                method: settlementInfo.method || 'cash', // cash, bank_transfer, etc
-                notes: settlementInfo.notes || ''
+                method: validatedInfo.method || 'cash', // cash, bank_transfer, etc
+                notes: validatedInfo.notes || ''
             };
             
             // Write to Firebase
@@ -808,6 +832,9 @@ class ModeManager {
                 console.error('Error sending payment notification:', notifError);
                 // Don't fail the settlement if notification fails
             }
+            
+            // ✅ REGISTRAR ACCIÓN: Para rate limiting
+            await window.recordRateLimitAction('recordSettlement');
             
             return settlementId;
             
