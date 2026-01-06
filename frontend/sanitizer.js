@@ -192,7 +192,20 @@ const Validators = {
         }
         
         // Validar categoría
-        const validCategories = ['food', 'transport', 'accommodation', 'entertainment', 'shopping', 'other', 'recurring'];
+        const validCategories = [
+            'food', 
+            'transport', 
+            'housing', 
+            'utilities', 
+            'entertainment', 
+            'shopping', 
+            'health', 
+            'travel', 
+            'subscription', 
+            'accommodation', 
+            'other', 
+            'recurring'
+        ];
         if (expenseInfo.category && !validCategories.includes(expenseInfo.category)) {
             errors.push("Categoría inválida");
         }
