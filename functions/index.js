@@ -50,7 +50,7 @@ exports.sendPushNotification = functions.database
             };
 
             // Send to all user's devices using FCM v1 API
-            const tokenList = Object.keys(tokens);
+            const tokenList = Object.keys(tokens).map(key => tokens[key].token);
             console.log(`📤 Sending to ${tokenList.length} device(s)`);
 
             // FCM v1 API requires sending to each token individually
