@@ -224,8 +224,8 @@ class ModeManager {
                 // Notify all members except the one who added the expense
                 const message = `${user.displayName || user.email} added ${expense.category}: ${expense.description} - ${expense.currency} ${expense.amount}`;
                 
-                if (typeof notifyGroupMembers === 'function') {
-                    await notifyGroupMembers(this.currentGroupId, 'expense_added', message, { 
+                if (typeof window.notifyGroupMembers === 'function') {
+                    await window.notifyGroupMembers(this.currentGroupId, 'expense_added', message, { 
                         groupName: this.currentGroupData?.fundName,
                         expenseId: expenseId
                     });
