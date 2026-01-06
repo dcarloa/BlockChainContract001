@@ -30,8 +30,12 @@ async function initializeMessaging() {
             return false;
         }
 
-        // Initialize messaging
+        // Get existing service worker registration
+        const registration = await navigator.serviceWorker.ready;
+        
+        // Initialize messaging with existing service worker
         messagingInstance = firebase.messaging();
+        messagingInstance.useServiceWorker(registration);
 
         // Handle foreground messages
         messagingInstance.onMessage((payload) => {
