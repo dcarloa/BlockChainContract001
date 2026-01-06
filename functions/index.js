@@ -36,9 +36,7 @@ exports.sendPushNotification = functions.database
                     body: notificationData.message || 'You have a new notification',
                     icon: '/assets/web-app-manifest-192x192.png',
                     badge: '/assets/favicon-96x96.png',
-                    tag: notificationData.type || 'general',
-                    requireInteraction: false,
-                    vibrate: [200, 100, 200]
+                    tag: notificationData.type || 'general'
                 },
                 data: {
                     notificationId: notificationId,
