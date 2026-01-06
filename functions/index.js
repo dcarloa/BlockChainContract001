@@ -30,21 +30,23 @@ exports.sendPushNotification = functions.database
             }
 
             // Prepare notification payload
+            // FCM v1 requires all data values to be strings
+            const data = {};
+            if (notificationId) data.notificationId = String(notificationId);
+            if (notificationData.type) data.type = String(notificationData.type);
+            if (notificationData.fundId) data.fundId = String(notificationData.fundId);
+            if (notificationData.expenseId) data.expenseId = String(notificationData.expenseId);
+            data.timestamp = String(notificationData.timestamp || Date.now());
+            if (notificationData.fundId) {
+                data.click_action = `/app.html?fund=${notificationData.fundId}`;
+            }
+
             const payload = {
                 notification: {
                     title: notificationData.title || 'Ant Pool',
                     body: notificationData.message || 'You have a new notification'
                 },
-                data: {
-                    notificationId: notificationId,
-                    type: notificationData.type || 'general',
-                    fundId: notificationData.fundId || '',
-                    expenseId: notificationData.expenseId || '',
-                    timestamp: String(notificationData.timestamp || Date.now()),
-                    click_action: notificationData.fundId 
-                        ? `/app.html?fund=${notificationData.fundId}`
-                        : '/app.html'
-                }
+                data: data
             };
 
             // Send to all user's devices using FCM v1 API
