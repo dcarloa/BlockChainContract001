@@ -98,9 +98,8 @@ async function getFCMToken() {
         }
 
         // Get token with VAPID key
-        // IMPORTANT: Replace 'YOUR_VAPID_KEY_HERE' with your actual VAPID key from Firebase Console
         const token = await messagingInstance.getToken({
-            vapidKey: 'YOUR_VAPID_KEY_HERE' // TODO: Replace with your VAPID key
+            vapidKey: 'BFn59UsYljZZxXP7BOaI8p5YIVaBPJU5nuzvzELHsO7PHUextLqSqeIil70geTDf_lapKKRAEIYH76WW9dxitLY'
         });
 
         if (token) {
