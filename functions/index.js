@@ -33,10 +33,7 @@ exports.sendPushNotification = functions.database
             const payload = {
                 notification: {
                     title: notificationData.title || 'Ant Pool',
-                    body: notificationData.message || 'You have a new notification',
-                    icon: '/assets/web-app-manifest-192x192.png',
-                    badge: '/assets/favicon-96x96.png',
-                    tag: notificationData.type || 'general'
+                    body: notificationData.message || 'You have a new notification'
                 },
                 data: {
                     notificationId: notificationId,
