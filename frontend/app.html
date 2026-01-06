@@ -67,6 +67,33 @@
     <!-- Toast Notifications -->
     <div id="toastContainer" class="toast-container"></div>
 
+    <!-- PWA Install Prompt -->
+    <div id="pwaInstallPrompt" class="pwa-install-prompt" style="display: none;">
+        <div class="pwa-install-content">
+            <div class="pwa-install-icon">📱</div>
+            <div class="pwa-install-text">
+                <strong>Install Ant Pool</strong>
+                <p>Get the full app experience with offline access</p>
+            </div>
+            <div class="pwa-install-actions">
+                <button id="installPWAButton" class="btn btn-primary btn-sm">
+                    <span>Install</span>
+                </button>
+                <button id="dismissPWAPrompt" class="btn btn-ghost btn-sm">
+                    <span>×</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Ready Indicator -->
+    <div id="offlineReadyIndicator" class="offline-ready-indicator" style="display: none;">
+        <div class="offline-ready-content">
+            <span class="offline-ready-icon">✓</span>
+            <span class="offline-ready-text">App ready for offline use</span>
+        </div>
+    </div>
+
     <!-- Sign In Modal (for Simple Mode) -->
     <div id="signInModal" class="modal" style="display: none;">
         <div class="modal-content modal-medium">
@@ -2778,15 +2805,147 @@
         });
     </script>
 
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration & PWA Install -->
     <script>
+        // PWA Install Prompt
+        let deferredPrompt;
+        let installPromptDismissed = localStorage.getItem('pwaInstallDismissed') === 'true';
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install prompt if not dismissed
+            if (!installPromptDismissed) {
+                const promptEl = document.getElementById('pwaInstallPrompt');
+                if (promptEl) {
+                    promptEl.style.display = 'block';
+                    setTimeout(() => promptEl.classList.add('show'), 100);
+                }
+            }
+        });
+
+        // Install button click
+        document.addEventListener('DOMContentLoaded', () => {
+            const installBtn = document.getElementById('installPWAButton');
+            const dismissBtn = document.getElementById('dismissPWAPrompt');
+            const promptEl = document.getElementById('pwaInstallPrompt');
+
+            if (installBtn) {
+                installBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ PWA installed');
+                        showToast('App installed successfully! 🎉', 'success');
+                    }
+                    
+                    deferredPrompt = null;
+                    promptEl.style.display = 'none';
+                });
+            }
+
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', () => {
+                    promptEl.classList.remove('show');
+                    setTimeout(() => {
+                        promptEl.style.display = 'none';
+                    }, 300);
+                    localStorage.setItem('pwaInstallDismissed', 'true');
+                    installPromptDismissed = true;
+                });
+            }
+        });
+
+        // Service Worker Registration with visual feedback
         if ('serviceWorker' in navigator) {
+            let swInstalling = false;
+            
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('✅ Service Worker registered:', reg.scope))
-                    .catch(err => console.error('❌ Service Worker registration failed:', err));
+                    .then(reg => {
+                        console.log('✅ Service Worker registered:', reg.scope);
+                        
+                        // Show installing message
+                        if (reg.installing) {
+                            swInstalling = true;
+                            showToast('Installing app for offline use... 📦', 'info', 0);
+                        } else if (reg.active) {
+                            // Already installed and active
+                            showOfflineReadyIndicator();
+                        }
+                        
+                        // Listen for Service Worker state changes
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
+                                        // Update available
+                                        showToast('New version available! Refresh to update. 🔄', 'info', 0);
+                                    } else {
+                                        // First install
+                                        if (swInstalling) {
+                                            // Hide installing toast
+                                            const toasts = document.querySelectorAll('.toast');
+                                            toasts.forEach(toast => {
+                                                if (toast.textContent.includes('Installing')) {
+                                                    toast.remove();
+                                                }
+                                            });
+                                        }
+                                        showToast('App installed! Ready for offline use ✓', 'success');
+                                        showOfflineReadyIndicator();
+                                    }
+                                }
+                                
+                                if (newWorker.state === 'activated') {
+                                    console.log('✅ Service Worker activated');
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => {
+                        console.error('❌ Service Worker registration failed:', err);
+                        showToast('Offline mode unavailable', 'error');
+                    });
+                
+                // Listen for controller change (new SW activated)
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    console.log('🔄 New Service Worker activated');
+                });
             });
         }
+
+        // Show offline-ready indicator
+        function showOfflineReadyIndicator() {
+            const indicator = document.getElementById('offlineReadyIndicator');
+            if (indicator) {
+                indicator.style.display = 'block';
+                setTimeout(() => indicator.classList.add('show'), 100);
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 300);
+                }, 5000);
+            }
+        }
+
+        // Online/Offline status
+        window.addEventListener('online', () => {
+            showToast('Back online! 🌐', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            showToast('You\'re offline. Using cached version 📴', 'warning', 0);
+        });
     </script>
 
 </body>
