@@ -47,34 +47,56 @@ exports.sendPushNotification = functions.database
                 }
             };
 
-            // Send to all user's devices
+            // Send to all user's devices using FCM v1 API
             const tokenList = Object.keys(tokens);
             console.log(`📤 Sending to ${tokenList.length} device(s)`);
 
-            const response = await admin.messaging().sendToDevice(tokenList, payload, {
-                priority: 'high',
-                timeToLive: 60 * 60 * 24 // 24 hours
+            // FCM v1 API requires sending to each token individually
+            const sendPromises = tokenList.map(async (token) => {
+                const message = {
+                    token: token,
+                    notification: payload.notification,
+                    data: payload.data,
+                    android: {
+                        priority: 'high'
+                    },
+                    apns: {
+                        headers: {
+                            'apns-priority': '10'
+                        }
+                    },
+                    webpush: {
+                        headers: {
+                            'TTL': '86400' // 24 hours
+                        }
+                    }
+                };
+
+                try {
+                    await admin.messaging().send(message);
+                    return { success: true, token };
+                } catch (error) {
+                    console.error(`❌ Error sending to token ${token}:`, error.code);
+                    return { success: false, token, error: error.code };
+                }
             });
 
+            const results = await Promise.all(sendPromises);
+            const successCount = results.filter(r => r.success).length;
+            const failureCount = results.filter(r => !r.success).length;
+
             console.log(`✅ Successfully sent notification. Results:`, {
-                success: response.successCount,
-                failure: response.failureCount
+                success: successCount,
+                failure: failureCount
             });
 
             // Remove invalid tokens
-            const invalidTokens = [];
-            response.results.forEach((result, index) => {
-                const error = result.error;
-                if (error) {
-                    console.error(`❌ Error sending to token ${tokenList[index]}:`, error);
-                    
-                    // Mark for removal if token is invalid
-                    if (error.code === 'messaging/invalid-registration-token' ||
-                        error.code === 'messaging/registration-token-not-registered') {
-                        invalidTokens.push(tokenList[index]);
-                    }
-                }
-            });
+            const invalidTokens = results
+                .filter(r => !r.success && (
+                    r.error === 'messaging/invalid-registration-token' ||
+                    r.error === 'messaging/registration-token-not-registered'
+                ))
+                .map(r => r.token);
 
             // Clean up invalid tokens
             if (invalidTokens.length > 0) {
