@@ -134,8 +134,8 @@ async function saveFCMToken(token) {
 
         const userId = user.uid;
         
-        // Sanitize token for Firebase key (replace invalid chars: . # $ [ ] /)
-        const sanitizedToken = token.replace(/[.#$\[\]\/]/g, '_');
+        // Sanitize token for Firebase key (replace invalid chars: . # $ [ ] / :)
+        const sanitizedToken = token.replace(/[.#$\[\]\/:]/g, '_');
         
         // Save token with timestamp
         await firebase.database().ref(`fcmTokens/${userId}/${sanitizedToken}`).set({
@@ -170,8 +170,8 @@ async function removeFCMToken() {
             return;
         }
 
-        // Sanitize token for Firebase key (replace invalid chars: . # $ [ ] /)
-        const sanitizedToken = currentFCMToken.replace(/[.#$\[\]\/]/g, '_');
+        // Sanitize token for Firebase key (replace invalid chars: . # $ [ ] / :)
+        const sanitizedToken = currentFCMToken.replace(/[.#$\[\]\/:]/g, '_');
 
         await firebase.database()
             .ref(`fcmTokens/${user.uid}/${sanitizedToken}`)
