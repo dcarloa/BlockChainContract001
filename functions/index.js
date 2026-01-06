@@ -50,13 +50,17 @@ exports.sendPushNotification = functions.database
             };
 
             // Send to all user's devices using FCM v1 API
-            const tokenList = Object.keys(tokens).map(key => tokens[key].token);
-            console.log(`📤 Sending to ${tokenList.length} device(s)`);
+            // Keep both sanitized key (for DB operations) and real token (for FCM send)
+            const tokenData = Object.keys(tokens).map(key => ({
+                key: key,                    // Sanitized key (no special chars)
+                token: tokens[key].token     // Real FCM token (with colon)
+            }));
+            console.log(`📤 Sending to ${tokenData.length} device(s)`);
 
             // FCM v1 API requires sending to each token individually
-            const sendPromises = tokenList.map(async (token) => {
+            const sendPromises = tokenData.map(async ({ key, token }) => {
                 const message = {
-                    token: token,
+                    token: token,  // Use real token for FCM
                     notification: payload.notification,
                     data: payload.data,
                     android: {
@@ -76,10 +80,10 @@ exports.sendPushNotification = functions.database
 
                 try {
                     await admin.messaging().send(message);
-                    return { success: true, token };
+                    return { success: true, key, token };
                 } catch (error) {
                     console.error(`❌ Error sending to token ${token}:`, error.code);
-                    return { success: false, token, error: error.code };
+                    return { success: false, key, token, error: error.code };
                 }
             });
 
@@ -98,14 +102,14 @@ exports.sendPushNotification = functions.database
                     r.error === 'messaging/invalid-registration-token' ||
                     r.error === 'messaging/registration-token-not-registered'
                 ))
-                .map(r => r.token);
+                .map(r => r.key);  // Use sanitized key for DB path
 
             // Clean up invalid tokens
             if (invalidTokens.length > 0) {
                 console.log(`🧹 Removing ${invalidTokens.length} invalid token(s)`);
                 const updates = {};
-                invalidTokens.forEach(token => {
-                    updates[`/fcmTokens/${userId}/${token}`] = null;
+                invalidTokens.forEach(key => {
+                    updates[`/fcmTokens/${userId}/${key}`] = null;  // Use sanitized key
                 });
                 await admin.database().ref().update(updates);
             }
