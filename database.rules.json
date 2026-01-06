@@ -123,7 +123,7 @@
         ".write": "auth != null && auth.uid === $userId",
         
         "$tokenId": {
-          ".validate": "newData.hasChildren(['token', 'timestamp'])"
+          ".validate": "newData.hasChildren(['token', 'createdAt', 'lastUsed'])"
         }
       }
     }
