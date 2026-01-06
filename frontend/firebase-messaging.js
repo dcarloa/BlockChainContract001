@@ -31,13 +31,10 @@ async function initializeMessaging() {
         }
 
         // Wait for service worker to be ready
-        const registration = await navigator.serviceWorker.ready;
+        await navigator.serviceWorker.ready;
         
-        // Initialize messaging with existing service worker
+        // Initialize messaging (will automatically use registered Service Worker)
         messagingInstance = firebase.messaging();
-        
-        // Use the existing service worker registration (not the default firebase-messaging-sw.js)
-        await messagingInstance.useServiceWorker(registration);
 
         // Handle foreground messages
         messagingInstance.onMessage((payload) => {
