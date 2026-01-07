@@ -89,14 +89,6 @@
         </div>
     </div>
 
-    <!-- Offline Ready Indicator -->
-    <div id="offlineReadyIndicator" class="offline-ready-indicator" style="display: none;">
-        <div class="offline-ready-content">
-            <span class="offline-ready-icon">✓</span>
-            <span class="offline-ready-text">App ready for offline use</span>
-        </div>
-    </div>
-
     <!-- Sign In Modal (for Simple Mode) -->
     <div id="signInModal" class="modal" style="display: none;">
         <div class="modal-content modal-medium">
@@ -2906,7 +2898,7 @@
                             showToast('Installing app for offline use... 📦', 'info', 0);
                         } else if (reg.active) {
                             // Already installed and active
-                            showOfflineReadyIndicator();
+                            // showOfflineReadyIndicator();
                         }
                         
                         // Listen for Service Worker state changes
@@ -2929,8 +2921,8 @@
                                                 }
                                             });
                                         }
-                                        showToast('App installed! Ready for offline use ✓', 'success');
-                                        showOfflineReadyIndicator();
+                                        // showToast('App installed! Ready for offline use ✓', 'success');
+                                        // showOfflineReadyIndicator();
                                     }
                                 }
                                 
