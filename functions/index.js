@@ -295,8 +295,11 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
  */
 exports.createStripeCheckoutSession = functions.https.onCall(async (data, context) => {
     try {
+        console.log('🔵 createStripeCheckoutSession called with data:', data);
+        
         // Check if user is authenticated
         if (!context.auth) {
+            console.error('❌ User not authenticated');
             throw new functions.https.HttpsError(
                 'unauthenticated',
                 'User must be authenticated'
@@ -306,6 +309,7 @@ exports.createStripeCheckoutSession = functions.https.onCall(async (data, contex
         const { customerEmail, successUrl, cancelUrl } = data;
 
         if (!customerEmail) {
+            console.error('❌ Customer email missing');
             throw new functions.https.HttpsError(
                 'invalid-argument',
                 'Customer email is required'
@@ -316,6 +320,8 @@ exports.createStripeCheckoutSession = functions.https.onCall(async (data, contex
 
         // Get the price ID from your Stripe product
         const priceId = 'price_1SmMb0B6L1CVc8RDGEi8cqVQ'; // PRO Monthly $4.99/month
+
+        console.log(`🔵 Creating checkout session for ${customerEmail} with price ${priceId}`);
 
         // Create checkout session
         const session = await stripe.checkout.sessions.create({
@@ -336,15 +342,17 @@ exports.createStripeCheckoutSession = functions.https.onCall(async (data, contex
             }
         });
 
-        console.log(`✅ Checkout session created for ${customerEmail}`);
+        console.log(`✅ Checkout session created: ${session.id}`);
+        console.log(`✅ Checkout URL: ${session.url}`);
 
         return { url: session.url };
 
     } catch (error) {
         console.error('❌ Error creating checkout session:', error);
+        console.error('❌ Error details:', error.message);
         throw new functions.https.HttpsError(
             'internal',
-            'Failed to create checkout session'
+            `Failed to create checkout session: ${error.message}`
         );
     }
 });
