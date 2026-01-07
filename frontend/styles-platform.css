@@ -3820,6 +3820,26 @@ header,
   opacity: 1;
 }
 
+/* Theme-specific styling for setting options */
+[data-theme="dark"] .setting-option {
+  color: var(--text-primary); /* Light text in dark mode */
+}
+
+[data-theme="light"] .setting-option {
+  color: var(--text-primary); /* Dark text in light mode */
+}
+
+/* Ensure active buttons have proper contrast in both themes */
+[data-theme="dark"] .setting-option.active {
+  background: rgba(99, 102, 241, 0.2);
+  color: #f1f5f9; /* Explicitly set light text */
+}
+
+[data-theme="light"] .setting-option.active {
+  background: rgba(99, 102, 241, 0.15);
+  color: #0f172a; /* Explicitly set dark text */
+}
+
 /* Responsive Settings Modal */
 @media (max-width: 640px) {
   .settings-modal {
