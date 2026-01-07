@@ -3047,6 +3047,25 @@ async function loadSimpleModeBalances() {
         const memberCount = Object.keys(currentFund.members || {}).length;
         const currencies = Object.keys(currencyTotals);
         
+        // Calculate total shares from expenses (not just member count)
+        let totalShares = 0;
+        if (groupData.expenses) {
+            // Get a representative expense to calculate shares
+            // We'll use the most recent expense to show current split configuration
+            const expenses = Object.values(groupData.expenses);
+            if (expenses.length > 0) {
+                // Sort by timestamp to get most recent
+                const sortedExpenses = expenses.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                const recentExpense = sortedExpenses[0];
+                // Count shares from splitBetween array (includes duplicates)
+                totalShares = recentExpense.splitBetween ? recentExpense.splitBetween.length : memberCount;
+            } else {
+                totalShares = memberCount;
+            }
+        } else {
+            totalShares = memberCount;
+        }
+        
         // Update dashboard stats
         let totalText = '';
         if (currencies.length === 1) {
@@ -3067,16 +3086,17 @@ async function loadSimpleModeBalances() {
         document.getElementById('simpleModeTotalExpenses').title = currencies.length > 1 ? 
             'Converted to USD using current exchange rates' : '';
         
-        // For per person
+        // For per share (not per member - considers shares)
         if (currencies.length > 1) {
-            const perPersonUSD = memberCount > 0 ? totalExpensesUSD / memberCount : 0;
-            document.getElementById('simpleModePerPerson').textContent = `$${perPersonUSD.toFixed(2)} USD`;
-            document.getElementById('simpleModePerPerson').title = 'Average per person (converted to USD)';
+            const perShareUSD = totalShares > 0 ? totalExpensesUSD / totalShares : 0;
+            document.getElementById('simpleModePerPerson').textContent = `$${perShareUSD.toFixed(2)} USD`;
+            document.getElementById('simpleModePerPerson').title = `Per share (${totalShares} shares total)`;
         } else if (currencies.length === 1) {
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
-            const perPerson = memberCount > 0 ? currencyTotals[currency] / memberCount : 0;
-            document.getElementById('simpleModePerPerson').textContent = `${symbol}${perPerson.toFixed(2)} ${currency}`;
+            const perShare = totalShares > 0 ? currencyTotals[currency] / totalShares : 0;
+            document.getElementById('simpleModePerPerson').textContent = `${symbol}${perShare.toFixed(2)} ${currency}`;
+            document.getElementById('simpleModePerPerson').title = `Per share (${totalShares} shares total)`;
         } else {
             document.getElementById('simpleModePerPerson').textContent = '$0.00 USD';
         }
