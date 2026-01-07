@@ -1037,9 +1037,78 @@ header,
 }
 
 .sort-select option {
-  background: #1a1a2e;
-  color: var(--text-primary);
   padding: 0.5rem;
+}
+
+/* CRITICAL: Force proper contrast for select dropdowns in both themes */
+[data-theme="dark"] .sort-select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .sort-select option {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="light"] .sort-select {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .sort-select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Apply same fix to ALL select elements */
+[data-theme="dark"] select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] select option {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="light"] select {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Input fields contrast fix */
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="dark"] textarea {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: rgba(241, 245, 249, 0.5) !important;
+}
+
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] textarea {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: rgba(15, 23, 42, 0.5) !important;
 }
 
 /* Funds Grid */
