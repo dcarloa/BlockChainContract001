@@ -169,3 +169,226 @@ exports.cleanupOldNotifications = functions.pubsub
             return null;
         }
     });
+
+/**
+ * Cloud Function: Handle Stripe webhooks for subscription management
+ */
+exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
+    const stripe = require('stripe')(functions.config().stripe?.secret_key);
+    const endpointSecret = functions.config().stripe?.webhook_secret;
+
+    if (!stripe || !endpointSecret) {
+        console.error('❌ Stripe not configured');
+        return res.status(500).send('Stripe configuration missing');
+    }
+
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
+    } catch (err) {
+        console.error('❌ Webhook signature verification failed:', err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    console.log(`📧 Stripe event received: ${event.type}`);
+
+    try {
+        switch (event.type) {
+            case 'checkout.session.completed': {
+                const session = event.data.object;
+                const customerId = session.customer;
+                const subscriptionId = session.subscription;
+                const clientEmail = session.customer_details?.email;
+
+                // Find user by email
+                const usersSnapshot = await admin.database()
+                    .ref('/users')
+                    .orderByChild('email')
+                    .equalTo(clientEmail)
+                    .once('value');
+
+                if (usersSnapshot.exists()) {
+                    const userData = usersSnapshot.val();
+                    const userId = Object.keys(userData)[0];
+
+                    await admin.database().ref(`/users/${userId}/subscription`).set({
+                        status: 'active',
+                        plan: 'pro',
+                        stripeCustomerId: customerId,
+                        stripeSubscriptionId: subscriptionId,
+                        createdAt: Date.now(),
+                        updatedAt: Date.now()
+                    });
+
+                    console.log(`✅ Subscription activated for user ${userId}`);
+                }
+                break;
+            }
+
+            case 'customer.subscription.updated': {
+                const subscription = event.data.object;
+                const customerId = subscription.customer;
+
+                // Find user by customerId
+                const usersSnapshot = await admin.database()
+                    .ref('/users')
+                    .orderByChild('subscription/stripeCustomerId')
+                    .equalTo(customerId)
+                    .once('value');
+
+                if (usersSnapshot.exists()) {
+                    const userData = usersSnapshot.val();
+                    const userId = Object.keys(userData)[0];
+
+                    await admin.database().ref(`/users/${userId}/subscription`).update({
+                        status: subscription.status,
+                        currentPeriodEnd: subscription.current_period_end * 1000,
+                        updatedAt: Date.now()
+                    });
+
+                    console.log(`✅ Subscription updated for user ${userId}: ${subscription.status}`);
+                }
+                break;
+            }
+
+            case 'customer.subscription.deleted': {
+                const subscription = event.data.object;
+                const customerId = subscription.customer;
+
+                const usersSnapshot = await admin.database()
+                    .ref('/users')
+                    .orderByChild('subscription/stripeCustomerId')
+                    .equalTo(customerId)
+                    .once('value');
+
+                if (usersSnapshot.exists()) {
+                    const userData = usersSnapshot.val();
+                    const userId = Object.keys(userData)[0];
+
+                    await admin.database().ref(`/users/${userId}/subscription`).set({
+                        status: 'cancelled',
+                        plan: 'free',
+                        cancelledAt: Date.now()
+                    });
+
+                    console.log(`✅ Subscription cancelled for user ${userId}`);
+                }
+                break;
+            }
+
+            default:
+                console.log(`ℹ️ Unhandled event type: ${event.type}`);
+        }
+
+        res.json({ received: true });
+    } catch (error) {
+        console.error('❌ Error processing webhook:', error);
+        res.status(500).send('Webhook processing failed');
+    }
+});
+
+/**
+ * Cloud Function: Create Stripe Checkout Session
+ * Creates a new checkout session for PRO subscription
+ */
+exports.createStripeCheckoutSession = functions.https.onCall(async (data, context) => {
+    try {
+        // Check if user is authenticated
+        if (!context.auth) {
+            throw new functions.https.HttpsError(
+                'unauthenticated',
+                'User must be authenticated'
+            );
+        }
+
+        const { customerEmail, successUrl, cancelUrl } = data;
+
+        if (!customerEmail) {
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                'Customer email is required'
+            );
+        }
+
+        const stripe = require('stripe')(functions.config().stripe.secret_key);
+
+        // Get the price ID from your Stripe product
+        const priceId = 'price_1SmMb0B6L1CVc8RDGEi8cqVQ'; // PRO Monthly $4.99/month
+
+        // Create checkout session
+        const session = await stripe.checkout.sessions.create({
+            mode: 'subscription',
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price: priceId,
+                    quantity: 1,
+                },
+            ],
+            customer_email: customerEmail,
+            success_url: successUrl || 'https://blockchaincontract001.web.app/app.html?payment=success',
+            cancel_url: cancelUrl || 'https://blockchaincontract001.web.app/app.html?payment=cancelled',
+            metadata: {
+                userId: context.auth.uid,
+                email: customerEmail
+            }
+        });
+
+        console.log(`✅ Checkout session created for ${customerEmail}`);
+
+        return { url: session.url };
+
+    } catch (error) {
+        console.error('❌ Error creating checkout session:', error);
+        throw new functions.https.HttpsError(
+            'internal',
+            'Failed to create checkout session'
+        );
+    }
+});
+
+/**
+ * Cloud Function: Create Stripe Customer Portal session
+ * Allows PRO users to manage their subscription
+ */
+exports.createStripePortalSession = functions.https.onCall(async (data, context) => {
+    try {
+        // Check if user is authenticated
+        if (!context.auth) {
+            throw new functions.https.HttpsError(
+                'unauthenticated',
+                'User must be authenticated'
+            );
+        }
+
+        const { customerId } = data;
+
+        if (!customerId) {
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                'Customer ID is required'
+            );
+        }
+
+        const stripe = require('stripe')(functions.config().stripe.secret_key);
+
+        // Create portal session
+        const session = await stripe.billingPortal.sessions.create({
+            customer: customerId,
+            return_url: 'https://blockchaincontract001.web.app/index.html'
+        });
+
+        console.log(`✅ Portal session created for customer ${customerId}`);
+
+        return { url: session.url };
+
+    } catch (error) {
+        console.error('❌ Error creating portal session:', error);
+        throw new functions.https.HttpsError(
+            'internal',
+            'Failed to create portal session'
+        );
+    }
+});

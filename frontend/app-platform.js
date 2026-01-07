@@ -9327,6 +9327,9 @@ function switchProfileTab(tabName) {
     // Load specific tab data
     if (tabName === 'groups') {
         loadProfileGroups();
+    } else if (tabName === 'subscription') {
+        loadSubscriptionStatus();
+        checkStripePricingTable();
     }
 }
 
@@ -9821,6 +9824,210 @@ async function notifyGroupMembers(fundId, type, message, extraData = {}) {
 
 // Make function globally available
 window.notifyGroupMembers = notifyGroupMembers;
+
+// ============================================
+// SUBSCRIPTION MANAGEMENT
+// ============================================
+
+/**
+ * Load user subscription status from Firebase
+ */
+async function loadSubscriptionStatus() {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            console.log('No user logged in');
+            return;
+        }
+
+        const subscriptionRef = firebase.database().ref(`users/${user.uid}/subscription`);
+        const snapshot = await subscriptionRef.once('value');
+        const subscription = snapshot.val();
+
+        console.log('📊 Subscription data:', subscription);
+
+        // Update UI based on subscription status
+        updateSubscriptionUI(subscription);
+
+    } catch (error) {
+        console.error('Error loading subscription status:', error);
+    }
+}
+
+/**
+ * Update subscription UI based on user's plan
+ */
+function updateSubscriptionUI(subscription) {
+    const freePlanCard = document.getElementById('freePlanCard');
+    const proPlanCard = document.getElementById('proPlanCard');
+    const proPlanBadge = document.getElementById('proPlanBadge');
+    const stripeButtonContainer = document.getElementById('stripeButtonContainer');
+    const manageSubscriptionContainer = document.getElementById('manageSubscriptionContainer');
+    const subscriptionStatus = document.getElementById('subscriptionStatus');
+
+    if (!freePlanCard || !proPlanCard) return;
+
+    // Get current plan (default to 'free')
+    const currentPlan = subscription?.plan || 'free';
+    const status = subscription?.status || 'none';
+
+    // Update badges
+    const freeBadge = freePlanCard.querySelector('.plan-badge');
+    const proBadge = proPlanCard.querySelector('.plan-badge');
+
+    if (currentPlan === 'pro' && status === 'active') {
+        // User is PRO
+        freeBadge.textContent = '';
+        freeBadge.classList.remove('current');
+        freeBadge.style.display = 'none';
+
+        proBadge.textContent = 'CURRENT PLAN';
+        proBadge.classList.remove('recommended');
+        proBadge.classList.add('current');
+
+        // Hide buy button, show manage button
+        if (stripeButtonContainer) stripeButtonContainer.style.display = 'none';
+        if (manageSubscriptionContainer) {
+            manageSubscriptionContainer.style.display = 'block';
+            
+            // Show subscription end date
+            if (subscription.currentPeriodEnd) {
+                const endDate = new Date(subscription.currentPeriodEnd);
+                subscriptionStatus.textContent = `Renews on ${endDate.toLocaleDateString()}`;
+            }
+        }
+
+        console.log('💎 PRO user detected');
+    } else {
+        // User is FREE
+        freeBadge.textContent = 'CURRENT PLAN';
+        freeBadge.classList.add('current');
+        freeBadge.style.display = 'block';
+
+        proBadge.textContent = 'RECOMMENDED';
+        proBadge.classList.add('recommended');
+        proBadge.classList.remove('current');
+
+        // Show buy button, hide manage button
+        if (stripeButtonContainer) stripeButtonContainer.style.display = 'block';
+        if (manageSubscriptionContainer) manageSubscriptionContainer.style.display = 'none';
+
+        // Set customer email in Stripe Pricing Table
+        const user = firebase.auth().currentUser;
+        if (user && user.email) {
+            const pricingTable = document.querySelector('stripe-pricing-table');
+            if (pricingTable) {
+                pricingTable.setAttribute('customer-email', user.email);
+            }
+        }
+
+        console.log('🆓 Free user detected');
+    }
+}
+
+/**
+ * Open Stripe Customer Portal
+ */
+async function openCustomerPortal() {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast(t('errors.notLoggedIn'), 'error');
+            return;
+        }
+
+        // Get customer ID from Firebase
+        const subscriptionRef = firebase.database().ref(`users/${user.uid}/subscription`);
+        const snapshot = await subscriptionRef.once('value');
+        const subscription = snapshot.val();
+
+        if (!subscription || !subscription.stripeCustomerId) {
+            showToast(t('errors.noSubscription'), 'error');
+            return;
+        }
+
+        showToast(t('loading.openingPortal'), 'info');
+
+        // Call Cloud Function to create portal session
+        const createPortalSession = firebase.functions().httpsCallable('createStripePortalSession');
+        const result = await createPortalSession({ customerId: subscription.stripeCustomerId });
+
+        if (result.data && result.data.url) {
+            // Redirect to Stripe Customer Portal
+            window.location.href = result.data.url;
+        } else {
+            throw new Error('No portal URL returned');
+        }
+
+    } catch (error) {
+        console.error('Error opening customer portal:', error);
+        showToast(t('errors.portalError'), 'error');
+    }
+}
+
+/**
+ * Open Stripe Checkout (fallback if pricing table fails)
+ */
+async function openStripeCheckout() {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast(t('common.errors.notLoggedIn'), 'error');
+            return;
+        }
+
+        showToast('Opening checkout...', 'info');
+
+        // Call Cloud Function to create checkout session
+        const createCheckoutSession = firebase.functions().httpsCallable('createStripeCheckoutSession');
+        const result = await createCheckoutSession({ 
+            customerEmail: user.email,
+            successUrl: 'https://blockchaincontract001.web.app/app.html?payment=success',
+            cancelUrl: 'https://blockchaincontract001.web.app/app.html?payment=cancelled'
+        });
+
+        if (result.data && result.data.url) {
+            // Redirect to Stripe Checkout
+            window.location.href = result.data.url;
+        } else {
+            throw new Error('No checkout URL returned');
+        }
+
+    } catch (error) {
+        console.error('Error opening checkout:', error);
+        showToast('Error opening checkout', 'error');
+    }
+}
+
+/**
+ * Check if Stripe Pricing Table loaded correctly
+ */
+function checkStripePricingTable() {
+    setTimeout(() => {
+        const pricingTable = document.querySelector('stripe-pricing-table');
+        const fallbackBtn = document.getElementById('stripeCheckoutBtn');
+        
+        if (pricingTable && fallbackBtn) {
+            // Check if pricing table has content
+            const hasContent = pricingTable.shadowRoot && pricingTable.shadowRoot.children.length > 0;
+            
+            if (!hasContent) {
+                console.warn('⚠️ Stripe Pricing Table not loaded, showing fallback button');
+                pricingTable.style.display = 'none';
+                fallbackBtn.style.display = 'block';
+            } else {
+                console.log('✅ Stripe Pricing Table loaded successfully');
+            }
+        }
+    }, 3000); // Wait 3 seconds for Stripe to load
+}
+
+// Make functions globally available
+window.loadSubscriptionStatus = loadSubscriptionStatus;
+window.updateSubscriptionUI = updateSubscriptionUI;
+window.openCustomerPortal = openCustomerPortal;
+window.openStripeCheckout = openStripeCheckout;
+window.checkStripePricingTable = checkStripePricingTable;
 
 // Notification system will be initialized after Firebase auth is ready
 // See firebase-config.js auth state listener

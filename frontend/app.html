@@ -17,14 +17,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self'; 
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://www.googletagmanager.com https://*.google-analytics.com;
-        script-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://www.googletagmanager.com https://*.google-analytics.com;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://www.googletagmanager.com https://*.google-analytics.com https://js.stripe.com;
+        script-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://www.googletagmanager.com https://*.google-analytics.com https://js.stripe.com;
         style-src 'self' 'unsafe-inline'; 
         img-src 'self' data: https:; 
         media-src 'self' blob:;
         font-src 'self' https://fonts.gstatic.com;
-        frame-src 'self' https://*.firebaseapp.com https://*.firebaseio.com https://accounts.google.com;
-        connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org https://www.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com https://accounts.google.com https://api.exchangerate-api.com https://api.openai.com https://www.googletagmanager.com https://*.google-analytics.com;
+        frame-src 'self' https://*.firebaseapp.com https://*.firebaseio.com https://accounts.google.com https://js.stripe.com https://checkout.stripe.com;
+        connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org https://www.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://*.googleapis.com https://*.cloudfunctions.net https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com https://accounts.google.com https://api.exchangerate-api.com https://api.openai.com https://www.googletagmanager.com https://*.google-analytics.com https://api.stripe.com;
     ">
     <title>Ant Pool - Cooperative Finance Colony</title>
     <meta name="description" content="Work together like ants. Share expenses the simple way or use blockchain for automatic payments. Your choice.">
@@ -54,6 +54,9 @@
     
     <!-- QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <!-- Stripe Pricing Table -->
+    <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
 </head>
 <body>
     <!-- Loading Overlay -->
@@ -429,7 +432,7 @@
                         
                         <div class="subscription-plans">
                             <!-- FREE Plan -->
-                            <div class="subscription-card free-plan">
+                            <div id="freePlanCard" class="subscription-card free-plan">
                                 <div class="plan-badge current">CURRENT PLAN</div>
                                 <div class="plan-icon">🆓</div>
                                 <h3>Free</h3>
@@ -441,8 +444,8 @@
                             </div>
                             
                             <!-- PRO Plan -->
-                            <div class="subscription-card pro-plan">
-                                <div class="plan-badge recommended">RECOMMENDED</div>
+                            <div id="proPlanCard" class="subscription-card pro-plan">
+                                <div id="proPlanBadge" class="plan-badge recommended">RECOMMENDED</div>
                                 <div class="plan-icon">💎</div>
                                 <h3>PRO</h3>
                                 <div class="plan-price">
@@ -454,13 +457,19 @@
                                 </div>
                                 <p class="plan-description">Support development and get premium features</p>
                                 
-                                <!-- Stripe Buy Button -->
-                                <div class="stripe-button-container">
-                                    <stripe-buy-button
-                                      buy-button-id="buy_btn_1SmMbcB6L1CVc8RD4oTqJDax"
-                                      publishable-key="pk_live_51NvSP6B6L1CVc8RDUkqFFM2VIQAZ8F40dMHh0snh9qZCTO7sgbZ6saCJUvOaekIlzlCibshPMC1M5hJbK51N17QL00ema31cnw"
-                                    >
-                                    </stripe-buy-button>
+                                <!-- Stripe Checkout Button (shown when not subscribed) -->
+                                <div id="stripeButtonContainer" class="stripe-button-container">
+                                    <button class="btn btn-primary btn-block" onclick="openStripeCheckout()">
+                                        💎 Subscribe to PRO - $4.99/month
+                                    </button>
+                                </div>
+                                
+                                <!-- Manage Subscription Button (shown when subscribed) -->
+                                <div id="manageSubscriptionContainer" class="stripe-button-container" style="display: none;">
+                                    <button class="btn btn-primary btn-block" onclick="openCustomerPortal()">
+                                        ⚙️ Manage Subscription
+                                    </button>
+                                    <p id="subscriptionStatus" style="margin-top: 1rem; text-align: center; color: #43e97b; font-weight: 600;"></p>
                                 </div>
                             </div>
                         </div>
@@ -1887,6 +1896,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
     
     <!-- App Scripts -->
@@ -2371,14 +2381,20 @@
             const approvalLabel = document.querySelector('label[for="approvalPercentage"] .label-text');
             if (approvalLabel) approvalLabel.textContent = t.app.createFund.fields.approvalPercentage;
             
-            const approvalHint = document.querySelector('label[for="approvalPercentage"]').parentElement.querySelector('.form-hint');
-            if (approvalHint) approvalHint.textContent = t.app.createFund.fields.approvalHint;
+            const approvalParent = document.querySelector('label[for="approvalPercentage"]');
+            if (approvalParent) {
+                const approvalHint = approvalParent.parentElement.querySelector('.form-hint');
+                if (approvalHint) approvalHint.textContent = t.app.createFund.fields.approvalHint;
+            }
             
             const minimumVotesLabel = document.querySelector('label[for="minimumVotes"] .label-text');
             if (minimumVotesLabel) minimumVotesLabel.textContent = t.app.createFund.fields.minimumVotes;
             
-            const minimumVotesHint = document.querySelector('label[for="minimumVotes"]').parentElement.querySelector('.form-hint');
-            if (minimumVotesHint) minimumVotesHint.textContent = t.app.createFund.fields.minimumVotesHint;
+            const minimumVotesParent = document.querySelector('label[for="minimumVotes"]');
+            if (minimumVotesParent) {
+                const minimumVotesHint = minimumVotesParent.parentElement.querySelector('.form-hint');
+                if (minimumVotesHint) minimumVotesHint.textContent = t.app.createFund.fields.minimumVotesHint;
+            }
             
             // Buttons
             const cancelCreateBtn = document.querySelector('#createFundModal .btn-secondary');

@@ -54,6 +54,9 @@ async function initializeFirebase() {
         firebaseAuth = firebase.auth();
         firebaseDatabase = firebase.database();
         
+        // Check for payment result in URL
+        checkPaymentResult();
+        
         // Setup auth state listener
         firebaseAuth.onAuthStateChanged((user) => {
             currentUser = user;
@@ -290,6 +293,49 @@ function listenDb(path, callback) {
 }
 
 // ============================================
+// PAYMENT RESULT HANDLER
+// ============================================
+
+/**
+ * Check URL parameters for payment result
+ */
+function checkPaymentResult() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    if (paymentStatus === 'success') {
+        // Show success message
+        setTimeout(() => {
+            if (typeof showToast === 'function') {
+                showToast(t('subscription.paymentSuccess'), 'success');
+            }
+        }, 1000);
+        
+        // Clean URL
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+        
+        // Reload subscription status after a delay
+        setTimeout(() => {
+            if (typeof loadSubscriptionStatus === 'function') {
+                loadSubscriptionStatus();
+            }
+        }, 2000);
+    } else if (paymentStatus === 'cancelled') {
+        // Show cancelled message
+        setTimeout(() => {
+            if (typeof showToast === 'function') {
+                showToast(t('subscription.paymentCancelled'), 'info');
+            }
+        }, 500);
+        
+        // Clean URL
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+    }
+}
+
+// ============================================
 // EXPORTS
 // ============================================
 
@@ -309,5 +355,6 @@ window.FirebaseConfig = {
     readDb,
     deleteDb,
     pushDb,
-    listenDb
+    listenDb,
+    checkPaymentResult
 };

@@ -570,7 +570,17 @@ const translations = {
                 resolvingRecipient: "Resolving recipient...",
                 registeringVote: "Registering vote...",
                 cancelingProposal: "Canceling proposal...",
-                executingProposal: "Executing proposal..."
+                executingProposal: "Executing proposal...",
+                openingPortal: "Opening customer portal..."
+            },
+            errors: {
+                notLoggedIn: "You must be logged in",
+                noSubscription: "No subscription found",
+                portalError: "Failed to open customer portal"
+            },
+            subscription: {
+                paymentSuccess: "🎉 Welcome to PRO! Your subscription is now active.",
+                paymentCancelled: "Payment was cancelled. You can subscribe anytime from your profile."
             },
             back: "Back"
         },
@@ -1150,7 +1160,17 @@ const translations = {
                 resolvingRecipient: "Resolviendo destinatario...",
                 registeringVote: "Registrando voto...",
                 cancelingProposal: "Cancelando propuesta...",
-                executingProposal: "Ejecutando propuesta..."
+                executingProposal: "Ejecutando propuesta...",
+                openingPortal: "Abriendo portal de cliente..."
+            },
+            errors: {
+                notLoggedIn: "Debes iniciar sesión",
+                noSubscription: "No se encontró suscripción",
+                portalError: "Error al abrir el portal de cliente"
+            },
+            subscription: {
+                paymentSuccess: "🎉 ¡Bienvenido a PRO! Tu suscripción está activa.",
+                paymentCancelled: "Pago cancelado. Puedes suscribirte cuando quieras desde tu perfil."
             },
             back: "Volver"
         },
