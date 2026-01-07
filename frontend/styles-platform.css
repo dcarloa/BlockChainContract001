@@ -7101,6 +7101,7 @@ header,
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .pwa-install-icon {
@@ -7110,6 +7111,7 @@ header,
 
 .pwa-install-text {
   flex: 1;
+  min-width: 200px;
 }
 
 .pwa-install-text strong {
@@ -7117,53 +7119,60 @@ header,
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 4px;
+  color: white;
 }
 
 .pwa-install-text p {
   font-size: 13px;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.95);
   margin: 0;
+  line-height: 1.4;
 }
 
 .pwa-install-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
+  width: 100%;
+  margin-top: 12px;
 }
 
 .pwa-install-actions .btn-sm {
-  padding: 8px 16px;
+  padding: 10px 20px;
   font-size: 14px;
   border-radius: 8px;
   font-weight: 600;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex: 1;
+  min-width: 100px;
 }
 
 .pwa-install-actions .btn-primary {
   background: white;
   color: #667eea;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .pwa-install-actions .btn-primary:hover {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .pwa-install-actions .btn-ghost {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.15);
   color: white;
-  opacity: 0.8;
-  padding: 8px 12px;
-  font-size: 20px;
-  line-height: 1;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .pwa-install-actions .btn-ghost:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 /* Offline Ready Indicator */
@@ -7215,11 +7224,20 @@ header,
   .pwa-install-prompt {
     bottom: 10px;
     width: calc(100% - 20px);
-    padding: 14px 16px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .pwa-install-content {
+    gap: 12px;
   }
 
   .pwa-install-icon {
     font-size: 28px;
+  }
+
+  .pwa-install-text {
+    width: 100%;
   }
 
   .pwa-install-text strong {
@@ -7229,10 +7247,21 @@ header,
   .pwa-install-text p {
     font-size: 12px;
   }
+  
+  .pwa-install-actions {
+    width: 100%;
+    gap: 8px;
+    margin-top: 10px;
+  }
 
   .pwa-install-actions .btn-sm {
-    padding: 6px 14px;
+    padding: 10px 16px;
     font-size: 13px;
+    flex: 1;
+  }
+  
+  .pwa-install-actions .btn-ghost {
+    padding: 8px 14px;
   }
 
   .offline-ready-indicator {
@@ -7483,17 +7512,60 @@ header,
   
   .subscription-plans {
     grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+  
+  .subscription-card {
+    padding: 1.5rem 1rem;
+    margin: 0;
   }
   
   .subscription-card .plan-icon {
-    font-size: 3rem;
+    font-size: 2.5rem;
+    margin: 0.5rem 0;
   }
   
   .subscription-card h3 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    margin: 0.25rem 0;
+  }
+  
+  .plan-price {
+    margin: 0.5rem 0 0.25rem 0;
   }
   
   .plan-price .price {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+  
+  .plan-price .period {
+    font-size: 0.9rem;
+  }
+  
+  .plan-price-annual {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .plan-description {
+    font-size: 0.85rem;
+    margin: 0.5rem 0 1rem 0;
+    min-height: auto;
+  }
+  
+  .stripe-button-container .btn-primary {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .plan-badge {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.8rem;
+  }
+  
+  .subscription-footer {
+    padding: 1rem;
+    font-size: 0.85rem;
   }
 }
