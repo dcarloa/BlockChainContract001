@@ -2914,6 +2914,13 @@ function renderExpenseItem(expense, currentUserId, groupData) {
     const commentsCount = expense.comments ? Object.keys(expense.comments).length : 0;
     const deleteRequestsCount = expense.deleteRequests ? Object.keys(expense.deleteRequests).length : 0;
     
+    // Calculate unique members vs total shares
+    const totalShares = expense.splitBetween.length;
+    const uniqueMembers = [...new Set(expense.splitBetween)].length;
+    const sharesDisplay = uniqueMembers === totalShares 
+        ? `${totalShares} ${totalShares === 1 ? 'person' : 'people'}`
+        : `${uniqueMembers} ${uniqueMembers === 1 ? 'member' : 'members'} (${totalShares} shares)`;
+    
     // Store ISO date and members for filtering
     const isoDate = expense.date || (expense.timestamp ? new Date(expense.timestamp).toISOString().split('T')[0] : '');
     const allMembers = [...paidByArray, ...expense.splitBetween].join(',');
@@ -2939,7 +2946,7 @@ function renderExpenseItem(expense, currentUserId, groupData) {
             <div class="expense-details" style="display: none;">
                 <div class="expense-meta">
                     <span class="meta-item">👤 ${paidByDisplay}</span>
-                    <span class="meta-item">👥 ${expense.splitBetween.length} people</span>
+                    <span class="meta-item">👥 ${sharesDisplay}</span>
                 </div>
                 ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
                 
