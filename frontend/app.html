@@ -232,6 +232,12 @@
                             👤
                         </button>
                         
+                        <!-- Upgrade PRO Button -->
+                        <button id="upgradeProBtn" class="upgrade-pro-btn" onclick="openProfilePanel(); setTimeout(() => switchProfileTab('subscription'), 100);" title="Upgrade to PRO">
+                            <span>💎</span>
+                            <span class="upgrade-text">PRO</span>
+                        </button>
+                        
                         <!-- Notifications -->
                         <button id="notificationsBtn" class="notifications-btn" onclick="toggleNotificationsPanel()" title="Notifications">
                             <span class="bell-icon">🔔</span>
@@ -416,44 +422,51 @@
                 <!-- Subscription Tab -->
                 <div id="profileTabSubscription" class="profile-tab-panel">
                     <div class="profile-section">
-                        <h4>Current Plan</h4>
-                        <div class="subscription-card">
-                            <div class="subscription-badge">
-                                <span class="plan-icon">🆓</span>
-                                <div class="plan-info">
-                                    <h3>Free Plan</h3>
-                                    <p>Perfect for personal use</p>
+                        <div class="subscription-header">
+                            <h4>🐜 Subscription Plans</h4>
+                            <p>Unlock premium features and support Ant Pool development</p>
+                        </div>
+                        
+                        <div class="subscription-plans">
+                            <!-- FREE Plan -->
+                            <div class="subscription-card free-plan">
+                                <div class="plan-badge current">CURRENT PLAN</div>
+                                <div class="plan-icon">🆓</div>
+                                <h3>Free</h3>
+                                <div class="plan-price">
+                                    <span class="price">$0</span>
+                                    <span class="period">/month</span>
+                                </div>
+                                <p class="plan-description">Perfect for getting started</p>
+                            </div>
+                            
+                            <!-- PRO Plan -->
+                            <div class="subscription-card pro-plan">
+                                <div class="plan-badge recommended">RECOMMENDED</div>
+                                <div class="plan-icon">💎</div>
+                                <h3>PRO</h3>
+                                <div class="plan-price">
+                                    <span class="price">$4.99</span>
+                                    <span class="period">/month</span>
+                                </div>
+                                <div class="plan-price-annual">
+                                    or $49/year <span class="save-badge">Save 17%</span>
+                                </div>
+                                <p class="plan-description">Unlock all features + blockchain mode</p>
+                                
+                                <!-- Stripe Buy Button -->
+                                <div class="stripe-button-container">
+                                    <stripe-buy-button
+                                      buy-button-id="buy_btn_1SmMbcB6L1CVc8RD4oTqJDax"
+                                      publishable-key="pk_live_51NvSP6B6L1CVc8RDUkqFFM2VIQAZ8F40dMHh0snh9qZCTO7sgbZ6saCJUvOaekIlzlCibshPMC1M5hJbK51N17QL00ema31cnw"
+                                    >
+                                    </stripe-buy-button>
                                 </div>
                             </div>
-                            <div class="plan-features">
-                                <div class="feature-item">
-                                    <span class="feature-icon">✅</span>
-                                    <span>Unlimited groups</span>
-                                </div>
-                                <div class="feature-item">
-                                    <span class="feature-icon">✅</span>
-                                    <span>Simple Mode & Blockchain Mode</span>
-                                </div>
-                                <div class="feature-item">
-                                    <span class="feature-icon">✅</span>
-                                    <span>Multi-currency support</span>
-                                </div>
-                                <div class="feature-item">
-                                    <span class="feature-icon">✅</span>
-                                    <span>Real-time notifications</span>
-                                </div>
-                                <div class="feature-item disabled">
-                                    <span class="feature-icon">🔒</span>
-                                    <span>Advanced analytics (Coming soon)</span>
-                                </div>
-                                <div class="feature-item disabled">
-                                    <span class="feature-icon">🔒</span>
-                                    <span>Priority support (Coming soon)</span>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-block" disabled style="opacity: 0.5; cursor: not-allowed;">
-                                Premium Plans Coming Soon
-                            </button>
+                        </div>
+                        
+                        <div class="subscription-footer">
+                            <p>💡 Features and limits will be defined soon. Early adopters get lifetime discounts!</p>
                         </div>
                     </div>
                 </div>
@@ -1866,6 +1879,9 @@
     <script src="i18n.js"></script>
     <script src="theme.js"></script>
     <script src="ethers.umd.min.js"></script>
+    
+    <!-- Stripe SDK -->
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>

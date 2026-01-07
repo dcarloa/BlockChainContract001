@@ -7147,3 +7147,219 @@ header,
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   box-shadow: 0 4px 16px rgba(5, 150, 105, 0.3);
 }
+
+/* ============================================
+   UPGRADE PRO BUTTON
+   ============================================ */
+.upgrade-pro-btn {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.upgrade-pro-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.upgrade-pro-btn:active {
+  transform: translateY(0);
+}
+
+.upgrade-pro-btn .upgrade-text {
+  font-weight: 700;
+}
+
+/* ============================================
+   SUBSCRIPTION PLANS REDESIGN
+   ============================================ */
+.subscription-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.subscription-header h4 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subscription-header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.subscription-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.subscription-card {
+  position: relative;
+  background: var(--glass-bg);
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.subscription-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.subscription-card.free-plan {
+  border-color: #43e97b;
+}
+
+.subscription-card.pro-plan {
+  border-color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+.plan-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.plan-badge.current {
+  background: #43e97b;
+  color: white;
+}
+
+.plan-badge.recommended {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.subscription-card .plan-icon {
+  font-size: 4rem;
+  margin: 1rem 0;
+  display: block;
+}
+
+.subscription-card h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.plan-price {
+  margin: 1rem 0 0.5rem 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.plan-price .price {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subscription-card.free-plan .plan-price .price {
+  background: linear-gradient(135deg, #43e97b 0%, #38d9a9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.plan-price .period {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.plan-price-annual {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.save-badge {
+  background: #43e97b;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.3rem;
+}
+
+.plan-description {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 1rem 0 1.5rem 0;
+  min-height: 3rem;
+}
+
+.stripe-button-container {
+  margin-top: 1.5rem;
+}
+
+.subscription-footer {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+
+.subscription-footer p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .upgrade-pro-btn .upgrade-text {
+    display: none;
+  }
+  
+  .subscription-plans {
+    grid-template-columns: 1fr;
+  }
+  
+  .subscription-card .plan-icon {
+    font-size: 3rem;
+  }
+  
+  .subscription-card h3 {
+    font-size: 1.5rem;
+  }
+  
+  .plan-price .price {
+    font-size: 2rem;
+  }
+}
