@@ -7,7 +7,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
 // Versión del cache - incrementar cuando actualices recursos
-const CACHE_VERSION = 'ant-pool-v1.1.0';
+const CACHE_VERSION = 'ant-pool-v1.2.0';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 const API_CACHE = `api-${CACHE_VERSION}`;
@@ -220,10 +220,12 @@ async function networkFirstStrategy(request, cacheName) {
 async function staleWhileRevalidate(request, cacheName) {
     const cachedResponse = await caches.match(request);
     
-    const fetchPromise = fetch(request).then((networkResponse) => {
+    const fetchPromise = fetch(request).then(async (networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
-            const cache = caches.open(cacheName);
-            cache.then(c => c.put(request, networkResponse.clone()));
+            const cache = await caches.open(cacheName);
+            // Clone BEFORE using the response
+            const responseToCache = networkResponse.clone();
+            await cache.put(request, responseToCache);
         }
         return networkResponse;
     }).catch(() => {
