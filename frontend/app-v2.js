@@ -157,7 +157,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 async function connectWallet() {
     try {
-        showLoading("Conectando con MetaMask...");
+        showLoading(t('app.loading.connectingMetaMask'));
         console.log("🔌 Iniciando conexión de wallet...");
         
         // Verificar que encontramos MetaMask
@@ -289,7 +289,7 @@ async function autoLoadContract() {
 
 async function initializeApp() {
     try {
-        showLoading("Cargando información del fondo...");
+        showLoading(t('app.loading.loadingFundInfo'));
         
         // Display user nickname
         document.getElementById('nicknameDisplay').textContent = userNickname;
@@ -403,7 +403,7 @@ async function setNickname() {
             return;
         }
         
-        showLoading("Estableciendo nickname...");
+        showLoading(t('app.loading.settingNickname'));
         
         const tx = await contract.setNickname(nickname);
         await tx.wait();
@@ -440,7 +440,7 @@ async function inviteMember() {
             return;
         }
         
-        showLoading("Enviando invitación...");
+        showLoading(t('app.loading.sendingInvite'));
         
         let tx;
         
@@ -477,7 +477,7 @@ async function inviteMember() {
 
 async function acceptInvitation() {
     try {
-        showLoading("Aceptando invitación...");
+        showLoading(t('app.loading.acceptingInvitation'));
         
         const tx = await contract.acceptInvitation();
         await tx.wait();
@@ -509,7 +509,7 @@ async function deposit() {
             return;
         }
         
-        showLoading("Procesando depósito...");
+        showLoading(t('app.loading.depositingFunds'));
         
         const tx = await contract.deposit({
             value: ethers.parseEther(amount)
@@ -564,7 +564,7 @@ async function createProposal() {
             return;
         }
         
-        showLoading("Resolviendo destinatario...");
+        showLoading(t('app.loading.resolvingRecipient'));
         
         let recipientAddress;
         
@@ -581,7 +581,7 @@ async function createProposal() {
             }
         }
         
-        showLoading("Creando propuesta...");
+        showLoading(t('app.loading.creatingProposal'));
         
         const tx = await contract.createProposal(
             recipientAddress,
@@ -777,7 +777,7 @@ function createProposalCard(proposal, id) {
 
 async function vote(proposalId, inFavor) {
     try {
-        showLoading("Registrando voto...");
+        showLoading(t('app.loading.registeringVote'));
         
         const tx = await contract.vote(proposalId, inFavor);
         await tx.wait();
@@ -800,7 +800,7 @@ async function cancelProposal(proposalId) {
     }
     
     try {
-        showLoading("Cancelando propuesta...");
+        showLoading(t('app.loading.cancelingProposal'));
         
         const tx = await contract.cancelProposal(proposalId);
         await tx.wait();
@@ -819,7 +819,7 @@ async function cancelProposal(proposalId) {
 
 async function executeProposal(proposalId) {
     try {
-        showLoading("Ejecutando propuesta...");
+        showLoading(t('app.loading.executingProposal'));
         
         const tx = await contract.executeProposal(proposalId);
         await tx.wait();

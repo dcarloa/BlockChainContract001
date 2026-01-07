@@ -599,7 +599,7 @@ async function setNickname() {
             return;
         }
         
-        showLoading("Verificando nickname actual...");
+        showLoading(t('app.loading.checkingNickname'));
         
         // Verificar si el usuario ya tiene un nickname
         const currentNickname = await factoryContract.getNickname(userAddress);
@@ -829,7 +829,7 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
 
 window.openInvitedFund = async function(fundAddress) {
     try {
-        showLoading("Loading fund details...");
+        showLoading(t('app.loading.loadingFundDetails'));
         
         // Get fund info from factory
         const totalFunds = await factoryContract.getTotalFunds();
@@ -1618,7 +1618,7 @@ async function deactivateFund(fundAddress, fundName) {
         
         if (!confirmed) return;
         
-        showLoading("Desactivando fondo...");
+        showLoading(t('app.loading.deactivatingFund'));
         
         // Find the fund to get its mode
         const fund = allUserFunds.find(f => f.fundAddress === fundAddress);
@@ -1670,7 +1670,7 @@ async function reactivateFund(fundAddress, fundName) {
         const confirmed = confirm(`▶️ Reactivate group "${fundName}"?\n\nThis action will enable the group again and all members will be notified.`);
         if (!confirmed) return;
         
-        showLoading("Reactivando grupo...");
+        showLoading(t('app.loading.reactivatingGroup'));
         
         const fund = allUserFunds.find(f => f.fundAddress === fundAddress);
         
@@ -1714,7 +1714,7 @@ async function hideFund(fundAddress, fundName) {
             
             if (!confirmed) return;
             
-            showLoading("Eliminando grupo...");
+            showLoading(t('app.loading.deletingGroup'));
             
             // Notify all group members BEFORE deleting
             await notifyGroupMembers(
@@ -1753,7 +1753,7 @@ async function hideFund(fundAddress, fundName) {
             
             if (!confirmed) return;
             
-            showLoading("Ocultando fondo...");
+            showLoading(t('app.loading.hidingFund'));
             
             // Get hidden funds from localStorage
             let hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
@@ -1918,7 +1918,7 @@ async function createSimpleFund(fundInfo) {
             }
         }
         
-        showLoading("Creating Simple Mode group...");
+        showLoading(t('app.loading.creatingSimpleGroup'));
         
         // Create group in Firebase
         const groupId = await window.modeManager.createSimpleGroup({
@@ -1974,7 +1974,7 @@ async function createBlockchainFund(fundInfo) {
             return;
         }
         
-        showLoading("Creating blockchain fund...");
+        showLoading(t('app.loading.creatingBlockchainFund'));
         
         const targetAmountWei = ethers.parseEther(fundInfo.targetAmount.toString());
         
@@ -1994,11 +1994,11 @@ async function createBlockchainFund(fundInfo) {
         showToast(`✅ Fund "${fundInfo.name}" created successfully!`, "success");
         
         // Give time for blockchain state to update
-        showLoading("🐜 Waiting for colony confirmation...");
+        showLoading(t('app.loading.waitingColonyConfirmation'));
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Reload funds
-        showLoading("Loading your new fund...");
+        showLoading(t('app.loading.loadingNewFund'));
         await loadUserFunds();
         
         // Show dashboard
@@ -2140,7 +2140,7 @@ async function signInWithGoogleOnly() {
             return;
         }
         
-        showLoading("Signing in with Google...");
+        showLoading(t('app.loading.signingInGoogle'));
         const user = await window.FirebaseConfig.signInWithGoogle();
         showToast(`Welcome ${user.displayName || user.email}!`, "success");
         closeSignInModal();
@@ -2193,7 +2193,7 @@ async function handleEmailSignIn(event) {
             }
         }
         
-        showLoading("Signing in...");
+        showLoading(t('app.loading.signingIn'));
         const user = await window.FirebaseConfig.signInWithEmail(email, password);
         showToast(`Welcome back!`, "success");
         closeSignInModal();
@@ -2234,7 +2234,7 @@ async function handleCreateAccount(event) {
             }
         }
         
-        showLoading("Creating account...");
+        showLoading(t('app.loading.creatingAccount'));
         const user = await window.FirebaseConfig.createAccount(email, password, name);
         showToast(`Welcome ${name}!`, "success");
         closeSignInModal();
@@ -2263,7 +2263,7 @@ async function signOutFromFirebase() {
             return;
         }
         
-        showLoading("Signing out...");
+        showLoading(t('app.loading.signingOut'));
         await window.FirebaseConfig.signOut();
         showToast("Signed out successfully", "success");
         
@@ -5714,13 +5714,13 @@ async function depositToFund() {
         const tx = await currentFundContract.deposit({ value: amountWei });
         
         // Now show loading after user confirmed
-        showLoading("⏳ Waiting for blockchain confirmation...");
+        showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
         showToast(`✅ Deposit of ${amount} ETH successful!`, "success");
         
         // Give time for state to update - longer delay for balance recalculation
-        showLoading("🐜 Recalculating balances...");
+        showLoading(t('app.loading.recalculatingBalances'));
         await new Promise(resolve => setTimeout(resolve, 3000));
         
         // Reload fund details
@@ -5800,7 +5800,7 @@ async function inviteMember() {
             console.error("  Error verificando isContributor:", e);
         }
         
-        showLoading("Sending invitation...");
+        showLoading(t('app.loading.sendingInvite'));
         
         let tx;
         if (addressOrNickname.startsWith('0x')) {
@@ -5816,7 +5816,7 @@ async function inviteMember() {
         showToast(`✅ Invitation sent to ${addressOrNickname}!`, "success");
         
         // Give time for state to update
-        showLoading("🐜 Updating members...");
+        showLoading(t('app.loading.updatingMembers'));
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Refresh view to show updated members
@@ -5867,7 +5867,7 @@ async function acceptInvitation() {
         showToast("✅ Invitation accepted! You are now an active member", "success");
         
         // Give time for state to update
-        showLoading("🐜 Updating colonies...");
+        showLoading(t('app.loading.updatingColonies'));
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         // BUG 2 FIX: Force complete dashboard reload
@@ -6000,13 +6000,13 @@ async function createProposal() {
         );
         
         // Now show loading after user confirmed
-        showLoading("⏳ Waiting for blockchain confirmation...");
+        showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
         showToast(t.app.fundDetail.propose.success, "success");
         
         // Dar tiempo para que el estado se actualice en blockchain
-        showLoading("🐜 Syncing with the colony... (this may take a few seconds)");
+        showLoading(t('app.loading.syncingColony'));
         await new Promise(resolve => setTimeout(resolve, 3000));
         
         // Refresh view to show new proposal
@@ -6403,13 +6403,13 @@ async function voteProposal(proposalId, inFavor) {
         const tx = await currentFundContract.vote(proposalId, inFavor);
         
         // Now show loading after user confirmed
-        showLoading("⏳ Waiting for blockchain confirmation...");
+        showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
         showToast(`✅ Vote ${inFavor ? 'for' : 'against'} registered!`, "success");
         
         // Dar tiempo para que el estado se actualice
-        showLoading("🐜 Syncing vote count... (this may take a few seconds)");
+        showLoading(t('app.loading.syncingVoteCount'));
         await new Promise(resolve => setTimeout(resolve, 2500));
         
         // Refresh view to show updated votes
@@ -6449,13 +6449,13 @@ async function executeProposal(proposalId) {
         const tx = await currentFundContract.executeProposal(proposalId);
         
         // Now show loading after user confirmed
-        showLoading("⏳ Waiting for blockchain confirmation...");
+        showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
         showToast("✅ Proposal executed! Funds transferred.", "success");
         
         // Dar tiempo para que el estado se actualice
-        showLoading("🐜 Actualizando balances...");
+        showLoading(t('app.loading.updatingBalances'));
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Refresh view to show executed proposal and updated balance
@@ -6867,7 +6867,7 @@ async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
         
         if (!confirmed) return;
         
-        showLoading("Removing member...");
+        showLoading(t('app.loading.kicking'));
         
         const tx = await currentFundContract.kickMember(memberAddress);
         await tx.wait();
@@ -6887,7 +6887,7 @@ async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
 
 async function previewCloseFund() {
     try {
-        showLoading("Calculando distribución...");
+        showLoading(t('app.loading.calculatingDistribution'));
         
         // Get fund data
         const balance = await currentFundContract.getBalance();
@@ -6970,7 +6970,7 @@ async function closeFund() {
         
         if (!doubleConfirmed) return;
         
-        showLoading("Cerrando fondo y distribuyendo...");
+        showLoading(t('app.loading.closingAndDistributing'));
         
         const tx = await currentFundContract.closeFund();
         await tx.wait();
@@ -7671,7 +7671,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const paidByName = paidByNames.join(' & ');
                 
-                showLoading('Creating recurring expense...');
+                showLoading(t('app.loading.creatingRecurringExpense'));
                 
                 window.modeManager.currentGroupId = currentFund.fundId;
                 
@@ -8175,7 +8175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (document.getElementById('alert80').checked) alertThresholds.push(80);
                 if (document.getElementById('alert100').checked) alertThresholds.push(100);
                 
-                showLoading('Setting budget...');
+                showLoading(t('app.loading.settingBudget'));
                 
                 window.modeManager.currentGroupId = currentFund.fundId;
                 
@@ -8362,7 +8362,7 @@ async function deleteBudget() {
         const confirmed = confirm('Are you sure you want to delete the budget? This action cannot be undone.');
         if (!confirmed) return;
         
-        showLoading('Deleting budget...');
+        showLoading(t('app.loading.deletingBudget'));
         
         window.modeManager.currentGroupId = currentFund.fundId;
         
@@ -8658,7 +8658,7 @@ async function loadAnalytics(timeframe) {
     try {
         if (!currentFund || !currentFund.fundId) return;
         
-        showLoading('Generating analytics...');
+        showLoading(t('app.loading.generatingAnalytics'));
         
         window.modeManager.currentGroupId = currentFund.fundId;
         const analytics = await window.modeManager.generateAnalytics(timeframe);
@@ -9513,7 +9513,7 @@ async function openGroupFromProfile(groupId) {
     closeProfilePanel();
     
     try {
-        showLoading('Loading group...');
+        showLoading(t('app.loading.loadingGroup'));
         
         const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
         if (!groupData) {
