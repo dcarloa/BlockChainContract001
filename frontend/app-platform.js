@@ -7312,8 +7312,8 @@ function changeLanguage(lang) {
     // Update settings UI to show active language
     updateAppSettingsUI();
     
-    // Close settings modal
-    closeAppSettings();
+    // Don't close modal - let user see the change
+    // closeAppSettings();
 }
 
 /**
@@ -7323,7 +7323,8 @@ function changeTheme(theme) {
     if (typeof setTheme === 'function') {
         setTheme(theme);
         updateAppSettingsUI(); // Update UI immediately after theme change
-        closeAppSettings(); // Close modal after theme change
+        // Don't close modal - let user see the change
+        // closeAppSettings();
     } else {
         console.error('setTheme function not found');
     }
