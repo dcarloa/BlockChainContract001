@@ -1719,6 +1719,37 @@ header,
   margin-top: 0.125rem;
 }
 
+/* User Balance Color Indicators */
+.fund-stat-card.balance-positive {
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.fund-stat-card.balance-positive:hover {
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.fund-stat-card.balance-positive .stat-value {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.fund-stat-card.balance-negative {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.fund-stat-card.balance-negative:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.fund-stat-card.balance-negative .stat-value {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .fund-header-top {
   display: flex;
   align-items: flex-start;

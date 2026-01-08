@@ -2611,7 +2611,6 @@ async function loadSimpleModeDetailView() {
             if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'none';
         }
         
-        safeUpdate('fundMembers', 'textContent', members.toString());
         safeUpdate('fundProposals', 'textContent', expenses.toString());
         
         // User's share/balance
@@ -2620,6 +2619,25 @@ async function loadSimpleModeDetailView() {
             ? `You are owed $${Math.abs(myBalance).toFixed(2)}`
             : `You owe $${Math.abs(myBalance).toFixed(2)}`;
         safeUpdate('userContribution', 'textContent', userBalanceText);
+        
+        // Update user balance in header stats
+        const userBalanceCard = document.getElementById('userBalanceCard');
+        const userBalanceValue = document.getElementById('userBalanceValue');
+        if (userBalanceValue) {
+            if (myBalance >= 0) {
+                userBalanceValue.textContent = `+$${Math.abs(myBalance).toFixed(2)}`;
+                if (userBalanceCard) {
+                    userBalanceCard.classList.remove('balance-negative');
+                    userBalanceCard.classList.add('balance-positive');
+                }
+            } else {
+                userBalanceValue.textContent = `-$${Math.abs(myBalance).toFixed(2)}`;
+                if (userBalanceCard) {
+                    userBalanceCard.classList.remove('balance-positive');
+                    userBalanceCard.classList.add('balance-negative');
+                }
+            }
+        }
         
         
         // Hide blockchain-specific elements safely
