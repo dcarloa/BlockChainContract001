@@ -39,12 +39,15 @@ function getCurrentFundMembers() {
     // Get current fund members
     if (!currentFund || !currentFund.members) return [];
     
-    return currentFund.members.map(addr => {
+    // Convert members object to array
+    const membersArray = Object.entries(currentFund.members).map(([uid, memberData]) => {
         return {
-            address: addr,
-            nickname: getMemberNickname(addr)
+            address: uid,
+            nickname: memberData.name || memberData.email || 'Member'
         };
     });
+    
+    return membersArray;
 }
 
 function getMemberNickname(address) {
