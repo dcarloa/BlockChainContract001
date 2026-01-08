@@ -290,63 +290,99 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="features">
+    <!-- Features Section - Redesigned -->
+    <section id="features" class="features" style="background: #f8f9fa; padding: 5rem 0;">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">🐜 The Ant Pool Philosophy</h2>
                 <p class="section-subtitle">Inspired by nature's most efficient cooperators</p>
             </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🌍</div>
-                    <h3 class="feature-title">Multi-Currency Support</h3>
-                    <p class="feature-description">
-                        Like ants collecting resources from everywhere, track expenses in 12 currencies: 
-                        USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Global colonies, local currencies.
-                    </p>
+            
+            <!-- Two Column Layout: Image + Features List -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 3rem; align-items: center;">
+                
+                <!-- Left: Animated Illustration -->
+                <div style="position: relative;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 24px; padding: 3rem; text-align: center; box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);">
+                        <div style="font-size: 8rem; animation: float 3s ease-in-out infinite;">🐜</div>
+                        <h3 style="color: white; font-size: 1.8rem; margin-top: 1rem; margin-bottom: 0.5rem;">Work Together</h3>
+                        <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem;">Like Nature Intended</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+                            <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
+                                <div style="font-size: 1.8rem; font-weight: bold; color: white;">12</div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">Currencies</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
+                                <div style="font-size: 1.8rem; font-weight: bold; color: white;">FREE</div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">Forever</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
+                                <div style="font-size: 1.8rem; font-weight: bold; color: white;">24/7</div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">Available</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔀</div>
-                    <h3 class="feature-title">Smart Settlements</h3>
-                    <p class="feature-description">
-                        Ants optimize their paths. Our settlement algorithm minimizes transactions—if Alice owes Bob and Bob owes Charlie, Alice pays Charlie directly. Maximum efficiency.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📅</div>
-                    <h3 class="feature-title">Timeline & Filters</h3>
-                    <p class="feature-description">
-                        Track your colony's history with date filters. View expenses by week, month, or custom range. Every ant's contribution is recorded and searchable.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔔</div>
-                    <h3 class="feature-title">Colony Transparency</h3>
-                    <p class="feature-description">
-                        Like ants leaving pheromone trails for others to follow, every transaction 
-                        is visible to all colony members. Real-time updates on your shared dashboard.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">👥</div>
-                    <h3 class="feature-title">Multiple Payers</h3>
-                    <p class="feature-description">
-                        Different ants carry different loads. Track who paid what, split expenses unevenly, 
-                        and settle balances fairly. Perfect for complex shared expenses.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3 class="feature-title">Mobile-First Design</h3>
-                    <p class="feature-description">
-                        Ants work everywhere. So does AntPool. Compact cards, responsive layout, touch-optimized buttons. 
-                        Manage your colony from any device, anywhere.
-                    </p>
+                
+                <!-- Right: Features List (Vertical Timeline Style) -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'; this.style.boxShadow='0 8px 30px rgba(102,126,234,0.2)';" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                        <div style="font-size: 2.5rem; flex-shrink: 0;">🌍</div>
+                        <div>
+                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: #333;">Multi-Currency Support</h3>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">Track expenses in USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Global colonies, local currencies.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'; this.style.boxShadow='0 8px 30px rgba(102,126,234,0.2)';" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                        <div style="font-size: 2.5rem; flex-shrink: 0;">🔀</div>
+                        <div>
+                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: #333;">Smart Settlements</h3>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">Debt optimization algorithm minimizes transactions. If Alice owes Bob and Bob owes Charlie, Alice pays Charlie directly.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'; this.style.boxShadow='0 8px 30px rgba(102,126,234,0.2)';" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                        <div style="font-size: 2.5rem; flex-shrink: 0;">📅</div>
+                        <div>
+                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: #333;">Timeline & Filters</h3>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">View expenses by week, month, or custom range. Every contribution is recorded and searchable with date filters.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'; this.style.boxShadow='0 8px 30px rgba(102,126,234,0.2)';" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                        <div style="font-size: 2.5rem; flex-shrink: 0;">🔔</div>
+                        <div>
+                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: #333;">Real-Time Updates</h3>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">All transactions visible to colony members. Instant notifications when expenses are added or modified.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateX(10px)'; this.style.boxShadow='0 8px 30px rgba(102,126,234,0.2)';" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                        <div style="font-size: 2.5rem; flex-shrink: 0;">📱</div>
+                        <div>
+                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: #333;">Mobile-First Design</h3>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">Compact cards, responsive layout, touch-optimized. Manage your colony from any device, anywhere.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+    
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @media (max-width: 768px) {
+            #features > div > div:nth-child(2) {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+        }
+    </style>
 
     <!-- How It Works Section -->
     <section id="how-it-works" class="how-it-works">
