@@ -114,6 +114,7 @@ async function playQuickTap() {
 async function showQuickTapTurn(player) {
     return new Promise((resolve) => {
         const gameArea = document.getElementById('gamePlayArea');
+        currentCallback = resolve;
         gameArea.innerHTML = `
             <div class="game-turn-screen">
                 <div class="game-player-indicator">
@@ -124,7 +125,7 @@ async function showQuickTapTurn(player) {
                     <p>Tap the button as fast as you can when it turns green!</p>
                     <div class="ready-indicator">GET READY...</div>
                 </div>
-                <button class="btn btn-secondary" onclick="startQuickTapRound('${player.address}', ${resolve})">
+                <button class="btn btn-secondary" onclick="startQuickTapRound('${player.address}')">
                     Ready!
                 </button>
             </div>
@@ -133,8 +134,9 @@ async function showQuickTapTurn(player) {
 }
 
 let quickTapStartTime = 0;
+let currentCallback = null;
 
-function startQuickTapRound(playerAddress, resolveCallback) {
+function startQuickTapRound(playerAddress) {
     const gameArea = document.getElementById('gamePlayArea');
     
     gameArea.innerHTML = `
@@ -152,7 +154,7 @@ function startQuickTapRound(playerAddress, resolveCallback) {
         quickTapStartTime = Date.now();
         gameArea.innerHTML = `
             <div class="game-turn-screen">
-                <button class="quick-tap-button" onclick="recordQuickTapTime('${playerAddress}', ${resolveCallback})">
+                <button class="quick-tap-button" onclick="recordQuickTapTime('${playerAddress}')">
                     🟢 TAP NOW!
                 </button>
             </div>
@@ -160,7 +162,7 @@ function startQuickTapRound(playerAddress, resolveCallback) {
     }, delay);
 }
 
-function recordQuickTapTime(playerAddress, resolveCallback) {
+function recordQuickTapTime(playerAddress) {
     const reactionTime = Date.now() - quickTapStartTime;
     challengeState.scores[playerAddress] = reactionTime;
     
@@ -175,16 +177,17 @@ function recordQuickTapTime(playerAddress, resolveCallback) {
                 <div class="score-value">${reactionTime}ms</div>
                 <p>Great reaction time!</p>
             </div>
-            <button class="btn btn-primary" onclick="nextPlayer(${resolveCallback})">
+            <button class="btn btn-primary" onclick="nextPlayer()">
                 Next Player →
             </button>
         </div>
     `;
 }
 
-function nextPlayer(resolveCallback) {
-    if (typeof resolveCallback === 'function') {
-        resolveCallback();
+function nextPlayer() {
+    if (currentCallback) {
+        currentCallback();
+        currentCallback = null;
     }
 }
 
@@ -211,6 +214,7 @@ async function playNumberGuess() {
 async function showNumberGuessTurn(player, secretNumber) {
     return new Promise((resolve) => {
         const gameArea = document.getElementById('gamePlayArea');
+        currentCallback = resolve;
         const previousGuesses = Object.entries(challengeState.scores)
             .map(([addr, guess]) => {
                 const p = challengeState.players.find(pl => pl.address === addr);
@@ -234,7 +238,7 @@ async function showNumberGuessTurn(player, secretNumber) {
                        min="1" 
                        max="100" 
                        placeholder="Enter your guess">
-                <button class="btn btn-primary" onclick="recordNumberGuess('${player.address}', ${resolve})">
+                <button class="btn btn-primary" onclick="recordNumberGuess('${player.address}')">
                     Submit Guess
                 </button>
             </div>
@@ -244,7 +248,7 @@ async function showNumberGuessTurn(player, secretNumber) {
     });
 }
 
-function recordNumberGuess(playerAddress, resolveCallback) {
+function recordNumberGuess(playerAddress) {
     const guess = parseInt(document.getElementById('numberGuessInput').value);
     
     if (isNaN(guess) || guess < 1 || guess > 100) {
@@ -253,7 +257,10 @@ function recordNumberGuess(playerAddress, resolveCallback) {
     }
     
     challengeState.scores[playerAddress] = guess;
-    resolveCallback();
+    if (currentCallback) {
+        currentCallback();
+        currentCallback = null;
+    }
 }
 
 // ============================================
