@@ -472,7 +472,7 @@ async function autoReconnectWallet() {
             
             // Restaurar UI a estado inicial
             document.getElementById('connectWallet').innerHTML = `
-                <span class="btn-icon">??</span>
+                <span class="btn-icon">🔗</span>
                 <span>Connect Wallet</span>
             `;
             document.getElementById('connectWallet').style.display = 'inline-flex';
@@ -497,7 +497,7 @@ async function autoReconnectWallet() {
         
         // Restaurar UI a estado inicial
         document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">??</span>
+            <span class="btn-icon">🔗</span>
             <span>Connect Wallet</span>
         `;
         document.getElementById('connectWallet').style.display = 'inline-flex';
@@ -756,10 +756,10 @@ async function loadPendingInvitations() {
                         </div>
                         <div class="invitation-item-actions">
                             <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fundAddress}', '${fundName}')">
-                                ? Accept
+                                ✅ Accept
                             </button>
                             <button class="btn btn-secondary btn-sm" onclick="openInvitedFund('${fundAddress}')">
-                                ??? View
+                                👁️ View
                             </button>
                         </div>
                     `;
@@ -1029,7 +1029,7 @@ function showAccessDeniedModal(mode) {
     let title, message, action;
     
     if (mode === 'blockchain') {
-        title = '?? Blockchain Access Required';
+        title = '🔗 Blockchain Access Required';
         message = `You need to connect a wallet to access blockchain groups.
         
 Your current session uses Google/Email authentication which only provides access to Simple Mode features.
@@ -1045,12 +1045,12 @@ Would you like to connect a wallet now?`;
             }
         };
     } else {
-        title = '?? Sign In Required';
+        title = '🔐 Sign In Required';
         message = `You need to sign in to access Simple Mode groups.
 
 To create and join Simple Mode groups, please sign in with:
-� Google account
-� Email/Password
+• Google account
+• Email/Password
 
 Would you like to sign in now?`;
         action = () => {
@@ -1529,7 +1529,7 @@ async function openFund(fundAddress) {
         
         // Check if group is paused
         if (!currentFund.isActive) {
-            showToast("?? Este grupo est� pausado. Solo lectura disponible.", "warning");
+            showToast("⏸️ Este grupo está pausado. Solo lectura disponible.", "warning");
         }
         
         // Validate access based on fund mode
@@ -1610,13 +1610,13 @@ function goToHome() {
 async function deactivateFund(fundAddress, fundName) {
     try {
         const confirmed = confirm(
-            `?? Pause fund "${fundName}"?\n\n` +
+            `⏸️ Pause fund "${fundName}"?\n\n` +
             `This action:\n` +
-            `� Will block all transactions (deposits, proposals, votes)\n` +
-            `� The fund will remain visible in read-only mode\n` +
-            `� You can view history and balances\n` +
-            `� Only the creator can reactivate it by calling the contract\n` +
-            `� All group members will be notified\n\n` +
+            `• Will block all transactions (deposits, proposals, votes)\n` +
+            `• The fund will remain visible in read-only mode\n` +
+            `• You can view history and balances\n` +
+            `• Only the creator can reactivate it by calling the contract\n` +
+            `• All group members will be notified\n\n` +
             `Continue?`
         );
         
@@ -1671,7 +1671,7 @@ async function deactivateFund(fundAddress, fundName) {
 
 async function reactivateFund(fundAddress, fundName) {
     try {
-        const confirmed = confirm(`?? Reactivate group "${fundName}"?\n\nThis action will enable the group again and all members will be notified.`);
+        const confirmed = confirm(`▶️ Reactivate group "${fundName}"?\n\nThis action will enable the group again and all members will be notified.`);
         if (!confirmed) return;
         
         showLoading(t('app.loading.reactivatingGroup'));
@@ -1706,13 +1706,13 @@ async function hideFund(fundAddress, fundName) {
         if (fund && fund.mode === 'simple') {
             // Simple Mode - delete group completely from Firebase
             const confirmed = confirm(
-                `??? Delete group "${fundName}"?\n\n` +
+                `🗑️ Delete group "${fundName}"?\n\n` +
                 `This action:\n` +
-                `� Will PERMANENTLY delete the group from Firebase\n` +
-                `� All expenses, payments and data will be deleted\n` +
-                `� This action CANNOT be undone\n` +
-                `� All members will be notified\n` +
-                `� All members will lose access\n\n` +
+                `• Will PERMANENTLY delete the group from Firebase\n` +
+                `• All expenses, payments and data will be deleted\n` +
+                `• This action CANNOT be undone\n` +
+                `• All members will be notified\n` +
+                `• All members will lose access\n\n` +
                 `Are you sure you want to continue?`
             );
             
@@ -1745,14 +1745,14 @@ async function hideFund(fundAddress, fundName) {
         } else {
             // Blockchain mode - just hide locally
             const confirmed = confirm(
-                `??? �Ocultar el fondo "${fundName}"?\n\n` +
-                `Esta acci�n:\n` +
-                `� Ocultar� el fondo de tu interfaz\n` +
-                `� El fondo seguir� existiendo en la blockchain\n` +
-                `� Los fondos NO se eliminar�n del contrato\n` +
-                `� Solo se guardar� tu preferencia localmente\n` +
-                `� Podr�s volver a verlo limpiando el storage del navegador\n\n` +
-                `�Continuar?`
+                `👁️ ¿Ocultar el fondo "${fundName}"?\n\n` +
+                `Esta acción:\n` +
+                `• Ocultará el fondo de tu interfaz\n` +
+                `• El fondo seguirá existiendo en la blockchain\n` +
+                `• Los fondos NO se eliminarán del contrato\n` +
+                `• Solo se guardará tu preferencia localmente\n` +
+                `• Podrás volver a verlo limpiando el storage del navegador\n\n` +
+                `¿Continuar?`
             );
             
             if (!confirmed) return;
@@ -1847,7 +1847,7 @@ async function createFund(event) {
         
         // Blockchain mode disabled for soft launch
         if (groupMode === 'blockchain') {
-            showToast("?? Blockchain Mode is coming soon! Please use Simple Mode for now.", "info");
+            showToast("🚧 Blockchain Mode is coming soon! Please use Simple Mode for now.", "info");
             return;
         }
         
@@ -1899,11 +1899,11 @@ async function createSimpleFund(fundInfo) {
         if (!window.FirebaseConfig.isAuthenticated()) {
             // Show informative message
             const shouldSignIn = confirm(
-                "?? Simple Mode requires Google/Email Sign-In\n\n" +
+                "🔐 Simple Mode requires Google/Email Sign-In\n\n" +
                 "Simple Mode uses Firebase (no blockchain) for:\n" +
-                "? Free expense tracking\n" +
-                "? Group balances calculation\n" +
-                "? No gas fees\n\n" +
+                "✅ Free expense tracking\n" +
+                "✅ Group balances calculation\n" +
+                "✅ No gas fees\n\n" +
                 "Your wallet is not needed for Simple Mode.\n\n" +
                 "Would you like to sign in with Google/Email now?"
             );
@@ -1959,12 +1959,12 @@ async function createBlockchainFund(fundInfo) {
         // Check if wallet is connected
         if (!userAddress || !factoryContract) {
             const shouldConnect = confirm(
-                "?? Blockchain Mode requires MetaMask connection\n\n" +
+                "🔗 Blockchain Mode requires MetaMask connection\n\n" +
                 "Blockchain Mode uses smart contracts for:\n" +
-                "? Automatic on-chain payments\n" +
-                "? Transparent voting\n" +
-                "? Decentralized fund management\n\n" +
-                "?? Requires gas fees for transactions.\n\n" +
+                "✅ Automatic on-chain payments\n" +
+                "✅ Transparent voting\n" +
+                "✅ Decentralized fund management\n\n" +
+                "⚠️ Requires gas fees for transactions.\n\n" +
                 "Would you like to connect your wallet now?"
             );
             
@@ -2127,15 +2127,15 @@ async function signInWithGoogleOnly() {
     try {
         // Show warning first
         const confirmGoogle = confirm(
-            "?? Sign in with Google (Limited Access)\n\n" +
+            "🔐 Sign in with Google (Limited Access)\n\n" +
             "You will ONLY have access to Simple Mode features:\n" +
-            "? Track expenses\n" +
-            "? Split bills with friends\n" +
-            "? View balances\n\n" +
+            "✅ Track expenses\n" +
+            "✅ Split bills with friends\n" +
+            "✅ View balances\n\n" +
             "You will NOT be able to:\n" +
-            "? Use Blockchain Mode\n" +
-            "? Create automatic payments\n" +
-            "? Use smart contracts\n\n" +
+            "❌ Use Blockchain Mode\n" +
+            "❌ Create automatic payments\n" +
+            "❌ Use smart contracts\n\n" +
             "You can connect a wallet later to unlock blockchain features.\n\n" +
             "Continue with Google Sign-In?"
         );
@@ -2183,10 +2183,10 @@ async function handleEmailSignIn(event) {
         // Check if user is trying to sign in for the first time
         if (!window.ethereum) {
             const confirmEmail = confirm(
-                "?? Sign in with Email (Limited Access)\n\n" +
+                "🔐 Sign in with Email (Limited Access)\n\n" +
                 "Without a crypto wallet, you will ONLY have Simple Mode:\n" +
-                "? Track expenses\n" +
-                "? Split bills\n\n" +
+                "✅ Track expenses\n" +
+                "✅ Split bills\n\n" +
                 "You will NOT have blockchain features.\n" +
                 "Connect a wallet later to unlock full access.\n\n" +
                 "Continue?"
@@ -2220,15 +2220,15 @@ async function handleCreateAccount(event) {
         // Warn about limited access without wallet
         if (!window.ethereum) {
             const confirmCreate = confirm(
-                "?? Creating Account (Limited Access)\n\n" +
+                "🔐 Creating Account (Limited Access)\n\n" +
                 "Without a crypto wallet (MetaMask), you will ONLY have access to:\n" +
-                "? Simple Mode - Expense tracking\n" +
-                "? Split bills with friends\n" +
-                "? View who owes what\n\n" +
+                "✅ Simple Mode - Expense tracking\n" +
+                "✅ Split bills with friends\n" +
+                "✅ View who owes what\n\n" +
                 "You will NOT be able to use:\n" +
-                "? Blockchain Mode\n" +
-                "? Automatic smart contract payments\n" +
-                "? On-chain transactions\n\n" +
+                "❌ Blockchain Mode\n" +
+                "❌ Automatic smart contract payments\n" +
+                "❌ On-chain transactions\n\n" +
                 "You can connect a wallet anytime later to unlock blockchain features.\n\n" +
                 "Create account with limited access?"
             );
@@ -2256,7 +2256,7 @@ async function handleCreateAccount(event) {
 async function signOutFromFirebase() {
     try {
         const confirmed = confirm(
-            "?? Sign out from Simple Mode?\n\n" +
+            "🔓 Sign out from Simple Mode?\n\n" +
             "You will be signed out from Google/Email.\n" +
             "Your Simple Mode groups will not be accessible until you sign in again.\n\n" +
             "Your wallet connection (if any) will remain active.\n\n" +
@@ -2381,8 +2381,8 @@ async function loadFundDetailView() {
         const typeKey = fundTypeKeys[Number(currentFund.fundType)] || 'other';
         document.getElementById('fundDetailDescription').textContent = description || t.app.fundDetail.info.loading;
         document.getElementById('fundTypeBadge').textContent = t.app.fundDetail.badges[typeKey];
-        document.getElementById('fundStatusBadge').textContent = isActive ? `?? ${t.app.fundDetail.info.active}` : `?? ${t.app.fundDetail.info.inactive}`;
-        document.getElementById('fundPrivacyBadge').textContent = isPrivate ? `?? ${t.app.fundDetail.info.private}` : `?? ${t.app.fundDetail.info.public}`;
+        document.getElementById('fundStatusBadge').textContent = isActive ? `✅ ${t.app.fundDetail.info.active}` : `⏸️ ${t.app.fundDetail.info.inactive}`;
+        document.getElementById('fundPrivacyBadge').textContent = isPrivate ? `🔒 ${t.app.fundDetail.info.private}` : `🌍 ${t.app.fundDetail.info.public}`;
         
         const balanceEth = ethers.formatEther(balance);
         
@@ -2432,7 +2432,7 @@ async function loadFundDetailView() {
             switchFundTab('members');
             
             // Show closed fund message
-            showToast("?? This fund is closed. No more actions allowed.", "warning");
+            showToast("🔒 This fund is closed. No more actions allowed.", "warning");
         } else {
             // Show all tabs if fund is active
             const depositTabBtn = document.querySelector('.fund-tab-btn[data-tab="deposit"]');
@@ -2779,11 +2779,11 @@ async function loadSimpleModeExpenses() {
         if (searchSection) searchSection.style.display = 'none';
         historyContainer.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">??</div>
+                <div class="empty-icon">📄</div>
                 <h4>No transactions yet</h4>
                 <p>Add your first expense to start tracking</p>
                 <button class="btn btn-primary" onclick="showAddExpenseModal()">
-                    <span class="btn-icon">?</span>
+                    <span class="btn-icon">➕</span>
                     <span>Add Expense</span>
                 </button>
             </div>
@@ -2845,10 +2845,10 @@ function renderSettlementItem(settlement, currentUserId, groupData) {
             <div class="expense-header">
                 <div class="expense-header-left">
                     <h4 class="expense-title-compact">
-                        ?? Payment: ${fromName} ? ${toName}
+                        💵 Payment: ${fromName} → ${toName}
                         <span class="expense-badge badge-payment">Paid</span>
                     </h4>
-                    <span class="expense-date-compact">?? ${dateStr}</span>
+                    <span class="expense-date-compact">📅 ${dateStr}</span>
                 </div>
                 <div class="expense-header-right">
                     <div class="expense-amount-large payment-amount">
@@ -2858,7 +2858,7 @@ function renderSettlementItem(settlement, currentUserId, groupData) {
             </div>
             ${settlement.notes ? `
                 <div class="expense-details" style="display: block; padding-top: 8px;">
-                    <p class="expense-notes">?? ${settlement.notes}</p>
+                    <p class="expense-notes">📝 ${settlement.notes}</p>
                 </div>
             ` : ''}
         </div>
@@ -3137,7 +3137,7 @@ async function loadSimpleModeBalances() {
         
         // Show debts I owe
         if (iOwe.length > 0) {
-            html += '<h4 class="balance-section-title balance-owes">?? You owe:</h4>';
+            html += '<h4 class="balance-section-title balance-owes">👉 You owe:</h4>';
             iOwe.forEach(debt => {
                 const toMember = currentFund.members[debt.to];
                 const toName = toMember?.name || toMember?.email || debt.to;
@@ -3159,7 +3159,7 @@ async function loadSimpleModeBalances() {
                             </div>
                         </div>
                         <button class="btn btn-primary btn-record-payment" onclick="showRecordPaymentModal('${debt.to}', ${debt.amount})">
-                            <span class="btn-icon">??</span>
+                            <span class="btn-icon">💵</span>
                             <span>Record Payment</span>
                         </button>
                     </div>
@@ -3169,7 +3169,7 @@ async function loadSimpleModeBalances() {
         
         // Show debts owed to me
         if (owesMe.length > 0) {
-            html += '<h4 class="balance-section-title balance-owed">?? Owes you:</h4>';
+            html += '<h4 class="balance-section-title balance-owed">👈 Owes you:</h4>';
             owesMe.forEach(debt => {
                 const fromMember = currentFund.members[debt.from];
                 const fromName = fromMember?.name || fromMember?.email || debt.from;
@@ -3480,7 +3480,7 @@ async function loadSmartSettlements() {
         
         // Wait for animations
         setTimeout(async () => {
-            showToast(`All ${currentSettlements.length} payments recorded successfully! ??`, 'success');
+            showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
             closeSmartSettlements();
             
             // Reload data
@@ -3502,7 +3502,7 @@ async function loadSmartSettlements() {
     }
     }, 300);
     
-    showToast('Settlement marked as complete! ??', 'success');
+    showToast('Settlement marked as complete! ✅', 'success');
 }
 
 /**
@@ -3511,7 +3511,7 @@ async function loadSmartSettlements() {
 async function markAllSettled() {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("?? El grupo est� pausado. No puedes registrar pagos.", "error");
+            showToast("⏸️ El grupo está pausado. No puedes registrar pagos.", "error");
             return;
         }
         
@@ -3560,17 +3560,16 @@ async function markAllSettled() {
             }
         }
         
-        
         // Wait for animations
         setTimeout(async () => {
-            showToast(`All ${currentSettlements.length} payments recorded successfully! ??`, 'success');
+            showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
             closeSmartSettlements();
             
             // Reload data
             await loadSimpleModeBalances();
             await loadSimpleModeExpenses(); // Refresh history to show settlements
         }, 500);
-        
+    
     } catch (error) {
         console.error('? Error recording settlements:', error);
         console.error('Stack:', error.stack);
@@ -3653,7 +3652,7 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
         if (expenses.length === 0) {
             timelineContainer.innerHTML = `
                 <div class="timeline-empty">
-                    <div class="timeline-empty-icon">??</div>
+                    <div class="timeline-empty-icon">📅</div>
                     <p>No expenses found in the selected date range</p>
                 </div>
             `;
@@ -3697,13 +3696,15 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
                 
                 // Get category emoji
                 const categoryEmoji = {
-                    'food': '??',
-                    'transport': '??',
-                    'entertainment': '??',
-                    'shopping': '???',
-                    'bills': '??',
-                    'other': '??'
-                }[expense.category] || '??';
+                    'food': '🍔',
+                    'transport': '🚗',
+                    'entertainment': '🎬',
+                    'shopping': '🛍️',
+                    'bills': '💳',
+                    'utilities': '🔧',
+                    'health': '⚕️',
+                    'other': '📦'
+                }[expense.category] || '💸';
                 
                 html += `
                     <div class="timeline-item">
@@ -3719,9 +3720,9 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
                                 </div>
                             </div>
                             <div class="timeline-expense-meta">
-                                <span>?? ${paidByText}</span>
-                                <span>?? ${currency}</span>
-                                <span>?? ${new Date(expense.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                                <span>👤 ${paidByText}</span>
+                                <span>💵 ${currency}</span>
+                                <span>⏰ ${new Date(expense.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
                         </div>
                     </div>
@@ -3735,7 +3736,7 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
         console.error('Error loading timeline:', error);
         document.getElementById('expenseTimeline').innerHTML = `
             <div class="timeline-empty">
-                <div class="timeline-empty-icon">??</div>
+                <div class="timeline-empty-icon">📅</div>
                 <p>Error loading timeline: ${error.message}</p>
             </div>
         `;
@@ -4446,7 +4447,7 @@ async function showExpenseComments(expenseId) {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;" onclick="event.stopPropagation()">
                 <div class="modal-header">
-                    <h3>?? Comments: ${expense.description}</h3>
+                    <h3>💬 Comments: ${expense.description}</h3>
                     <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">&times;</button>
                 </div>
                 <div class="modal-body">
@@ -4466,7 +4467,7 @@ async function showExpenseComments(expenseId) {
                             onclick="addComment('${expenseId}')"
                             style="width: 100%;"
                         >
-                            <span class="btn-icon">??</span>
+                            <span class="btn-icon">📝</span>
                             <span>Post Comment</span>
                         </button>
                     </div>
@@ -4505,7 +4506,7 @@ async function renderComments(comments) {
         return `
             <div class="comment-item">
                 <div class="comment-header">
-                    <span class="comment-author">?? ${comment.userName}</span>
+                    <span class="comment-author">👤 ${comment.userName}</span>
                     <span class="comment-date">${date}</span>
                 </div>
                 <div class="comment-text">${comment.text}</div>
@@ -4653,12 +4654,12 @@ async function showDeleteRequests(expenseId) {
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            return `<li>?? ${req.userName} - ${date}</li>`;
+            return `<li>👤 ${req.userName} - ${date}</li>`;
         }).join('');
 
         const confirmed = confirm(
             `${requests.length} member(s) requested deletion:\n\n` +
-            requests.map(r => `� ${r.userName}`).join('\n') +
+            requests.map(r => `• ${r.userName}`).join('\n') +
             '\n\nDo you want to delete this expense?'
         );
 
@@ -5021,7 +5022,7 @@ async function sendEmailInvite() {
         const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
         window.location.href = mailtoLink;
 
-        showToast('Opening email client... ??', 'success');
+        showToast('Opening email client... ✉️', 'success');
         emailInput.value = '';
 
     } catch (error) {
@@ -5160,7 +5161,7 @@ function showAddExpenseModal() {
     
     // Check if group is paused
     if (currentFund && !currentFund.isActive) {
-        showToast("?? The group is paused. You cannot add expenses.", "error");
+        showToast("⏸️ The group is paused. You cannot add expenses.", "error");
         return;
     }
     
@@ -5611,7 +5612,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function approveExpense(expenseId) {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("?? The group is paused. You cannot approve expenses.", "error");
+            showToast("⏸️ The group is paused. You cannot approve expenses.", "error");
             return;
         }
         
@@ -5647,7 +5648,7 @@ async function approveExpense(expenseId) {
 async function rejectExpense(expenseId) {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("?? The group is paused. You cannot reject expenses.", "error");
+            showToast("⏸️ The group is paused. You cannot reject expenses.", "error");
             return;
         }
         
@@ -7415,7 +7416,7 @@ function filterExpenses() {
         noResultsDiv.className = 'no-results-message';
         noResultsDiv.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">??</div>
+                <div class="empty-icon">🔍</div>
                 <h4>No expenses found</h4>
                 <p>Try adjusting your filters</p>
             </div>
@@ -7789,8 +7790,8 @@ async function loadRecurringExpenses() {
         count.textContent = recurring.length;
         
         list.innerHTML = recurring.map(rec => {
-            const frequencyIcons = { daily: '??', weekly: '??', monthly: '???' };
-            const icon = frequencyIcons[rec.frequency] || '??';
+            const frequencyIcons = { daily: '📆', weekly: '📅', monthly: '🗓️' };
+            const icon = frequencyIcons[rec.frequency] || '🔁';
             const nextDue = new Date(rec.nextDue).toLocaleDateString();
             const nextDueTime = new Date(rec.nextDue).toLocaleString();
             const isOverdue = rec.nextDue < Date.now();
@@ -7908,25 +7909,25 @@ async function loadAllRecurringExpenses() {
         
         const getCategoryIcon = (category) => {
             const icons = {
-                'food': '??',
-                'transport': '??',
-                'housing': '??',
-                'utilities': '??',
-                'entertainment': '??',
-                'shopping': '???',
-                'health': '??',
-                'travel': '??',
-                'subscription': '??',
-                'other': '??'
+                'food': '🍔',
+                'transport': '🚗',
+                'housing': '🏠',
+                'utilities': '🔧',
+                'entertainment': '🎬',
+                'shopping': '🛍️',
+                'health': '⚕️',
+                'travel': '✈️',
+                'subscription': '📱',
+                'other': '📦'
             };
-            return icons[category] || '??';
+            return icons[category] || '💸';
         };
         
         container.innerHTML = recurring.map(rec => {
             const icon = getCategoryIcon(rec.category);
             const statusBadge = rec.isActive 
-                ? '<span class="status-badge status-active">? Active</span>'
-                : '<span class="status-badge status-paused">? Paused</span>';
+                ? '<span class="status-badge status-active">✅ Active</span>'
+                : '<span class="status-badge status-paused">⏸️ Paused</span>';
             
             const nextDue = new Date(rec.nextDue).toLocaleDateString();
             const daysUntil = Math.ceil((new Date(rec.nextDue) - new Date()) / (1000 * 60 * 60 * 24));
@@ -7986,14 +7987,14 @@ async function showRecurringDetails(recurringId) {
         }
         
         const icon = {
-            'food': '??', 'transport': '??', 'housing': '??', 'utilities': '??',
-            'entertainment': '??', 'shopping': '???', 'health': '??', 'travel': '??',
-            'subscription': '??', 'other': '??'
-        }[rec.category] || '??';
+            'food': '🍔', 'transport': '🚗', 'housing': '🏠', 'utilities': '🔧',
+            'entertainment': '🎬', 'shopping': '🛍️', 'health': '⚕️', 'travel': '✈️',
+            'subscription': '📱', 'other': '📦'
+        }[rec.category] || '💸';
         
         const statusBadge = rec.isActive 
-            ? '<span class="status-badge status-active">? Active</span>'
-            : '<span class="status-badge status-paused">? Paused</span>';
+            ? '<span class="status-badge status-active">✅ Active</span>'
+            : '<span class="status-badge status-paused">⏸️ Paused</span>';
         
         const nextDue = new Date(rec.nextDue).toLocaleDateString();
         const daysUntil = Math.ceil((new Date(rec.nextDue) - new Date()) / (1000 * 60 * 60 * 24));
@@ -8062,7 +8063,7 @@ async function showRecurringDetails(recurringId) {
             
             <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: center;">
                 <button class="btn ${rec.isActive ? 'btn-secondary' : 'btn-primary'}" onclick="toggleRecurringFromDetails('${rec.id}', ${rec.isActive})">
-                    ${rec.isActive ? '?? Pause' : '?? Resume'}
+                    ${rec.isActive ? '⏸️ Pause' : '▶️ Resume'}
                 </button>
             </div>
         `;
@@ -9072,23 +9073,25 @@ function renderNotifications() {
  */
 function getNotificationIcon(type) {
     const icons = {
-        'expense_added': '??',
-        'expense_deleted': '???',
-        'expense_delete_requested': '??',
-        'payment_received': '??',
-        'group_paused': '??',
-        'group_reactivated': '??',
-        'group_deleted': '???',
-        'invitation': '??',
-        'vote_required': '???',
-        'proposal_approved': '?',
-        'proposal_rejected': '?',
+        'expense_added': '💸',
+        'expense_deleted': '🗑️',
+        'expense_delete_requested': '⚠️',
+        'payment_received': '💰',
+        'group_paused': '⏸️',
+        'group_reactivated': '▶️',
+        'group_deleted': '🗑️',
+        'invitation': '✉️',
+        'vote_required': '🗳️',
+        'proposal_approved': '✅',
+        'proposal_rejected': '❌',
         'member_joined': '👋',
-        'member_removed': '??',
-        'member_left': '??',
-        'removal_requested': '??',
-        'fund_goal_reached': '??',
-        'default': '??'
+        'member_removed': '👋',
+        'member_left': '👋',
+        'removal_requested': '⚠️',
+        'fund_goal_reached': '🎯',
+        'budget_exceeded': '⚠️',
+        'recurring_expense_created': '🔁',
+        'default': '🔔'
     };
     return icons[type] || icons.default;
 }
@@ -9498,10 +9501,10 @@ async function loadProfileGroups() {
                     <div class="group-card-info">
                         <div class="group-card-name">${groupName}</div>
                         <div class="group-card-meta">
-                            ${role} � ${memberCount} member${memberCount !== 1 ? 's' : ''}
+                            ${role} • ${memberCount} member${memberCount !== 1 ? 's' : ''}
                         </div>
                     </div>
-                    <div class="group-card-icon">??</div>
+                    <div class="group-card-icon">→</div>
                 </div>
             `);
         }
