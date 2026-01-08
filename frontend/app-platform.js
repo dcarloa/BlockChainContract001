@@ -1,5 +1,5 @@
 // FundHub Platform - Multi-Fund Management
-// Este archivo gestiona la interfaz principal con múltiples fondos
+// Este archivo gestiona la interfaz principal con mï¿½ltiples fondos
 
 // ============================================
 // ABI CONTRACTS
@@ -145,7 +145,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         await loadFactoryInfo();
         
-        // Intentar reconectar wallet automáticamente si ya estaba conectada
+        // Intentar reconectar wallet automï¿½ticamente si ya estaba conectada
         await autoReconnectWallet();
     } else {
         // Hide wallet button if no wallet available
@@ -392,13 +392,13 @@ async function autoReconnectWallet() {
             return;
         }
         
-        // Verificar si hay una conexión previa guardada
+        // Verificar si hay una conexiï¿½n previa guardada
         if (!window.ethereum) {
             return;
         }
 
 
-        // Usar el proveedor de MetaMask directamente si está disponible
+        // Usar el proveedor de MetaMask directamente si estï¿½ disponible
         const ethereumProvider = metamaskProviderDirect || window.ethereum;
 
         // Intentar obtener cuentas sin solicitar permiso, con timeout de 2 segundos
@@ -449,7 +449,7 @@ async function autoReconnectWallet() {
         const nickname = await factoryContract.getNickname(userAddress);
         
         if (nickname.toLowerCase() !== userAddress.toLowerCase()) {
-            // Usuario tiene nickname - cargar dashboard automáticamente
+            // Usuario tiene nickname - cargar dashboard automï¿½ticamente
             userNickname = nickname;
             
             // Update unified session badge
@@ -462,7 +462,7 @@ async function autoReconnectWallet() {
                 throw dashboardError; // Re-lanzar para que el catch general limpie el estado
             }
         } else {
-            // Usuario NO tiene nickname - NO reconectar automáticamente
+            // Usuario NO tiene nickname - NO reconectar automï¿½ticamente
             
             // Limpiar estado
             provider = null;
@@ -528,7 +528,7 @@ async function loadFactoryContract() {
     try {
         const factoryInfo = await loadFactoryInfo();
         if (!factoryInfo) {
-            throw new Error("No se pudo cargar la información del Factory");
+            throw new Error("No se pudo cargar la informaciï¿½n del Factory");
         }
         
         factoryContract = new ethers.Contract(
@@ -554,7 +554,7 @@ async function checkUserNickname() {
         
         const nickname = await factoryContract.getNickname(userAddress);
         
-        // Si el nickname es igual a la dirección, no tiene nickname
+        // Si el nickname es igual a la direcciï¿½n, no tiene nickname
         if (nickname.toLowerCase() === userAddress.toLowerCase()) {
             // No tiene nickname - OBLIGATORIO establecerlo
             userNickname = null;
@@ -1049,8 +1049,8 @@ Would you like to connect a wallet now?`;
         message = `You need to sign in to access Simple Mode groups.
 
 To create and join Simple Mode groups, please sign in with:
-• Google account
-• Email/Password
+ï¿½ Google account
+ï¿½ Email/Password
 
 Would you like to sign in now?`;
         action = () => {
@@ -1171,7 +1171,7 @@ async function loadUserFunds() {
         // Cargar detalles de cada fondo
         await loadAllFundsDetails();
         
-        // Actualizar estadísticas
+        // Actualizar estadï¿½sticas
         updateStats();
         
         // Hide loading state
@@ -1255,7 +1255,7 @@ async function loadAllFundsDetails() {
                 fund.contributors = Number(contributors);
                 fund.proposals = Number(proposals);
                 fund.target = ethers.formatEther(target);
-                // Si target es 0, no hay meta (sin límite)
+                // Si target es 0, no hay meta (sin lï¿½mite)
                 fund.progress = parseFloat(fund.target) > 0 
                     ? (parseFloat(fund.balance) / parseFloat(fund.target)) * 100 
                     : 0;
@@ -1303,9 +1303,9 @@ function updateStats() {
         }
     }
     
-    document.getElementById('totalFundsCreated').textContent = createdCount;
-    document.getElementById('totalFundsParticipating').textContent = participatingCount;
-    document.getElementById('totalValueLocked').textContent = `$${totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('totalGroupsCreated').textContent = createdCount;
+    document.getElementById('totalGroupsParticipating').textContent = participatingCount;
+    document.getElementById('totalGroupsJoined').textContent = participatingCount;
     
     // Update filter counts
     const simpleCount = allUserGroups.filter(f => f.mode === 'simple').length;
@@ -1525,7 +1525,7 @@ async function openFund(fundAddress) {
         
         // Check if group is paused
         if (!currentFund.isActive) {
-            showToast("?? Este grupo está pausado. Solo lectura disponible.", "warning");
+            showToast("?? Este grupo estï¿½ pausado. Solo lectura disponible.", "warning");
         }
         
         // Validate access based on fund mode
@@ -1608,11 +1608,11 @@ async function deactivateFund(fundAddress, fundName) {
         const confirmed = confirm(
             `?? Pause fund "${fundName}"?\n\n` +
             `This action:\n` +
-            `• Will block all transactions (deposits, proposals, votes)\n` +
-            `• The fund will remain visible in read-only mode\n` +
-            `• You can view history and balances\n` +
-            `• Only the creator can reactivate it by calling the contract\n` +
-            `• All group members will be notified\n\n` +
+            `ï¿½ Will block all transactions (deposits, proposals, votes)\n` +
+            `ï¿½ The fund will remain visible in read-only mode\n` +
+            `ï¿½ You can view history and balances\n` +
+            `ï¿½ Only the creator can reactivate it by calling the contract\n` +
+            `ï¿½ All group members will be notified\n\n` +
             `Continue?`
         );
         
@@ -1704,11 +1704,11 @@ async function hideFund(fundAddress, fundName) {
             const confirmed = confirm(
                 `??? Delete group "${fundName}"?\n\n` +
                 `This action:\n` +
-                `• Will PERMANENTLY delete the group from Firebase\n` +
-                `• All expenses, payments and data will be deleted\n` +
-                `• This action CANNOT be undone\n` +
-                `• All members will be notified\n` +
-                `• All members will lose access\n\n` +
+                `ï¿½ Will PERMANENTLY delete the group from Firebase\n` +
+                `ï¿½ All expenses, payments and data will be deleted\n` +
+                `ï¿½ This action CANNOT be undone\n` +
+                `ï¿½ All members will be notified\n` +
+                `ï¿½ All members will lose access\n\n` +
                 `Are you sure you want to continue?`
             );
             
@@ -1741,14 +1741,14 @@ async function hideFund(fundAddress, fundName) {
         } else {
             // Blockchain mode - just hide locally
             const confirmed = confirm(
-                `??? ¿Ocultar el fondo "${fundName}"?\n\n` +
-                `Esta acción:\n` +
-                `• Ocultará el fondo de tu interfaz\n` +
-                `• El fondo seguirá existiendo en la blockchain\n` +
-                `• Los fondos NO se eliminarán del contrato\n` +
-                `• Solo se guardará tu preferencia localmente\n` +
-                `• Podrás volver a verlo limpiando el storage del navegador\n\n` +
-                `¿Continuar?`
+                `??? ï¿½Ocultar el fondo "${fundName}"?\n\n` +
+                `Esta acciï¿½n:\n` +
+                `ï¿½ Ocultarï¿½ el fondo de tu interfaz\n` +
+                `ï¿½ El fondo seguirï¿½ existiendo en la blockchain\n` +
+                `ï¿½ Los fondos NO se eliminarï¿½n del contrato\n` +
+                `ï¿½ Solo se guardarï¿½ tu preferencia localmente\n` +
+                `ï¿½ Podrï¿½s volver a verlo limpiando el storage del navegador\n\n` +
+                `ï¿½Continuar?`
             );
             
             if (!confirmed) return;
@@ -1828,7 +1828,7 @@ async function createFund(event) {
     
     try {
         const fundName = document.getElementById('fundName').value.trim();
-        const description = document.getElementById('fundDescription').value.trim() || "Sin descripción";
+        const description = document.getElementById('fundDescription').value.trim() || "Sin descripciï¿½n";
         const isPrivate = document.getElementById('isPrivate').value === 'true'; // Hidden field with default true
         const approvalPercentage = document.getElementById('approvalPercentage').value;
         const minimumVotes = document.getElementById('minimumVotes').value;
@@ -2315,7 +2315,7 @@ async function refreshCurrentView() {
             // Estamos en la vista de detalle de un fondo
             await loadFundDetailView();
             
-            // Recargar también la pestaña activa específica
+            // Recargar tambiï¿½n la pestaï¿½a activa especï¿½fica
             const activeTab = document.querySelector('.tab-pane.active');
             if (activeTab) {
                 const tabId = activeTab.id;
@@ -2571,7 +2571,7 @@ async function loadSimpleModeDetailView() {
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
             safeUpdate('fundBalanceMain', 'textContent', `${symbol}${currencyBreakdown[currency].toFixed(2)} ${currency}`);
-            safeUpdate('fundBalanceBreakdown', 'innerHTML', `˜ $${totalUSD.toFixed(2)} USD`);
+            safeUpdate('fundBalanceBreakdown', 'innerHTML', `ï¿½ $${totalUSD.toFixed(2)} USD`);
             if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'block';
         } else if (currencies.length > 1) {
             // Multiple currencies - show USD total with breakdown
@@ -3507,7 +3507,7 @@ async function loadSmartSettlements() {
 async function markAllSettled() {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("?? El grupo está pausado. No puedes registrar pagos.", "error");
+            showToast("?? El grupo estï¿½ pausado. No puedes registrar pagos.", "error");
             return;
         }
         
@@ -3825,7 +3825,7 @@ function loadSimpleModeMembers() {
                         <p class="member-meta">
                             ${isCreator ? '?? Creator' : ''}
                             ${isCurrentUser && !isCreator ? '(You)' : ''}
-                            • Joined ${joinDate}
+                            ï¿½ Joined ${joinDate}
                         </p>
                     </div>
                 </div>
@@ -4654,7 +4654,7 @@ async function showDeleteRequests(expenseId) {
 
         const confirmed = confirm(
             `${requests.length} member(s) requested deletion:\n\n` +
-            requests.map(r => `• ${r.userName}`).join('\n') +
+            requests.map(r => `ï¿½ ${r.userName}`).join('\n') +
             '\n\nDo you want to delete this expense?'
         );
 
@@ -5259,14 +5259,14 @@ function populateExpenseMembers() {
                 </div>
             </label>
             <div class="member-share-controls" id="split-share-controls-${memberIndex}">
-                <button type="button" class="share-btn share-btn-minus" onclick="decrementExpenseShare(${memberIndex})" title="Quitar una porción">
+                <button type="button" class="share-btn share-btn-minus" onclick="decrementExpenseShare(${memberIndex})" title="Quitar una porciï¿½n">
                     -
                 </button>
                 <div class="share-counter" id="split-share-count-${memberIndex}">
                     <span class="share-number">1</span>
                     <span class="share-label">person</span>
                 </div>
-                <button type="button" class="share-btn share-btn-plus" onclick="incrementExpenseShare(${memberIndex})" title="Agregar una porción">
+                <button type="button" class="share-btn share-btn-plus" onclick="incrementExpenseShare(${memberIndex})" title="Agregar una porciï¿½n">
                     +
                 </button>
             </div>
@@ -5351,15 +5351,15 @@ window.decrementExpenseShare = decrementExpenseShare;
 
 const CURRENCY_SYMBOLS = {
     'USD': '$',
-    'EUR': '€',
-    'GBP': '£',
+    'EUR': 'ï¿½',
+    'GBP': 'ï¿½',
     'MXN': '$',
     'COP': '$',
     'BRL': 'R$',
     'CAD': 'CA$',
     'AUD': 'A$',
-    'JPY': '¥',
-    'CNY': '¥',
+    'JPY': 'ï¿½',
+    'CNY': 'ï¿½',
     'INR': '?',
     'CHF': 'CHF'
 };
@@ -6103,14 +6103,14 @@ async function loadInvolvedMembersCheckboxes() {
                         </div>
                     </label>
                     <div class="member-share-controls" id="share-controls-${i}">
-                        <button type="button" class="share-btn share-btn-minus" onclick="decrementShare(${i})" title="Quitar una porción">
+                        <button type="button" class="share-btn share-btn-minus" onclick="decrementShare(${i})" title="Quitar una porciï¿½n">
                             -
                         </button>
                         <div class="share-counter" id="share-count-${i}">
                             <span class="share-number">1</span>
                             <span class="share-label">person</span>
                         </div>
-                        <button type="button" class="share-btn share-btn-plus" onclick="incrementShare(${i})" title="Agregar una porción">
+                        <button type="button" class="share-btn share-btn-plus" onclick="incrementShare(${i})" title="Agregar una porciï¿½n">
                             +
                         </button>
                     </div>
@@ -6708,10 +6708,10 @@ async function loadBalances() {
                         <div class="balance-details">
                             <div class="balance-name">
                                 ${formatUserDisplay(member.nickname, member.address)}
-                                ${isCurrentUser ? ' (Tú)' : ''}
+                                ${isCurrentUser ? ' (Tï¿½)' : ''}
                             </div>
                             <div class="balance-breakdown">
-                                <span>?? Aportó: ${member.contributionEth.toFixed(4)} ETH</span>
+                                <span>?? Aportï¿½: ${member.contributionEth.toFixed(4)} ETH</span>
                                 <span>?? Parte justa: ${member.fairShareEth.toFixed(4)} ETH</span>
                             </div>
                             ${owesMoneyButton}
@@ -6830,8 +6830,8 @@ async function loadKickMembersList() {
                         <div class="member-details">
                             <div class="member-name">${formatUserDisplay(member.nickname, member.address)}</div>
                             <div class="member-stats">
-                                <span>?? Aportó: ${contributionEth.toFixed(4)} ETH</span>
-                                <span>?? Recibirá: ${refundAmount.toFixed(4)} ETH</span>
+                                <span>?? Aportï¿½: ${contributionEth.toFixed(4)} ETH</span>
+                                <span>?? Recibirï¿½: ${refundAmount.toFixed(4)} ETH</span>
                             </div>
                         </div>
                     </div>
@@ -6859,9 +6859,9 @@ async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
         const confirmed = confirm(
             `?? Remove ${memberNickname}?\n\n` +
             `This action:\n` +
-            `• Will permanently remove the member from the group\n` +
-            `• Will refund ${refundAmount.toFixed(4)} ETH\n` +
-            `• They will no longer be able to vote or participate\n\n` +
+            `ï¿½ Will permanently remove the member from the group\n` +
+            `ï¿½ Will refund ${refundAmount.toFixed(4)} ETH\n` +
+            `ï¿½ They will no longer be able to vote or participate\n\n` +
             `Continue?`
         );
         
@@ -6954,9 +6954,9 @@ async function closeFund() {
         
         // Confirmation
         const confirmed = confirm(
-            "?? ADVERTENCIA: Esta acción es IRREVERSIBLE\n\n" +
-            "Se cerrará el fondo permanentemente y se distribuirán todos los fondos restantes proporcionalmente.\n\n" +
-            "¿Estás seguro de que deseas continuar?"
+            "?? ADVERTENCIA: Esta acciï¿½n es IRREVERSIBLE\n\n" +
+            "Se cerrarï¿½ el fondo permanentemente y se distribuirï¿½n todos los fondos restantes proporcionalmente.\n\n" +
+            "ï¿½Estï¿½s seguro de que deseas continuar?"
         );
         
         if (!confirmed) return;
@@ -7601,14 +7601,14 @@ function populateRecurringMembers() {
                 </div>
             </label>
             <div class="member-share-controls" id="recurring-share-controls-${index}">
-                <button type="button" class="share-btn share-btn-minus" onclick="decrementRecurringShare(${index})" title="Quitar una porción">
+                <button type="button" class="share-btn share-btn-minus" onclick="decrementRecurringShare(${index})" title="Quitar una porciï¿½n">
                     -
                 </button>
                 <div class="share-counter" id="recurring-share-count-${index}">
                     <span class="share-number">1</span>
                     <span class="share-label">person</span>
                 </div>
-                <button type="button" class="share-btn share-btn-plus" onclick="incrementRecurringShare(${index})" title="Agregar una porción">
+                <button type="button" class="share-btn share-btn-plus" onclick="incrementRecurringShare(${index})" title="Agregar una porciï¿½n">
                     +
                 </button>
             </div>
@@ -7802,12 +7802,12 @@ async function loadRecurringExpenses() {
                             </div>
                             <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
                                 <span style="color: ${isOverdue ? '#ef4444' : '#667eea'}; font-weight: bold;">${formatCurrency(rec.amount, rec.currency)}</span>
-                                • ${capitalizeFirst(rec.frequency)}
-                                • Next: <span title="${nextDueTime}">${nextDue}</span>
+                                ï¿½ ${capitalizeFirst(rec.frequency)}
+                                ï¿½ Next: <span title="${nextDueTime}">${nextDue}</span>
                             </div>
                             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.25rem;">
                                 Paid by: ${rec.paidByName}
-                                ${rec.lastCreated ? ` • Last created: ${new Date(rec.lastCreated).toLocaleDateString()}` : ''}
+                                ${rec.lastCreated ? ` ï¿½ Last created: ${new Date(rec.lastCreated).toLocaleDateString()}` : ''}
                             </div>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
@@ -7956,7 +7956,7 @@ async function loadAllRecurringExpenses() {
                                 </div>
                             </div>
                             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.5rem;">
-                                Paid by: ${rec.paidByName} • Split: ${rec.splitBetween.length} member${rec.splitBetween.length > 1 ? 's' : ''}
+                                Paid by: ${rec.paidByName} ï¿½ Split: ${rec.splitBetween.length} member${rec.splitBetween.length > 1 ? 's' : ''}
                             </div>
                         </div>
                     </div>
@@ -9034,14 +9034,14 @@ function renderNotifications() {
         
         if (typeof notif.message === 'object' && notif.message !== null) {
             // Old format: entire notification data was nested in message field
-            title = notif.message.title || 'Notificación';
+            title = notif.message.title || 'Notificaciï¿½n';
             message = notif.message.message || '';
             type = notif.message.type || notif.type;
             fundId = notif.message.fundId || notif.fundId;
             expenseId = notif.message.expenseId || notif.expenseId;
         } else {
             // New format: proper structure
-            title = notif.title || 'Notificación';
+            title = notif.title || 'Notificaciï¿½n';
             message = notif.message || '';
             type = notif.type;
             fundId = notif.fundId;
@@ -9494,7 +9494,7 @@ async function loadProfileGroups() {
                     <div class="group-card-info">
                         <div class="group-card-name">${groupName}</div>
                         <div class="group-card-meta">
-                            ${role} • ${memberCount} member${memberCount !== 1 ? 's' : ''}
+                            ${role} ï¿½ ${memberCount} member${memberCount !== 1 ? 's' : ''}
                         </div>
                     </div>
                     <div class="group-card-icon">??</div>
