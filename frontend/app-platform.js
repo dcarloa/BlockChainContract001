@@ -1378,20 +1378,20 @@ function filterAndSortGroups() {
             break;
     }
     
-    const fundsGrid = document.getElementById('fundsGrid');
+    const groupsGrid = document.getElementById('groupsGrid');
     const emptyState = document.getElementById('emptyState');
     
     
     if (filteredFunds.length === 0) {
-        if (fundsGrid) {
-            fundsGrid.innerHTML = '';
-            fundsGrid.style.display = 'none';
+        if (groupsGrid) {
+            groupsGrid.innerHTML = '';
+            groupsGrid.style.display = 'none';
         }
         if (emptyState) {
             emptyState.style.display = 'flex';
         }
     } else {
-        emptyState.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'none';
         
         // Filter out hidden funds from localStorage
         const hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
@@ -1405,12 +1405,16 @@ function filterAndSortGroups() {
         
         
         if (visibleFunds.length === 0) {
-            fundsGrid.innerHTML = '';
-            fundsGrid.style.display = 'none';
-            emptyState.style.display = 'flex';
+            if (groupsGrid) {
+                groupsGrid.innerHTML = '';
+                groupsGrid.style.display = 'none';
+            }
+            if (emptyState) emptyState.style.display = 'flex';
         } else {
-            fundsGrid.style.display = 'grid';
-            fundsGrid.innerHTML = visibleFunds.map(fund => createFundCard(fund)).join('');
+            if (groupsGrid) {
+                groupsGrid.style.display = 'grid';
+                groupsGrid.innerHTML = visibleFunds.map(fund => createFundCard(fund)).join('');
+            }
         }
     }
 }
