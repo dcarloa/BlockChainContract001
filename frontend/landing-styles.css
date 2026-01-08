@@ -1894,3 +1894,17 @@ body {
         padding: 0.875rem 1rem;
     }
 }
+
+/* Features Redesigned Section - Theme Support */
+.features-redesigned {
+    padding: 5rem 0;
+    background: var(--bg-dark);
+}
+
+[data-theme="light"] .features-redesigned {
+    background: #f8f9fa;
+}
+
+[data-theme="dark"] .features-redesigned {
+    background: var(--dark);
+}
