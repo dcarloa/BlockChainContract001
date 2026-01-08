@@ -342,9 +342,16 @@ async function executeRemoteSelection(method) {
     gameArea.innerHTML = `
         <div class="game-turn-screen">
             <div class="spinner-wheel-container">
-                <div class="spinner-wheel" id="spinnerWheel"></div>
+                <div class="spinner-pointer">▼</div>
+                <div class="spinner-wheel" id="spinnerWheel">
+                    ${challengeState.players.map((p, i) => `
+                        <div class="wheel-segment" style="--index: ${i}; --total: ${challengeState.players.length};">
+                            <span class="segment-text">${p.nickname}</span>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
-            <div class="spinner-status">Spinning...</div>
+            <div class="spinner-status">🎲 Spinning...</div>
         </div>
     `;
     
@@ -372,20 +379,21 @@ async function spinTheWheel(preselected = null) {
         const wheel = document.getElementById('spinnerWheel');
         const players = challengeState.players;
         
-        // Create wheel segments
-        players.forEach((player, index) => {
-            const segment = document.createElement('div');
-            segment.className = 'wheel-segment';
-            segment.textContent = player.nickname;
-            segment.style.transform = `rotate(${(360 / players.length) * index}deg)`;
-            wheel.appendChild(segment);
-        });
+        // Determine selected player
+        const selected = preselected || players[Math.floor(Math.random() * players.length)];
+        const selectedIndex = players.findIndex(p => p.address === selected.address);
         
-        // Spin animation
-        wheel.style.animation = 'spin 3s ease-out';
+        // Calculate rotation to land on selected player
+        const segmentAngle = 360 / players.length;
+        const targetAngle = 360 - (selectedIndex * segmentAngle) + (segmentAngle / 2);
+        const spins = 360 * 5; // 5 full rotations
+        const finalRotation = spins + targetAngle;
+        
+        // Apply spin animation
+        wheel.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+        wheel.style.transform = `rotate(${finalRotation}deg)`;
         
         setTimeout(() => {
-            const selected = preselected || players[Math.floor(Math.random() * players.length)];
             resolve(selected);
         }, 3000);
     });
