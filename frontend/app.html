@@ -205,28 +205,8 @@
                 
                 <!-- Header Actions Section -->
                 <div class="header-actions">
-                    <!-- User Session Badge (Desktop Only) -->
-                    <div id="unifiedSessionBadge" class="unified-session-badge" style="display: none; cursor: pointer;" onclick="openProfilePanel()" title="Open Profile">
-                        <div class="session-info">
-                            <div class="session-auth" id="sessionAuthDisplay">
-                                <span class="session-icon">👤</span>
-                                <span id="sessionUserName"></span>
-                            </div>
-                            <div class="session-wallet" id="sessionWalletDisplay" style="display: none;">
-                                <span class="session-icon">🦊</span>
-                                <span id="sessionWalletAddress"></span>
-                            </div>
-                        </div>
-                        <div class="session-status" id="sessionStatus"></div>
-                    </div>
-                    
                     <!-- Action Buttons Group -->
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <!-- Profile Button (Mobile) -->
-                        <button id="profileBtnMobile" class="settings-btn-app" onclick="openProfilePanel()" title="Profile" style="display: none;">
-                            👤
-                        </button>
-                        
                         <!-- Upgrade PRO Button -->
                         <button id="upgradeProBtn" class="upgrade-pro-btn" onclick="openProfilePanel(); setTimeout(() => switchProfileTab('subscription'), 100);" title="Upgrade to PRO">
                             <span>💎</span>
@@ -242,27 +222,101 @@
                         <!-- Settings -->
                         <button class="settings-btn-app" onclick="openAppSettings()" title="Settings">⚙️</button>
                         
-                        <!-- Auth Buttons -->
-                        <button id="signInSimpleMode" class="btn btn-secondary" style="display: none;" onclick="showSignInModal()">
-                            <span class="btn-icon">🔐</span>
-                            <span>Sign In</span>
-                        </button>
-                        
-                        <button id="signOutFirebase" class="btn btn-secondary" style="display: none;" onclick="signOutFromFirebase()" title="Sign out">
-                            <span class="btn-icon">🚪</span>
-                            <span>Sign Out</span>
-                        </button>
-                        
-                        <!-- Wallet Buttons -->
-                        <button id="connectWallet" class="btn btn-primary">
-                            <span class="btn-icon">🦊</span>
-                            <span>Connect</span>
-                        </button>
-                        
-                        <button id="disconnectWallet" class="btn btn-secondary" style="display: none;">
-                            <span class="btn-icon">🚪</span>
-                            <span>Disconnect</span>
-                        </button>
+                        <!-- Unified User Menu Button -->
+                        <div class="user-menu-container">
+                            <button id="userMenuBtn" class="user-menu-btn" onclick="toggleUserMenu()" title="Account">
+                                <div class="user-menu-avatar">
+                                    <span id="userMenuIcon">👤</span>
+                                </div>
+                                <div class="user-menu-info">
+                                    <div id="userMenuName" class="user-menu-name">Sign In</div>
+                                    <div id="userMenuStatus" class="user-menu-status"></div>
+                                </div>
+                                <span class="user-menu-arrow">▼</span>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div id="userMenuDropdown" class="user-menu-dropdown" style="display: none;">
+                                <!-- Sign In Option (shown when not authenticated) -->
+                                <div id="menuSignInOption" class="menu-section" style="display: none;">
+                                    <button class="menu-item" onclick="showSignInModal(); closeUserMenu();">
+                                        <span class="menu-icon">🔐</span>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Sign In</div>
+                                            <div class="menu-desc">Access Simple Mode</div>
+                                        </div>
+                                    </button>
+                                </div>
+                                
+                                <!-- Connect Wallet Option (shown when wallet not connected) -->
+                                <div id="menuConnectWalletOption" class="menu-section">
+                                    <button id="connectWallet" class="menu-item" onclick="closeUserMenu();">
+                                        <span class="menu-icon">🦊</span>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Connect Wallet</div>
+                                            <div class="menu-desc">Enable Blockchain Mode</div>
+                                        </div>
+                                    </button>
+                                </div>
+                                
+                                <!-- User Info Section (shown when authenticated) -->
+                                <div id="menuUserInfo" class="menu-section" style="display: none;">
+                                    <div class="menu-header">
+                                        <div class="menu-header-avatar">
+                                            <span id="menuUserAvatar">👤</span>
+                                        </div>
+                                        <div class="menu-header-info">
+                                            <div id="menuUserDisplayName" class="menu-header-name"></div>
+                                            <div id="menuUserEmail" class="menu-header-email"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Wallet Info Section (shown when wallet connected) -->
+                                <div id="menuWalletInfo" class="menu-section" style="display: none;">
+                                    <div class="menu-item-static">
+                                        <span class="menu-icon">🦊</span>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Wallet Connected</div>
+                                            <div id="menuWalletAddress" class="menu-desc wallet-address"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="menu-divider"></div>
+                                
+                                <!-- Profile Option -->
+                                <button class="menu-item" onclick="openProfilePanel(); closeUserMenu();">
+                                    <span class="menu-icon">👤</span>
+                                    <div class="menu-content">
+                                        <div class="menu-title">My Profile</div>
+                                    </div>
+                                </button>
+                                
+                                <div class="menu-divider"></div>
+                                
+                                <!-- Sign Out Options -->
+                                <div id="menuSignOutFirebase" class="menu-section" style="display: none;">
+                                    <button id="signOutFirebase" class="menu-item menu-item-danger" onclick="signOutFromFirebase(); closeUserMenu();">
+                                        <span class="menu-icon">🚪</span>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Sign Out</div>
+                                            <div class="menu-desc">From Simple Mode</div>
+                                        </div>
+                                    </button>
+                                </div>
+                                
+                                <div id="menuDisconnectWallet" class="menu-section" style="display: none;">
+                                    <button id="disconnectWallet" class="menu-item menu-item-danger" onclick="closeUserMenu();">
+                                        <span class="menu-icon">🔌</span>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Disconnect Wallet</div>
+                                            <div class="menu-desc">From Blockchain Mode</div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

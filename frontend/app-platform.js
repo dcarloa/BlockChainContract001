@@ -949,61 +949,132 @@ async function updateUIForFirebaseUser(user) {
  * Update unified session badge showing both Firebase auth and wallet status
  */
 function updateUnifiedSessionBadge() {
-    const badge = document.getElementById('unifiedSessionBadge');
-    const authDisplay = document.getElementById('sessionAuthDisplay');
-    const walletDisplay = document.getElementById('sessionWalletDisplay');
-    const userName = document.getElementById('sessionUserName');
-    const walletAddress = document.getElementById('sessionWalletAddress');
-    const statusDisplay = document.getElementById('sessionStatus');
+    // Update new user menu
+    updateUserMenu();
+}
+
+/**
+ * Toggle user menu dropdown
+ */
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userMenuDropdown');
+    const btn = document.getElementById('userMenuBtn');
     
+    if (dropdown.style.display === 'none' || !dropdown.style.display) {
+        dropdown.style.display = 'block';
+        btn.classList.add('active');
+    } else {
+        dropdown.style.display = 'none';
+        btn.classList.remove('active');
+    }
+}
+
+/**
+ * Close user menu
+ */
+function closeUserMenu() {
+    const dropdown = document.getElementById('userMenuDropdown');
+    const btn = document.getElementById('userMenuBtn');
+    dropdown.style.display = 'none';
+    btn.classList.remove('active');
+}
+
+/**
+ * Update user menu based on authentication state
+ */
+function updateUserMenu() {
     const firebaseUser = window.FirebaseConfig?.getCurrentUser();
     const hasWallet = !!userAddress;
     
-    // If no authentication at all, hide badge
-    if (!firebaseUser && !hasWallet) {
-        badge.style.display = 'none';
-        const profileBtnMobile = document.getElementById('profileBtnMobile');
-        if (profileBtnMobile) profileBtnMobile.style.display = 'none';
-        return;
-    }
+    // Update button display
+    const menuIcon = document.getElementById('userMenuIcon');
+    const menuName = document.getElementById('userMenuName');
+    const menuStatus = document.getElementById('userMenuStatus');
     
-    // Show badge
-    badge.style.display = 'flex';
+    // Update dropdown sections visibility
+    const menuSignInOption = document.getElementById('menuSignInOption');
+    const menuConnectWalletOption = document.getElementById('menuConnectWalletOption');
+    const menuUserInfo = document.getElementById('menuUserInfo');
+    const menuWalletInfo = document.getElementById('menuWalletInfo');
+    const menuSignOutFirebase = document.getElementById('menuSignOutFirebase');
+    const menuDisconnectWallet = document.getElementById('menuDisconnectWallet');
     
-    // Show mobile profile button if authenticated
-    const profileBtnMobile = document.getElementById('profileBtnMobile');
-    if (profileBtnMobile && firebaseUser) {
-        profileBtnMobile.style.display = 'flex';
-    }
-    
-    // Update auth display
-    if (firebaseUser) {
-        authDisplay.style.display = 'flex';
-        userName.textContent = firebaseUser.displayName || firebaseUser.email;
-    } else {
-        authDisplay.style.display = 'none';
-    }
-    
-    // Update wallet display
-    if (hasWallet) {
-        walletDisplay.style.display = 'flex';
-        walletAddress.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
-    } else {
-        walletDisplay.style.display = 'none';
-    }
-    
-    // Update status display
+    // Determine state and update UI
     if (firebaseUser && hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-full">✅ Full Access</span>';
-        statusDisplay.title = 'You have access to Simple Mode AND Blockchain Mode';
+        // Full access - both authenticated
+        menuIcon.textContent = '✅';
+        menuName.textContent = firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User';
+        menuStatus.textContent = 'Full Access';
+        
+        menuSignInOption.style.display = 'none';
+        menuConnectWalletOption.style.display = 'none';
+        menuUserInfo.style.display = 'block';
+        menuWalletInfo.style.display = 'block';
+        menuSignOutFirebase.style.display = 'block';
+        menuDisconnectWallet.style.display = 'block';
+        
+        // Update user info in dropdown
+        document.getElementById('menuUserAvatar').textContent = firebaseUser.displayName?.charAt(0) || '👤';
+        document.getElementById('menuUserDisplayName').textContent = firebaseUser.displayName || 'User';
+        document.getElementById('menuUserEmail').textContent = firebaseUser.email || '';
+        document.getElementById('menuWalletAddress').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+        
     } else if (firebaseUser && !hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-limited">⚠️ Limited Access</span>';
-        statusDisplay.title = 'Simple Mode only. Connect wallet for blockchain features.';
+        // Firebase only - limited access
+        menuIcon.textContent = '👤';
+        menuName.textContent = firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User';
+        menuStatus.textContent = 'Simple Mode';
+        
+        menuSignInOption.style.display = 'none';
+        menuConnectWalletOption.style.display = 'block';
+        menuUserInfo.style.display = 'block';
+        menuWalletInfo.style.display = 'none';
+        menuSignOutFirebase.style.display = 'block';
+        menuDisconnectWallet.style.display = 'none';
+        
+        // Update user info in dropdown
+        document.getElementById('menuUserAvatar').textContent = firebaseUser.displayName?.charAt(0) || '👤';
+        document.getElementById('menuUserDisplayName').textContent = firebaseUser.displayName || 'User';
+        document.getElementById('menuUserEmail').textContent = firebaseUser.email || '';
+        
     } else if (!firebaseUser && hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-wallet-only">🔗 Wallet Only</span>';
-        statusDisplay.title = 'Blockchain Mode available. Sign in for Simple Mode groups.';
+        // Wallet only
+        menuIcon.textContent = '🦊';
+        menuName.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
+        menuStatus.textContent = 'Blockchain Mode';
+        
+        menuSignInOption.style.display = 'block';
+        menuConnectWalletOption.style.display = 'none';
+        menuUserInfo.style.display = 'none';
+        menuWalletInfo.style.display = 'block';
+        menuSignOutFirebase.style.display = 'none';
+        menuDisconnectWallet.style.display = 'block';
+        
+        // Update wallet info in dropdown
+        document.getElementById('menuWalletAddress').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+        
+    } else {
+        // Not authenticated at all
+        menuIcon.textContent = '👤';
+        menuName.textContent = 'Sign In';
+        menuStatus.textContent = '';
+        
+        menuSignInOption.style.display = 'block';
+        menuConnectWalletOption.style.display = 'block';
+        menuUserInfo.style.display = 'none';
+        menuWalletInfo.style.display = 'none';
+        menuSignOutFirebase.style.display = 'none';
+        menuDisconnectWallet.style.display = 'none';
     }
 }
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const container = document.querySelector('.user-menu-container');
+    if (container && !container.contains(event.target)) {
+        closeUserMenu();
+    }
+});
 
 /**
  * Check if user has access to blockchain features
