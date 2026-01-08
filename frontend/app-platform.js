@@ -173,9 +173,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     
     // Always show dashboard on page load/refresh
+    console.log('🏠 Calling showDashboard() on page load');
     showDashboard();
     
     // Load user funds (both Simple and Blockchain modes)
+    console.log('📂 Calling loadUserFunds()');
     await loadUserFunds();
     
     } catch (error) {
@@ -845,6 +847,8 @@ window.openInvitedFund = async function(fundAddress) {
 }
 
 function showDashboard() {
+    console.log('📊 showDashboard() called');
+    
     // Clear any active group state
     currentFund = null;
     currentFundContract = null;
@@ -857,16 +861,18 @@ function showDashboard() {
     const addExpenseCard = document.getElementById('simpleAddExpenseCard');
     if (addExpenseCard) addExpenseCard.style.display = 'none';
     
-    // Make sure dashboard section is visible
+    // Make sure dashboard section is visible and fund detail is hidden
     const dashboardSection = document.getElementById('dashboardSection');
     const fundDetailSection = document.getElementById('fundDetailSection');
     
+    if (fundDetailSection) {
+        fundDetailSection.classList.remove('active');
+        console.log('  ✓ fundDetailSection hidden');
+    }
     
     if (dashboardSection) {
         dashboardSection.classList.add('active');
-    }
-    if (fundDetailSection) {
-        fundDetailSection.classList.remove('active');
+        console.log('  ✓ dashboardSection shown');
     }
     
     // Enable create fund button for both modes
