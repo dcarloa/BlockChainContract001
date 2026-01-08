@@ -289,16 +289,8 @@ async function connectWallet() {
             }
         }
         
-        // Update UI with wallet info
-        const walletIcon = walletResult.walletType === 'metamask' ? '🦊' : 
-                          walletResult.walletType === 'coinbase' ? '🔵' : '👛';
-        
-        document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">${walletIcon}</span>
-            <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
-        `;
-        document.getElementById('connectWallet').style.display = 'none';
-        document.getElementById('disconnectWallet').style.display = 'inline-flex';
+        // Update UI with wallet info via unified menu
+        // The walletIcon is managed by updateUserMenu()
         
         // Load factory contract
         await loadFactoryContract();
@@ -352,15 +344,7 @@ async function disconnectWallet() {
         currentFundContract = null;
         allFunds = [];
         
-        // Reset UI
-        document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">🔗</span>
-            <span>Connect Wallet</span>
-        `;
-        document.getElementById('connectWallet').style.display = 'inline-flex';
-        document.getElementById('connectWallet').disabled = false;
-        document.getElementById('connectWallet').style.opacity = '1';
-        document.getElementById('disconnectWallet').style.display = 'none';
+        // Reset UI is handled by updateUserMenu()
         
         // Update unified session badge
         updateUnifiedSessionBadge();
@@ -436,14 +420,7 @@ async function autoReconnectWallet() {
         }
 
 
-        // Actualizar UI
-        const walletIcon = '🦊'; // Por defecto MetaMask
-        document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">${walletIcon}</span>
-            <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
-        `;
-        document.getElementById('connectWallet').style.display = 'none';
-        document.getElementById('disconnectWallet').style.display = 'inline-flex';
+        // Actualizar UI - handled by updateUserMenu()
 
 
         // Cargar factory contract
@@ -474,13 +451,7 @@ async function autoReconnectWallet() {
             userAddress = null;
             factoryContract = null;
             
-            // Restaurar UI a estado inicial
-            document.getElementById('connectWallet').innerHTML = `
-                <span class="btn-icon">🔗</span>
-                <span>Connect Wallet</span>
-            `;
-            document.getElementById('connectWallet').style.display = 'inline-flex';
-            document.getElementById('disconnectWallet').style.display = 'none';
+            // Restaurar UI a estado inicial - handled by updateUserMenu()
             
             // Update unified session badge
             updateUnifiedSessionBadge();
@@ -499,13 +470,7 @@ async function autoReconnectWallet() {
         userNickname = null;
         factoryContract = null;
         
-        // Restaurar UI a estado inicial
-        document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">🔗</span>
-            <span>Connect Wallet</span>
-        `;
-        document.getElementById('connectWallet').style.display = 'inline-flex';
-        document.getElementById('disconnectWallet').style.display = 'none';
+        // Restaurar UI a estado inicial - handled by updateUserMenu()
         
         // Update unified session badge
         updateUnifiedSessionBadge();
@@ -2029,7 +1994,7 @@ async function createBlockchainFund(fundInfo) {
             }
             
             // Trigger wallet connection
-            document.getElementById('connectWallet').click();
+            await connectWallet();
             showToast("Please connect your wallet and try again", "info");
             return;
         }
