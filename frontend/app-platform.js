@@ -147,9 +147,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         
         // Intentar reconectar wallet autom�ticamente si ya estaba conectada
         await autoReconnectWallet();
-    } else {
-        // Hide wallet button if no wallet available
-        document.getElementById('connectWallet').style.display = 'none';
     }
     
     
@@ -190,20 +187,34 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 function setupEventListeners() {
     // Dashboard
-    document.getElementById('connectWallet').addEventListener('click', connectWallet);
-    document.getElementById('disconnectWallet').addEventListener('click', disconnectWallet);
-    document.getElementById('setNicknameBtn').addEventListener('click', setNickname);
-    document.getElementById('createFundBtn').addEventListener('click', showCreateFundModal);
-    document.getElementById('createFundForm').addEventListener('submit', createFund);
-    document.getElementById('backToDashboard').addEventListener('click', backToDashboard);
+    const connectWalletBtn = document.getElementById('connectWallet');
+    const disconnectWalletBtn = document.getElementById('disconnectWallet');
+    const setNicknameBtn = document.getElementById('setNicknameBtn');
+    const createFundBtn = document.getElementById('createFundBtn');
+    const createFundForm = document.getElementById('createFundForm');
+    const backToDashboardBtn = document.getElementById('backToDashboard');
+    
+    if (connectWalletBtn) connectWalletBtn.addEventListener('click', connectWallet);
+    if (disconnectWalletBtn) disconnectWalletBtn.addEventListener('click', disconnectWallet);
+    if (setNicknameBtn) setNicknameBtn.addEventListener('click', setNickname);
+    if (createFundBtn) createFundBtn.addEventListener('click', showCreateFundModal);
+    if (createFundForm) createFundForm.addEventListener('submit', createFund);
+    if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', backToDashboard);
     
     // Fund Detail Actions
-    document.getElementById('depositBtn').addEventListener('click', depositToFund);
-    document.getElementById('inviteBtn').addEventListener('click', inviteMember);
-    document.getElementById('createProposalBtn').addEventListener('click', createProposal);
-    document.getElementById('acceptInvitationBtn').addEventListener('click', acceptInvitation);
-    document.getElementById('previewCloseFundBtn').addEventListener('click', previewCloseFund);
-    document.getElementById('closeFundBtn').addEventListener('click', closeFund);
+    const depositBtn = document.getElementById('depositBtn');
+    const inviteBtn = document.getElementById('inviteBtn');
+    const createProposalBtn = document.getElementById('createProposalBtn');
+    const acceptInvitationBtn = document.getElementById('acceptInvitationBtn');
+    const previewCloseFundBtn = document.getElementById('previewCloseFundBtn');
+    const closeFundBtn = document.getElementById('closeFundBtn');
+    
+    if (depositBtn) depositBtn.addEventListener('click', depositToFund);
+    if (inviteBtn) inviteBtn.addEventListener('click', inviteMember);
+    if (createProposalBtn) createProposalBtn.addEventListener('click', createProposal);
+    if (acceptInvitationBtn) acceptInvitationBtn.addEventListener('click', acceptInvitation);
+    if (previewCloseFundBtn) previewCloseFundBtn.addEventListener('click', previewCloseFund);
+    if (closeFundBtn) closeFundBtn.addEventListener('click', closeFund);
     
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
