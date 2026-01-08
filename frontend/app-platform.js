@@ -280,7 +280,7 @@ async function connectWallet() {
                     return;
                 } catch (switchError) {
                     hideLoading();
-                    showToast("? Error switching network. Please change it manually.", "error");
+                    showToast("Error switching network. Please change it manually.", "error");
                     return;
                 }
             } else {
@@ -302,16 +302,16 @@ async function connectWallet() {
         updateUnifiedSessionBadge();
         
         hideLoading();
-        showToast(`? Conectado con ${walletResult.walletName}`, "success");
+        showToast(`Connected with ${walletResult.walletName}`, "success");
         
     } catch (error) {
         hideLoading();
         console.error("? Error connecting wallet:", error);
         
         if (error.message.includes('User rejected')) {
-            showToast("? Connection cancelled by user", "warning");
+            showToast("Connection cancelled by user", "warning");
         } else {
-            showToast("? Error connecting wallet: " + error.message, "error");
+            showToast("Error connecting wallet: " + error.message, "error");
         }
     }
 }
@@ -356,7 +356,7 @@ async function disconnectWallet() {
         hideLoading();
         
         // Show success message and redirect
-        showToast("? Wallet disconnected successfully", "success");
+        showToast("Wallet disconnected successfully", "success");
         
         setTimeout(() => {
             showLoading(t.app.loading.redirecting);
@@ -368,7 +368,7 @@ async function disconnectWallet() {
     } catch (error) {
         hideLoading();
         console.error("Error disconnecting wallet:", error);
-        showToast("? Error disconnecting: " + error.message, "error");
+        showToast("Error disconnecting: " + error.message, "error");
     }
 }
 
@@ -612,7 +612,7 @@ async function setNickname() {
         // Cerrar modal
         document.getElementById('nicknameModal').style.display = 'none';
         
-        showToast(`? Nickname "${userNickname}" set successfully!`, "success");
+        showToast(`Nickname "${userNickname}" set successfully!`, "success");
         
         // Load dashboard
         await loadDashboard();
@@ -785,7 +785,7 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
         await refreshCurrentView();
         await loadPendingInvitations();
         
-        showToast(`? Invitation accepted! You are now a member of ${fundName}`, "success");
+        showToast(`Invitation accepted! You are now a member of ${fundName}`, "success");
         
         hideLoading();
         
@@ -1172,7 +1172,8 @@ async function loadUserFunds() {
                                 description: groupData.description,
                                 targetAmount: groupData.targetAmount,
                                 currency: groupData.currency || 'USD',
-                                memberCount: Object.keys(groupData.members || {}).length
+                                memberCount: Object.keys(groupData.members || {}).length,
+                                icon: groupData.icon || '📦' // Add icon field
                             };
                             
                             fundMap.set(groupId, fundData);
@@ -1679,7 +1680,7 @@ async function deactivateFund(fundAddress, fundName) {
         // Refresh view to show deactivated state
         await refreshCurrentView();
         
-        showToast("? Fund deactivated. Now in read-only mode.", "success");
+        showToast("Group paused. Now in read-only mode.", "success");
         
         hideLoading();
         
@@ -1708,7 +1709,7 @@ async function reactivateFund(fundAddress, fundName) {
         await notifyGroupMembers(fundAddress, 'group_reactivated', `The group "${fundName}" has been reactivated`, { groupName: fundName });
         
         await refreshCurrentView();
-        showToast("? Group reactivated successfully", "success");
+        showToast("Group reactivated successfully", "success");
         hideLoading();
         
     } catch (error) {
@@ -1761,7 +1762,7 @@ async function hideFund(fundAddress, fundName) {
             // Delete the entire group from Firebase
             await window.FirebaseConfig.deleteDb(`groups/${fundAddress}`);
             
-            showToast("? Grupo eliminado correctamente", "success");
+            showToast("Grupo eliminado correctamente", "success");
             
         } else {
             // Blockchain mode - just hide locally
@@ -1789,7 +1790,7 @@ async function hideFund(fundAddress, fundName) {
                 localStorage.setItem('hiddenFunds', JSON.stringify(hiddenFunds));
             }
             
-            showToast("? Fondo ocultado de tu vista", "success");
+            showToast("Fondo ocultado de tu vista", "success");
         }
         
         // Refresh view to hide the fund
@@ -1954,7 +1955,7 @@ async function createSimpleFund(fundInfo) {
             icon: fundInfo.icon || '📦'
         });
         
-        showToast(`? Group "${fundInfo.name}" created successfully!`, "success");
+        showToast(`Group "${fundInfo.name}" created successfully!`, "success");
         
         // Reload funds list
         await loadUserFunds();
@@ -2016,7 +2017,7 @@ async function createBlockchainFund(fundInfo) {
         
         const receipt = await tx.wait();
         
-        showToast(`? Fund "${fundInfo.name}" created successfully!`, "success");
+        showToast(`Fund "${fundInfo.name}" created successfully!`, "success");
         
         // Give time for blockchain state to update
         showLoading(t('app.loading.waitingColonyConfirmation'));
@@ -4901,7 +4902,7 @@ async function handleGroupJoin(groupId) {
                 await loadSimpleModeDetailView();
                 
                 hideLoading();
-                showToast(`? Welcome back to "${groupName}"!`, 'success');
+                showToast(`Welcome back to "${groupName}"!`, 'success');
                 
                 // Reload dashboard in background to show the group in list
                 setTimeout(() => loadAllFundsDetails(), 500);
@@ -5133,7 +5134,7 @@ async function handlePaymentSubmission(event) {
         // Record settlement via mode manager
         await window.modeManager.recordSettlement(settlementInfo);
 
-        showToast('Payment recorded successfully! ?', 'success');
+        showToast('Payment recorded successfully!', 'success');
         closeRecordPaymentModal();
 
         // Refresh balances
@@ -5596,7 +5597,7 @@ async function handleExpenseSubmission(event) {
         // Save to Firebase via mode manager
         await window.modeManager.addSimpleExpense(expenseInfo);
 
-        showToast('Expense added successfully! ?', 'success');
+        showToast('Expense added successfully!', 'success');
         closeAddExpenseModal();
 
         // Refresh expense list and balances
@@ -5650,7 +5651,7 @@ async function approveExpense(expenseId) {
         const success = await window.modeManager.approveExpense(expenseId, true);
 
         if (success) {
-            showToast('Expense approved! ?', 'success');
+            showToast('Expense approved!', 'success');
             // Refresh expense list
             await loadSimpleModeExpenses();
         } else {
@@ -5689,7 +5690,7 @@ async function rejectExpense(expenseId) {
         const success = await window.modeManager.approveExpense(expenseId, false);
 
         if (success) {
-            showToast('Expense rejected ?', 'info');
+            showToast('Expense rejected', 'info');
             // Refresh expense list
             await loadSimpleModeExpenses();
         } else {
@@ -5723,12 +5724,12 @@ async function depositToFund() {
         
         
         if (isPrivate && memberStatus === 0n) {
-            showToast("?? This is a private fund. You need an invitation from the creator to participate.", "warning");
+            showToast("This is a private fund. You need an invitation from the creator to participate.", "warning");
             return;
         }
         
         if (isPrivate && memberStatus === 1n) {
-            showToast("?? You have a pending invitation. Accept it first in the 'Invite' tab before depositing.", "warning");
+            showToast("You have a pending invitation. Accept it first in the 'Invite' tab before depositing.", "warning");
             return;
         }
         
