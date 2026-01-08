@@ -1551,16 +1551,81 @@ header,
   z-index: 1;
 }
 
+.fund-detail-header {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2rem;
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.fund-detail-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-gradient);
+  opacity: 0.03;
+}
+
+.fund-header-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.fund-header-icon {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.fund-header-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.fund-header-description {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fund-badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .fund-header-top {
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-md);
-}
-
-.fund-header-icon {
-  font-size: 3rem;
-  flex-shrink: 0;
 }
 
 .fund-header-info {
@@ -2712,6 +2777,22 @@ header,
     grid-template-columns: 1fr;
   }
   
+  .fund-detail-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .fund-header-icon {
+    font-size: 4rem;
+  }
+
+  .fund-header-title {
+    font-size: 2rem;
+  }
+
+  .fund-header-description {
+    font-size: 1rem;
+  }
+
   .fund-stats-bar {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2783,6 +2864,22 @@ header,
   
   .stat-content p {
     font-size: 0.75rem;
+  }
+
+  .fund-detail-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .fund-header-icon {
+    font-size: 3.5rem;
+  }
+
+  .fund-header-title {
+    font-size: 1.75rem;
+  }
+
+  .fund-header-description {
+    font-size: 0.95rem;
   }
   
   /* Search and Sort Bar - Mobile */
