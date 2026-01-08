@@ -994,13 +994,13 @@ function updateUnifiedSessionBadge() {
     
     // Update status display
     if (firebaseUser && hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-full">? Full Access</span>';
+        statusDisplay.innerHTML = '<span class="status-full">✅ Full Access</span>';
         statusDisplay.title = 'You have access to Simple Mode AND Blockchain Mode';
     } else if (firebaseUser && !hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-limited">?? Limited Access</span>';
+        statusDisplay.innerHTML = '<span class="status-limited">⚠️ Limited Access</span>';
         statusDisplay.title = 'Simple Mode only. Connect wallet for blockchain features.';
     } else if (!firebaseUser && hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-wallet-only">?? Wallet Only</span>';
+        statusDisplay.innerHTML = '<span class="status-wallet-only">🔗 Wallet Only</span>';
         statusDisplay.title = 'Blockchain Mode available. Sign in for Simple Mode groups.';
     }
 }
@@ -2548,9 +2548,9 @@ async function loadSimpleModeDetailView() {
         
         // Update UI safely
         safeUpdate('fundDetailDescription', 'textContent', groupData.description || 'No description');
-        safeUpdate('fundTypeBadge', 'textContent', '?? Simple Mode');
-        safeUpdate('fundStatusBadge', 'textContent', '?? Active');
-        safeUpdate('fundPrivacyBadge', 'textContent', groupData.isPrivate ? '?? Private' : '?? Public');
+        safeUpdate('fundTypeBadge', 'textContent', '🐜 Simple Mode');
+        safeUpdate('fundStatusBadge', 'textContent', '✅ Active');
+        safeUpdate('fundPrivacyBadge', 'textContent', groupData.isPrivate ? '🔒 Private' : '🌍 Public');
         
         // For Simple Mode: show stats differently
         const members = groupData.members ? Object.keys(groupData.members).length : 1;
@@ -2575,7 +2575,7 @@ async function loadSimpleModeDetailView() {
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
             safeUpdate('fundBalanceMain', 'textContent', `${symbol}${currencyBreakdown[currency].toFixed(2)} ${currency}`);
-            safeUpdate('fundBalanceBreakdown', 'innerHTML', `� $${totalUSD.toFixed(2)} USD`);
+            safeUpdate('fundBalanceBreakdown', 'innerHTML', `≈ $${totalUSD.toFixed(2)} USD`);
             if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'block';
         } else if (currencies.length > 1) {
             // Multiple currencies - show USD total with breakdown
@@ -3199,7 +3199,7 @@ async function loadSimpleModeBalances() {
         if (iOwe.length === 0 && owesMe.length === 0) {
             html += `
                 <div class="empty-state">
-                    <div class="empty-icon">?</div>
+                    <div class="empty-icon">✅</div>
                     <h4>All Settled!</h4>
                     <p>Everyone is even. No outstanding balances.</p>
                 </div>
@@ -3592,12 +3592,12 @@ function toggleTimeline() {
     
     if (content.style.display === 'none') {
         content.style.display = 'block';
-        icon.textContent = '?';
+        icon.textContent = '▲';
         text.textContent = 'Hide Timeline';
         loadExpenseTimeline();
     } else {
         content.style.display = 'none';
-        icon.textContent = '?';
+        icon.textContent = '▼';
         text.textContent = 'Show Timeline';
     }
 }
@@ -3617,7 +3617,7 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
         if (!groupData || !groupData.expenses) {
             timelineContainer.innerHTML = `
                 <div class="timeline-empty">
-                    <div class="timeline-empty-icon">??</div>
+                    <div class="timeline-empty-icon">📅</div>
                     <p>No expenses yet</p>
                 </div>
             `;
@@ -3827,9 +3827,9 @@ function loadSimpleModeMembers() {
                         <h4>${member.name || member.email || uid}</h4>
                         <p class="member-email">${member.email || ''}</p>
                         <p class="member-meta">
-                            ${isCreator ? '?? Creator' : ''}
+                            ${isCreator ? '👑 Creator' : ''}
                             ${isCurrentUser && !isCreator ? '(You)' : ''}
-                            � Joined ${joinDate}
+                            📅 Joined ${joinDate}
                         </p>
                     </div>
                 </div>
@@ -4749,35 +4749,35 @@ function loadSimpleModeInviteUI() {
 
     inviteTabContent.innerHTML = `
         <div class="tab-card">
-            <h3>?? Invite Members</h3>
+            <h3>🎫 Invite Members</h3>
             <p>Share this group with friends! No wallet needed for Simple Mode.</p>
             
             <div class="invite-method-card">
-                <h4>?? Share Link</h4>
+                <h4>🔗 Share Link</h4>
                 <p>Copy this link and send it via WhatsApp, email, or any messenger:</p>
                 <div class="invite-link-container">
                     <input type="text" id="inviteLinkInput" class="input-modern" value="${inviteLink}" readonly>
                     <button class="btn btn-primary" onclick="copyInviteLink()">
-                        <span class="btn-icon">??</span>
+                        <span class="btn-icon">📋</span>
                         <span>Copy</span>
                     </button>
                 </div>
             </div>
 
             <div class="invite-method-card">
-                <h4>?? Send Email Invitation</h4>
+                <h4>✉️ Send Email Invitation</h4>
                 <p>Send an email invitation directly:</p>
                 <div class="form-group">
                     <input type="email" id="inviteEmail" class="input-modern" placeholder="friend@example.com">
                 </div>
                 <button class="btn btn-secondary" onclick="sendEmailInvite()">
-                    <span class="btn-icon">??</span>
+                    <span class="btn-icon">📧</span>
                     <span>Send Invitation</span>
                 </button>
             </div>
 
             <div class="info-box">
-                <p><strong>?? How it works:</strong></p>
+                <p><strong>💡 How it works:</strong></p>
                 <ul>
                     <li>Friends click the link or accept the email invite</li>
                     <li>They sign in with Google or create an account</li>
@@ -4801,11 +4801,11 @@ function copyInviteLink() {
     
     try {
         document.execCommand('copy');
-        showToast('Link copied to clipboard! ??', 'success');
+        showToast('Link copied to clipboard! 🎉', 'success');
     } catch (err) {
         // Fallback for modern browsers
         navigator.clipboard.writeText(input.value).then(() => {
-            showToast('Link copied to clipboard! ??', 'success');
+            showToast('Link copied to clipboard! 🎉', 'success');
         }).catch(() => {
             showToast('Failed to copy link', 'error');
         });
@@ -4920,7 +4920,7 @@ async function handleGroupJoin(groupId) {
             console.error('Error sending join notification:', notifError);
         }
 
-        showToast(`? Successfully joined "${groupName}"!`, 'success');
+        showToast(`🎉 Successfully joined "${groupName}"!`, 'success');
         
         // Clean up URL and session
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -9083,7 +9083,7 @@ function getNotificationIcon(type) {
         'vote_required': '???',
         'proposal_approved': '?',
         'proposal_rejected': '?',
-        'member_joined': '??',
+        'member_joined': '👋',
         'member_removed': '??',
         'member_left': '??',
         'removal_requested': '??',
