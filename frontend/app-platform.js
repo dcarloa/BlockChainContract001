@@ -172,12 +172,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     } else {
     }
     
-    // Always show dashboard on page load/refresh
-    console.log('🏠 Calling showDashboard() on page load');
+    // Show dashboard
     showDashboard();
     
     // Load user funds (both Simple and Blockchain modes)
-    console.log('📂 Calling loadUserFunds()');
     await loadUserFunds();
     
     } catch (error) {
@@ -432,14 +430,18 @@ async function autoReconnectWallet() {
         const nickname = await factoryContract.getNickname(userAddress);
         
         if (nickname.toLowerCase() !== userAddress.toLowerCase()) {
-            // Usuario tiene nickname - solo actualizar estado, no cargar dashboard
+            // Usuario tiene nickname - cargar dashboard autom�ticamente
             userNickname = nickname;
             
             // Update unified session badge
             updateUnifiedSessionBadge();
             
-            // No cargamos dashboard automáticamente - dejamos que el usuario navegue manualmente
-            // El dashboard se mostrará con showDashboard() llamado después
+            try {
+                await loadDashboard();
+            } catch (dashboardError) {
+                console.error("? Error cargando dashboard:", dashboardError);
+                throw dashboardError; // Re-lanzar para que el catch general limpie el estado
+            }
         } else {
             // Usuario NO tiene nickname - NO reconectar autom�ticamente
             
@@ -847,13 +849,6 @@ window.openInvitedFund = async function(fundAddress) {
 }
 
 function showDashboard() {
-    console.log('📊 showDashboard() called');
-    
-    // Clear any active group state
-    currentFund = null;
-    currentFundContract = null;
-    currentFundId = null;
-    
     // Hide FAB button and action card when showing dashboard
     const fabBtn = document.getElementById('addExpenseBtn');
     if (fabBtn) fabBtn.style.display = 'none';
@@ -861,18 +856,16 @@ function showDashboard() {
     const addExpenseCard = document.getElementById('simpleAddExpenseCard');
     if (addExpenseCard) addExpenseCard.style.display = 'none';
     
-    // Make sure dashboard section is visible and fund detail is hidden
+    // Make sure dashboard section is visible
     const dashboardSection = document.getElementById('dashboardSection');
     const fundDetailSection = document.getElementById('fundDetailSection');
     
-    if (fundDetailSection) {
-        fundDetailSection.classList.remove('active');
-        console.log('  ✓ fundDetailSection hidden');
-    }
     
     if (dashboardSection) {
         dashboardSection.classList.add('active');
-        console.log('  ✓ dashboardSection shown');
+    }
+    if (fundDetailSection) {
+        fundDetailSection.classList.remove('active');
     }
     
     // Enable create fund button for both modes
@@ -2618,6 +2611,7 @@ async function loadSimpleModeDetailView() {
             if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'none';
         }
         
+        safeUpdate('fundMembers', 'textContent', members.toString());
         safeUpdate('fundProposals', 'textContent', expenses.toString());
         
         // User's share/balance
@@ -2626,25 +2620,6 @@ async function loadSimpleModeDetailView() {
             ? `You are owed $${Math.abs(myBalance).toFixed(2)}`
             : `You owe $${Math.abs(myBalance).toFixed(2)}`;
         safeUpdate('userContribution', 'textContent', userBalanceText);
-        
-        // Update user balance in header stats
-        const userBalanceCard = document.getElementById('userBalanceCard');
-        const userBalanceValue = document.getElementById('userBalanceValue');
-        if (userBalanceValue) {
-            if (myBalance >= 0) {
-                userBalanceValue.textContent = `+$${Math.abs(myBalance).toFixed(2)}`;
-                if (userBalanceCard) {
-                    userBalanceCard.classList.remove('balance-negative');
-                    userBalanceCard.classList.add('balance-positive');
-                }
-            } else {
-                userBalanceValue.textContent = `-$${Math.abs(myBalance).toFixed(2)}`;
-                if (userBalanceCard) {
-                    userBalanceCard.classList.remove('balance-positive');
-                    userBalanceCard.classList.add('balance-negative');
-                }
-            }
-        }
         
         
         // Hide blockchain-specific elements safely

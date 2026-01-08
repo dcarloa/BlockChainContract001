@@ -883,27 +883,21 @@
                         <div class="fund-stat-card">
                             <div class="stat-icon">💰</div>
                             <div class="stat-content">
-                                <span class="stat-label">Total</span>
+                                <span class="stat-label">Total Balance</span>
                                 <span class="stat-value" id="fundBalanceMain">0 ETH</span>
                                 <div class="stat-breakdown" id="fundBalanceBreakdown" style="display: none;"></div>
                             </div>
                         </div>
-                        <div class="fund-stat-card" id="userBalanceCard">
-                            <div class="stat-icon">📊</div>
+                        <div class="fund-stat-card">
+                            <div class="stat-icon">👥</div>
                             <div class="stat-content">
-                                <span class="stat-label">Your Balance</span>
-                                <span class="stat-value" id="userBalanceValue">$0.00</span>
+                                <span class="stat-label">Members</span>
+                                <span class="stat-value" id="fundMembers">0</span>
                             </div>
                         </div>
                         <div class="fund-stat-card">
                             <div class="stat-icon">💸</div>
                             <div class="stat-content">
-                                <span class="stat-label">Expenses</span>
-                                <span class="stat-value" id="fundProposals">0</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                                 <span class="stat-label">Expenses</span>
                                 <span class="stat-value" id="fundProposals">0</span>
                             </div>
@@ -935,7 +929,7 @@
 
                 <!-- Fund Tabs -->
                 <div class="fund-tabs">
-                    <button class="fund-tab-btn" data-tab="deposit">
+                    <button class="fund-tab-btn active" data-tab="deposit">
                         <span class="tab-icon">💵</span>
                         <span>Deposit</span>
                     </button>
@@ -951,7 +945,7 @@
                         <span class="tab-icon">🗳️</span>
                         <span>Vote</span>
                     </button>
-                    <button class="fund-tab-btn active" data-tab="history">
+                    <button class="fund-tab-btn" data-tab="history">
                         <span class="tab-icon">📜</span>
                         <span>History</span>
                     </button>
@@ -973,7 +967,7 @@
                 <div class="fund-tab-content">
                     
                     <!-- Deposit Tab -->
-                    <div id="depositTab" class="tab-pane">
+                    <div id="depositTab" class="tab-pane active">
                         <div class="tab-card">
                             <h3>💰 Contribute to the Pot</h3>
                             <p>Deposit money to the group. Useful for future expenses or to balance contributions.</p>
@@ -1119,7 +1113,7 @@
                     </div>
 
                     <!-- History Tab -->
-                    <div id="historyTab" class="tab-pane active">
+                    <div id="historyTab" class="tab-pane">
                         <!-- Simple Mode: Add Expense Action Card -->
                         <div id="simpleAddExpenseCard" class="action-card" style="display: none;">
                             <div class="action-card-content">
