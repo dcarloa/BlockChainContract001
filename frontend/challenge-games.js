@@ -145,15 +145,21 @@ async function showQuickTapTurn(player) {
 
 let quickTapStartTime = 0;
 let currentCallback = null;
+let quickTapEarlyClickTime = null;
+let isWaitingForGreen = false;
 
 function startQuickTapRound(playerAddress) {
     const gameArea = document.getElementById('gamePlayArea');
+    isWaitingForGreen = true;
+    quickTapEarlyClickTime = null;
     
+    // Create waiting screen with click detection
     gameArea.innerHTML = `
-        <div class="game-turn-screen">
+        <div class="game-turn-screen" onclick="handleEarlyClick('${playerAddress}')">
             <div class="quick-tap-waiting">
                 <div class="pulse-indicator"></div>
                 <p>WAIT FOR GREEN...</p>
+                <small style="color: #888; margin-top: 10px;">⚠️ Don't click yet!</small>
             </div>
         </div>
     `;
@@ -161,7 +167,10 @@ function startQuickTapRound(playerAddress) {
     const delay = Math.random() * 3000 + 2000; // 2-5 seconds
     
     setTimeout(() => {
+        if (!isWaitingForGreen) return; // Player clicked early, don't show green button
+        
         quickTapStartTime = Date.now();
+        isWaitingForGreen = false;
         gameArea.innerHTML = `
             <div class="game-turn-screen">
                 <button class="quick-tap-button" onclick="recordQuickTapTime('${playerAddress}')">
@@ -170,6 +179,35 @@ function startQuickTapRound(playerAddress) {
             </div>
         `;
     }, delay);
+}
+
+function handleEarlyClick(playerAddress) {
+    if (!isWaitingForGreen) return; // Already processed or green is showing
+    
+    isWaitingForGreen = false;
+    quickTapEarlyClickTime = Date.now();
+    
+    // Mark player as eliminated with penalty time
+    const waitTime = quickTapEarlyClickTime - (Date.now() - 5000); // Negative time indicates early click
+    challengeState.scores[playerAddress] = -waitTime; // Store how long they waited before clicking early
+    
+    const gameArea = document.getElementById('gamePlayArea');
+    const player = challengeState.players.find(p => p.address === playerAddress);
+    
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div class="score-display">
+                <div class="score-icon" style="font-size: 4rem;">❌</div>
+                <h2>${player.nickname}</h2>
+                <div class="score-value" style="color: #e74c3c;">ELIMINATED!</div>
+                <p>You clicked too early!</p>
+                <small style="color: #888;">Wait for the green button next time</small>
+            </div>
+            <button class="btn btn-primary" onclick="nextPlayer()">
+                Next Player →
+            </button>
+        </div>
+    `;
 }
 
 function recordQuickTapTime(playerAddress) {
@@ -400,19 +438,42 @@ function showRemoteResult(player, method) {
 function showResults(scoringType, extraInfo = null) {
     const gameArea = document.getElementById('gamePlayArea');
     
-    // Sort scores
-    const sortedPlayers = Object.entries(challengeState.scores)
-        .map(([addr, score]) => ({
+    // Separate eliminated players (negative scores = early clicks) from valid players
+    const entries = Object.entries(challengeState.scores);
+    const validPlayers = [];
+    const eliminatedPlayers = [];
+    
+    entries.forEach(([addr, score]) => {
+        const playerData = {
             player: challengeState.players.find(p => p.address === addr),
             score: score
-        }))
-        .sort((a, b) => {
-            if (scoringType === 'lower_wins') {
-                return a.score - b.score;
-            } else {
-                return b.score - a.score;
-            }
-        });
+        };
+        
+        if (score < 0) {
+            // Negative score = eliminated (clicked early)
+            // Convert to positive for display (how long they waited before clicking early)
+            playerData.score = Math.abs(score);
+            playerData.eliminated = true;
+            eliminatedPlayers.push(playerData);
+        } else {
+            validPlayers.push(playerData);
+        }
+    });
+    
+    // Sort valid players by score
+    validPlayers.sort((a, b) => {
+        if (scoringType === 'lower_wins') {
+            return a.score - b.score;
+        } else {
+            return b.score - a.score;
+        }
+    });
+    
+    // Sort eliminated players by who waited least (worst first)
+    eliminatedPlayers.sort((a, b) => a.score - b.score);
+    
+    // Combine: valid players first, then eliminated players (worst performers last)
+    const sortedPlayers = [...validPlayers, ...eliminatedPlayers];
     
     const winner = sortedPlayers[0];
     const loser = sortedPlayers[sortedPlayers.length - 1];
@@ -425,12 +486,17 @@ function showResults(scoringType, extraInfo = null) {
     };
     
     const resultsHTML = sortedPlayers.map((item, index) => {
-        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index === sortedPlayers.length - 1 ? '💸' : '  ';
+        const isLoser = index === sortedPlayers.length - 1;
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : isLoser ? '💸' : '  ';
+        const scoreDisplay = item.eliminated 
+            ? `<span style="color: #e74c3c;">ELIMINATED</span>`
+            : `${item.score}${challengeState.gameType === 'quickTap' ? 'ms' : ''}`;
+        
         return `
-            <div class="result-row ${index === sortedPlayers.length - 1 ? 'loser-row' : ''}">
+            <div class="result-row ${isLoser ? 'loser-row' : ''} ${item.eliminated ? 'eliminated-row' : ''}">
                 <span class="result-medal">${medal}</span>
                 <span class="result-name">${item.player.nickname}</span>
-                <span class="result-score">${item.score}${challengeState.gameType === 'quickTap' ? 'ms' : ''}</span>
+                <span class="result-score">${scoreDisplay}</span>
             </div>
         `;
     }).join('');
