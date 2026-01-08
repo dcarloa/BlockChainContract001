@@ -243,6 +243,9 @@ function nextPlayer() {
 async function playNumberGuess() {
     const secretNumber = Math.floor(Math.random() * 100) + 1;
     
+    // Store original guesses separately
+    challengeState.guesses = {};
+    
     for (let i = 0; i < challengeState.players.length; i++) {
         challengeState.currentPlayerIndex = i;
         const player = challengeState.players[i];
@@ -250,10 +253,11 @@ async function playNumberGuess() {
         await showNumberGuessTurn(player, secretNumber);
     }
     
-    // Calculate distances from secret number
+    // Calculate distances from secret number for scoring
     for (let playerAddr in challengeState.scores) {
         const guess = challengeState.scores[playerAddr];
-        challengeState.scores[playerAddr] = Math.abs(guess - secretNumber);
+        challengeState.guesses[playerAddr] = guess; // Store original guess
+        challengeState.scores[playerAddr] = Math.abs(guess - secretNumber); // Store distance for ranking
     }
     
     showResults('lower_wins', secretNumber);
@@ -492,8 +496,15 @@ function showResults(scoringType, extraInfo = null) {
         let scoreDisplay;
         if (item.eliminated) {
             scoreDisplay = `<span style="color: #e74c3c;">ELIMINATED (${item.score.toFixed(0)}ms)</span>`;
+        } else if (challengeState.gameType === 'numberGuess') {
+            // For number guess, show: "Guessed X (off by Y)"
+            const originalGuess = challengeState.guesses[item.player.address];
+            const distance = item.score;
+            scoreDisplay = `Guessed ${originalGuess} <span style="color: #888; font-size: 0.85em;">(off by ${distance})</span>`;
+        } else if (challengeState.gameType === 'quickTap') {
+            scoreDisplay = `${item.score}ms`;
         } else {
-            scoreDisplay = `${item.score}${challengeState.gameType === 'quickTap' ? 'ms' : ''}`;
+            scoreDisplay = `${item.score}`;
         }
         
         return `
@@ -512,7 +523,9 @@ function showResults(scoringType, extraInfo = null) {
     } else if (challengeState.gameType === 'quickTap') {
         explanationText = `<p class="loser-explanation">Slowest reaction time: ${loser.score}ms</p>`;
     } else if (challengeState.gameType === 'numberGuess') {
-        explanationText = `<p class="loser-explanation">Furthest from the secret number (${extraInfo})</p>`;
+        const loserGuess = challengeState.guesses[loser.player.address];
+        const loserDistance = loser.score;
+        explanationText = `<p class="loser-explanation">Guessed ${loserGuess}, which was ${loserDistance} away from ${extraInfo}</p>`;
     }
     
     gameArea.innerHTML = `
