@@ -45,18 +45,28 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Navbar scroll effect
+// Navbar scroll effect - respects theme
 let lastScroll = 0;
 const navbar = document.querySelector('.navbar');
 
 window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
+    const theme = document.documentElement.getAttribute('data-theme') || 'dark';
     
     if (currentScroll > 100) {
-        navbar.style.background = 'rgba(2, 6, 23, 0.98)';
-        navbar.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        if (theme === 'light') {
+            navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+            navbar.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.05)';
+        } else {
+            navbar.style.background = 'rgba(2, 6, 23, 0.98)';
+            navbar.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        }
     } else {
-        navbar.style.background = 'rgba(2, 6, 23, 0.95)';
+        if (theme === 'light') {
+            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+        } else {
+            navbar.style.background = 'rgba(2, 6, 23, 0.95)';
+        }
         navbar.style.boxShadow = 'none';
     }
     
