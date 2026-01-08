@@ -2509,14 +2509,14 @@ function switchFundTab(tabName) {
 async function loadSimpleModeDetailView() {
     try {
         
-        const fundTypeIcons = ['??', '??', '??', '??'];
+        const fundTypeIcons = ['🌴', '💰', '🤝', '📦'];
         
         // Update header - safely check if elements exist
         const headerIcon = document.getElementById('fundHeaderIcon');
         const detailName = document.getElementById('fundDetailName');
         
         if (headerIcon) {
-            headerIcon.textContent = fundTypeIcons[Number(currentFund.fundType)] || '??';
+            headerIcon.textContent = fundTypeIcons[Number(currentFund.fundType)] || '📦';
         }
         if (detailName) {
             detailName.textContent = currentFund.fundName || currentFund.name;
@@ -2624,7 +2624,7 @@ async function loadSimpleModeDetailView() {
         // Show Simple Mode tabs
         if (inviteTab) {
             inviteTab.style.display = 'flex';
-            inviteTab.textContent = '?? Invite';
+            inviteTab.innerHTML = '<span class="tab-icon">🎫</span><span>Invite</span>';
         }
         if (membersTab) membersTab.style.display = 'flex';
         if (balancesTab) balancesTab.style.display = 'flex';
@@ -3796,7 +3796,7 @@ function loadSimpleModeMembers() {
             // Current user can leave group (if not creator)
             actionsHtml = `
                 <button class="btn btn-warning btn-sm" onclick="leaveGroup()">
-                    <span>?? Leave Group</span>
+                    <span>🚻 Leave Group</span>
                 </button>
             `;
         } else if (!isCurrentUser && !isCreator) {
@@ -3804,14 +3804,14 @@ function loadSimpleModeMembers() {
                 // Admin can remove directly
                 actionsHtml = `
                     <button class="btn btn-danger btn-sm" onclick="removeMemberWithValidation('${uid}')">
-                        <span>?? Remove</span>
+                        <span>🚫 Remove</span>
                     </button>
                 `;
             } else {
                 // Regular members can only request removal
                 actionsHtml = `
                     <button class="btn btn-warning btn-sm" onclick="requestMemberRemoval('${uid}')">
-                        <span>?? Request Removal</span>
+                        <span>⚠️ Request Removal</span>
                     </button>
                 `;
             }
@@ -7802,24 +7802,24 @@ async function loadRecurringExpenses() {
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                                 <span style="font-size: 1.2rem;">${icon}</span>
                                 <strong style="font-size: 1rem;">${rec.description}</strong>
-                                ${isOverdue ? '<span style="background: #ef4444; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">?? OVERDUE</span>' : ''}
+                                ${isOverdue ? '<span style="background: #ef4444; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">⚠️ OVERDUE</span>' : ''}
                             </div>
                             <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
                                 <span style="color: ${isOverdue ? '#ef4444' : '#667eea'}; font-weight: bold;">${formatCurrency(rec.amount, rec.currency)}</span>
-                                � ${capitalizeFirst(rec.frequency)}
-                                � Next: <span title="${nextDueTime}">${nextDue}</span>
+                                🔁 ${capitalizeFirst(rec.frequency)}
+                                📅 Next: <span title="${nextDueTime}">${nextDue}</span>
                             </div>
                             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.25rem;">
                                 Paid by: ${rec.paidByName}
-                                ${rec.lastCreated ? ` � Last created: ${new Date(rec.lastCreated).toLocaleDateString()}` : ''}
+                                ${rec.lastCreated ? ` 📅 Last created: ${new Date(rec.lastCreated).toLocaleDateString()}` : ''}
                             </div>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
                             <button class="btn-icon-small" onclick="toggleRecurringExpense('${rec.id}')" title="${rec.isActive ? 'Pause' : 'Resume'}">
-                                ${rec.isActive ? '??' : '??'}
+                                ${rec.isActive ? '⏸️' : '▶️'}
                             </button>
                             <button class="btn-icon-small" onclick="deleteRecurringExpense('${rec.id}')" title="Delete">
-                                ???
+                                🗑️
                             </button>
                         </div>
                     </div>
@@ -8251,10 +8251,10 @@ async function loadBudgetStatus() {
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
                             <button class="btn-icon-small" onclick="editBudget()" title="Edit Budget">
-                                ??
+                                ✏️
                             </button>
                             <button class="btn-icon-small" onclick="deleteBudget()" title="Delete Budget" style="color: #ef4444;">
-                                ???
+                                🗑️
                             </button>
                         </div>
                     </div>
@@ -8266,7 +8266,7 @@ async function loadBudgetStatus() {
                 
                 ${status.status === 'exceeded' ? 
                     `<div class="budget-exceeded" style="margin-top: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 3px solid #ef4444;">
-                        <strong style="color: #ef4444;">?? Budget Exceeded!</strong>
+                        <strong style="color: #ef4444;">⚠️ Budget Exceeded!</strong>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
                             You've spent ${formatCurrency(status.spent - status.budget, status.currency)} over budget.
                         </p>
@@ -8318,7 +8318,7 @@ async function checkBudgetThresholdNotifications(status) {
             
             if (thresholdToNotify >= 100) {
                 notificationType = 'budget_exceeded';
-                notificationTitle = '?? Budget Exceeded!';
+                notificationTitle = '⚠️ Budget Exceeded!';
                 notificationMessage = `Group "${currentFund.name}" has exceeded its budget. Spent: ${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)} (${percentage.toFixed(0)}%)`;
             } else if (thresholdToNotify >= 80) {
                 notificationType = 'budget_warning';
