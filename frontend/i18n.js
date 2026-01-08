@@ -43,8 +43,8 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "Shared Expenses on Blockchain",
-                subtitle: "Create funds, manage expenses and vote on proposals with total transparency. No intermediaries, no hidden fees.",
+                title: "Split Expenses Like Ants Work Together",
+                subtitle: "Track shared expenses, split bills, and settle debts with smart optimization. 12 currencies supported. Free forever.",
                 cta: "Start Free",
                 stats: {
                     users: "Active Users",
@@ -53,50 +53,50 @@ const translations = {
                 }
             },
             features: {
-                title: "Why SplitExpense?",
+                title: "Why Ant Pool?",
                 subtitle: "The ultimate solution for shared expenses",
                 items: {
                     transparent: {
                         title: "100% Transparent",
-                        desc: "All transactions on blockchain. No hidden accounts, no surprises. Verify every movement in real time."
+                        desc: "All transactions visible to group members. No hidden accounts, no surprises. Verify every movement in real time."
                     },
                     secure: {
                         title: "Ultra Secure",
-                        desc: "Your funds in smart contracts audited on Base. Only you and your group control the money."
+                        desc: "Your data protected by Firebase security. Only you and your group can access the information."
                     },
                     voting: {
-                        title: "Democratic Voting",
-                        desc: "Every expense requires group approval. Fair and transparent voting system."
+                        title: "Smart Settlements",
+                        desc: "AI-powered debt optimization. Minimize transactions automatically—like ants finding the shortest path."
                     },
                     fast: {
-                        title: "Instant",
-                        desc: "Transactions confirmed in seconds on Base L2. No more endless waits."
+                        title: "12 Currencies",
+                        desc: "USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Track expenses in your local currency."
                     },
                     nocustody: {
-                        title: "Non-Custodial",
-                        desc: "We never touch your money. Everything stays in smart contracts under your control."
+                        title: "Free Forever",
+                        desc: "No subscriptions, no premium tiers, no ads. Completely free for unlimited groups and members."
                     },
                     flexible: {
                         title: "Totally Flexible",
-                        desc: "From trips with friends to family savings. Adapt SplitExpense to any situation."
+                        desc: "From trips with friends to family savings. Adapt Ant Pool to any situation."
                     }
                 }
             },
             howItWorks: {
                 title: "How Does It Work?",
-                subtitle: "Create your fund in 3 simple steps",
+                subtitle: "Create your group in 3 simple steps",
                 steps: {
                     create: {
-                        title: "Create Fund",
-                        desc: "Choose a name, set a goal and invite your friends with a simple link."
+                        title: "Create Group",
+                        desc: "Choose a name, select a currency and invite your friends with email."
                     },
                     deposit: {
-                        title: "Deposit",
-                        desc: "Each member deposits their share. Everything recorded transparently on blockchain."
+                        title: "Track Expenses",
+                        desc: "Each member adds their expenses. Everything recorded transparently in the timeline."
                     },
                     vote: {
-                        title: "Vote & Spend",
-                        desc: "Create proposals, vote as a group and execute approved expenses."
+                        title: "Smart Settlements",
+                        desc: "See who owes whom with optimized payments. Settle debts outside the app."
                     }
                 }
             },
@@ -122,32 +122,32 @@ const translations = {
                 }
             },
             benefits: {
-                title: "Why use Blockchain?",
+                title: "Why Ant Pool Wins",
                 noIntermediaries: {
-                    title: "No Intermediaries",
-                    desc: "You control your money. No dependence on banks or centralized platforms."
+                    title: "Global Ant Colony",
+                    desc: "12 currencies supported. Track expenses in USD, COP, EUR, MXN, and more. Your colony works worldwide."
                 },
                 immutable: {
-                    title: "Immutable & Auditable",
-                    desc: "Every transaction is permanently recorded. Impossible to manipulate."
+                    title: "100% Free Forever",
+                    desc: "No subscriptions. No premium tiers. No ads. Like ants sharing food freely in their colony."
                 },
                 openSource: {
-                    title: "Open Source",
-                    desc: "The smart contract is public. Anyone can verify its security."
+                    title: "Smart Debt Optimization",
+                    desc: "Like ants finding the shortest path, our algorithm minimizes transactions automatically."
                 },
                 available: {
                     title: "Available 24/7",
-                    desc: "No banking hours. Works 24 hours a day, every day."
+                    desc: "Access your colony anytime from any device. Mobile-optimized design. Real-time updates."
                 },
-                comparisonTitle: "SplitExpense vs Traditional Alternatives",
+                comparisonTitle: "Ant Pool vs Competitors",
                 comparisonFeature: "Feature",
-                comparisonSE: "SplitExpense",
-                comparisonTraditional: "Traditional Apps",
-                transparency: "Transparency",
-                total: "Total",
-                limited: "Limited",
-                fees: "Fees",
-                control: "Control",
+                comparisonSE: "Ant Pool",
+                comparisonTraditional: "Splitwise/Tricount",
+                transparency: "Price",
+                total: "FREE Forever",
+                limited: "$3-5/month Premium",
+                fees: "Currencies",
+                control: "Smart Settlements",
                 yours: "Yours",
                 company: "Company",
                 audit: "Audit",
@@ -157,14 +157,14 @@ const translations = {
             },
             cta: {
                 title: "Ready to transform your shared expenses?",
-                subtitle: "Join thousands of users already using SplitExpense",
+                subtitle: "Join thousands of users already using Ant Pool",
                 button: "Start for Free",
-                noRegistration: "No registration • No fees • No intermediaries"
+                noRegistration: "No subscriptions • No ads • Pure cooperation"
             },
             footer: {
-                tagline: "Made with ❤️ using Ethereum & Base.",
-                subtitle: "Open source • Non-custodial • Decentralized",
-                description: "The most transparent way to manage shared expenses using blockchain.",
+                tagline: "Made with ❤️ for cooperative expense management.",
+                subtitle: "Free forever • Mobile-first • Collaborative",
+                description: "The most transparent way to manage shared expenses with smart optimization.",
                 product: "Product",
                 features: "Features",
                 howItWorks: "How It Works",
@@ -195,14 +195,14 @@ const translations = {
                 disconnect: "Disconnect"
             },
             welcome: {
-                title: "Welcome to SplitExpense",
-                subtitle: "Shared funds management on blockchain",
+                title: "Welcome to Ant Pool",
+                subtitle: "Shared expense management made simple",
                 connect: "Connect Wallet",
                 connecting: "Connecting...",
                 setNickname: "Set Nickname"
             },
             nickname: {
-                title: "Welcome to SplitExpense!",
+                title: "Welcome to Ant Pool!",
                 subtitle: "You need to set a nickname to identify yourself in groups and create funds.",
                 label: "Your Nickname *",
                 placeholder: "e.g.: John, Maria123, etc.",
@@ -633,8 +633,8 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "Gastos Compartidos en Blockchain",
-                subtitle: "Crea fondos, administra gastos y vota propuestas con total transparencia. Sin intermediarios, sin comisiones ocultas.",
+                title: "Divide Gastos Como Hormigas Trabajan Juntas",
+                subtitle: "Rastrea gastos compartidos, divide cuentas y liquida deudas con optimización inteligente. 12 monedas soportadas. Gratis para siempre.",
                 cta: "Comenzar Gratis",
                 stats: {
                     users: "Usuarios Activos",
@@ -643,50 +643,50 @@ const translations = {
                 }
             },
             features: {
-                title: "¿Por qué SplitExpense?",
+                title: "¿Por qué Ant Pool?",
                 subtitle: "La solución definitiva para gastos compartidos",
                 items: {
                     transparent: {
                         title: "100% Transparente",
-                        desc: "Todas las transacciones en blockchain. Sin cuentas ocultas, sin sorpresas. Verifica cada movimiento en tiempo real."
+                        desc: "Todas las transacciones visibles para los miembros del grupo. Sin cuentas ocultas, sin sorpresas. Verifica cada movimiento en tiempo real."
                     },
                     secure: {
                         title: "Ultra Seguro",
-                        desc: "Tus fondos en smart contracts auditados en Base. Solo tú y tu grupo controlan el dinero."
+                        desc: "Tus datos protegidos por la seguridad de Firebase. Solo tú y tu grupo pueden acceder a la información."
                     },
                     voting: {
-                        title: "Votación Democrática",
-                        desc: "Cada gasto requiere aprobación del grupo. Sistema de votación justo y transparente."
+                        title: "Liquidaciones Inteligentes",
+                        desc: "Optimización de deudas con IA. Minimiza transacciones automáticamente—como hormigas encontrando el camino más corto."
                     },
                     fast: {
-                        title: "Instantáneo",
-                        desc: "Transacciones confirmadas en segundos en Base L2. Sin más esperas interminables."
+                        title: "12 Monedas",
+                        desc: "USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Rastrea gastos en tu moneda local."
                     },
                     nocustody: {
-                        title: "Sin Custodia",
-                        desc: "Nunca tocamos tu dinero. Todo permanece en smart contracts bajo tu control."
+                        title: "Gratis Para Siempre",
+                        desc: "Sin suscripciones, sin niveles premium, sin anuncios. Completamente gratis para grupos y miembros ilimitados."
                     },
                     flexible: {
                         title: "Totalmente Flexible",
-                        desc: "Desde viajes con amigos hasta ahorros familiares. Adapta SplitExpense a cualquier situación."
+                        desc: "Desde viajes con amigos hasta ahorros familiares. Adapta Ant Pool a cualquier situación."
                     }
                 }
             },
             howItWorks: {
                 title: "¿Cómo Funciona?",
-                subtitle: "Crea tu fondo en 3 simples pasos",
+                subtitle: "Crea tu grupo en 3 simples pasos",
                 steps: {
                     create: {
-                        title: "Crear Fondo",
-                        desc: "Elige un nombre, establece una meta e invita a tus amigos con un simple link."
+                        title: "Crear Grupo",
+                        desc: "Elige un nombre, selecciona una moneda e invita a tus amigos con email."
                     },
                     deposit: {
-                        title: "Depositar",
-                        desc: "Cada miembro deposita su parte. Todo registrado transparentemente en blockchain."
+                        title: "Rastrear Gastos",
+                        desc: "Cada miembro agrega sus gastos. Todo registrado transparentemente en la línea de tiempo."
                     },
                     vote: {
-                        title: "Votar y Gastar",
-                        desc: "Crea propuestas, vota en grupo y ejecuta gastos aprobados."
+                        title: "Liquidaciones Inteligentes",
+                        desc: "Ve quién le debe a quién con pagos optimizados. Liquida deudas fuera de la app."
                     }
                 }
             },
@@ -712,32 +712,32 @@ const translations = {
                 }
             },
             benefits: {
-                title: "¿Por qué usar Blockchain?",
+                title: "¿Por qué Ant Pool Gana?",
                 noIntermediaries: {
-                    title: "Sin Intermediarios",
-                    desc: "Tú controlas tu dinero. No dependes de bancos o plataformas centralizadas."
+                    title: "Colonia de Hormigas Global",
+                    desc: "12 monedas soportadas. Rastrea gastos en USD, COP, EUR, MXN, y más. Tu colonia funciona en todo el mundo."
                 },
                 immutable: {
-                    title: "Inmutable y Auditable",
-                    desc: "Cada transacción queda registrada permanentemente. Imposible de manipular."
+                    title: "100% Gratis Para Siempre",
+                    desc: "Sin suscripciones. Sin niveles premium. Sin anuncios. Como hormigas compartiendo comida libremente en su colonia."
                 },
                 openSource: {
-                    title: "Código Abierto",
-                    desc: "El contrato inteligente es público. Cualquiera puede verificar su seguridad."
+                    title: "Optimización Inteligente de Deudas",
+                    desc: "Como hormigas encontrando el camino más corto, nuestro algoritmo minimiza transacciones automáticamente."
                 },
                 available: {
                     title: "Disponible 24/7",
-                    desc: "Sin horarios bancarios. Funciona las 24 horas del día, todos los días."
+                    desc: "Accede a tu colonia en cualquier momento desde cualquier dispositivo. Diseño optimizado para móviles. Actualizaciones en tiempo real."
                 },
-                comparisonTitle: "SplitExpense vs Alternativas Tradicionales",
+                comparisonTitle: "Ant Pool vs Competidores",
                 comparisonFeature: "Característica",
-                comparisonSE: "SplitExpense",
-                comparisonTraditional: "Apps Tradicionales",
-                transparency: "Transparencia",
-                total: "Total",
-                limited: "Limitada",
-                fees: "Comisiones",
-                control: "Control",
+                comparisonSE: "Ant Pool",
+                comparisonTraditional: "Splitwise/Tricount",
+                transparency: "Precio",
+                total: "GRATIS Para Siempre",
+                limited: "$3-5/mes Premium",
+                fees: "Monedas",
+                control: "Liquidaciones Inteligentes",
                 yours: "Tuyo",
                 company: "Empresa",
                 audit: "Auditoría",
@@ -747,14 +747,14 @@ const translations = {
             },
             cta: {
                 title: "¿Listo para transformar tus gastos compartidos?",
-                subtitle: "Únete a miles de usuarios que ya usan SplitExpense",
+                subtitle: "Únete a miles de usuarios que ya usan Ant Pool",
                 button: "Comenzar Gratis",
-                noRegistration: "Sin registro • Sin comisiones • Sin intermediarios"
+                noRegistration: "Sin suscripciones • Sin anuncios • Pura cooperación"
             },
             footer: {
-                tagline: "Hecho con ❤️ usando Ethereum & Base.",
-                subtitle: "Código abierto • Sin custodia • Descentralizado",
-                description: "La forma más transparente de gestionar gastos compartidos usando blockchain.",
+                tagline: "Hecho con ❤️ para la gestión cooperativa de gastos.",
+                subtitle: "Gratis para siempre • Enfocado en móviles • Colaborativo",
+                description: "La forma más transparente de gestionar gastos compartidos con optimización inteligente.",
                 product: "Producto",
                 features: "Características",
                 howItWorks: "Cómo Funciona",
@@ -785,14 +785,14 @@ const translations = {
                 disconnect: "Desconectar"
             },
             welcome: {
-                title: "Bienvenido a SplitExpense",
-                subtitle: "Gestión de fondos compartidos en blockchain",
+                title: "Bienvenido a Ant Pool",
+                subtitle: "Gestión de gastos compartidos simplificada",
                 connect: "Conectar Wallet",
                 connecting: "Conectando...",
                 setNickname: "Establecer Apodo"
             },
             nickname: {
-                title: "¡Bienvenido a SplitExpense!",
+                title: "¡Bienvenido a Ant Pool!",
                 subtitle: "Necesitas establecer un nickname para identificarte en los grupos y poder crear fondos.",
                 label: "Tu Nickname *",
                 placeholder: "Ej: Juan, Maria123, etc.",
