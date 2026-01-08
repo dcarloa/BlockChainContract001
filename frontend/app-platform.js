@@ -1,5 +1,5 @@
-﻿// FundHub Platform - Multi-Fund Management
-// Este archivo gestiona la interfaz principal con múltiples fondos
+// FundHub Platform - Multi-Fund Management
+// Este archivo gestiona la interfaz principal con m�ltiples fondos
 
 // ============================================
 // ABI CONTRACTS
@@ -78,7 +78,7 @@ let userAddress = null;
 let userNickname = null;
 let metamaskProviderDirect = null;
 
-let allUserFunds = [];
+let allUserGroups = [];
 let currentFilter = 'all';
 
 // ============================================
@@ -133,11 +133,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                 }
             };
         } else {
-            console.error("❌ Firebase initialization failed");
+            console.error("? Firebase initialization failed");
             showToast("Firebase initialization failed. Some features may not work.", "error");
         }
     } else {
-        console.error("❌ FirebaseConfig not available");
+        console.error("? FirebaseConfig not available");
         showToast("Firebase not loaded. Please refresh the page.", "error");
     }
     
@@ -145,7 +145,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         await loadFactoryInfo();
         
-        // Intentar reconectar wallet automáticamente si ya estaba conectada
+        // Intentar reconectar wallet autom�ticamente si ya estaba conectada
         await autoReconnectWallet();
     } else {
         // Hide wallet button if no wallet available
@@ -189,7 +189,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     await loadUserFunds();
     
     } catch (error) {
-        console.error('❌ CRITICAL ERROR in DOMContentLoaded:', error);
+        console.error('? CRITICAL ERROR in DOMContentLoaded:', error);
         console.error('Stack trace:', error.stack);
         showToast('Application initialization error. Please refresh the page.', 'error');
     }
@@ -262,7 +262,7 @@ async function connectWallet() {
             
             // Show network switcher
             const switchNetwork = confirm(
-                `⚠️ Wrong network detected (Chain ID: ${network.chainId})\n\n` +
+                `?? Wrong network detected (Chain ID: ${network.chainId})\n\n` +
                 `To use this app you need to be on Base Sepolia (Chain ID: 84532)\n\n` +
                 `Do you want to switch network automatically?`
             );
@@ -276,18 +276,18 @@ async function connectWallet() {
                     return;
                 } catch (switchError) {
                     hideLoading();
-                    showToast("❌ Error switching network. Please change it manually.", "error");
+                    showToast("? Error switching network. Please change it manually.", "error");
                     return;
                 }
             } else {
-                showToast("⚠️ Please switch to Base Sepolia network (Chain ID: 84532)", "warning");
+                showToast("?? Please switch to Base Sepolia network (Chain ID: 84532)", "warning");
                 return;
             }
         }
         
         // Update UI with wallet info
-        const walletIcon = walletResult.walletType === 'metamask' ? '🦊' : 
-                          walletResult.walletType === 'coinbase' ? '🔵' : '📱';
+        const walletIcon = walletResult.walletType === 'metamask' ? '??' : 
+                          walletResult.walletType === 'coinbase' ? '??' : '??';
         
         document.getElementById('connectWallet').innerHTML = `
             <span class="btn-icon">${walletIcon}</span>
@@ -306,16 +306,16 @@ async function connectWallet() {
         updateUnifiedSessionBadge();
         
         hideLoading();
-        showToast(`✅ Conectado con ${walletResult.walletName}`, "success");
+        showToast(`? Conectado con ${walletResult.walletName}`, "success");
         
     } catch (error) {
         hideLoading();
-        console.error("❌ Error connecting wallet:", error);
+        console.error("? Error connecting wallet:", error);
         
         if (error.message.includes('User rejected')) {
-            showToast("❌ Connection cancelled by user", "warning");
+            showToast("? Connection cancelled by user", "warning");
         } else {
-            showToast("❌ Error connecting wallet: " + error.message, "error");
+            showToast("? Error connecting wallet: " + error.message, "error");
         }
     }
 }
@@ -350,7 +350,7 @@ async function disconnectWallet() {
         
         // Reset UI
         document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">🦊</span>
+            <span class="btn-icon">??</span>
             <span>Connect Wallet</span>
         `;
         document.getElementById('connectWallet').style.display = 'inline-flex';
@@ -368,7 +368,7 @@ async function disconnectWallet() {
         hideLoading();
         
         // Show success message and redirect
-        showToast("✅ Wallet disconnected successfully", "success");
+        showToast("? Wallet disconnected successfully", "success");
         
         setTimeout(() => {
             showLoading(t.app.loading.redirecting);
@@ -380,7 +380,7 @@ async function disconnectWallet() {
     } catch (error) {
         hideLoading();
         console.error("Error disconnecting wallet:", error);
-        showToast("❌ Error disconnecting: " + error.message, "error");
+        showToast("? Error disconnecting: " + error.message, "error");
     }
 }
 
@@ -392,13 +392,13 @@ async function autoReconnectWallet() {
             return;
         }
         
-        // Verificar si hay una conexión previa guardada
+        // Verificar si hay una conexi�n previa guardada
         if (!window.ethereum) {
             return;
         }
 
 
-        // Usar el proveedor de MetaMask directamente si está disponible
+        // Usar el proveedor de MetaMask directamente si est� disponible
         const ethereumProvider = metamaskProviderDirect || window.ethereum;
 
         // Intentar obtener cuentas sin solicitar permiso, con timeout de 2 segundos
@@ -433,7 +433,7 @@ async function autoReconnectWallet() {
 
 
         // Actualizar UI
-        const walletIcon = '🦊'; // Por defecto MetaMask
+        const walletIcon = '??'; // Por defecto MetaMask
         document.getElementById('connectWallet').innerHTML = `
             <span class="btn-icon">${walletIcon}</span>
             <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
@@ -449,7 +449,7 @@ async function autoReconnectWallet() {
         const nickname = await factoryContract.getNickname(userAddress);
         
         if (nickname.toLowerCase() !== userAddress.toLowerCase()) {
-            // Usuario tiene nickname - cargar dashboard automáticamente
+            // Usuario tiene nickname - cargar dashboard autom�ticamente
             userNickname = nickname;
             
             // Update unified session badge
@@ -458,11 +458,11 @@ async function autoReconnectWallet() {
             try {
                 await loadDashboard();
             } catch (dashboardError) {
-                console.error("❌ Error cargando dashboard:", dashboardError);
+                console.error("? Error cargando dashboard:", dashboardError);
                 throw dashboardError; // Re-lanzar para que el catch general limpie el estado
             }
         } else {
-            // Usuario NO tiene nickname - NO reconectar automáticamente
+            // Usuario NO tiene nickname - NO reconectar autom�ticamente
             
             // Limpiar estado
             provider = null;
@@ -472,7 +472,7 @@ async function autoReconnectWallet() {
             
             // Restaurar UI a estado inicial
             document.getElementById('connectWallet').innerHTML = `
-                <span class="btn-icon">🦊</span>
+                <span class="btn-icon">??</span>
                 <span>Connect Wallet</span>
             `;
             document.getElementById('connectWallet').style.display = 'inline-flex';
@@ -485,7 +485,7 @@ async function autoReconnectWallet() {
         }
 
     } catch (error) {
-        console.error("❌ Error en auto-reconnect:", error);
+        console.error("? Error en auto-reconnect:", error);
         console.error("   Mensaje:", error.message);
         
         // Limpiar estado en caso de error
@@ -497,7 +497,7 @@ async function autoReconnectWallet() {
         
         // Restaurar UI a estado inicial
         document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">🦊</span>
+            <span class="btn-icon">??</span>
             <span>Connect Wallet</span>
         `;
         document.getElementById('connectWallet').style.display = 'inline-flex';
@@ -528,7 +528,7 @@ async function loadFactoryContract() {
     try {
         const factoryInfo = await loadFactoryInfo();
         if (!factoryInfo) {
-            throw new Error("No se pudo cargar la información del Factory");
+            throw new Error("No se pudo cargar la informaci�n del Factory");
         }
         
         factoryContract = new ethers.Contract(
@@ -554,7 +554,7 @@ async function checkUserNickname() {
         
         const nickname = await factoryContract.getNickname(userAddress);
         
-        // Si el nickname es igual a la dirección, no tiene nickname
+        // Si el nickname es igual a la direcci�n, no tiene nickname
         if (nickname.toLowerCase() === userAddress.toLowerCase()) {
             // No tiene nickname - OBLIGATORIO establecerlo
             userNickname = null;
@@ -605,7 +605,7 @@ async function setNickname() {
         const currentNickname = await factoryContract.getNickname(userAddress);
         if (currentNickname.toLowerCase() !== userAddress.toLowerCase()) {
             hideLoading();
-            showToast(`⚠️ You already have a nickname set: "${currentNickname}"`, "warning");
+            showToast(`?? You already have a nickname set: "${currentNickname}"`, "warning");
             // Update UI with existing nickname
             userNickname = currentNickname;
             
@@ -643,7 +643,7 @@ async function setNickname() {
         // Cerrar modal
         document.getElementById('nicknameModal').style.display = 'none';
         
-        showToast(`✅ Nickname "${userNickname}" set successfully!`, "success");
+        showToast(`? Nickname "${userNickname}" set successfully!`, "success");
         
         // Load dashboard
         await loadDashboard();
@@ -662,8 +662,8 @@ async function setNickname() {
 // ============================================
 
 function getFundTypeIcon(fundType) {
-    const icons = ['🌴', '💰', '🤝', '🎯'];
-    return icons[fundType] || '🎯';
+    const icons = ['??', '??', '??', '??'];
+    return icons[fundType] || '??';
 }
 
 async function loadDashboard() {
@@ -756,10 +756,10 @@ async function loadPendingInvitations() {
                         </div>
                         <div class="invitation-item-actions">
                             <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fundAddress}', '${fundName}')">
-                                ✅ Accept
+                                ? Accept
                             </button>
                             <button class="btn btn-secondary btn-sm" onclick="openInvitedFund('${fundAddress}')">
-                                👁️ View
+                                ??? View
                             </button>
                         </div>
                     `;
@@ -807,16 +807,16 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
                 await registerTx.wait();
             }
         } catch (regError) {
-            console.warn("⚠️ Could not register participant in Factory:", regError.message);
+            console.warn("?? Could not register participant in Factory:", regError.message);
             // Continue anyway - user is still a member of the fund
         }
         
         // Refresh dashboard to show new fund
-        allUserFunds = [];
+        allUserGroups = [];
         await refreshCurrentView();
         await loadPendingInvitations();
         
-        showToast(`✅ Invitation accepted! You are now a member of ${fundName}`, "success");
+        showToast(`? Invitation accepted! You are now a member of ${fundName}`, "success");
         
         hideLoading();
         
@@ -994,13 +994,13 @@ function updateUnifiedSessionBadge() {
     
     // Update status display
     if (firebaseUser && hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-full">✅ Full Access</span>';
+        statusDisplay.innerHTML = '<span class="status-full">? Full Access</span>';
         statusDisplay.title = 'You have access to Simple Mode AND Blockchain Mode';
     } else if (firebaseUser && !hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-limited">⚠️ Limited Access</span>';
+        statusDisplay.innerHTML = '<span class="status-limited">?? Limited Access</span>';
         statusDisplay.title = 'Simple Mode only. Connect wallet for blockchain features.';
     } else if (!firebaseUser && hasWallet) {
-        statusDisplay.innerHTML = '<span class="status-wallet-only">🦊 Wallet Only</span>';
+        statusDisplay.innerHTML = '<span class="status-wallet-only">?? Wallet Only</span>';
         statusDisplay.title = 'Blockchain Mode available. Sign in for Simple Mode groups.';
     }
 }
@@ -1029,7 +1029,7 @@ function showAccessDeniedModal(mode) {
     let title, message, action;
     
     if (mode === 'blockchain') {
-        title = '🔒 Blockchain Access Required';
+        title = '?? Blockchain Access Required';
         message = `You need to connect a wallet to access blockchain groups.
         
 Your current session uses Google/Email authentication which only provides access to Simple Mode features.
@@ -1045,12 +1045,12 @@ Would you like to connect a wallet now?`;
             }
         };
     } else {
-        title = '🔒 Sign In Required';
+        title = '?? Sign In Required';
         message = `You need to sign in to access Simple Mode groups.
 
 To create and join Simple Mode groups, please sign in with:
-• Google account
-• Email/Password
+� Google account
+� Email/Password
 
 Would you like to sign in now?`;
         action = () => {
@@ -1067,11 +1067,11 @@ async function loadUserFunds() {
     try {
         // Show loading state
         const loadingGroups = document.getElementById('loadingGroups');
-        const fundsGrid = document.getElementById('fundsGrid');
+        const groupsGrid = document.getElementById('groupsGrid');
         const emptyState = document.getElementById('emptyState');
         
         if (loadingGroups) loadingGroups.style.display = 'flex';
-        if (fundsGrid) fundsGrid.style.display = 'none';
+        if (groupsGrid) groupsGrid.style.display = 'none';
         if (emptyState) emptyState.style.display = 'none';
         
         const fundMap = new Map();
@@ -1164,14 +1164,14 @@ async function loadUserFunds() {
         }
         
         // Combinar y eliminar duplicados
-        const totalFunds = fundMap.size;
+        const totalGroups = fundMap.size;
         
-        allUserFunds = Array.from(fundMap.values());
+        allUserGroups = Array.from(fundMap.values());
         
         // Cargar detalles de cada fondo
         await loadAllFundsDetails();
         
-        // Actualizar estadísticas
+        // Actualizar estad�sticas
         updateStats();
         
         // Hide loading state
@@ -1190,8 +1190,8 @@ async function loadUserFunds() {
 }
 
 async function loadAllFundsDetails() {
-    // Cargar detalles adicionales de cada fondo (balance, etc.)
-    for (let fund of allUserFunds) {
+    // Cargar detalles adicionales de cada grupo (balance, etc.)
+    for (let fund of allUserGroups) {
         try {
             if (!fund.fundAddress) {
                 console.warn("Fund without address, skipping...");
@@ -1255,7 +1255,7 @@ async function loadAllFundsDetails() {
                 fund.contributors = Number(contributors);
                 fund.proposals = Number(proposals);
                 fund.target = ethers.formatEther(target);
-                // Si target es 0, no hay meta (sin límite)
+                // Si target es 0, no hay meta (sin l�mite)
                 fund.progress = parseFloat(fund.target) > 0 
                     ? (parseFloat(fund.balance) / parseFloat(fund.target)) * 100 
                     : 0;
@@ -1268,12 +1268,12 @@ async function loadAllFundsDetails() {
 }
 
 function updateStats() {
-    const createdCount = allUserFunds.filter(f => f.isCreator).length;
-    const participatingCount = allUserFunds.length;
+    const createdCount = allUserGroups.filter(f => f.isCreator).length;
+    const participatingCount = allUserGroups.length;
     
     // Calculate total spent in USD from Simple Mode groups
     let totalUSD = 0;
-    const simpleFunds = allUserFunds.filter(f => f.mode === 'simple');
+    const simpleFunds = allUserGroups.filter(f => f.mode === 'simple');
     
     for (const fund of simpleFunds) {
         if (fund.expenses) {
@@ -1308,10 +1308,10 @@ function updateStats() {
     document.getElementById('totalValueLocked').textContent = `$${totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     
     // Update filter counts
-    const simpleCount = allUserFunds.filter(f => f.mode === 'simple').length;
-    const blockchainCount = allUserFunds.filter(f => f.mode === 'blockchain').length;
+    const simpleCount = allUserGroups.filter(f => f.mode === 'simple').length;
+    const blockchainCount = allUserGroups.filter(f => f.mode === 'blockchain').length;
     
-    document.getElementById('countAll').textContent = allUserFunds.length;
+    document.getElementById('countAll').textContent = allUserGroups.length;
     document.getElementById('countCreated').textContent = createdCount;
     document.getElementById('countParticipating').textContent = participatingCount;
     document.getElementById('countSimple').textContent = simpleCount;
@@ -1323,7 +1323,7 @@ function displayFunds() {
 }
 
 function filterAndSortGroups() {
-    let filteredFunds = [...allUserFunds];
+    let filteredFunds = [...allUserGroups];
     
     // Apply category filter
     switch(currentFilter) {
@@ -1424,11 +1424,11 @@ function createFundCard(fund) {
     const currentLang = getCurrentLanguage();
     const t = translations[currentLang];
     
-    const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
+    const fundTypeIcons = ['??', '??', '??', '??'];
     const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
     
     // Use custom icon if available, otherwise fall back to type-based icon
-    const icon = fund.icon || fundTypeIcons[Number(fund.fundType)] || '🎯';
+    const icon = fund.icon || fundTypeIcons[Number(fund.fundType)] || '??';
     const typeKey = fundTypeKeys[Number(fund.fundType)] || 'other';
     const typeName = t.app.fundDetail.badges[typeKey];
     const isInactive = !fund.isActive;
@@ -1440,15 +1440,15 @@ function createFundCard(fund) {
                 <div class="fund-actions">
                     ${fund.isActive ? `
                     <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Pausar grupo">
-                        ⏸️
+                        ??
                     </button>
                     ` : `
                     <button class="fund-action-btn fund-resume-btn" onclick="event.stopPropagation(); reactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Reactivar grupo">
-                        ▶️
+                        ??
                     </button>
                     `}
                     <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${fund.fundName}')" title="Eliminar grupo">
-                        🚫
+                        ??
                     </button>
                 </div>
                 ` : ''}
@@ -1458,9 +1458,9 @@ function createFundCard(fund) {
                     <div class="fund-card-title">
                         <h3>${fund.fundName}</h3>
                         <div class="fund-badges">
-                            ${fund.mode === 'simple' ? `<span class="badge badge-mode mode-simple">📝 Simple</span>` : `<span class="badge badge-mode mode-blockchain">⛓️ Blockchain</span>`}
+                            ${fund.mode === 'simple' ? `<span class="badge badge-mode mode-simple">?? Simple</span>` : `<span class="badge badge-mode mode-blockchain">?? Blockchain</span>`}
                             ${isInactive ? `<span class="badge badge-status status-inactive">${t.app.dashboard.card.inactive}</span>` : ''}
-                            ${fund.isCreator ? `<span class="badge badge-creator">👑 ${t.app.fundDetail.badges.creator}</span>` : ''}
+                            ${fund.isCreator ? `<span class="badge badge-creator">?? ${t.app.fundDetail.badges.creator}</span>` : ''}
                         </div>
                     </div>
                 </div>
@@ -1492,8 +1492,8 @@ function createFundCard(fund) {
                 ` : ''}
                 
                 <div class="fund-meta">
-                    <span>👥 ${fund.contributors || 0} ${t.app.dashboard.card.members}</span>
-                    <span>${fund.mode === 'simple' ? '💳' : '📊'} ${fund.proposals || 0} ${fund.mode === 'simple' ? 'expenses' : t.app.fundDetail.info.proposals.toLowerCase()}</span>
+                    <span>?? ${fund.contributors || 0} ${t.app.dashboard.card.members}</span>
+                    <span>${fund.mode === 'simple' ? '??' : '??'} ${fund.proposals || 0} ${fund.mode === 'simple' ? 'expenses' : t.app.fundDetail.info.proposals.toLowerCase()}</span>
                 </div>
             </div>
         </div>
@@ -1513,19 +1513,19 @@ async function openFund(fundAddress) {
         }
         
         // Find current fund
-        currentFund = allUserFunds.find(f => {
+        currentFund = allUserGroups.find(f => {
             return f.fundAddress && f.fundAddress.toLowerCase() === fundAddress.toLowerCase();
         });
         
         if (!currentFund) {
-            console.error("Fund not found. Available addresses:", allUserFunds.map(f => f.fundAddress));
+            console.error("Fund not found. Available addresses:", allUserGroups.map(f => f.fundAddress));
             throw new Error("Fund not found in your list");
         }
         
         
         // Check if group is paused
         if (!currentFund.isActive) {
-            showToast("⏸️ Este grupo está pausado. Solo lectura disponible.", "warning");
+            showToast("?? Este grupo est� pausado. Solo lectura disponible.", "warning");
         }
         
         // Validate access based on fund mode
@@ -1606,13 +1606,13 @@ function goToHome() {
 async function deactivateFund(fundAddress, fundName) {
     try {
         const confirmed = confirm(
-            `⏸️ Pause fund "${fundName}"?\n\n` +
+            `?? Pause fund "${fundName}"?\n\n` +
             `This action:\n` +
-            `• Will block all transactions (deposits, proposals, votes)\n` +
-            `• The fund will remain visible in read-only mode\n` +
-            `• You can view history and balances\n` +
-            `• Only the creator can reactivate it by calling the contract\n` +
-            `• All group members will be notified\n\n` +
+            `� Will block all transactions (deposits, proposals, votes)\n` +
+            `� The fund will remain visible in read-only mode\n` +
+            `� You can view history and balances\n` +
+            `� Only the creator can reactivate it by calling the contract\n` +
+            `� All group members will be notified\n\n` +
             `Continue?`
         );
         
@@ -1621,7 +1621,7 @@ async function deactivateFund(fundAddress, fundName) {
         showLoading(t('app.loading.deactivatingFund'));
         
         // Find the fund to get its mode
-        const fund = allUserFunds.find(f => f.fundAddress === fundAddress);
+        const fund = allUserGroups.find(f => f.fundAddress === fundAddress);
         
         if (fund && fund.mode === 'blockchain') {
             // Blockchain mode - use smart contract
@@ -1654,7 +1654,7 @@ async function deactivateFund(fundAddress, fundName) {
         // Refresh view to show deactivated state
         await refreshCurrentView();
         
-        showToast("✅ Fund deactivated. Now in read-only mode.", "success");
+        showToast("? Fund deactivated. Now in read-only mode.", "success");
         
         hideLoading();
         
@@ -1667,12 +1667,12 @@ async function deactivateFund(fundAddress, fundName) {
 
 async function reactivateFund(fundAddress, fundName) {
     try {
-        const confirmed = confirm(`▶️ Reactivate group "${fundName}"?\n\nThis action will enable the group again and all members will be notified.`);
+        const confirmed = confirm(`?? Reactivate group "${fundName}"?\n\nThis action will enable the group again and all members will be notified.`);
         if (!confirmed) return;
         
         showLoading(t('app.loading.reactivatingGroup'));
         
-        const fund = allUserFunds.find(f => f.fundAddress === fundAddress);
+        const fund = allUserGroups.find(f => f.fundAddress === fundAddress);
         
         if (fund && fund.mode === 'simple') {
             await window.FirebaseConfig.writeDb(`groups/${fundAddress}/isActive`, true);
@@ -1683,7 +1683,7 @@ async function reactivateFund(fundAddress, fundName) {
         await notifyGroupMembers(fundAddress, 'group_reactivated', `The group "${fundName}" has been reactivated`, { groupName: fundName });
         
         await refreshCurrentView();
-        showToast("✅ Group reactivated successfully", "success");
+        showToast("? Group reactivated successfully", "success");
         hideLoading();
         
     } catch (error) {
@@ -1697,18 +1697,18 @@ async function reactivateFund(fundAddress, fundName) {
 async function hideFund(fundAddress, fundName) {
     try {
         // Find the fund to check its mode
-        const fund = allUserFunds.find(f => f.fundAddress === fundAddress);
+        const fund = allUserGroups.find(f => f.fundAddress === fundAddress);
         
         if (fund && fund.mode === 'simple') {
             // Simple Mode - delete group completely from Firebase
             const confirmed = confirm(
-                `🗑️ Delete group "${fundName}"?\n\n` +
+                `??? Delete group "${fundName}"?\n\n` +
                 `This action:\n` +
-                `• Will PERMANENTLY delete the group from Firebase\n` +
-                `• All expenses, payments and data will be deleted\n` +
-                `• This action CANNOT be undone\n` +
-                `• All members will be notified\n` +
-                `• All members will lose access\n\n` +
+                `� Will PERMANENTLY delete the group from Firebase\n` +
+                `� All expenses, payments and data will be deleted\n` +
+                `� This action CANNOT be undone\n` +
+                `� All members will be notified\n` +
+                `� All members will lose access\n\n` +
                 `Are you sure you want to continue?`
             );
             
@@ -1736,19 +1736,19 @@ async function hideFund(fundAddress, fundName) {
             // Delete the entire group from Firebase
             await window.FirebaseConfig.deleteDb(`groups/${fundAddress}`);
             
-            showToast("✅ Grupo eliminado correctamente", "success");
+            showToast("? Grupo eliminado correctamente", "success");
             
         } else {
             // Blockchain mode - just hide locally
             const confirmed = confirm(
-                `🗑️ ¿Ocultar el fondo "${fundName}"?\n\n` +
-                `Esta acción:\n` +
-                `• Ocultará el fondo de tu interfaz\n` +
-                `• El fondo seguirá existiendo en la blockchain\n` +
-                `• Los fondos NO se eliminarán del contrato\n` +
-                `• Solo se guardará tu preferencia localmente\n` +
-                `• Podrás volver a verlo limpiando el storage del navegador\n\n` +
-                `¿Continuar?`
+                `??? �Ocultar el fondo "${fundName}"?\n\n` +
+                `Esta acci�n:\n` +
+                `� Ocultar� el fondo de tu interfaz\n` +
+                `� El fondo seguir� existiendo en la blockchain\n` +
+                `� Los fondos NO se eliminar�n del contrato\n` +
+                `� Solo se guardar� tu preferencia localmente\n` +
+                `� Podr�s volver a verlo limpiando el storage del navegador\n\n` +
+                `�Continuar?`
             );
             
             if (!confirmed) return;
@@ -1764,7 +1764,7 @@ async function hideFund(fundAddress, fundName) {
                 localStorage.setItem('hiddenFunds', JSON.stringify(hiddenFunds));
             }
             
-            showToast("✅ Fondo ocultado de tu vista", "success");
+            showToast("? Fondo ocultado de tu vista", "success");
         }
         
         // Refresh view to hide the fund
@@ -1828,13 +1828,13 @@ async function createFund(event) {
     
     try {
         const fundName = document.getElementById('fundName').value.trim();
-        const description = document.getElementById('fundDescription').value.trim() || "Sin descripción";
+        const description = document.getElementById('fundDescription').value.trim() || "Sin descripci�n";
         const isPrivate = document.getElementById('isPrivate').value === 'true'; // Hidden field with default true
         const approvalPercentage = document.getElementById('approvalPercentage').value;
         const minimumVotes = document.getElementById('minimumVotes').value;
         const fundType = document.getElementById('fundType').value; // Hidden field with default 0
         const groupMode = document.querySelector('input[name="groupMode"]:checked').value;
-        const groupIcon = document.querySelector('input[name="groupIcon"]:checked')?.value || '🐕'; // Default to dog icon
+        const groupIcon = document.querySelector('input[name="groupIcon"]:checked')?.value || '??'; // Default to dog icon
         
         if (!fundName) {
             showToast("Please enter the fund name", "warning");
@@ -1843,7 +1843,7 @@ async function createFund(event) {
         
         // Blockchain mode disabled for soft launch
         if (groupMode === 'blockchain') {
-            showToast("🚀 Blockchain Mode is coming soon! Please use Simple Mode for now.", "info");
+            showToast("?? Blockchain Mode is coming soon! Please use Simple Mode for now.", "info");
             return;
         }
         
@@ -1895,11 +1895,11 @@ async function createSimpleFund(fundInfo) {
         if (!window.FirebaseConfig.isAuthenticated()) {
             // Show informative message
             const shouldSignIn = confirm(
-                "🔐 Simple Mode requires Google/Email Sign-In\n\n" +
+                "?? Simple Mode requires Google/Email Sign-In\n\n" +
                 "Simple Mode uses Firebase (no blockchain) for:\n" +
-                "✅ Free expense tracking\n" +
-                "✅ Group balances calculation\n" +
-                "✅ No gas fees\n\n" +
+                "? Free expense tracking\n" +
+                "? Group balances calculation\n" +
+                "? No gas fees\n\n" +
                 "Your wallet is not needed for Simple Mode.\n\n" +
                 "Would you like to sign in with Google/Email now?"
             );
@@ -1926,10 +1926,10 @@ async function createSimpleFund(fundInfo) {
             description: fundInfo.description,
             targetAmount: fundInfo.targetAmount,
             currency: 'USD', // Can be changed later
-            icon: fundInfo.icon || '🐕'
+            icon: fundInfo.icon || '??'
         });
         
-        showToast(`✅ Group "${fundInfo.name}" created successfully!`, "success");
+        showToast(`? Group "${fundInfo.name}" created successfully!`, "success");
         
         // Reload funds list
         await loadUserFunds();
@@ -1942,7 +1942,7 @@ async function createSimpleFund(fundInfo) {
         
     } catch (error) {
         hideLoading();
-        console.error("❌ Error creating simple fund:", error);
+        console.error("? Error creating simple fund:", error);
         throw error;
     }
 }
@@ -1955,12 +1955,12 @@ async function createBlockchainFund(fundInfo) {
         // Check if wallet is connected
         if (!userAddress || !factoryContract) {
             const shouldConnect = confirm(
-                "🦊 Blockchain Mode requires MetaMask connection\n\n" +
+                "?? Blockchain Mode requires MetaMask connection\n\n" +
                 "Blockchain Mode uses smart contracts for:\n" +
-                "✅ Automatic on-chain payments\n" +
-                "✅ Transparent voting\n" +
-                "✅ Decentralized fund management\n\n" +
-                "⚠️ Requires gas fees for transactions.\n\n" +
+                "? Automatic on-chain payments\n" +
+                "? Transparent voting\n" +
+                "? Decentralized fund management\n\n" +
+                "?? Requires gas fees for transactions.\n\n" +
                 "Would you like to connect your wallet now?"
             );
             
@@ -1991,7 +1991,7 @@ async function createBlockchainFund(fundInfo) {
         
         const receipt = await tx.wait();
         
-        showToast(`✅ Fund "${fundInfo.name}" created successfully!`, "success");
+        showToast(`? Fund "${fundInfo.name}" created successfully!`, "success");
         
         // Give time for blockchain state to update
         showLoading(t('app.loading.waitingColonyConfirmation'));
@@ -2009,7 +2009,7 @@ async function createBlockchainFund(fundInfo) {
         
     } catch (error) {
         hideLoading();
-        console.error("❌ Error creating blockchain fund:", error);
+        console.error("? Error creating blockchain fund:", error);
         throw error;
     }
 }
@@ -2114,7 +2114,7 @@ async function signInWithWallet() {
         closeSignInModal();
         await connectWallet();
     } catch (error) {
-        console.error("❌ Wallet connection error:", error);
+        console.error("? Wallet connection error:", error);
         showToast("Wallet connection failed: " + error.message, "error");
     }
 }
@@ -2123,15 +2123,15 @@ async function signInWithGoogleOnly() {
     try {
         // Show warning first
         const confirmGoogle = confirm(
-            "⚠️ Sign in with Google (Limited Access)\n\n" +
+            "?? Sign in with Google (Limited Access)\n\n" +
             "You will ONLY have access to Simple Mode features:\n" +
-            "✅ Track expenses\n" +
-            "✅ Split bills with friends\n" +
-            "✅ View balances\n\n" +
+            "? Track expenses\n" +
+            "? Split bills with friends\n" +
+            "? View balances\n\n" +
             "You will NOT be able to:\n" +
-            "❌ Use Blockchain Mode\n" +
-            "❌ Create automatic payments\n" +
-            "❌ Use smart contracts\n\n" +
+            "? Use Blockchain Mode\n" +
+            "? Create automatic payments\n" +
+            "? Use smart contracts\n\n" +
             "You can connect a wallet later to unlock blockchain features.\n\n" +
             "Continue with Google Sign-In?"
         );
@@ -2147,7 +2147,7 @@ async function signInWithGoogleOnly() {
         hideLoading();
     } catch (error) {
         hideLoading();
-        console.error("❌ Google sign-in error:", error);
+        console.error("? Google sign-in error:", error);
         showToast("Sign in failed: " + error.message, "error");
     }
 }
@@ -2179,10 +2179,10 @@ async function handleEmailSignIn(event) {
         // Check if user is trying to sign in for the first time
         if (!window.ethereum) {
             const confirmEmail = confirm(
-                "⚠️ Sign in with Email (Limited Access)\n\n" +
+                "?? Sign in with Email (Limited Access)\n\n" +
                 "Without a crypto wallet, you will ONLY have Simple Mode:\n" +
-                "✅ Track expenses\n" +
-                "✅ Split bills\n\n" +
+                "? Track expenses\n" +
+                "? Split bills\n\n" +
                 "You will NOT have blockchain features.\n" +
                 "Connect a wallet later to unlock full access.\n\n" +
                 "Continue?"
@@ -2200,7 +2200,7 @@ async function handleEmailSignIn(event) {
         hideLoading();
     } catch (error) {
         hideLoading();
-        console.error("❌ Email sign-in error:", error);
+        console.error("? Email sign-in error:", error);
         showToast("Sign in failed: " + error.message, "error");
     }
 }
@@ -2216,15 +2216,15 @@ async function handleCreateAccount(event) {
         // Warn about limited access without wallet
         if (!window.ethereum) {
             const confirmCreate = confirm(
-                "⚠️ Creating Account (Limited Access)\n\n" +
+                "?? Creating Account (Limited Access)\n\n" +
                 "Without a crypto wallet (MetaMask), you will ONLY have access to:\n" +
-                "✅ Simple Mode - Expense tracking\n" +
-                "✅ Split bills with friends\n" +
-                "✅ View who owes what\n\n" +
+                "? Simple Mode - Expense tracking\n" +
+                "? Split bills with friends\n" +
+                "? View who owes what\n\n" +
                 "You will NOT be able to use:\n" +
-                "❌ Blockchain Mode\n" +
-                "❌ Automatic smart contract payments\n" +
-                "❌ On-chain transactions\n\n" +
+                "? Blockchain Mode\n" +
+                "? Automatic smart contract payments\n" +
+                "? On-chain transactions\n\n" +
                 "You can connect a wallet anytime later to unlock blockchain features.\n\n" +
                 "Create account with limited access?"
             );
@@ -2241,7 +2241,7 @@ async function handleCreateAccount(event) {
         hideLoading();
     } catch (error) {
         hideLoading();
-        console.error("❌ Account creation error:", error);
+        console.error("? Account creation error:", error);
         showToast("Account creation failed: " + error.message, "error");
     }
 }
@@ -2252,7 +2252,7 @@ async function handleCreateAccount(event) {
 async function signOutFromFirebase() {
     try {
         const confirmed = confirm(
-            "🚪 Sign out from Simple Mode?\n\n" +
+            "?? Sign out from Simple Mode?\n\n" +
             "You will be signed out from Google/Email.\n" +
             "Your Simple Mode groups will not be accessible until you sign in again.\n\n" +
             "Your wallet connection (if any) will remain active.\n\n" +
@@ -2272,7 +2272,7 @@ async function signOutFromFirebase() {
         hideLoading();
     } catch (error) {
         hideLoading();
-        console.error("❌ Sign out error:", error);
+        console.error("? Sign out error:", error);
         showToast("Sign out failed: " + error.message, "error");
     }
 }
@@ -2315,7 +2315,7 @@ async function refreshCurrentView() {
             // Estamos en la vista de detalle de un fondo
             await loadFundDetailView();
             
-            // Recargar también la pestaña activa específica
+            // Recargar tambi�n la pesta�a activa espec�fica
             const activeTab = document.querySelector('.tab-pane.active');
             if (activeTab) {
                 const tabId = activeTab.id;
@@ -2355,11 +2355,11 @@ async function loadFundDetailView() {
         }
         
         // Blockchain Mode - existing logic
-        const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
+        const fundTypeIcons = ['??', '??', '??', '??'];
         const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
         
         // Update header
-        document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '🎯';
+        document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '??';
         document.getElementById('fundDetailName').textContent = currentFund.fundName;
         
         // Load contract data
@@ -2377,8 +2377,8 @@ async function loadFundDetailView() {
         const typeKey = fundTypeKeys[Number(currentFund.fundType)] || 'other';
         document.getElementById('fundDetailDescription').textContent = description || t.app.fundDetail.info.loading;
         document.getElementById('fundTypeBadge').textContent = t.app.fundDetail.badges[typeKey];
-        document.getElementById('fundStatusBadge').textContent = isActive ? `🟢 ${t.app.fundDetail.info.active}` : `🔴 ${t.app.fundDetail.info.inactive}`;
-        document.getElementById('fundPrivacyBadge').textContent = isPrivate ? `🔒 ${t.app.fundDetail.info.private}` : `🌐 ${t.app.fundDetail.info.public}`;
+        document.getElementById('fundStatusBadge').textContent = isActive ? `?? ${t.app.fundDetail.info.active}` : `?? ${t.app.fundDetail.info.inactive}`;
+        document.getElementById('fundPrivacyBadge').textContent = isPrivate ? `?? ${t.app.fundDetail.info.private}` : `?? ${t.app.fundDetail.info.public}`;
         
         const balanceEth = ethers.formatEther(balance);
         
@@ -2428,7 +2428,7 @@ async function loadFundDetailView() {
             switchFundTab('members');
             
             // Show closed fund message
-            showToast("⚠️ This fund is closed. No more actions allowed.", "warning");
+            showToast("?? This fund is closed. No more actions allowed.", "warning");
         } else {
             // Show all tabs if fund is active
             const depositTabBtn = document.querySelector('.fund-tab-btn[data-tab="deposit"]');
@@ -2505,14 +2505,14 @@ function switchFundTab(tabName) {
 async function loadSimpleModeDetailView() {
     try {
         
-        const fundTypeIcons = ['🌴', '💰', '🤝', '🎯'];
+        const fundTypeIcons = ['??', '??', '??', '??'];
         
         // Update header - safely check if elements exist
         const headerIcon = document.getElementById('fundHeaderIcon');
         const detailName = document.getElementById('fundDetailName');
         
         if (headerIcon) {
-            headerIcon.textContent = fundTypeIcons[Number(currentFund.fundType)] || '🎯';
+            headerIcon.textContent = fundTypeIcons[Number(currentFund.fundType)] || '??';
         }
         if (detailName) {
             detailName.textContent = currentFund.fundName || currentFund.name;
@@ -2544,9 +2544,9 @@ async function loadSimpleModeDetailView() {
         
         // Update UI safely
         safeUpdate('fundDetailDescription', 'textContent', groupData.description || 'No description');
-        safeUpdate('fundTypeBadge', 'textContent', '📝 Simple Mode');
-        safeUpdate('fundStatusBadge', 'textContent', '🟢 Active');
-        safeUpdate('fundPrivacyBadge', 'textContent', groupData.isPrivate ? '🔒 Private' : '🌐 Public');
+        safeUpdate('fundTypeBadge', 'textContent', '?? Simple Mode');
+        safeUpdate('fundStatusBadge', 'textContent', '?? Active');
+        safeUpdate('fundPrivacyBadge', 'textContent', groupData.isPrivate ? '?? Private' : '?? Public');
         
         // For Simple Mode: show stats differently
         const members = groupData.members ? Object.keys(groupData.members).length : 1;
@@ -2571,7 +2571,7 @@ async function loadSimpleModeDetailView() {
             const currency = currencies[0];
             const symbol = getCurrencySymbol(currency);
             safeUpdate('fundBalanceMain', 'textContent', `${symbol}${currencyBreakdown[currency].toFixed(2)} ${currency}`);
-            safeUpdate('fundBalanceBreakdown', 'innerHTML', `≈ $${totalUSD.toFixed(2)} USD`);
+            safeUpdate('fundBalanceBreakdown', 'innerHTML', `� $${totalUSD.toFixed(2)} USD`);
             if (balanceBreakdownEl) balanceBreakdownEl.style.display = 'block';
         } else if (currencies.length > 1) {
             // Multiple currencies - show USD total with breakdown
@@ -2620,7 +2620,7 @@ async function loadSimpleModeDetailView() {
         // Show Simple Mode tabs
         if (inviteTab) {
             inviteTab.style.display = 'flex';
-            inviteTab.textContent = '👥 Invite';
+            inviteTab.textContent = '?? Invite';
         }
         if (membersTab) membersTab.style.display = 'flex';
         if (balancesTab) balancesTab.style.display = 'flex';
@@ -2688,7 +2688,7 @@ async function loadSimpleModeDetailView() {
         
         
     } catch (error) {
-        console.error("❌ Error loading Simple Mode detail:", error);
+        console.error("? Error loading Simple Mode detail:", error);
         console.error("Error stack:", error.stack);
         showToast("Error loading group: " + error.message, "error");
         throw error; // Re-throw to be caught by caller
@@ -2742,7 +2742,7 @@ async function loadSimpleModeExpenses() {
     const searchSection = document.getElementById('expenseSearchSection');
     
     if (!historyContainer) {
-        console.error('❌ History container not found (historyList)');
+        console.error('? History container not found (historyList)');
         return;
     }
     
@@ -2775,11 +2775,11 @@ async function loadSimpleModeExpenses() {
         if (searchSection) searchSection.style.display = 'none';
         historyContainer.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">📝</div>
+                <div class="empty-icon">??</div>
                 <h4>No transactions yet</h4>
                 <p>Add your first expense to start tracking</p>
                 <button class="btn btn-primary" onclick="showAddExpenseModal()">
-                    <span class="btn-icon">➕</span>
+                    <span class="btn-icon">?</span>
                     <span>Add Expense</span>
                 </button>
             </div>
@@ -2841,10 +2841,10 @@ function renderSettlementItem(settlement, currentUserId, groupData) {
             <div class="expense-header">
                 <div class="expense-header-left">
                     <h4 class="expense-title-compact">
-                        💸 Payment: ${fromName} → ${toName}
+                        ?? Payment: ${fromName} ? ${toName}
                         <span class="expense-badge badge-payment">Paid</span>
                     </h4>
-                    <span class="expense-date-compact">📅 ${dateStr}</span>
+                    <span class="expense-date-compact">?? ${dateStr}</span>
                 </div>
                 <div class="expense-header-right">
                     <div class="expense-amount-large payment-amount">
@@ -2854,7 +2854,7 @@ function renderSettlementItem(settlement, currentUserId, groupData) {
             </div>
             ${settlement.notes ? `
                 <div class="expense-details" style="display: block; padding-top: 8px;">
-                    <p class="expense-notes">💬 ${settlement.notes}</p>
+                    <p class="expense-notes">?? ${settlement.notes}</p>
                 </div>
             ` : ''}
         </div>
@@ -2930,48 +2930,48 @@ function renderExpenseItem(expense, currentUserId, groupData) {
             <div class="expense-header" onclick="toggleExpenseDetails('${expense.id}')">
                 <div class="expense-header-left">
                     <h4 class="expense-title-compact">
-                        ${isNegative ? '💰 ' : ''}${expense.description}
+                        ${isNegative ? '?? ' : ''}${expense.description}
                         ${isNegative ? '<span class="expense-badge badge-payment">Payment</span>' : ''}
                     </h4>
-                    <span class="expense-date-compact">📅 ${dateStr}</span>
+                    <span class="expense-date-compact">?? ${dateStr}</span>
                 </div>
                 <div class="expense-header-right">
                     <div class="${amountClass}">
                         ${amountPrefix}${amountStr}${currencyLabel}
                     </div>
-                    <span class="expand-icon">▼</span>
+                    <span class="expand-icon">?</span>
                 </div>
             </div>
             
             <div class="expense-details" style="display: none;">
                 <div class="expense-meta">
-                    <span class="meta-item">👤 ${paidByDisplay}</span>
-                    <span class="meta-item">👥 ${sharesDisplay}</span>
+                    <span class="meta-item">?? ${paidByDisplay}</span>
+                    <span class="meta-item">?? ${sharesDisplay}</span>
                 </div>
-                ${expense.notes ? `<p class="expense-notes">💬 ${expense.notes}</p>` : ''}
+                ${expense.notes ? `<p class="expense-notes">?? ${expense.notes}</p>` : ''}
                 
                 <!-- Interaction Bar -->
                 <div class="expense-interactions">
                 <button class="interaction-btn ${hasLiked ? 'active' : ''}" onclick="toggleLikeExpense('${expense.id}')" title="Like">
-                    ${hasLiked ? '❤️' : '🤍'} ${likesCount > 0 ? likesCount : ''}
+                    ${hasLiked ? '??' : '??'} ${likesCount > 0 ? likesCount : ''}
                 </button>
                 <button class="interaction-btn" onclick="showExpenseComments('${expense.id}')" title="Comments">
-                    💬 ${commentsCount > 0 ? commentsCount : ''}
+                    ?? ${commentsCount > 0 ? commentsCount : ''}
                 </button>
                 ${!isCreator ? `
                     <button class="interaction-btn ${deleteRequestsCount > 0 ? 'active' : ''}" onclick="requestDeleteExpense('${expense.id}')" title="Request deletion">
-                        ⚠️ ${deleteRequestsCount > 0 ? deleteRequestsCount : ''}
+                        ?? ${deleteRequestsCount > 0 ? deleteRequestsCount : ''}
                     </button>
                 ` : `
                     <button class="interaction-btn btn-delete" onclick="deleteExpense('${expense.id}')" title="Delete expense">
-                        🗑️ Delete
+                        ??? Delete
                     </button>
                 `}
             </div>
             
                 ${deleteRequestsCount > 0 && isCreator ? `
                     <div class="expense-alert">
-                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-icon">??</span>
                         <span>${deleteRequestsCount} member${deleteRequestsCount > 1 ? 's' : ''} requested deletion of this expense</span>
                         <button class="btn-link" onclick="showDeleteRequests('${expense.id}')">View requests</button>
                     </div>
@@ -3133,7 +3133,7 @@ async function loadSimpleModeBalances() {
         
         // Show debts I owe
         if (iOwe.length > 0) {
-            html += '<h4 class="balance-section-title balance-owes">💸 You owe:</h4>';
+            html += '<h4 class="balance-section-title balance-owes">?? You owe:</h4>';
             iOwe.forEach(debt => {
                 const toMember = currentFund.members[debt.to];
                 const toName = toMember?.name || toMember?.email || debt.to;
@@ -3155,7 +3155,7 @@ async function loadSimpleModeBalances() {
                             </div>
                         </div>
                         <button class="btn btn-primary btn-record-payment" onclick="showRecordPaymentModal('${debt.to}', ${debt.amount})">
-                            <span class="btn-icon">💰</span>
+                            <span class="btn-icon">??</span>
                             <span>Record Payment</span>
                         </button>
                     </div>
@@ -3165,7 +3165,7 @@ async function loadSimpleModeBalances() {
         
         // Show debts owed to me
         if (owesMe.length > 0) {
-            html += '<h4 class="balance-section-title balance-owed">💰 Owes you:</h4>';
+            html += '<h4 class="balance-section-title balance-owed">?? Owes you:</h4>';
             owesMe.forEach(debt => {
                 const fromMember = currentFund.members[debt.from];
                 const fromName = fromMember?.name || fromMember?.email || debt.from;
@@ -3195,7 +3195,7 @@ async function loadSimpleModeBalances() {
         if (iOwe.length === 0 && owesMe.length === 0) {
             html += `
                 <div class="empty-state">
-                    <div class="empty-icon">✅</div>
+                    <div class="empty-icon">?</div>
                     <h4>All Settled!</h4>
                     <p>Everyone is even. No outstanding balances.</p>
                 </div>
@@ -3390,7 +3390,7 @@ async function loadSmartSettlements() {
             
             html += `
                 <div class="settlement-item" id="settlement-${index}">
-                    <div class="settlement-arrow">→</div>
+                    <div class="settlement-arrow">?</div>
                     <div class="settlement-content">
                         <div class="settlement-from">
                             <div class="settlement-avatar">${fromName.charAt(0).toUpperCase()}</div>
@@ -3406,7 +3406,7 @@ async function loadSmartSettlements() {
                         </div>
                     </div>
                     <button class="settlement-mark-btn" onclick="markSettlementComplete(${index})" title="Mark as complete">
-                        <span class="btn-icon">✓</span>
+                        <span class="btn-icon">?</span>
                     </button>
                 </div>
             `;
@@ -3476,7 +3476,7 @@ async function loadSmartSettlements() {
         
         // Wait for animations
         setTimeout(async () => {
-            showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
+            showToast(`All ${currentSettlements.length} payments recorded successfully! ??`, 'success');
             closeSmartSettlements();
             
             // Reload data
@@ -3498,7 +3498,7 @@ async function loadSmartSettlements() {
     }
     }, 300);
     
-    showToast('Settlement marked as complete! 🎉', 'success');
+    showToast('Settlement marked as complete! ??', 'success');
 }
 
 /**
@@ -3507,7 +3507,7 @@ async function loadSmartSettlements() {
 async function markAllSettled() {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("⏸️ El grupo está pausado. No puedes registrar pagos.", "error");
+            showToast("?? El grupo est� pausado. No puedes registrar pagos.", "error");
             return;
         }
         
@@ -3515,12 +3515,12 @@ async function markAllSettled() {
         const settlements = document.querySelectorAll('.settlement-item');
         
         if (settlements.length === 0) {
-            console.warn('⚠️ No settlements to mark');
+            console.warn('?? No settlements to mark');
             return;
         }
         
         if (currentSettlements.length === 0) {
-            console.warn('⚠️ No settlements data available');
+            console.warn('?? No settlements data available');
             return;
         }
         
@@ -3559,7 +3559,7 @@ async function markAllSettled() {
         
         // Wait for animations
         setTimeout(async () => {
-            showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
+            showToast(`All ${currentSettlements.length} payments recorded successfully! ??`, 'success');
             closeSmartSettlements();
             
             // Reload data
@@ -3568,7 +3568,7 @@ async function markAllSettled() {
         }, 500);
         
     } catch (error) {
-        console.error('❌ Error recording settlements:', error);
+        console.error('? Error recording settlements:', error);
         console.error('Stack:', error.stack);
         showToast('Error recording payments: ' + error.message, 'error');
     }
@@ -3588,12 +3588,12 @@ function toggleTimeline() {
     
     if (content.style.display === 'none') {
         content.style.display = 'block';
-        icon.textContent = '▲';
+        icon.textContent = '?';
         text.textContent = 'Hide Timeline';
         loadExpenseTimeline();
     } else {
         content.style.display = 'none';
-        icon.textContent = '▼';
+        icon.textContent = '?';
         text.textContent = 'Show Timeline';
     }
 }
@@ -3613,7 +3613,7 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
         if (!groupData || !groupData.expenses) {
             timelineContainer.innerHTML = `
                 <div class="timeline-empty">
-                    <div class="timeline-empty-icon">📭</div>
+                    <div class="timeline-empty-icon">??</div>
                     <p>No expenses yet</p>
                 </div>
             `;
@@ -3649,7 +3649,7 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
         if (expenses.length === 0) {
             timelineContainer.innerHTML = `
                 <div class="timeline-empty">
-                    <div class="timeline-empty-icon">🔍</div>
+                    <div class="timeline-empty-icon">??</div>
                     <p>No expenses found in the selected date range</p>
                 </div>
             `;
@@ -3693,13 +3693,13 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
                 
                 // Get category emoji
                 const categoryEmoji = {
-                    'food': '🍔',
-                    'transport': '🚗',
-                    'entertainment': '🎬',
-                    'shopping': '🛍️',
-                    'bills': '📄',
-                    'other': '📦'
-                }[expense.category] || '📦';
+                    'food': '??',
+                    'transport': '??',
+                    'entertainment': '??',
+                    'shopping': '???',
+                    'bills': '??',
+                    'other': '??'
+                }[expense.category] || '??';
                 
                 html += `
                     <div class="timeline-item">
@@ -3715,9 +3715,9 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
                                 </div>
                             </div>
                             <div class="timeline-expense-meta">
-                                <span>👤 ${paidByText}</span>
-                                <span>💱 ${currency}</span>
-                                <span>🕐 ${new Date(expense.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                                <span>?? ${paidByText}</span>
+                                <span>?? ${currency}</span>
+                                <span>?? ${new Date(expense.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
                         </div>
                     </div>
@@ -3731,7 +3731,7 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
         console.error('Error loading timeline:', error);
         document.getElementById('expenseTimeline').innerHTML = `
             <div class="timeline-empty">
-                <div class="timeline-empty-icon">⚠️</div>
+                <div class="timeline-empty-icon">??</div>
                 <p>Error loading timeline: ${error.message}</p>
             </div>
         `;
@@ -3792,7 +3792,7 @@ function loadSimpleModeMembers() {
             // Current user can leave group (if not creator)
             actionsHtml = `
                 <button class="btn btn-warning btn-sm" onclick="leaveGroup()">
-                    <span>🚪 Leave Group</span>
+                    <span>?? Leave Group</span>
                 </button>
             `;
         } else if (!isCurrentUser && !isCreator) {
@@ -3800,14 +3800,14 @@ function loadSimpleModeMembers() {
                 // Admin can remove directly
                 actionsHtml = `
                     <button class="btn btn-danger btn-sm" onclick="removeMemberWithValidation('${uid}')">
-                        <span>🚫 Remove</span>
+                        <span>?? Remove</span>
                     </button>
                 `;
             } else {
                 // Regular members can only request removal
                 actionsHtml = `
                     <button class="btn btn-warning btn-sm" onclick="requestMemberRemoval('${uid}')">
-                        <span>⚠️ Request Removal</span>
+                        <span>?? Request Removal</span>
                     </button>
                 `;
             }
@@ -3823,9 +3823,9 @@ function loadSimpleModeMembers() {
                         <h4>${member.name || member.email || uid}</h4>
                         <p class="member-email">${member.email || ''}</p>
                         <p class="member-meta">
-                            ${isCreator ? '👑 Creator' : ''}
+                            ${isCreator ? '?? Creator' : ''}
                             ${isCurrentUser && !isCreator ? '(You)' : ''}
-                            • Joined ${joinDate}
+                            � Joined ${joinDate}
                         </p>
                     </div>
                 </div>
@@ -3949,7 +3949,7 @@ async function leaveGroup() {
         const groupName = currentFund.fundName || currentFund.name;
         const confirmed = confirm(
             `Leave "${groupName}"?\n\n` +
-            `✅ You have no pending balances\n\n` +
+            `? You have no pending balances\n\n` +
             `This will:\n` +
             `- Remove you from the group permanently\n` +
             `- You won't be able to access this group\n` +
@@ -4033,7 +4033,7 @@ async function removeMemberWithValidation(memberId) {
 
         const confirmed = confirm(
             `Remove ${memberName} from the group?\n\n` +
-            `✅ Member has no pending balances\n\n` +
+            `? Member has no pending balances\n\n` +
             `This will:\n` +
             `- Remove them from the group permanently\n` +
             `- They won't be able to access this group\n` +
@@ -4201,10 +4201,10 @@ async function loadRemovalRequests() {
                         </div>
                         <div class="request-actions" style="display: flex; gap: 0.5rem; flex-shrink: 0;">
                             <button class="btn btn-success btn-sm" onclick="approveRemovalRequest('${req.id}')" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
-                                ✅ Approve
+                                ? Approve
                             </button>
                             <button class="btn btn-secondary btn-sm" onclick="rejectRemovalRequest('${req.id}')" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
-                                ❌ Reject
+                                ? Reject
                             </button>
                         </div>
                     </div>
@@ -4251,7 +4251,7 @@ async function approveRemovalRequest(requestId) {
 
         const confirmed = confirm(
             `Approve removal of ${request.targetMemberName}?\n\n` +
-            `✅ Member has no pending balances\n\n` +
+            `? Member has no pending balances\n\n` +
             `This will remove them from the group permanently.`
         );
 
@@ -4423,7 +4423,7 @@ async function showExpenseComments(expenseId) {
         const expense = await window.FirebaseConfig.readDb(expensePath);
         
         if (!expense) {
-            console.error('❌ Expense not found at path:', expensePath);
+            console.error('? Expense not found at path:', expensePath);
             showToast('Expense not found', 'error');
             return;
         }
@@ -4442,7 +4442,7 @@ async function showExpenseComments(expenseId) {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;" onclick="event.stopPropagation()">
                 <div class="modal-header">
-                    <h3>💬 Comments: ${expense.description}</h3>
+                    <h3>?? Comments: ${expense.description}</h3>
                     <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">&times;</button>
                 </div>
                 <div class="modal-body">
@@ -4462,7 +4462,7 @@ async function showExpenseComments(expenseId) {
                             onclick="addComment('${expenseId}')"
                             style="width: 100%;"
                         >
-                            <span class="btn-icon">💬</span>
+                            <span class="btn-icon">??</span>
                             <span>Post Comment</span>
                         </button>
                     </div>
@@ -4473,7 +4473,7 @@ async function showExpenseComments(expenseId) {
         document.body.appendChild(modal);
 
     } catch (error) {
-        console.error('❌ Error showing comments:', error);
+        console.error('? Error showing comments:', error);
         console.error('Stack:', error.stack);
         showToast('Error loading comments: ' + error.message, 'error');
     }
@@ -4501,7 +4501,7 @@ async function renderComments(comments) {
         return `
             <div class="comment-item">
                 <div class="comment-header">
-                    <span class="comment-author">👤 ${comment.userName}</span>
+                    <span class="comment-author">?? ${comment.userName}</span>
                     <span class="comment-date">${date}</span>
                 </div>
                 <div class="comment-text">${comment.text}</div>
@@ -4588,7 +4588,7 @@ async function requestDeleteExpense(expenseId) {
             timestamp: Date.now()
         });
 
-        // 🔔 NOTIFICATION: Notify expense creator(s) about deletion request
+        // ?? NOTIFICATION: Notify expense creator(s) about deletion request
         if (expense) {
             const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
             
@@ -4612,10 +4612,10 @@ async function requestDeleteExpense(expenseId) {
                     }
                 }
             } else {
-                console.error('❌ createNotification function not available');
+                console.error('? createNotification function not available');
             }
         } else {
-            console.warn('⚠️ Expense not found, cannot send notification');
+            console.warn('?? Expense not found, cannot send notification');
         }
 
         showToast('Deletion request sent', 'success');
@@ -4649,12 +4649,12 @@ async function showDeleteRequests(expenseId) {
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            return `<li>👤 ${req.userName} - ${date}</li>`;
+            return `<li>?? ${req.userName} - ${date}</li>`;
         }).join('');
 
         const confirmed = confirm(
             `${requests.length} member(s) requested deletion:\n\n` +
-            requests.map(r => `• ${r.userName}`).join('\n') +
+            requests.map(r => `� ${r.userName}`).join('\n') +
             '\n\nDo you want to delete this expense?'
         );
 
@@ -4709,7 +4709,7 @@ async function deleteExpense(expenseId) {
 
         showToast('Expense deleted', 'success');
         
-        // 🔔 NOTIFICATION: Notify all group members about deleted expense
+        // ?? NOTIFICATION: Notify all group members about deleted expense
         try {
             const message = `${user.displayName || user.email} deleted: ${expense.description} - ${expense.currency || '$'}${expense.amount}`;
             
@@ -4745,35 +4745,35 @@ function loadSimpleModeInviteUI() {
 
     inviteTabContent.innerHTML = `
         <div class="tab-card">
-            <h3>👥 Invite Members</h3>
+            <h3>?? Invite Members</h3>
             <p>Share this group with friends! No wallet needed for Simple Mode.</p>
             
             <div class="invite-method-card">
-                <h4>📎 Share Link</h4>
+                <h4>?? Share Link</h4>
                 <p>Copy this link and send it via WhatsApp, email, or any messenger:</p>
                 <div class="invite-link-container">
                     <input type="text" id="inviteLinkInput" class="input-modern" value="${inviteLink}" readonly>
                     <button class="btn btn-primary" onclick="copyInviteLink()">
-                        <span class="btn-icon">📋</span>
+                        <span class="btn-icon">??</span>
                         <span>Copy</span>
                     </button>
                 </div>
             </div>
 
             <div class="invite-method-card">
-                <h4>✉️ Send Email Invitation</h4>
+                <h4>?? Send Email Invitation</h4>
                 <p>Send an email invitation directly:</p>
                 <div class="form-group">
                     <input type="email" id="inviteEmail" class="input-modern" placeholder="friend@example.com">
                 </div>
                 <button class="btn btn-secondary" onclick="sendEmailInvite()">
-                    <span class="btn-icon">📧</span>
+                    <span class="btn-icon">??</span>
                     <span>Send Invitation</span>
                 </button>
             </div>
 
             <div class="info-box">
-                <p><strong>ℹ️ How it works:</strong></p>
+                <p><strong>?? How it works:</strong></p>
                 <ul>
                     <li>Friends click the link or accept the email invite</li>
                     <li>They sign in with Google or create an account</li>
@@ -4797,11 +4797,11 @@ function copyInviteLink() {
     
     try {
         document.execCommand('copy');
-        showToast('Link copied to clipboard! 📋', 'success');
+        showToast('Link copied to clipboard! ??', 'success');
     } catch (err) {
         // Fallback for modern browsers
         navigator.clipboard.writeText(input.value).then(() => {
-            showToast('Link copied to clipboard! 📋', 'success');
+            showToast('Link copied to clipboard! ??', 'success');
         }).catch(() => {
             showToast('Failed to copy link', 'error');
         });
@@ -4875,7 +4875,7 @@ async function handleGroupJoin(groupId) {
                 await loadSimpleModeDetailView();
                 
                 hideLoading();
-                showToast(`✅ Welcome back to "${groupName}"!`, 'success');
+                showToast(`? Welcome back to "${groupName}"!`, 'success');
                 
                 // Reload dashboard in background to show the group in list
                 setTimeout(() => loadAllFundsDetails(), 500);
@@ -4904,7 +4904,7 @@ async function handleGroupJoin(groupId) {
             joinedAt: Date.now()
         });
         
-        // 🔔 NOTIFICATION: Notify all existing members that someone joined
+        // ?? NOTIFICATION: Notify all existing members that someone joined
         try {
             const userName = user.displayName || user.email;
             const message = `${userName} has joined ${groupName}`;
@@ -4916,7 +4916,7 @@ async function handleGroupJoin(groupId) {
             console.error('Error sending join notification:', notifError);
         }
 
-        showToast(`✅ Successfully joined "${groupName}"!`, 'success');
+        showToast(`? Successfully joined "${groupName}"!`, 'success');
         
         // Clean up URL and session
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -5017,7 +5017,7 @@ async function sendEmailInvite() {
         const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
         window.location.href = mailtoLink;
 
-        showToast('Opening email client... 📧', 'success');
+        showToast('Opening email client... ??', 'success');
         emailInput.value = '';
 
     } catch (error) {
@@ -5107,7 +5107,7 @@ async function handlePaymentSubmission(event) {
         // Record settlement via mode manager
         await window.modeManager.recordSettlement(settlementInfo);
 
-        showToast('Payment recorded successfully! ✅', 'success');
+        showToast('Payment recorded successfully! ?', 'success');
         closeRecordPaymentModal();
 
         // Refresh balances
@@ -5156,7 +5156,7 @@ function showAddExpenseModal() {
     
     // Check if group is paused
     if (currentFund && !currentFund.isActive) {
-        showToast("⏸️ The group is paused. You cannot add expenses.", "error");
+        showToast("?? The group is paused. You cannot add expenses.", "error");
         return;
     }
     
@@ -5170,7 +5170,7 @@ function showAddExpenseModal() {
     
     const modal = document.getElementById('addExpenseModal');
     if (!modal) {
-        console.error('❌ Modal not found');
+        console.error('? Modal not found');
         return;
     }
 
@@ -5216,11 +5216,11 @@ function populateExpenseMembers() {
 
 
     if (!paidByContainer) {
-        console.error('❌ Paid by container not found');
+        console.error('? Paid by container not found');
         return;
     }
     if (!splitContainer) {
-        console.error('❌ Split container not found');
+        console.error('? Split container not found');
         return;
     }
 
@@ -5259,14 +5259,14 @@ function populateExpenseMembers() {
                 </div>
             </label>
             <div class="member-share-controls" id="split-share-controls-${memberIndex}">
-                <button type="button" class="share-btn share-btn-minus" onclick="decrementExpenseShare(${memberIndex})" title="Quitar una porción">
-                    −
+                <button type="button" class="share-btn share-btn-minus" onclick="decrementExpenseShare(${memberIndex})" title="Quitar una porci�n">
+                    -
                 </button>
                 <div class="share-counter" id="split-share-count-${memberIndex}">
                     <span class="share-number">1</span>
                     <span class="share-label">person</span>
                 </div>
-                <button type="button" class="share-btn share-btn-plus" onclick="incrementExpenseShare(${memberIndex})" title="Agregar una porción">
+                <button type="button" class="share-btn share-btn-plus" onclick="incrementExpenseShare(${memberIndex})" title="Agregar una porci�n">
                     +
                 </button>
             </div>
@@ -5351,16 +5351,16 @@ window.decrementExpenseShare = decrementExpenseShare;
 
 const CURRENCY_SYMBOLS = {
     'USD': '$',
-    'EUR': '€',
-    'GBP': '£',
+    'EUR': '�',
+    'GBP': '�',
     'MXN': '$',
     'COP': '$',
     'BRL': 'R$',
     'CAD': 'CA$',
     'AUD': 'A$',
-    'JPY': '¥',
-    'CNY': '¥',
-    'INR': '₹',
+    'JPY': '�',
+    'CNY': '�',
+    'INR': '?',
     'CHF': 'CHF'
 };
 
@@ -5409,7 +5409,7 @@ async function fetchExchangeRates() {
         return exchangeRatesCache;
 
     } catch (error) {
-        console.error('❌ Error fetching exchange rates:', error);
+        console.error('? Error fetching exchange rates:', error);
         // Fallback rates (approximate, updated Dec 2024)
         return {
             USD: 1,
@@ -5444,7 +5444,7 @@ async function convertToUSD(amount, fromCurrency = 'USD') {
         const rate = rates[fromCurrency];
         
         if (!rate) {
-            console.warn(`⚠️ No exchange rate for ${fromCurrency}, using 1:1`);
+            console.warn(`?? No exchange rate for ${fromCurrency}, using 1:1`);
             return amount;
         }
 
@@ -5570,7 +5570,7 @@ async function handleExpenseSubmission(event) {
         // Save to Firebase via mode manager
         await window.modeManager.addSimpleExpense(expenseInfo);
 
-        showToast('Expense added successfully! ✅', 'success');
+        showToast('Expense added successfully! ?', 'success');
         closeAddExpenseModal();
 
         // Refresh expense list and balances
@@ -5592,7 +5592,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (expenseForm) {
         expenseForm.addEventListener('submit', handleExpenseSubmission);
     } else {
-        console.error('❌ addExpenseForm not found in DOM');
+        console.error('? addExpenseForm not found in DOM');
     }
     
     const paymentForm = document.getElementById('recordPaymentForm');
@@ -5607,7 +5607,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function approveExpense(expenseId) {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("⏸️ The group is paused. You cannot approve expenses.", "error");
+            showToast("?? The group is paused. You cannot approve expenses.", "error");
             return;
         }
         
@@ -5624,7 +5624,7 @@ async function approveExpense(expenseId) {
         const success = await window.modeManager.approveExpense(expenseId, true);
 
         if (success) {
-            showToast('Expense approved! ✅', 'success');
+            showToast('Expense approved! ?', 'success');
             // Refresh expense list
             await loadSimpleModeExpenses();
         } else {
@@ -5643,7 +5643,7 @@ async function approveExpense(expenseId) {
 async function rejectExpense(expenseId) {
     try {
         if (currentFund && !currentFund.isActive) {
-            showToast("⏸️ The group is paused. You cannot reject expenses.", "error");
+            showToast("?? The group is paused. You cannot reject expenses.", "error");
             return;
         }
         
@@ -5663,7 +5663,7 @@ async function rejectExpense(expenseId) {
         const success = await window.modeManager.approveExpense(expenseId, false);
 
         if (success) {
-            showToast('Expense rejected ❌', 'info');
+            showToast('Expense rejected ?', 'info');
             // Refresh expense list
             await loadSimpleModeExpenses();
         } else {
@@ -5697,18 +5697,18 @@ async function depositToFund() {
         
         
         if (isPrivate && memberStatus === 0n) {
-            showToast("⚠️ This is a private fund. You need an invitation from the creator to participate.", "warning");
+            showToast("?? This is a private fund. You need an invitation from the creator to participate.", "warning");
             return;
         }
         
         if (isPrivate && memberStatus === 1n) {
-            showToast("⚠️ You have a pending invitation. Accept it first in the 'Invite' tab before depositing.", "warning");
+            showToast("?? You have a pending invitation. Accept it first in the 'Invite' tab before depositing.", "warning");
             return;
         }
         
         
         // Show message BEFORE MetaMask popup
-        showToast("🐜 Confirm the deposit in your wallet...", "info");
+        showToast("?? Confirm the deposit in your wallet...", "info");
         
         const amountWei = ethers.parseEther(amount);
         const tx = await currentFundContract.deposit({ value: amountWei });
@@ -5717,7 +5717,7 @@ async function depositToFund() {
         showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
-        showToast(`✅ Deposit of ${amount} ETH successful!`, "success");
+        showToast(`? Deposit of ${amount} ETH successful!`, "success");
         
         // Give time for state to update - longer delay for balance recalculation
         showLoading(t('app.loading.recalculatingBalances'));
@@ -5765,32 +5765,32 @@ async function inviteMember() {
             try {
                 targetAddress = await factoryContract.getAddressByNickname(addressOrNickname);
                 if (targetAddress === ethers.ZeroAddress) {
-                    showToast(`❌ El nickname "${addressOrNickname}" no existe`, "error");
+                    showToast(`? El nickname "${addressOrNickname}" no existe`, "error");
                     return;
                 }
             } catch (e) {
-                showToast(`❌ El nickname "${addressOrNickname}" no existe`, "error");
+                showToast(`? El nickname "${addressOrNickname}" no existe`, "error");
                 return;
             }
         }
         
         // Check if inviting yourself
         if (targetAddress.toLowerCase() === userAddress.toLowerCase()) {
-            showToast("⚠️ You cannot invite yourself", "warning");
+            showToast("?? You cannot invite yourself", "warning");
             return;
         }
         
         // Check member status
         const memberStatus = await currentFundContract.memberStatus(targetAddress);
         
-        // 🔍 DEBUG: Verificar estado del destinatario
+        // ?? DEBUG: Verificar estado del destinatario
         
         if (memberStatus === 1n) {
-            showToast(`⚠️ ${addressOrNickname} already has a pending invitation`, "warning");
+            showToast(`?? ${addressOrNickname} already has a pending invitation`, "warning");
             return;
         }
         if (memberStatus === 2n) {
-            showToast(`⚠️ ${addressOrNickname} is already an active member of the fund`, "warning");
+            showToast(`?? ${addressOrNickname} is already an active member of the fund`, "warning");
             return;
         }
         try {
@@ -5813,7 +5813,7 @@ async function inviteMember() {
         
         const receipt = await tx.wait();
         
-        showToast(`✅ Invitation sent to ${addressOrNickname}!`, "success");
+        showToast(`? Invitation sent to ${addressOrNickname}!`, "success");
         
         // Give time for state to update
         showLoading(t('app.loading.updatingMembers'));
@@ -5860,18 +5860,18 @@ async function acceptInvitation() {
                 await registerTx.wait();
             }
         } catch (regError) {
-            console.warn("⚠️ Could not register participant in Factory:", regError.message);
+            console.warn("?? Could not register participant in Factory:", regError.message);
             // Continue anyway - user is still a member of the fund
         }
         
-        showToast("✅ Invitation accepted! You are now an active member", "success");
+        showToast("? Invitation accepted! You are now an active member", "success");
         
         // Give time for state to update
         showLoading(t('app.loading.updatingColonies'));
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         // BUG 2 FIX: Force complete dashboard reload
-        allUserFunds = [];
+        allUserGroups = [];
         await loadUserFunds();
         await loadPendingInvitations();
         
@@ -5918,7 +5918,7 @@ async function createProposal() {
         // IMPORTANT: Verify the creator is included in involved members
         const userIsInvolved = selectedMembers.some(addr => addr.toLowerCase() === userAddress.toLowerCase());
         if (!userIsInvolved) {
-            showToast("⚠️ You must include yourself in the involved members to vote on this proposal. Check your own checkbox!", "warning");
+            showToast("?? You must include yourself in the involved members to vote on this proposal. Check your own checkbox!", "warning");
             return;
         }
         
@@ -5941,7 +5941,7 @@ async function createProposal() {
         // Warn if involved members have insufficient funds
         if (insufficientMembers.length > 0) {
             const memberList = insufficientMembers.join(', ');
-            showToast(`⚠️ Warning: ${memberList} ha${insufficientMembers.length > 1 ? 've' : 's'} not contributed yet. They won't be able to cover their share.`, "warning");
+            showToast(`?? Warning: ${memberList} ha${insufficientMembers.length > 1 ? 've' : 's'} not contributed yet. They won't be able to cover their share.`, "warning");
         }
         
         // Calculate if we need to borrow from non-involved members
@@ -5956,13 +5956,13 @@ async function createProposal() {
                 const borrowedPerPerson = borrowedAmount / BigInt(nonInvolvedCount);
                 
                 const confirmBorrow = confirm(
-                    `⚠️ IMPORTANT NOTICE:\n\n` +
+                    `?? IMPORTANT NOTICE:\n\n` +
                     `The involved members' contributions (${ethers.formatEther(totalFromInvolved)} ETH) ` +
                     `are not enough to cover ${amount} ETH.\n\n` +
                     `This proposal will BORROW ${ethers.formatEther(borrowedAmount)} ETH ` +
                     `from non-involved members (~${ethers.formatEther(borrowedPerPerson)} ETH each).\n\n` +
-                    `✅ All members will be notified and included in the vote.\n` +
-                    `✅ 100% approval required when borrowing funds.\n\n` +
+                    `? All members will be notified and included in the vote.\n` +
+                    `? 100% approval required when borrowing funds.\n\n` +
                     `Do you want to continue?`
                 );
                 
@@ -5975,7 +5975,7 @@ async function createProposal() {
         // PROBLEM 2 FIX: Check if user is a contributor before allowing proposal
         const userContribution = await currentFundContract.contributions(userAddress);
         if (userContribution === 0n) {
-            showToast("⚠️ You must deposit funds before creating proposals. Go to the 'Deposit' tab first.", "warning");
+            showToast("?? You must deposit funds before creating proposals. Go to the 'Deposit' tab first.", "warning");
             return;
         }
         
@@ -5990,7 +5990,7 @@ async function createProposal() {
         
         
         // Show message BEFORE MetaMask popup
-        showToast("🐜 Confirm the transaction in your wallet...", "info");
+        showToast("?? Confirm the transaction in your wallet...", "info");
         
         const tx = await currentFundContract.createProposal(
             recipientAddress, 
@@ -6032,13 +6032,13 @@ async function createProposal() {
         // PROBLEM 2 FIX: Better error messages for common issues
         let errorMsg = "Error creating proposal";
         if (error.message.includes("No eres contribuyente")) {
-            errorMsg = "⚠️ You must deposit funds before creating proposals. Go to the 'Deposit' tab first.";
+            errorMsg = "?? You must deposit funds before creating proposals. Go to the 'Deposit' tab first.";
         } else if (error.message.includes("Monto excede limite")) {
-            errorMsg = "⚠️ Amount cannot exceed 80% of fund balance";
+            errorMsg = "?? Amount cannot exceed 80% of fund balance";
         } else if (error.message.includes("Only active members")) {
-            errorMsg = "⚠️ Only active members can create proposals. Accept your invitation first.";
+            errorMsg = "?? Only active members can create proposals. Accept your invitation first.";
         } else if (error.message.includes("Debe seleccionar al menos un miembro")) {
-            errorMsg = "⚠️ You must select at least one involved member";
+            errorMsg = "?? You must select at least one involved member";
         } else {
             errorMsg = "Error creating proposal: " + error.message;
         }
@@ -6103,14 +6103,14 @@ async function loadInvolvedMembersCheckboxes() {
                         </div>
                     </label>
                     <div class="member-share-controls" id="share-controls-${i}">
-                        <button type="button" class="share-btn share-btn-minus" onclick="decrementShare(${i})" title="Quitar una porción">
-                            −
+                        <button type="button" class="share-btn share-btn-minus" onclick="decrementShare(${i})" title="Quitar una porci�n">
+                            -
                         </button>
                         <div class="share-counter" id="share-count-${i}">
                             <span class="share-number">1</span>
                             <span class="share-label">person</span>
                         </div>
-                        <button type="button" class="share-btn share-btn-plus" onclick="incrementShare(${i})" title="Agregar una porción">
+                        <button type="button" class="share-btn share-btn-plus" onclick="incrementShare(${i})" title="Agregar una porci�n">
                             +
                         </button>
                     </div>
@@ -6215,7 +6215,7 @@ async function loadMembers() {
                     <div class="member-card">
                         <div class="member-avatar">${avatar}</div>
                         <div class="member-info">
-                            <h4>${displayName} ${isCreator ? '👑' : ''}</h4>
+                            <h4>${displayName} ${isCreator ? '??' : ''}</h4>
                             <p class="member-address" title="${address}">${formatAddress(address)}</p>
                         </div>
                         <div class="member-contribution">
@@ -6312,7 +6312,7 @@ async function loadProposals() {
                 const borrowedAlert = proposal.requiresFullConsent ? `
                     <div class="borrowed-funds-alert">
                         <div class="alert-header">
-                            <span class="alert-icon">⚠️</span>
+                            <span class="alert-icon">??</span>
                             <strong>${t.app.fundDetail.vote.borrowedWarning}</strong>
                         </div>
                         <p class="alert-text">${t.app.fundDetail.vote.borrowedWarningText}</p>
@@ -6339,7 +6339,7 @@ async function loadProposals() {
                         
                         ${!proposal.requiresFullConsent ? `
                             <div class="proposal-info-badge" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); padding: 8px 12px; border-radius: 8px; margin: 8px 0; font-size: 0.85rem;">
-                                👥 Only involved members can vote on this proposal
+                                ?? Only involved members can vote on this proposal
                             </div>
                         ` : ''}
                         
@@ -6348,8 +6348,8 @@ async function loadProposals() {
                         <p class="proposal-description">${proposal.description}</p>
                         
                         <div class="proposal-meta">
-                            <span title="${proposal.proposer}">👤 From: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
-                            <span title="${proposal.recipient}">🎯 To: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
+                            <span title="${proposal.proposer}">?? From: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
+                            <span title="${proposal.recipient}">?? To: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
                         </div>
                         
                         <div class="proposal-votes">
@@ -6357,14 +6357,14 @@ async function loadProposals() {
                                 <div class="vote-bar-fill" style="width: ${percentFor}%"></div>
                             </div>
                             <div class="vote-counts">
-                                <span>✅ ${votesFor} for</span>
-                                <span>❌ ${votesAgainst} against</span>
+                                <span>? ${votesFor} for</span>
+                                <span>? ${votesAgainst} against</span>
                             </div>
                         </div>
                         
                         ${!proposal.isInvolved ? `
                             <div class="info-box" style="background: rgba(100, 116, 139, 0.1); border: 1px solid rgba(100, 116, 139, 0.3); padding: 12px; margin-top: 12px; border-radius: 8px; text-align: center;">
-                                👁️ <strong>You are not included in this proposal</strong><br>
+                                ??? <strong>You are not included in this proposal</strong><br>
                                 <small>Only involved members can vote on this expense</small>
                             </div>
                         ` : proposal.hasVoted ? `
@@ -6382,7 +6382,7 @@ async function loadProposals() {
                         
                         ${proposal.approved && !proposal.executed ? `
                             <button class="btn btn-primary btn-block" onclick="executeProposal(${proposal.id})">
-                                ⚡ Execute Proposal
+                                ? Execute Proposal
                             </button>
                         ` : ''}
                     </div>
@@ -6398,7 +6398,7 @@ async function loadProposals() {
 async function voteProposal(proposalId, inFavor) {
     try {
         // Show message BEFORE MetaMask popup
-        showToast("🐜 Confirm the vote in your wallet...", "info");
+        showToast("?? Confirm the vote in your wallet...", "info");
         
         const tx = await currentFundContract.vote(proposalId, inFavor);
         
@@ -6406,7 +6406,7 @@ async function voteProposal(proposalId, inFavor) {
         showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
-        showToast(`✅ Vote ${inFavor ? 'for' : 'against'} registered!`, "success");
+        showToast(`? Vote ${inFavor ? 'for' : 'against'} registered!`, "success");
         
         // Dar tiempo para que el estado se actualice
         showLoading(t('app.loading.syncingVoteCount'));
@@ -6416,7 +6416,7 @@ async function voteProposal(proposalId, inFavor) {
         await refreshCurrentView();
         
         // Show manual refresh option if needed
-        showToast("🔄 If vote doesn't appear, refresh the page (F5)", "info");
+        showToast("?? If vote doesn't appear, refresh the page (F5)", "info");
         
         hideLoading();
         
@@ -6427,12 +6427,12 @@ async function voteProposal(proposalId, inFavor) {
         // Better error message for common case
         let errorMsg = "Error voting";
         if (error.message.includes("No estas involucrado") || error.message.includes("not involved")) {
-            errorMsg = "⚠️ You cannot vote on this proposal!\n\n" +
+            errorMsg = "?? You cannot vote on this proposal!\n\n" +
                       "Reason: You were not selected as an 'involved member' when this proposal was created.\n\n" +
                       "Only members checked in the 'Involved Members' section during proposal creation can vote.\n\n" +
                       "Tip: When creating proposals, make sure to check YOUR OWN checkbox if you want to vote!";
         } else if (error.message.includes("Ya votaste")) {
-            errorMsg = "⚠️ You already voted on this proposal";
+            errorMsg = "?? You already voted on this proposal";
         } else {
             errorMsg = "Error voting: " + error.message;
         }
@@ -6444,7 +6444,7 @@ async function voteProposal(proposalId, inFavor) {
 async function executeProposal(proposalId) {
     try {
         // Show message BEFORE MetaMask popup
-        showToast("🐜 Confirm the execution in your wallet...", "info");
+        showToast("?? Confirm the execution in your wallet...", "info");
         
         const tx = await currentFundContract.executeProposal(proposalId);
         
@@ -6452,7 +6452,7 @@ async function executeProposal(proposalId) {
         showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
-        showToast("✅ Proposal executed! Funds transferred.", "success");
+        showToast("? Proposal executed! Funds transferred.", "success");
         
         // Dar tiempo para que el estado se actualice
         showLoading(t('app.loading.updatingBalances'));
@@ -6536,19 +6536,19 @@ async function loadHistory() {
             let statusBadge = '';
             let statusClass = '';
             if (proposal.executed) {
-                statusBadge = '<span class="status-badge status-executed">✅ Executed</span>';
+                statusBadge = '<span class="status-badge status-executed">? Executed</span>';
                 statusClass = 'proposal-executed';
             } else if (proposal.cancelled) {
-                statusBadge = '<span class="status-badge status-cancelled">❌ Cancelled</span>';
+                statusBadge = '<span class="status-badge status-cancelled">? Cancelled</span>';
                 statusClass = 'proposal-cancelled';
             } else if (proposal.expired) {
-                statusBadge = '<span class="status-badge status-expired">⏱️ Expired</span>';
+                statusBadge = '<span class="status-badge status-expired">?? Expired</span>';
                 statusClass = 'proposal-expired';
             } else if (proposal.approved) {
-                statusBadge = '<span class="status-badge status-approved">👍 Approved</span>';
+                statusBadge = '<span class="status-badge status-approved">?? Approved</span>';
                 statusClass = 'proposal-approved';
             } else {
-                statusBadge = '<span class="status-badge status-active">🕒 Active</span>';
+                statusBadge = '<span class="status-badge status-active">?? Active</span>';
                 statusClass = 'proposal-active';
             }
             
@@ -6562,19 +6562,19 @@ async function loadHistory() {
                     </div>
                     <p class="proposal-description">${proposal.description}</p>
                     <div class="proposal-meta">
-                        <span title="${proposal.proposer}">👤 From: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
-                        <span title="${proposal.recipient}">🎯 To: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
+                        <span title="${proposal.proposer}">?? From: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
+                        <span title="${proposal.recipient}">?? To: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
                     </div>
                     <div class="proposal-meta">
-                        <span>📅 Created: ${createdDate}</span>
+                        <span>?? Created: ${createdDate}</span>
                     </div>
                     <div class="proposal-votes">
                         <div class="vote-bar">
                             <div class="vote-bar-fill" style="width: ${percentage}%"></div>
                         </div>
                         <div class="vote-counts">
-                            <span class="vote-for">👍 ${votesFor}</span>
-                            <span class="vote-against">👎 ${votesAgainst}</span>
+                            <span class="vote-for">?? ${votesFor}</span>
+                            <span class="vote-against">?? ${votesAgainst}</span>
                             <span class="vote-percentage">${percentage.toFixed(1)}%</span>
                         </div>
                     </div>
@@ -6675,8 +6675,8 @@ async function loadBalances() {
         if (displayBalances.length === 0) {
             balancesList.innerHTML = `
                 <div class="info-box success-box" style="text-align: center; padding: 2rem;">
-                    <h3>✅ All Balanced!</h3>
-                    <p>Everyone has settled their debts. The colony is in perfect harmony! 🐜</p>
+                    <h3>? All Balanced!</h3>
+                    <p>Everyone has settled their debts. The colony is in perfect harmony! ??</p>
                 </div>
             `;
             return;
@@ -6687,7 +6687,7 @@ async function loadBalances() {
             const isNegative = member.balance < 0n;
             const statusClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
             const statusText = isPositive ? 'Should receive' : isNegative ? 'Should pay' : 'Balanced';
-            const statusIcon = isPositive ? '💰' : isNegative ? '💸' : '✅';
+            const statusIcon = isPositive ? '??' : isNegative ? '??' : '?';
             
             const avatar = member.nickname && member.nickname !== formatAddress(member.address)
                 ? member.nickname.substring(0, 2).toUpperCase()
@@ -6697,7 +6697,7 @@ async function loadBalances() {
             const isCurrentUser = member.address.toLowerCase() === userAddress.toLowerCase();
             const owesMoneyButton = isCurrentUser && isNegative 
                 ? `<button class="btn btn-sm btn-primary" onclick="settleDebt(${Math.abs(member.balanceEth)})">
-                       💳 Liquidar mi deuda
+                       ?? Liquidar mi deuda
                    </button>`
                 : '';
             
@@ -6708,11 +6708,11 @@ async function loadBalances() {
                         <div class="balance-details">
                             <div class="balance-name">
                                 ${formatUserDisplay(member.nickname, member.address)}
-                                ${isCurrentUser ? ' (Tú)' : ''}
+                                ${isCurrentUser ? ' (T�)' : ''}
                             </div>
                             <div class="balance-breakdown">
-                                <span>💰 Aportó: ${member.contributionEth.toFixed(4)} ETH</span>
-                                <span>📊 Parte justa: ${member.fairShareEth.toFixed(4)} ETH</span>
+                                <span>?? Aport�: ${member.contributionEth.toFixed(4)} ETH</span>
+                                <span>?? Parte justa: ${member.fairShareEth.toFixed(4)} ETH</span>
                             </div>
                             ${owesMoneyButton}
                         </div>
@@ -6731,7 +6731,7 @@ async function loadBalances() {
         console.error("Error loading balances:", error);
         document.getElementById('balancesList').innerHTML = `
             <div class="info-box warning-box">
-                <p><strong>⚠️ Error al calcular balances:</strong></p>
+                <p><strong>?? Error al calcular balances:</strong></p>
                 <p>${error.message}</p>
             </div>
         `;
@@ -6755,7 +6755,7 @@ function settleDebt(amount) {
         }
         
         // Show informative message
-        showToast(`💳 Amount pre-filled: ${amount.toFixed(4)} ETH. Confirm to settle your debt.`, 'info');
+        showToast(`?? Amount pre-filled: ${amount.toFixed(4)} ETH. Confirm to settle your debt.`, 'info');
         
     } catch (error) {
         console.error("Error in settleDebt:", error);
@@ -6830,13 +6830,13 @@ async function loadKickMembersList() {
                         <div class="member-details">
                             <div class="member-name">${formatUserDisplay(member.nickname, member.address)}</div>
                             <div class="member-stats">
-                                <span>💰 Aportó: ${contributionEth.toFixed(4)} ETH</span>
-                                <span>💸 Recibirá: ${refundAmount.toFixed(4)} ETH</span>
+                                <span>?? Aport�: ${contributionEth.toFixed(4)} ETH</span>
+                                <span>?? Recibir�: ${refundAmount.toFixed(4)} ETH</span>
                             </div>
                         </div>
                     </div>
                     <button class="btn btn-sm btn-danger" onclick="kickMemberConfirm('${member.address}', '${member.nickname}', ${refundAmount})">
-                        👋 Expulsar
+                        ?? Expulsar
                     </button>
                 </div>
             `;
@@ -6857,11 +6857,11 @@ async function loadKickMembersList() {
 async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
     try {
         const confirmed = confirm(
-            `⚠️ Remove ${memberNickname}?\n\n` +
+            `?? Remove ${memberNickname}?\n\n` +
             `This action:\n` +
-            `• Will permanently remove the member from the group\n` +
-            `• Will refund ${refundAmount.toFixed(4)} ETH\n` +
-            `• They will no longer be able to vote or participate\n\n` +
+            `� Will permanently remove the member from the group\n` +
+            `� Will refund ${refundAmount.toFixed(4)} ETH\n` +
+            `� They will no longer be able to vote or participate\n\n` +
             `Continue?`
         );
         
@@ -6876,7 +6876,7 @@ async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
         await refreshCurrentView();
         
         hideLoading();
-        showToast(`✅ ${memberNickname} has been removed from the group`, "success");
+        showToast(`? ${memberNickname} has been removed from the group`, "success");
         
     } catch (error) {
         hideLoading();
@@ -6948,22 +6948,22 @@ async function closeFund() {
         const contractCreator = await currentFundContract.creator();
         
         if (contractCreator.toLowerCase() !== userAddress.toLowerCase()) {
-            showToast("⚠️ Solo el creador del fondo puede cerrarlo", "error");
+            showToast("?? Solo el creador del fondo puede cerrarlo", "error");
             return;
         }
         
         // Confirmation
         const confirmed = confirm(
-            "⚠️ ADVERTENCIA: Esta acción es IRREVERSIBLE\n\n" +
-            "Se cerrará el fondo permanentemente y se distribuirán todos los fondos restantes proporcionalmente.\n\n" +
-            "¿Estás seguro de que deseas continuar?"
+            "?? ADVERTENCIA: Esta acci�n es IRREVERSIBLE\n\n" +
+            "Se cerrar� el fondo permanentemente y se distribuir�n todos los fondos restantes proporcionalmente.\n\n" +
+            "�Est�s seguro de que deseas continuar?"
         );
         
         if (!confirmed) return;
         
         // Double confirmation
         const doubleConfirmed = confirm(
-            "🚨 FINAL CONFIRMATION\n\n" +
+            "?? FINAL CONFIRMATION\n\n" +
             "This is your last chance to cancel.\n\n" +
             "Do you really want to close and distribute the fund?"
         );
@@ -6980,7 +6980,7 @@ async function closeFund() {
         
         hideLoading();
         
-        showToast("✅ Fund closed and funds distributed successfully!", "success");
+        showToast("? Fund closed and funds distributed successfully!", "success");
         
     } catch (error) {
         hideLoading();
@@ -6988,9 +6988,9 @@ async function closeFund() {
         
         let errorMsg = "Error al cerrar el fondo";
         if (error.message.includes("Only creator")) {
-            errorMsg = "⚠️ Only the fund creator can close it";
+            errorMsg = "?? Only the fund creator can close it";
         } else if (error.message.includes("ya esta cerrado")) {
-            errorMsg = "⚠️ The fund is already closed";
+            errorMsg = "?? The fund is already closed";
         } else {
             errorMsg = "Error closing fund: " + error.message;
         }
@@ -7072,7 +7072,7 @@ function onScanSuccess(decodedText, decodedResult) {
     // Validate Ethereum address format
     if (!isValidEthereumAddress(address)) {
         const t = translations[getCurrentLanguage()];
-        showToast(`⚠️ ${t.app.fundDetail.qrScanner.invalidQR}`, "error");
+        showToast(`?? ${t.app.fundDetail.qrScanner.invalidQR}`, "error");
         isProcessingScan = false;
         return;
     }
@@ -7126,12 +7126,12 @@ function confirmScannedAddress() {
     const t = translations[getCurrentLanguage()];
     
     if (!scannedAddressValue) {
-        showToast(`⚠️ ${t.app.fundDetail.qrScanner.noAddress}`, "error");
+        showToast(`?? ${t.app.fundDetail.qrScanner.noAddress}`, "error");
         return;
     }
     
     if (!document.getElementById('qrConfirmCheckbox').checked) {
-        showToast(`⚠️ ${t.app.fundDetail.qrScanner.mustConfirm}`, "warning");
+        showToast(`?? ${t.app.fundDetail.qrScanner.mustConfirm}`, "warning");
         return;
     }
     
@@ -7139,7 +7139,7 @@ function confirmScannedAddress() {
     document.getElementById('proposalRecipient').value = scannedAddressValue;
     
     // Show success message
-    showToast(`✅ ${t.app.fundDetail.qrScanner.scanSuccess}`, "success");
+    showToast(`? ${t.app.fundDetail.qrScanner.scanSuccess}`, "success");
     
     // Close modal
     closeQRScanner();
@@ -7411,7 +7411,7 @@ function filterExpenses() {
         noResultsDiv.className = 'no-results-message';
         noResultsDiv.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">🔍</div>
+                <div class="empty-icon">??</div>
                 <h4>No expenses found</h4>
                 <p>Try adjusting your filters</p>
             </div>
@@ -7436,7 +7436,7 @@ function clearExpenseFilters() {
     if (endDate) endDate.value = '';
     if (myExpenses) myExpenses.checked = false;
     
-    console.log('🧹 Filters cleared');
+    console.log('?? Filters cleared');
     
     filterExpenses();
 }
@@ -7453,11 +7453,11 @@ function toggleExpenseDetails(expenseId) {
     
     if (details.style.display === 'none') {
         details.style.display = 'block';
-        expandIcon.textContent = '▲';
+        expandIcon.textContent = '?';
         card.classList.add('expanded');
     } else {
         details.style.display = 'none';
-        expandIcon.textContent = '▼';
+        expandIcon.textContent = '?';
         card.classList.remove('expanded');
     }
 }
@@ -7601,14 +7601,14 @@ function populateRecurringMembers() {
                 </div>
             </label>
             <div class="member-share-controls" id="recurring-share-controls-${index}">
-                <button type="button" class="share-btn share-btn-minus" onclick="decrementRecurringShare(${index})" title="Quitar una porción">
-                    −
+                <button type="button" class="share-btn share-btn-minus" onclick="decrementRecurringShare(${index})" title="Quitar una porci�n">
+                    -
                 </button>
                 <div class="share-counter" id="recurring-share-count-${index}">
                     <span class="share-number">1</span>
                     <span class="share-label">person</span>
                 </div>
-                <button type="button" class="share-btn share-btn-plus" onclick="incrementRecurringShare(${index})" title="Agregar una porción">
+                <button type="button" class="share-btn share-btn-plus" onclick="incrementRecurringShare(${index})" title="Agregar una porci�n">
                     +
                 </button>
             </div>
@@ -7690,7 +7690,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 hideLoading();
-                showToast('✅ Recurring expense created!', 'success');
+                showToast('? Recurring expense created!', 'success');
                 closeRecurringExpenseModal();
                 
                 // Reload recurring expenses list
@@ -7725,11 +7725,11 @@ async function checkAndProcessRecurring() {
             // Reload recurring list to update nextDue display
             await loadRecurringExpenses();
             
-            showToast(`✅ ${createdCount} recurring expense(s) created automatically`, 'success');
+            showToast(`? ${createdCount} recurring expense(s) created automatically`, 'success');
         }
         
     } catch (error) {
-        console.error('❌ Error processing recurring expenses:', error);
+        console.error('? Error processing recurring expenses:', error);
     }
 }
 
@@ -7751,7 +7751,7 @@ function startRecurringExpensesTimer() {
         checkAndProcessRecurring();
     }, 5 * 60 * 1000); // 5 minutes
     
-    console.log('⏰ Recurring expenses timer started (checks every 5 minutes)');
+    console.log('? Recurring expenses timer started (checks every 5 minutes)');
 }
 
 /**
@@ -7761,7 +7761,7 @@ function stopRecurringExpensesTimer() {
     if (recurringProcessTimer) {
         clearInterval(recurringProcessTimer);
         recurringProcessTimer = null;
-        console.log('⏸️ Recurring expenses timer stopped');
+        console.log('?? Recurring expenses timer stopped');
     }
 }
 
@@ -7785,8 +7785,8 @@ async function loadRecurringExpenses() {
         count.textContent = recurring.length;
         
         list.innerHTML = recurring.map(rec => {
-            const frequencyIcons = { daily: '📅', weekly: '📆', monthly: '🗓️' };
-            const icon = frequencyIcons[rec.frequency] || '🔄';
+            const frequencyIcons = { daily: '??', weekly: '??', monthly: '???' };
+            const icon = frequencyIcons[rec.frequency] || '??';
             const nextDue = new Date(rec.nextDue).toLocaleDateString();
             const nextDueTime = new Date(rec.nextDue).toLocaleString();
             const isOverdue = rec.nextDue < Date.now();
@@ -7798,24 +7798,24 @@ async function loadRecurringExpenses() {
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                                 <span style="font-size: 1.2rem;">${icon}</span>
                                 <strong style="font-size: 1rem;">${rec.description}</strong>
-                                ${isOverdue ? '<span style="background: #ef4444; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">⚠️ OVERDUE</span>' : ''}
+                                ${isOverdue ? '<span style="background: #ef4444; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">?? OVERDUE</span>' : ''}
                             </div>
                             <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
                                 <span style="color: ${isOverdue ? '#ef4444' : '#667eea'}; font-weight: bold;">${formatCurrency(rec.amount, rec.currency)}</span>
-                                • ${capitalizeFirst(rec.frequency)}
-                                • Next: <span title="${nextDueTime}">${nextDue}</span>
+                                � ${capitalizeFirst(rec.frequency)}
+                                � Next: <span title="${nextDueTime}">${nextDue}</span>
                             </div>
                             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.25rem;">
                                 Paid by: ${rec.paidByName}
-                                ${rec.lastCreated ? ` • Last created: ${new Date(rec.lastCreated).toLocaleDateString()}` : ''}
+                                ${rec.lastCreated ? ` � Last created: ${new Date(rec.lastCreated).toLocaleDateString()}` : ''}
                             </div>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
                             <button class="btn-icon-small" onclick="toggleRecurringExpense('${rec.id}')" title="${rec.isActive ? 'Pause' : 'Resume'}">
-                                ${rec.isActive ? '⏸️' : '▶️'}
+                                ${rec.isActive ? '??' : '??'}
                             </button>
                             <button class="btn-icon-small" onclick="deleteRecurringExpense('${rec.id}')" title="Delete">
-                                🗑️
+                                ???
                             </button>
                         </div>
                     </div>
@@ -7892,7 +7892,7 @@ async function loadAllRecurringExpenses() {
         if (!recurring || recurring.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.6);">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">??</div>
                     <p>No recurring expenses yet</p>
                     <p style="font-size: 0.9rem; margin-top: 0.5rem;">
                         Create one to automatically track rent, subscriptions, or other regular payments
@@ -7904,25 +7904,25 @@ async function loadAllRecurringExpenses() {
         
         const getCategoryIcon = (category) => {
             const icons = {
-                'food': '🍕',
-                'transport': '🚗',
-                'housing': '🏠',
-                'utilities': '💡',
-                'entertainment': '🎬',
-                'shopping': '🛍️',
-                'health': '⚕️',
-                'travel': '✈️',
-                'subscription': '📺',
-                'other': '🎯'
+                'food': '??',
+                'transport': '??',
+                'housing': '??',
+                'utilities': '??',
+                'entertainment': '??',
+                'shopping': '???',
+                'health': '??',
+                'travel': '??',
+                'subscription': '??',
+                'other': '??'
             };
-            return icons[category] || '🎯';
+            return icons[category] || '??';
         };
         
         container.innerHTML = recurring.map(rec => {
             const icon = getCategoryIcon(rec.category);
             const statusBadge = rec.isActive 
-                ? '<span class="status-badge status-active">● Active</span>'
-                : '<span class="status-badge status-paused">⏸ Paused</span>';
+                ? '<span class="status-badge status-active">? Active</span>'
+                : '<span class="status-badge status-paused">? Paused</span>';
             
             const nextDue = new Date(rec.nextDue).toLocaleDateString();
             const daysUntil = Math.ceil((new Date(rec.nextDue) - new Date()) / (1000 * 60 * 60 * 24));
@@ -7956,7 +7956,7 @@ async function loadAllRecurringExpenses() {
                                 </div>
                             </div>
                             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.5rem;">
-                                Paid by: ${rec.paidByName} • Split: ${rec.splitBetween.length} member${rec.splitBetween.length > 1 ? 's' : ''}
+                                Paid by: ${rec.paidByName} � Split: ${rec.splitBetween.length} member${rec.splitBetween.length > 1 ? 's' : ''}
                             </div>
                         </div>
                     </div>
@@ -7982,14 +7982,14 @@ async function showRecurringDetails(recurringId) {
         }
         
         const icon = {
-            'food': '🍕', 'transport': '🚗', 'housing': '🏠', 'utilities': '💡',
-            'entertainment': '🎬', 'shopping': '🛍️', 'health': '⚕️', 'travel': '✈️',
-            'subscription': '📺', 'other': '🎯'
-        }[rec.category] || '🎯';
+            'food': '??', 'transport': '??', 'housing': '??', 'utilities': '??',
+            'entertainment': '??', 'shopping': '???', 'health': '??', 'travel': '??',
+            'subscription': '??', 'other': '??'
+        }[rec.category] || '??';
         
         const statusBadge = rec.isActive 
-            ? '<span class="status-badge status-active">● Active</span>'
-            : '<span class="status-badge status-paused">⏸ Paused</span>';
+            ? '<span class="status-badge status-active">? Active</span>'
+            : '<span class="status-badge status-paused">? Paused</span>';
         
         const nextDue = new Date(rec.nextDue).toLocaleDateString();
         const daysUntil = Math.ceil((new Date(rec.nextDue) - new Date()) / (1000 * 60 * 60 * 24));
@@ -8058,7 +8058,7 @@ async function showRecurringDetails(recurringId) {
             
             <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: center;">
                 <button class="btn ${rec.isActive ? 'btn-secondary' : 'btn-primary'}" onclick="toggleRecurringFromDetails('${rec.id}', ${rec.isActive})">
-                    ${rec.isActive ? '⏸️ Pause' : '▶️ Resume'}
+                    ${rec.isActive ? '?? Pause' : '?? Resume'}
                 </button>
             </div>
         `;
@@ -8188,7 +8188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 hideLoading();
-                showToast('✅ Budget set successfully!', 'success');
+                showToast('? Budget set successfully!', 'success');
                 closeBudgetModal();
                 
                 // Reload budget status
@@ -8247,10 +8247,10 @@ async function loadBudgetStatus() {
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
                             <button class="btn-icon-small" onclick="editBudget()" title="Edit Budget">
-                                ✏️
+                                ??
                             </button>
                             <button class="btn-icon-small" onclick="deleteBudget()" title="Delete Budget" style="color: #ef4444;">
-                                🗑️
+                                ???
                             </button>
                         </div>
                     </div>
@@ -8262,14 +8262,14 @@ async function loadBudgetStatus() {
                 
                 ${status.status === 'exceeded' ? 
                     `<div class="budget-exceeded" style="margin-top: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 3px solid #ef4444;">
-                        <strong style="color: #ef4444;">⚠️ Budget Exceeded!</strong>
+                        <strong style="color: #ef4444;">?? Budget Exceeded!</strong>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
                             You've spent ${formatCurrency(status.spent - status.budget, status.currency)} over budget.
                         </p>
                     </div>` : 
                 status.status === 'warning' ?
                     `<div class="budget-warning" style="margin-top: 1rem; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 3px solid #f59e0b;">
-                        <strong style="color: #f59e0b;">⚡ Warning: Approaching Limit</strong>
+                        <strong style="color: #f59e0b;">? Warning: Approaching Limit</strong>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
                             You're at ${status.percentage.toFixed(0)}% of your budget. Consider slowing down spending.
                         </p>
@@ -8314,15 +8314,15 @@ async function checkBudgetThresholdNotifications(status) {
             
             if (thresholdToNotify >= 100) {
                 notificationType = 'budget_exceeded';
-                notificationTitle = '🚨 Budget Exceeded!';
+                notificationTitle = '?? Budget Exceeded!';
                 notificationMessage = `Group "${currentFund.name}" has exceeded its budget. Spent: ${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)} (${percentage.toFixed(0)}%)`;
             } else if (thresholdToNotify >= 80) {
                 notificationType = 'budget_warning';
-                notificationTitle = '⚠️ Budget Warning';
+                notificationTitle = '?? Budget Warning';
                 notificationMessage = `Group "${currentFund.name}" is at ${percentage.toFixed(0)}% of budget (${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)})`;
             } else {
                 notificationType = 'budget_alert';
-                notificationTitle = '💰 Budget Alert';
+                notificationTitle = '?? Budget Alert';
                 notificationMessage = `Group "${currentFund.name}" has reached ${thresholdToNotify}% of budget (${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)})`;
             }
             
@@ -8433,7 +8433,7 @@ function saveOpenAIConfig() {
     }
     
     localStorage.setItem('openai_api_key', apiKey);
-    showToast('✅ API key saved successfully!', 'success');
+    showToast('? API key saved successfully!', 'success');
     closeOpenAIConfigModal();
 }
 
@@ -8479,7 +8479,7 @@ async function handleReceiptImage(event) {
         // Fill form with extracted data
         if (extractedData) {
             fillExpenseFormFromReceipt(extractedData);
-            showToast('✅ Receipt scanned successfully!', 'success');
+            showToast('? Receipt scanned successfully!', 'success');
         }
         
     } catch (error) {
@@ -8677,7 +8677,7 @@ async function loadAnalytics(timeframe) {
             // Multiple currencies - show note
             displayCurrency = '';
             currencyNote = `<div style="background: rgba(255,165,0,0.2); border-left: 3px solid #ffa502; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem;">
-                <strong>⚠️ Multiple Currencies Detected:</strong> ${currencies.join(', ')}
+                <strong>?? Multiple Currencies Detected:</strong> ${currencies.join(', ')}
                 <br><small style="color: rgba(255,255,255,0.7);">Amounts shown in original currencies. Future update will convert to a single currency.</small>
             </div>`;
         }
@@ -8858,7 +8858,7 @@ async function exportToCSV() {
         a.download = `${currentFund.name}_analytics_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
         
-        showToast('✅ CSV exported', 'success');
+        showToast('? CSV exported', 'success');
         
     } catch (error) {
         console.error('Error exporting CSV:', error);
@@ -8894,7 +8894,7 @@ function initNotificationSystem() {
     const markAllReadBtn = document.getElementById('markAllReadBtn');
     
     if (!notificationsBtn || !notificationsPanel) {
-        console.error('❌ Notification elements not found in DOM');
+        console.error('? Notification elements not found in DOM');
         return;
     }
     
@@ -9009,7 +9009,7 @@ function renderNotifications() {
     const emptyState = document.getElementById('emptyNotifications');
     
     if (!notificationsList) {
-        console.error('❌ notificationsList element not found!');
+        console.error('? notificationsList element not found!');
         return;
     }
     
@@ -9017,7 +9017,7 @@ function renderNotifications() {
         if (emptyState) {
             emptyState.classList.remove('hidden');
         } else {
-            console.warn('⚠️ emptyNotifications element not found');
+            console.warn('?? emptyNotifications element not found');
         }
         notificationsList.innerHTML = '';
         return;
@@ -9034,14 +9034,14 @@ function renderNotifications() {
         
         if (typeof notif.message === 'object' && notif.message !== null) {
             // Old format: entire notification data was nested in message field
-            title = notif.message.title || 'Notificación';
+            title = notif.message.title || 'Notificaci�n';
             message = notif.message.message || '';
             type = notif.message.type || notif.type;
             fundId = notif.message.fundId || notif.fundId;
             expenseId = notif.message.expenseId || notif.expenseId;
         } else {
             // New format: proper structure
-            title = notif.title || 'Notificación';
+            title = notif.title || 'Notificaci�n';
             message = notif.message || '';
             type = notif.type;
             fundId = notif.fundId;
@@ -9068,23 +9068,23 @@ function renderNotifications() {
  */
 function getNotificationIcon(type) {
     const icons = {
-        'expense_added': '💸',
-        'expense_deleted': '🗑️',
-        'expense_delete_requested': '⚠️',
-        'payment_received': '💰',
-        'group_paused': '⏸️',
-        'group_reactivated': '▶️',
-        'group_deleted': '🗑️',
-        'invitation': '📨',
-        'vote_required': '🗳️',
-        'proposal_approved': '✅',
-        'proposal_rejected': '❌',
-        'member_joined': '👥',
-        'member_removed': '🚫',
-        'member_left': '🚪',
-        'removal_requested': '⚠️',
-        'fund_goal_reached': '🎯',
-        'default': '🔔'
+        'expense_added': '??',
+        'expense_deleted': '???',
+        'expense_delete_requested': '??',
+        'payment_received': '??',
+        'group_paused': '??',
+        'group_reactivated': '??',
+        'group_deleted': '???',
+        'invitation': '??',
+        'vote_required': '???',
+        'proposal_approved': '?',
+        'proposal_rejected': '?',
+        'member_joined': '??',
+        'member_removed': '??',
+        'member_left': '??',
+        'removal_requested': '??',
+        'fund_goal_reached': '??',
+        'default': '??'
     };
     return icons[type] || icons.default;
 }
@@ -9237,7 +9237,7 @@ async function deleteAllNotifications() {
         showToast('All notifications deleted', 'success');
         
     } catch (error) {
-        console.error('❌ Error deleting notifications:', error);
+        console.error('? Error deleting notifications:', error);
         showToast('Error deleting notifications', 'error');
     }
 }
@@ -9494,10 +9494,10 @@ async function loadProfileGroups() {
                     <div class="group-card-info">
                         <div class="group-card-name">${groupName}</div>
                         <div class="group-card-meta">
-                            ${role} • ${memberCount} member${memberCount !== 1 ? 's' : ''}
+                            ${role} � ${memberCount} member${memberCount !== 1 ? 's' : ''}
                         </div>
                     </div>
-                    <div class="group-card-icon">👥</div>
+                    <div class="group-card-icon">??</div>
                 </div>
             `);
         }
@@ -9656,7 +9656,7 @@ function toggleDarkModeSetting(checkbox) {
         document.documentElement.setAttribute('data-theme', theme);
     }
     
-    showToast(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', 'success');
+    showToast(isDark ? '?? Dark mode enabled' : '?? Light mode enabled', 'success');
 }
 
 /**
@@ -9672,23 +9672,23 @@ async function togglePushNotifications(checkbox) {
             
             if (token) {
                 localStorage.setItem('pushNotificationsEnabled', 'true');
-                showToast('✅ Push notifications enabled', 'success');
+                showToast('? Push notifications enabled', 'success');
             } else {
                 // Permission denied, uncheck
                 checkbox.checked = false;
                 localStorage.setItem('pushNotificationsEnabled', 'false');
-                showToast('❌ Notification permission denied', 'error');
+                showToast('? Notification permission denied', 'error');
             }
         } catch (error) {
             console.error('Error enabling push notifications:', error);
             checkbox.checked = false;
-            showToast('❌ Failed to enable push notifications', 'error');
+            showToast('? Failed to enable push notifications', 'error');
         }
     } else {
         // Disable push notifications
         await removeFCMToken();
         localStorage.setItem('pushNotificationsEnabled', 'false');
-        showToast('🔕 Push notifications disabled', 'success');
+        showToast('?? Push notifications disabled', 'success');
     }
 }
 
@@ -9698,7 +9698,7 @@ async function togglePushNotifications(checkbox) {
 function toggleNotificationsSetting(checkbox) {
     const isEnabled = checkbox.checked;
     localStorage.setItem('notificationsEnabled', isEnabled ? 'true' : 'false');
-    showToast(isEnabled ? '🔔 In-app notifications enabled' : '🔕 In-app notifications disabled', 'success');
+    showToast(isEnabled ? '?? In-app notifications enabled' : '?? In-app notifications disabled', 'success');
 }
 
 /**
@@ -9752,7 +9752,7 @@ function handleNotificationClick(notificationId, type, fundId, expenseId) {
         if (typeof openFund === 'function') {
             openFund(fundId);
         } else {
-            console.warn('⚠️ openFund function not available');
+            console.warn('?? openFund function not available');
         }
     }
     
@@ -9787,7 +9787,7 @@ async function createNotification(userId, notificationData) {
         
         
     } catch (error) {
-        console.error('❌ Error creating notification:', error);
+        console.error('? Error creating notification:', error);
     }
 }
 
@@ -9844,7 +9844,7 @@ async function loadSubscriptionStatus() {
         const snapshot = await subscriptionRef.once('value');
         const subscription = snapshot.val();
 
-        console.log('📊 Subscription data:', subscription);
+        console.log('?? Subscription data:', subscription);
 
         // Update UI based on subscription status
         updateSubscriptionUI(subscription);
@@ -9897,7 +9897,7 @@ function updateSubscriptionUI(subscription) {
             }
         }
 
-        console.log('💎 PRO user detected');
+        console.log('?? PRO user detected');
     } else {
         // User is FREE
         freeBadge.textContent = 'CURRENT PLAN';
@@ -9921,7 +9921,7 @@ function updateSubscriptionUI(subscription) {
             }
         }
 
-        console.log('🆓 Free user detected');
+        console.log('?? Free user detected');
     }
 }
 
@@ -10012,11 +10012,11 @@ function checkStripePricingTable() {
             const hasContent = pricingTable.shadowRoot && pricingTable.shadowRoot.children.length > 0;
             
             if (!hasContent) {
-                console.warn('⚠️ Stripe Pricing Table not loaded, showing fallback button');
+                console.warn('?? Stripe Pricing Table not loaded, showing fallback button');
                 pricingTable.style.display = 'none';
                 fallbackBtn.style.display = 'block';
             } else {
-                console.log('✅ Stripe Pricing Table loaded successfully');
+                console.log('? Stripe Pricing Table loaded successfully');
             }
         }
     }, 3000); // Wait 3 seconds for Stripe to load

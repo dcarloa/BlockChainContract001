@@ -671,7 +671,7 @@
                     <div class="stat-card">
                         <div class="stat-icon">📊</div>
                         <div class="stat-content">
-                            <h3 id="totalFundsCreated">0</h3>
+                            <h3 id="totalGroupsCreated">0</h3>
                             <p>Groups Created</p>
                         </div>
                     </div>
@@ -679,16 +679,16 @@
                     <div class="stat-card">
                         <div class="stat-icon">👥</div>
                         <div class="stat-content">
-                            <h3 id="totalFundsParticipating">0</h3>
+                            <h3 id="totalGroupsParticipating">0</h3>
                             <p>Active Groups</p>
                         </div>
                     </div>
                     
                     <div class="stat-card">
-                        <div class="stat-icon">💰</div>
+                        <div class="stat-icon">�</div>
                         <div class="stat-content">
-                            <h3 id="totalValueLocked">$0.00</h3>
-                            <p>Total Spent (USD)</p>
+                            <h3 id="totalGroupsJoined">0</h3>
+                            <p>Groups Joined</p>
                         </div>
                     </div>
                 </div>
@@ -764,9 +764,9 @@
                     <p>Please wait while we fetch your expense groups</p>
                 </div>
 
-                <!-- Funds Grid -->
-                <div id="fundsGrid" class="funds-grid">
-                    <!-- Funds will be loaded here -->
+                <!-- Groups Grid -->
+                <div id="groupsGrid" class="groups-grid">
+                    <!-- Groups will be loaded here -->
                 </div>
 
                 <!-- Empty State -->
@@ -801,7 +801,7 @@
                         <p id="fundDetailDescription">-</p>
                         <div class="fund-badges">
                             <span class="badge" id="fundTypeBadge">Tipo</span>
-                            <span class="badge" id="fundStatusBadge">Estado</span>
+                            <span class="badge" id="groupStatusBadge">Estado</span>
                         </div>
                     </div>
                 </div>
@@ -840,7 +840,7 @@
                         <span class="closed-fund-icon">🔒</span>
                         <div>
                             <h4>Closed Group</h4>
-                            <p>This group has been permanently closed. Funds were distributed proportionally among all members.</p>
+                            <p>This group has been permanently closed. Balances were settled proportionally among all members.</p>
                         </div>
                     </div>
                 </div>
@@ -1004,7 +1004,7 @@
                             </div>
                             
                             <button id="createProposalBtn" class="btn btn-primary btn-block">
-                                📝 Propose Use of Funds
+                                📝 Propose Settlement
                             </button>
                         </div>
                     </div>
@@ -1014,7 +1014,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <div>
                                 <h3>🗳️ Vote on Proposals</h3>
-                                <p class="tab-description">Proposals to use funds. Vote whether you approve or reject paying each provider.</p>
+                                <p class="tab-description">Settlement proposals. Vote whether you approve or reject each payment.</p>
                             </div>
                             <button onclick="refreshCurrentView()" class="btn btn-secondary" style="height: fit-content;" title="Refresh proposals from blockchain">
                                 🔄 Refresh
@@ -1309,7 +1309,7 @@
                                     <h4>👥 Member Management</h4>
                                     <p><strong>Remove Member</strong></p>
                                     <p class="help-text">
-                                        Remove a member from the group by returning their proportional share of current funds.
+                                        Remove a member from the group by returning their proportional share of the current balance.
                                     </p>
                                     
                                     <div class="info-box">
@@ -1337,7 +1337,7 @@
                                     <h4>🚨 Danger Zone</h4>
                                     <p><strong>Close and Distribute Fund</strong></p>
                                     <p class="help-text">
-                                        This action will permanently close the fund and distribute all remaining funds 
+                                        This action will permanently close the group and settle all remaining balances 
                                         proportionally among contributors according to their contribution.
                                     </p>
                                     
@@ -1999,9 +1999,9 @@
             
             // Stats
             const statCards = document.querySelectorAll('.stat-card p');
-            if (statCards[0]) statCards[0].textContent = t.app.stats.fundsCreated;
-            if (statCards[1]) statCards[1].textContent = t.app.stats.activeFunds;
-            if (statCards[2]) statCards[2].textContent = t.app.stats.totalETH;
+            if (statCards[0]) statCards[0].textContent = t.app.stats.groupsCreated;
+            if (statCards[1]) statCards[1].textContent = t.app.stats.activeGroups;
+            if (statCards[2]) statCards[2].textContent = t.app.stats.groupsJoined;
             
             // Invitations
             const invitationsTitle = document.querySelector('.invitations-header h3');
@@ -2056,9 +2056,9 @@
                 fundTypeBadge.textContent = t.app.fundDetail.info.type;
             }
             
-            const fundStatusBadge = document.querySelector('#fundStatusBadge');
-            if (fundStatusBadge && fundStatusBadge.textContent === 'Estado') {
-                fundStatusBadge.textContent = t.app.fundDetail.info.status;
+            const groupStatusBadge = document.querySelector('#groupStatusBadge');
+            if (groupStatusBadge && groupStatusBadge.textContent === 'Estado') {
+                groupStatusBadge.textContent = t.app.fundDetail.info.status;
             }
             
             // Fund Tabs

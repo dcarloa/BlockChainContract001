@@ -48,7 +48,7 @@ const translations = {
                 cta: "Start Free",
                 stats: {
                     users: "Active Users",
-                    funds: "Total Funds",
+                    funds: "Total Groups",
                     confirmation: "Confirmation"
                 }
             },
@@ -191,7 +191,7 @@ const translations = {
             },
             nav: {
                 dashboard: "Dashboard",
-                createFund: "Create Fund",
+                createFund: "Create Group",
                 disconnect: "Disconnect"
             },
             welcome: {
@@ -203,7 +203,7 @@ const translations = {
             },
             nickname: {
                 title: "Welcome to Ant Pool!",
-                subtitle: "You need to set a nickname to identify yourself in groups and create funds.",
+                subtitle: "You need to set a nickname to identify yourself in groups and create them.",
                 label: "Your Nickname *",
                 placeholder: "e.g.: John, Maria123, etc.",
                 help: "3-32 characters, letters and numbers only. It will identify you in all your groups.",
@@ -212,9 +212,9 @@ const translations = {
                 success: "Nickname saved successfully!"
             },
             stats: {
-                fundsCreated: "Funds Created",
-                activeFunds: "Active Funds",
-                totalETH: "Total ETH"
+                groupsCreated: "Groups Created",
+                activeGroups: "Active Groups",
+                groupsJoined: "Groups Joined"
             },
             invitations: {
                 title: "Pending Invitations"
@@ -281,10 +281,10 @@ const translations = {
                 },
                 buttons: {
                     cancel: "Cancel",
-                    create: "Create Fund",
+                    create: "Create Group",
                     creating: "Creating..."
                 },
-                success: "Fund created successfully!"
+                success: "Group created successfully!"
             },
             fundDetail: {
                 tabs: {
@@ -324,9 +324,9 @@ const translations = {
                     member: "Member"
                 },
                 banners: {
-                    invitation: "You have a pending invitation to this fund",
+                    invitation: "You have a pending invitation to this group",
                     accept: "Accept Invitation",
-                    closed: "This fund is closed. No more actions allowed."
+                    closed: "This group is closed. No more actions allowed."
                 },
                 deposit: {
                     title: "Contribute to Common Pot",
@@ -339,7 +339,7 @@ const translations = {
                     success: "Deposit successful!"
                 },
                 members: {
-                    title: "Fund Members",
+                    title: "Group Members",
                     empty: "No members yet",
                     role: {
                         creator: "Creator",
@@ -388,7 +388,7 @@ const translations = {
                     selectAllMembers: "Select All",
                     deselectAllMembers: "Deselect All",
                     noMembersSelected: "You must select at least one member",
-                    button: "Propose Use of Funds",
+                    button: "Propose Settlement",
                     creating: "Creating...",
                     success: "Proposal created!"
                 },
@@ -412,11 +412,11 @@ const translations = {
                     executing: "Executing...",
                     success: "Vote recorded!",
                     executeSuccess: "Proposal executed!",
-                    borrowedWarning: "⚠️ BORROWED FUNDS ALERT",
+                    borrowedWarning: "⚠️ BORROWED BALANCE ALERT",
                     borrowedWarningText: "This expense exceeds the contributions of the involved members. ALL members must vote.",
                     totalBorrowed: "Total borrowed from non-involved members:",
                     borrowedPerPerson: "Borrowed per non-involved member:",
-                    allMustVote: "All fund members can vote on this proposal"
+                    allMustVote: "All group members can vote on this proposal"
                 },
                 history: {
                     title: "Proposal History",
@@ -446,7 +446,7 @@ const translations = {
                     warning: "IMPORTANT - Read carefully:",
                     warningPoints: [
                         "Base Network Only: The address MUST be a valid address on the Base blockchain",
-                        "Verify carefully: If you send funds to an incorrect address, they will be lost forever",
+                        "Verify carefully: If you send money to an incorrect address, it will be lost forever",
                         "No refunds: Blockchain transactions are irreversible",
                         "Your responsibility: Double-check that the address belongs to the intended recipient"
                     ],
@@ -456,7 +456,7 @@ const translations = {
                     confirmationPoints: [
                         "This address is correct and belongs to the intended recipient",
                         "This address is on the Base blockchain",
-                        "You understand that funds sent to an incorrect address cannot be recovered",
+                        "You understand that money sent to an incorrect address cannot be recovered",
                         "You assume full responsibility for this address"
                     ],
                     checkboxLabel: "I have verified the address and accept full responsibility",
@@ -470,11 +470,11 @@ const translations = {
                     cameraError: "Error starting camera. Check permissions."
                 },
                 manage: {
-                    title: "Fund Management",
-                    subtitle: "Advanced options to manage the fund.",
+                    title: "Group Management",
+                    subtitle: "Advanced options to manage the group.",
                     memberManagement: "Member Management",
                     kickMember: "Kick Member",
-                    kickDescription: "Remove a member from the group, returning their proportional share of current funds.",
+                    kickDescription: "Remove a member from the group, returning their proportional share of the current balance.",
                     howItWorks: "How it works:",
                     kickPoints: [
                         "Member is removed from the group permanently",
@@ -485,8 +485,8 @@ const translations = {
                     noMembersToKick: "No members to kick",
                     noMembersSubtitle: "Only one member in the group or you are not the creator",
                     dangerZone: "Danger Zone",
-                    closeAndDistribute: "Close and Distribute Fund",
-                    closeDescription: "This action will permanently close the fund and distribute all remaining funds proportionally among contributors according to their contribution.",
+                    closeAndDistribute: "Close and Settle Group",
+                    closeDescription: "This action will permanently close the group and settle all remaining balances proportionally among contributors according to their contribution.",
                     warning: "Warning:",
                     warningPoints: [
                         "This action is irreversible",
@@ -521,27 +521,27 @@ const translations = {
                 checkingNickname: "Checking current nickname...",
                 checkingAvailability: "Checking availability...",
                 settingNickname: "Setting nickname...",
-                loadingFunds: "Loading your funds...",
+                loadingFunds: "Loading your groups...",
                 acceptingInvite: "Accepting invitation to",
-                loadingFundDetails: "Loading fund details...",
-                loadingFund: "Loading fund...",
+                loadingFundDetails: "Loading group details...",
+                loadingFund: "Loading group...",
                 deactivatingFund: "Deactivating fund...",
                 reactivatingGroup: "Reactivating group...",
                 deletingGroup: "Deleting group...",
                 hidingFund: "Hiding fund...",
                 creatingGroup: "Creating group...",
                 creatingSimpleGroup: "Creating Simple Mode group...",
-                creatingBlockchainFund: "Creating blockchain fund...",
+                creatingBlockchainFund: "Creating blockchain group...",
                 waitingColonyConfirmation: "🐜 Waiting for colony confirmation...",
                 loadingNewGroup: "Loading your new group...",
-                loadingNewFund: "Loading your new fund...",
-                depositingFunds: "Depositing funds...",
+                loadingNewFund: "Loading your new group...",
+                depositingFunds: "Adding to balance...",
                 sendingInvite: "Sending invitation...",
                 acceptingInvitation: "Accepting invitation...",
                 creatingProposal: "Creating proposal...",
                 voting: "Voting...",
                 executing: "Executing...",
-                closingFund: "Closing fund...",
+                closingFund: "Closing group...",
                 withdrawing: "Withdrawing...",
                 kicking: "Removing member...",
                 loadingProposals: "Loading proposals...",
@@ -566,7 +566,7 @@ const translations = {
                 generatingAnalytics: "Generating analytics...",
                 loadingGroup: "Loading group...",
                 connectingMetaMask: "Connecting with MetaMask...",
-                loadingFundInfo: "Loading fund information...",
+                loadingFundInfo: "Loading group information...",
                 resolvingRecipient: "Resolving recipient...",
                 registeringVote: "Registering vote...",
                 cancelingProposal: "Canceling proposal...",
@@ -638,7 +638,7 @@ const translations = {
                 cta: "Comenzar Gratis",
                 stats: {
                     users: "Usuarios Activos",
-                    funds: "Fondos Totales",
+                    funds: "Grupos Totales",
                     confirmation: "Confirmación"
                 }
             },
@@ -781,7 +781,7 @@ const translations = {
             },
             nav: {
                 dashboard: "Panel",
-                createFund: "Crear Fondo",
+                createFund: "Crear Grupo",
                 disconnect: "Desconectar"
             },
             welcome: {
@@ -793,7 +793,7 @@ const translations = {
             },
             nickname: {
                 title: "¡Bienvenido a Ant Pool!",
-                subtitle: "Necesitas establecer un nickname para identificarte en los grupos y poder crear fondos.",
+                subtitle: "Necesitas establecer un nickname para identificarte en los grupos y poder crearlos.",
                 label: "Tu Nickname *",
                 placeholder: "Ej: Juan, Maria123, etc.",
                 help: "3-32 caracteres, solo letras y números. Te identificará en todos tus grupos.",
@@ -802,9 +802,9 @@ const translations = {
                 success: "¡Apodo guardado exitosamente!"
             },
             stats: {
-                fundsCreated: "Grupos Creados",
-                activeFunds: "Grupos Activos",
-                totalETH: "ETH Total"
+                groupsCreated: "Grupos Creados",
+                activeGroups: "Grupos Activos",
+                groupsJoined: "Grupos Unidos"
             },
             invitations: {
                 title: "Invitaciones Pendientes"
@@ -871,10 +871,10 @@ const translations = {
                 },
                 buttons: {
                     cancel: "Cancelar",
-                    create: "Crear Fondo",
+                    create: "Crear Grupo",
                     creating: "Creando..."
                 },
-                success: "¡Fondo creado exitosamente!"
+                success: "¡Grupo creado exitosamente!"
             },
             fundDetail: {
                 tabs: {
@@ -914,9 +914,9 @@ const translations = {
                     member: "Miembro"
                 },
                 banners: {
-                    invitation: "Tienes una invitación pendiente a este fondo",
+                    invitation: "Tienes una invitación pendiente a este grupo",
                     accept: "Aceptar Invitación",
-                    closed: "Este fondo está cerrado. No se permiten más acciones."
+                    closed: "Este grupo está cerrado. No se permiten más acciones."
                 },
                 deposit: {
                     title: "Aportar al Bote Común",
@@ -929,7 +929,7 @@ const translations = {
                     success: "¡Depósito exitoso!"
                 },
                 members: {
-                    title: "Miembros del Fondo",
+                    title: "Miembros del Grupo",
                     empty: "Aún no hay miembros",
                     role: {
                         creator: "Creador",
@@ -978,7 +978,7 @@ const translations = {
                     selectAllMembers: "Seleccionar Todos",
                     deselectAllMembers: "Deseleccionar Todos",
                     noMembersSelected: "Debes seleccionar al menos un miembro",
-                    button: "Proponer Uso de Fondos",
+                    button: "Proponer Liquidación",
                     creating: "Creando...",
                     success: "¡Propuesta creada!"
                 },
@@ -1002,11 +1002,11 @@ const translations = {
                     executing: "Ejecutando...",
                     success: "¡Voto registrado!",
                     executeSuccess: "¡Propuesta ejecutada!",
-                    borrowedWarning: "⚠️ ALERTA DE FONDOS PRESTADOS",
+                    borrowedWarning: "⚠️ ALERTA DE SALDO PRESTADO",
                     borrowedWarningText: "Este gasto excede las contribuciones de los miembros involucrados. TODOS los miembros deben votar.",
                     totalBorrowed: "Total prestado de miembros no involucrados:",
                     borrowedPerPerson: "Prestado por cada miembro no involucrado:",
-                    allMustVote: "Todos los miembros del fondo pueden votar en esta propuesta"
+                    allMustVote: "Todos los miembros del grupo pueden votar en esta propuesta"
                 },
                 history: {
                     title: "Historial de Propuestas",
@@ -1036,7 +1036,7 @@ const translations = {
                     warning: "IMPORTANTE - Lee con atención:",
                     warningPoints: [
                         "Solo Red Base: La dirección DEBE ser una dirección válida en la blockchain de Base",
-                        "Verifica cuidadosamente: Si envías fondos a una dirección incorrecta, se perderán para siempre",
+                        "Verifica cuidadosamente: Si envías dinero a una dirección incorrecta, se perderá para siempre",
                         "Sin reembolsos: Las transacciones en blockchain son irreversibles",
                         "Tu responsabilidad: Verifica dos veces que la dirección pertenece al destinatario correcto"
                     ],
@@ -1046,7 +1046,7 @@ const translations = {
                     confirmationPoints: [
                         "Esta dirección es correcta y pertenece al destinatario previsto",
                         "Esta dirección está en la blockchain de Base",
-                        "Entiendes que los fondos enviados a una dirección incorrecta no pueden recuperarse",
+                        "Entiendes que el dinero enviado a una dirección incorrecta no puede recuperarse",
                         "Asumes toda la responsabilidad por esta dirección"
                     ],
                     checkboxLabel: "He verificado la dirección y acepto toda la responsabilidad",
@@ -1060,11 +1060,11 @@ const translations = {
                     cameraError: "Error al iniciar la cámara. Verifica los permisos."
                 },
                 manage: {
-                    title: "Gestión del Fondo",
-                    subtitle: "Opciones avanzadas para administrar el fondo.",
+                    title: "Gestión del Grupo",
+                    subtitle: "Opciones avanzadas para administrar el grupo.",
                     memberManagement: "Gestión de Miembros",
                     kickMember: "Expulsar Miembro",
-                    kickDescription: "Expulsa a un miembro del grupo devolviéndole su parte proporcional de los fondos actuales.",
+                    kickDescription: "Expulsa a un miembro del grupo devolviendo su parte proporcional del saldo actual.",
                     howItWorks: "Cómo funciona:",
                     kickPoints: [
                         "El miembro es removido del grupo permanentemente",
@@ -1075,23 +1075,23 @@ const translations = {
                     noMembersToKick: "No hay miembros para expulsar",
                     noMembersSubtitle: "Solo hay un miembro en el grupo o no eres el creador",
                     dangerZone: "Zona de Peligro",
-                    closeAndDistribute: "Cerrar y Distribuir Fondo",
-                    closeDescription: "Esta acción cerrará permanentemente el fondo y distribuirá todos los fondos restantes proporcionalmente entre los contribuyentes según su aportación.",
+                    closeAndDistribute: "Cerrar y Liquidar Grupo",
+                    closeDescription: "Esta acción cerrará permanentemente el grupo y liquidará todos los saldos restantes proporcionalmente entre los contribuyentes según su aportación.",
                     warning: "Advertencia:",
                     warningPoints: [
                         "Esta acción es irreversible",
-                        "Solo el creador del fondo puede ejecutarla",
+                        "Solo el creador del grupo puede ejecutarla",,
                         "Cada contribuyente recibirá: (su aportación / total) × balance actual",
-                        "El fondo quedará cerrado permanentemente",
+                        "El grupo quedará cerrado permanentemente",
                         "No se podrán hacer más depósitos ni propuestas"
                     ],
                     distributionPreview: "Vista Previa de Distribución",
                     previewButton: "Vista Previa de Distribución",
-                    closeButton: "Cerrar y Distribuir Fondo",
-                    pause: "Pausar Fondo",
+                    closeButton: "Cerrar y Liquidar Grupo",
+                    pause: "Pausar Grupo",
                     pausing: "Pausando...",
-                    pauseSuccess: "Fondo pausado. Ahora está en modo solo lectura.",
-                    pauseConfirm: "¿Pausar el fondo? Esto bloqueará todas las transacciones (depósitos, propuestas, votos). El fondo seguirá visible en modo solo lectura."
+                    pauseSuccess: "Grupo pausado. Ahora está en modo solo lectura.",
+                    pauseConfirm: "¿Pausar el grupo? Esto bloqueará todas las transacciones (depósitos, propuestas, votos). El grupo seguirá visible en modo solo lectura."
                 }
             },
             toast: {
@@ -1111,27 +1111,27 @@ const translations = {
                 checkingNickname: "Verificando nickname actual...",
                 checkingAvailability: "Verificando disponibilidad...",
                 settingNickname: "Estableciendo nickname...",
-                loadingFunds: "Cargando tus fondos...",
+                loadingFunds: "Cargando tus grupos...",
                 acceptingInvite: "Aceptando invitación a",
-                loadingFundDetails: "Cargando detalles del fondo...",
-                loadingFund: "Cargando fondo...",
-                deactivatingFund: "Desactivando fondo...",
+                loadingFundDetails: "Cargando detalles del grupo...",
+                loadingFund: "Cargando grupo...",
+                deactivatingFund: "Desactivando grupo...",
                 reactivatingGroup: "Reactivando grupo...",
                 deletingGroup: "Eliminando grupo...",
-                hidingFund: "Ocultando fondo...",
+                hidingFund: "Ocultando grupo...",
                 creatingGroup: "Creando grupo...",
                 creatingSimpleGroup: "Creando grupo en Modo Simple...",
-                creatingBlockchainFund: "Creando fondo blockchain...",
+                creatingBlockchainFund: "Creando grupo blockchain...",
                 waitingColonyConfirmation: "🐜 Esperando confirmación de la colonia...",
                 loadingNewGroup: "Cargando tu nuevo grupo...",
-                loadingNewFund: "Cargando tu nuevo fondo...",
-                depositingFunds: "Depositando fondos...",
+                loadingNewFund: "Cargando tu nuevo grupo...",
+                depositingFunds: "Agregando al saldo...",
                 sendingInvite: "Enviando invitación...",
                 acceptingInvitation: "Aceptando invitación...",
                 creatingProposal: "Creando propuesta...",
                 voting: "Votando...",
                 executing: "Ejecutando...",
-                closingFund: "Cerrando fondo...",
+                closingFund: "Cerrando grupo...",
                 withdrawing: "Retirando...",
                 kicking: "Removiendo miembro...",
                 loadingProposals: "Cargando propuestas...",
