@@ -175,14 +175,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     } else {
     }
     
-    // Show Sign In button if user is not signed in with Firebase
-    // (independent of wallet availability)
-    if (!window.FirebaseConfig || !window.FirebaseConfig.getCurrentUser()) {
-        document.getElementById('signInSimpleMode').style.display = 'flex';
-    } else {
-    }
-    
-    // Show dashboard anyway
+    // Show dashboard
     showDashboard();
     
     // Load user funds (both Simple and Blockchain modes)
@@ -908,15 +901,8 @@ function showDashboard() {
 }
 
 async function updateUIForFirebaseUser(user) {
-    const signInBtn = document.getElementById('signInSimpleMode');
-    const signOutBtn = document.getElementById('signOutFirebase');
-    
     if (user) {
-        // User is signed in
-        if (signInBtn) signInBtn.style.display = 'none';
-        if (signOutBtn) signOutBtn.style.display = 'flex';
-        
-        // Update unified session badge
+        // User is signed in - update unified session badge
         updateUnifiedSessionBadge();
         
         // Initialize notification system now that Firebase is ready
@@ -933,14 +919,7 @@ async function updateUIForFirebaseUser(user) {
         // Reload funds to show Simple Mode groups
         loadUserFunds();
     } else {
-        // User is signed out
-        if (signOutBtn) signOutBtn.style.display = 'none';
-        // Always show Sign In button when Firebase user is logged out
-        if (signInBtn) {
-            signInBtn.style.display = 'flex';
-        }
-        
-        // Update unified session badge
+        // User is signed out - update unified session badge
         updateUnifiedSessionBadge();
     }
 }
