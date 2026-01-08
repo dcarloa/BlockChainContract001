@@ -9093,6 +9093,14 @@ header,
 .result-announcement h3 {
     font-size: 1.5rem;
     font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.loser-explanation {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 0.5rem;
+    font-style: italic;
 }
 
 .result-winner {

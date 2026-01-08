@@ -488,9 +488,13 @@ function showResults(scoringType, extraInfo = null) {
     const resultsHTML = sortedPlayers.map((item, index) => {
         const isLoser = index === sortedPlayers.length - 1;
         const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : isLoser ? '💸' : '  ';
-        const scoreDisplay = item.eliminated 
-            ? `<span style="color: #e74c3c;">ELIMINATED</span>`
-            : `${item.score}${challengeState.gameType === 'quickTap' ? 'ms' : ''}`;
+        
+        let scoreDisplay;
+        if (item.eliminated) {
+            scoreDisplay = `<span style="color: #e74c3c;">ELIMINATED (${item.score.toFixed(0)}ms)</span>`;
+        } else {
+            scoreDisplay = `${item.score}${challengeState.gameType === 'quickTap' ? 'ms' : ''}`;
+        }
         
         return `
             <div class="result-row ${isLoser ? 'loser-row' : ''} ${item.eliminated ? 'eliminated-row' : ''}">
@@ -500,6 +504,16 @@ function showResults(scoringType, extraInfo = null) {
             </div>
         `;
     }).join('');
+    
+    // Generate explanation for why loser was selected
+    let explanationText = '';
+    if (loser.eliminated) {
+        explanationText = `<p class="loser-explanation">Clicked too early! Only waited ${loser.score.toFixed(0)}ms before the green button appeared.</p>`;
+    } else if (challengeState.gameType === 'quickTap') {
+        explanationText = `<p class="loser-explanation">Slowest reaction time: ${loser.score}ms</p>`;
+    } else if (challengeState.gameType === 'numberGuess') {
+        explanationText = `<p class="loser-explanation">Furthest from the secret number (${extraInfo})</p>`;
+    }
     
     gameArea.innerHTML = `
         <div class="game-turn-screen">
@@ -515,6 +529,7 @@ function showResults(scoringType, extraInfo = null) {
             <div class="result-announcement">
                 <div class="loser-badge">💸</div>
                 <h3>${loser.player.nickname} will pay!</h3>
+                ${explanationText}
             </div>
             <div class="result-actions">
                 <button class="btn btn-secondary" onclick="startPhysicalGame('${challengeState.gameType}')">
