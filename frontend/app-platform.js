@@ -262,7 +262,7 @@ async function connectWallet() {
             
             // Show network switcher
             const switchNetwork = confirm(
-                `?? Wrong network detected (Chain ID: ${network.chainId})\n\n` +
+                `⚠️ Wrong network detected (Chain ID: ${network.chainId})\n\n` +
                 `To use this app you need to be on Base Sepolia (Chain ID: 84532)\n\n` +
                 `Do you want to switch network automatically?`
             );
@@ -280,14 +280,14 @@ async function connectWallet() {
                     return;
                 }
             } else {
-                showToast("?? Please switch to Base Sepolia network (Chain ID: 84532)", "warning");
+                showToast("⚠️ Please switch to Base Sepolia network (Chain ID: 84532)", "warning");
                 return;
             }
         }
         
         // Update UI with wallet info
-        const walletIcon = walletResult.walletType === 'metamask' ? '??' : 
-                          walletResult.walletType === 'coinbase' ? '??' : '??';
+        const walletIcon = walletResult.walletType === 'metamask' ? '🦊' : 
+                          walletResult.walletType === 'coinbase' ? '🔵' : '👛';
         
         document.getElementById('connectWallet').innerHTML = `
             <span class="btn-icon">${walletIcon}</span>
@@ -350,7 +350,7 @@ async function disconnectWallet() {
         
         // Reset UI
         document.getElementById('connectWallet').innerHTML = `
-            <span class="btn-icon">??</span>
+            <span class="btn-icon">🔗</span>
             <span>Connect Wallet</span>
         `;
         document.getElementById('connectWallet').style.display = 'inline-flex';
@@ -433,7 +433,7 @@ async function autoReconnectWallet() {
 
 
         // Actualizar UI
-        const walletIcon = '??'; // Por defecto MetaMask
+        const walletIcon = '🦊'; // Por defecto MetaMask
         document.getElementById('connectWallet').innerHTML = `
             <span class="btn-icon">${walletIcon}</span>
             <span>${userAddress.substring(0, 6)}...${userAddress.substring(38)}</span>
@@ -605,7 +605,7 @@ async function setNickname() {
         const currentNickname = await factoryContract.getNickname(userAddress);
         if (currentNickname.toLowerCase() !== userAddress.toLowerCase()) {
             hideLoading();
-            showToast(`?? You already have a nickname set: "${currentNickname}"`, "warning");
+            showToast(`⚠️ You already have a nickname set: "${currentNickname}"`, "warning");
             // Update UI with existing nickname
             userNickname = currentNickname;
             
@@ -662,8 +662,8 @@ async function setNickname() {
 // ============================================
 
 function getFundTypeIcon(fundType) {
-    const icons = ['??', '??', '??', '??'];
-    return icons[fundType] || '??';
+    const icons = ['🌴', '💰', '🤝', '📦'];
+    return icons[fundType] || '📦';
 }
 
 async function loadDashboard() {
@@ -1428,11 +1428,11 @@ function createFundCard(fund) {
     const currentLang = getCurrentLanguage();
     const t = translations[currentLang];
     
-    const fundTypeIcons = ['??', '??', '??', '??'];
+    const fundTypeIcons = ['🌴', '💰', '🤝', '📦'];
     const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
     
     // Use custom icon if available, otherwise fall back to type-based icon
-    const icon = fund.icon || fundTypeIcons[Number(fund.fundType)] || '??';
+    const icon = fund.icon || fundTypeIcons[Number(fund.fundType)] || '📦';
     const typeKey = fundTypeKeys[Number(fund.fundType)] || 'other';
     const typeName = t.app.fundDetail.badges[typeKey];
     const isInactive = !fund.isActive;
@@ -1444,15 +1444,15 @@ function createFundCard(fund) {
                 <div class="fund-actions">
                     ${fund.isActive ? `
                     <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Pausar grupo">
-                        ??
+                        ⏸️
                     </button>
                     ` : `
                     <button class="fund-action-btn fund-resume-btn" onclick="event.stopPropagation(); reactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Reactivar grupo">
-                        ??
+                        ▶️
                     </button>
                     `}
                     <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${fund.fundName}')" title="Eliminar grupo">
-                        ??
+                        🗑️
                     </button>
                 </div>
                 ` : ''}
@@ -1462,9 +1462,9 @@ function createFundCard(fund) {
                     <div class="fund-card-title">
                         <h3>${fund.fundName}</h3>
                         <div class="fund-badges">
-                            ${fund.mode === 'simple' ? `<span class="badge badge-mode mode-simple">?? Simple</span>` : `<span class="badge badge-mode mode-blockchain">?? Blockchain</span>`}
+                            ${fund.mode === 'simple' ? `<span class="badge badge-mode mode-simple">🐜 Simple</span>` : `<span class="badge badge-mode mode-blockchain">⛓️ Blockchain</span>`}
                             ${isInactive ? `<span class="badge badge-status status-inactive">${t.app.dashboard.card.inactive}</span>` : ''}
-                            ${fund.isCreator ? `<span class="badge badge-creator">?? ${t.app.fundDetail.badges.creator}</span>` : ''}
+                            ${fund.isCreator ? `<span class="badge badge-creator">👑 ${t.app.fundDetail.badges.creator}</span>` : ''}
                         </div>
                     </div>
                 </div>
@@ -1496,8 +1496,8 @@ function createFundCard(fund) {
                 ` : ''}
                 
                 <div class="fund-meta">
-                    <span>?? ${fund.contributors || 0} ${t.app.dashboard.card.members}</span>
-                    <span>${fund.mode === 'simple' ? '??' : '??'} ${fund.proposals || 0} ${fund.mode === 'simple' ? 'expenses' : t.app.fundDetail.info.proposals.toLowerCase()}</span>
+                    <span>👥 ${fund.contributors || 0} ${t.app.dashboard.card.members}</span>
+                    <span>${fund.mode === 'simple' ? '💰' : '📝'} ${fund.proposals || 0} ${fund.mode === 'simple' ? 'expenses' : t.app.fundDetail.info.proposals.toLowerCase()}</span>
                 </div>
             </div>
         </div>
@@ -1838,7 +1838,7 @@ async function createFund(event) {
         const minimumVotes = document.getElementById('minimumVotes').value;
         const fundType = document.getElementById('fundType').value; // Hidden field with default 0
         const groupMode = document.querySelector('input[name="groupMode"]:checked').value;
-        const groupIcon = document.querySelector('input[name="groupIcon"]:checked')?.value || '??'; // Default to dog icon
+        const groupIcon = document.querySelector('input[name="groupIcon"]:checked')?.value || '🐶'; // Default to dog icon
         
         if (!fundName) {
             showToast("Please enter the fund name", "warning");
@@ -1930,7 +1930,7 @@ async function createSimpleFund(fundInfo) {
             description: fundInfo.description,
             targetAmount: fundInfo.targetAmount,
             currency: 'USD', // Can be changed later
-            icon: fundInfo.icon || '??'
+            icon: fundInfo.icon || '📦'
         });
         
         showToast(`? Group "${fundInfo.name}" created successfully!`, "success");
