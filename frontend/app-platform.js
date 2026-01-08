@@ -2359,11 +2359,11 @@ async function loadFundDetailView() {
         }
         
         // Blockchain Mode - existing logic
-        const fundTypeIcons = ['??', '??', '??', '??'];
+        const fundTypeIcons = ['🌴', '💰', '🤝', '📦'];
         const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
         
         // Update header
-        document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '??';
+        document.getElementById('fundHeaderIcon').textContent = fundTypeIcons[Number(currentFund.fundType)] || '📦';
         document.getElementById('fundDetailName').textContent = currentFund.fundName;
         
         // Load contract data
@@ -2934,48 +2934,48 @@ function renderExpenseItem(expense, currentUserId, groupData) {
             <div class="expense-header" onclick="toggleExpenseDetails('${expense.id}')">
                 <div class="expense-header-left">
                     <h4 class="expense-title-compact">
-                        ${isNegative ? '?? ' : ''}${expense.description}
+                        ${isNegative ? '💸 ' : ''}${expense.description}
                         ${isNegative ? '<span class="expense-badge badge-payment">Payment</span>' : ''}
                     </h4>
-                    <span class="expense-date-compact">?? ${dateStr}</span>
+                    <span class="expense-date-compact">📅 ${dateStr}</span>
                 </div>
                 <div class="expense-header-right">
                     <div class="${amountClass}">
                         ${amountPrefix}${amountStr}${currencyLabel}
                     </div>
-                    <span class="expand-icon">?</span>
+                    <span class="expand-icon">▼</span>
                 </div>
             </div>
             
             <div class="expense-details" style="display: none;">
                 <div class="expense-meta">
-                    <span class="meta-item">?? ${paidByDisplay}</span>
-                    <span class="meta-item">?? ${sharesDisplay}</span>
+                    <span class="meta-item">👤 ${paidByDisplay}</span>
+                    <span class="meta-item">👥 ${sharesDisplay}</span>
                 </div>
-                ${expense.notes ? `<p class="expense-notes">?? ${expense.notes}</p>` : ''}
+                ${expense.notes ? `<p class="expense-notes">📝 ${expense.notes}</p>` : ''}
                 
                 <!-- Interaction Bar -->
                 <div class="expense-interactions">
                 <button class="interaction-btn ${hasLiked ? 'active' : ''}" onclick="toggleLikeExpense('${expense.id}')" title="Like">
-                    ${hasLiked ? '??' : '??'} ${likesCount > 0 ? likesCount : ''}
+                    ${hasLiked ? '❤️' : '🤍'} ${likesCount > 0 ? likesCount : ''}
                 </button>
                 <button class="interaction-btn" onclick="showExpenseComments('${expense.id}')" title="Comments">
-                    ?? ${commentsCount > 0 ? commentsCount : ''}
+                    💬 ${commentsCount > 0 ? commentsCount : ''}
                 </button>
                 ${!isCreator ? `
                     <button class="interaction-btn ${deleteRequestsCount > 0 ? 'active' : ''}" onclick="requestDeleteExpense('${expense.id}')" title="Request deletion">
-                        ?? ${deleteRequestsCount > 0 ? deleteRequestsCount : ''}
+                        ⚠️ ${deleteRequestsCount > 0 ? deleteRequestsCount : ''}
                     </button>
                 ` : `
                     <button class="interaction-btn btn-delete" onclick="deleteExpense('${expense.id}')" title="Delete expense">
-                        ??? Delete
+                        🗑️ Delete
                     </button>
                 `}
             </div>
             
                 ${deleteRequestsCount > 0 && isCreator ? `
                     <div class="expense-alert">
-                        <span class="alert-icon">??</span>
+                        <span class="alert-icon">⚠️</span>
                         <span>${deleteRequestsCount} member${deleteRequestsCount > 1 ? 's' : ''} requested deletion of this expense</span>
                         <button class="btn-link" onclick="showDeleteRequests('${expense.id}')">View requests</button>
                     </div>
