@@ -430,18 +430,14 @@ async function autoReconnectWallet() {
         const nickname = await factoryContract.getNickname(userAddress);
         
         if (nickname.toLowerCase() !== userAddress.toLowerCase()) {
-            // Usuario tiene nickname - cargar dashboard autom�ticamente
+            // Usuario tiene nickname - solo actualizar estado, no cargar dashboard
             userNickname = nickname;
             
             // Update unified session badge
             updateUnifiedSessionBadge();
             
-            try {
-                await loadDashboard();
-            } catch (dashboardError) {
-                console.error("? Error cargando dashboard:", dashboardError);
-                throw dashboardError; // Re-lanzar para que el catch general limpie el estado
-            }
+            // No cargamos dashboard automáticamente - dejamos que el usuario navegue manualmente
+            // El dashboard se mostrará con showDashboard() llamado después
         } else {
             // Usuario NO tiene nickname - NO reconectar autom�ticamente
             
