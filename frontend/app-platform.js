@@ -972,7 +972,6 @@ function updateUserMenu() {
     
     // Update dropdown sections visibility
     const menuSignInOption = document.getElementById('menuSignInOption');
-    const menuConnectWalletOption = document.getElementById('menuConnectWalletOption');
     const menuUserInfo = document.getElementById('menuUserInfo');
     const menuWalletInfo = document.getElementById('menuWalletInfo');
     const menuSignOutFirebase = document.getElementById('menuSignOutFirebase');
@@ -986,7 +985,6 @@ function updateUserMenu() {
         menuStatus.textContent = 'Full Access';
         
         menuSignInOption.style.display = 'none';
-        menuConnectWalletOption.style.display = 'none';
         menuUserInfo.style.display = 'block';
         menuWalletInfo.style.display = 'block';
         menuSignOutFirebase.style.display = 'block';
@@ -1005,7 +1003,6 @@ function updateUserMenu() {
         menuStatus.textContent = 'Simple Mode';
         
         menuSignInOption.style.display = 'none';
-        menuConnectWalletOption.style.display = 'block';
         menuUserInfo.style.display = 'block';
         menuWalletInfo.style.display = 'none';
         menuSignOutFirebase.style.display = 'block';
@@ -1023,7 +1020,6 @@ function updateUserMenu() {
         menuStatus.textContent = 'Blockchain Mode';
         
         menuSignInOption.style.display = 'block';
-        menuConnectWalletOption.style.display = 'none';
         menuUserInfo.style.display = 'none';
         menuWalletInfo.style.display = 'block';
         menuSignOutFirebase.style.display = 'none';
@@ -1039,7 +1035,6 @@ function updateUserMenu() {
         menuStatus.textContent = '';
         
         menuSignInOption.style.display = 'block';
-        menuConnectWalletOption.style.display = 'block';
         menuUserInfo.style.display = 'none';
         menuWalletInfo.style.display = 'none';
         menuSignOutFirebase.style.display = 'none';
