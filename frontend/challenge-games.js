@@ -52,9 +52,19 @@ function getCurrentFundMembers() {
 
 function getMemberNickname(address) {
     // Helper to get nickname from address
-    if (currentFund && currentFund.memberNicknames) {
-        return currentFund.memberNicknames[address] || address.substring(0, 6);
+    if (!currentFund || !address) return 'Player';
+    
+    // For Simple Mode, check members object
+    if (currentFund.members && currentFund.members[address]) {
+        return currentFund.members[address].name || currentFund.members[address].email || 'Player';
     }
+    
+    // For Blockchain Mode, check memberNicknames
+    if (currentFund.memberNicknames && currentFund.memberNicknames[address]) {
+        return currentFund.memberNicknames[address];
+    }
+    
+    // Fallback to shortened address
     return address.substring(0, 6);
 }
 

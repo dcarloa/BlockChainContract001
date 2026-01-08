@@ -5231,6 +5231,12 @@ function closeAddExpenseModal() {
     const modal = document.getElementById('addExpenseModal');
     const form = document.getElementById('addExpenseForm');
     
+    // Remove challenge indicator if exists
+    const challengeIndicator = document.getElementById('challengeIndicator');
+    if (challengeIndicator) {
+        challengeIndicator.remove();
+    }
+    
     if (form) form.reset();
     if (modal) modal.style.display = 'none';
 }
