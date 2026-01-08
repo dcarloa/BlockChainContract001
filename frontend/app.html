@@ -859,16 +859,15 @@
             <!-- Fund Detail Section (Single Fund View) -->
             <section id="fundDetailSection" class="fund-detail-section">
                 
-                <!-- Back Button -->
-                <div class="back-bar">
-                    <button id="backToDashboard" class="btn btn-secondary">
-                        <span class="btn-icon">←</span>
-                        <span>Back to My Groups</span>
-                    </button>
-                </div>
-
-                <!-- Fund Header -->
+                <!-- Fund Header with integrated back button and stats -->
                 <div class="fund-detail-header">
+                    <!-- Back Button -->
+                    <button id="backToDashboard" class="back-button-integrated">
+                        <span class="back-icon">←</span>
+                        <span class="back-text">Back to My Groups</span>
+                    </button>
+
+                    <!-- Header Content -->
                     <div class="fund-header-content">
                         <div class="fund-header-icon" id="fundHeaderIcon">🌴</div>
                         <h1 id="fundDetailName" class="fund-header-title">Cargando...</h1>
@@ -878,22 +877,31 @@
                             <span class="badge" id="groupStatusBadge">Estado</span>
                         </div>
                     </div>
-                </div>
 
-                <!-- Fund Stats Bar -->
-                <div class="fund-stats-bar">
-                    <div class="fund-stat-item stat-balance">
-                        <span class="stat-label">💰 Total Balance</span>
-                        <span class="stat-value" id="fundBalanceMain">0 ETH</span>
-                        <div class="stat-breakdown" id="fundBalanceBreakdown" style="display: none;"></div>
-                    </div>
-                    <div class="fund-stat-item">
-                        <span class="stat-label">👥 Members</span>
-                        <span class="stat-value" id="fundMembers">0</span>
-                    </div>
-                    <div class="fund-stat-item">
-                        <span class="stat-label">💸 Expenses</span>
-                        <span class="stat-value" id="fundProposals">0</span>
+                    <!-- Integrated Stats -->
+                    <div class="fund-stats-integrated">
+                        <div class="fund-stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-content">
+                                <span class="stat-label">Total Balance</span>
+                                <span class="stat-value" id="fundBalanceMain">0 ETH</span>
+                                <div class="stat-breakdown" id="fundBalanceBreakdown" style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="fund-stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-content">
+                                <span class="stat-label">Members</span>
+                                <span class="stat-value" id="fundMembers">0</span>
+                            </div>
+                        </div>
+                        <div class="fund-stat-card">
+                            <div class="stat-icon">💸</div>
+                            <div class="stat-content">
+                                <span class="stat-label">Expenses</span>
+                                <span class="stat-value" id="fundProposals">0</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

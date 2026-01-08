@@ -1556,7 +1556,7 @@ header,
   backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  padding: 3rem 2rem;
+  padding: 2rem;
   margin-bottom: var(--spacing-lg);
   position: relative;
   overflow: hidden;
@@ -1573,30 +1573,65 @@ header,
   opacity: 0.03;
 }
 
+/* Back Button Integrated */
+.back-button-integrated {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin-bottom: 2rem;
+}
+
+.back-button-integrated:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateX(-4px);
+}
+
+.back-icon {
+  font-size: 1.125rem;
+  transition: transform var(--transition-base);
+}
+
+.back-button-integrated:hover .back-icon {
+  transform: translateX(-2px);
+}
+
 .fund-header-content {
   position: relative;
   z-index: 1;
   text-align: center;
   max-width: 800px;
-  margin: 0 auto;
+  margin: 0 auto 2.5rem auto;
 }
 
 .fund-header-icon {
-  font-size: 5rem;
-  margin-bottom: 1.5rem;
+  font-size: 4rem;
+  margin-bottom: 1rem;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
   animation: floatIcon 3s ease-in-out infinite;
 }
 
 @keyframes floatIcon {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
 }
 
 .fund-header-title {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   font-weight: 800;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1606,9 +1641,9 @@ header,
 
 .fund-header-description {
   color: var(--text-secondary);
-  font-size: 1.125rem;
+  font-size: 1rem;
   line-height: 1.6;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -1619,6 +1654,69 @@ header,
   justify-content: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+/* Integrated Stats */
+.fund-stats-integrated {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.fund-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+}
+
+.fund-stat-card:hover {
+  background: rgba(102, 126, 234, 0.08);
+  transform: translateY(-2px);
+}
+
+.fund-stat-card .stat-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.fund-stat-card .stat-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fund-stat-card .stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fund-stat-card .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.fund-stat-card .stat-breakdown {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
 }
 
 .fund-header-top {
@@ -1643,12 +1741,9 @@ header,
   line-height: 1.6;
 }
 
-/* Fund Stats Bar */
+/* Fund Stats Bar - Legacy (hidden, using integrated stats now) */
 .fund-stats-bar {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: var(--spacing-lg);
+  display: none;
 }
 
 .fund-stats-bar:empty {
@@ -2778,23 +2873,28 @@ header,
   }
   
   .fund-detail-header {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem;
   }
 
   .fund-header-icon {
-    font-size: 4rem;
+    font-size: 3.5rem;
   }
 
   .fund-header-title {
-    font-size: 2rem;
+    font-size: 1.875rem;
   }
 
   .fund-header-description {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
 
-  .fund-stats-bar {
-    grid-template-columns: repeat(2, 1fr);
+  .fund-stats-integrated {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .fund-stat-card {
+    padding: 0.875rem;
   }
   
   .action-bar {
@@ -2867,19 +2967,37 @@ header,
   }
 
   .fund-detail-header {
-    padding: 1.5rem 1rem;
+    padding: 1.25rem;
+  }
+
+  .back-button-integrated {
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .fund-header-content {
+    margin-bottom: 1.5rem;
   }
 
   .fund-header-icon {
-    font-size: 3.5rem;
+    font-size: 3rem;
   }
 
   .fund-header-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 
   .fund-header-description {
-    font-size: 0.95rem;
+    font-size: 0.875rem;
+  }
+
+  .fund-stat-card .stat-icon {
+    font-size: 1.5rem;
+  }
+
+  .fund-stat-card .stat-value {
+    font-size: 1.25rem;
   }
   
   /* Search and Sort Bar - Mobile */
@@ -3008,14 +3126,7 @@ header,
     line-height: 1.4;
   }
   
-  .fund-stats-bar {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-  
-  .fund-stat-item.stat-balance {
-    grid-column: 1;
-  }
+  /* Fund stats responsive handled by fund-stats-integrated */
   
   .stat-value {
     font-size: 1.1rem;
