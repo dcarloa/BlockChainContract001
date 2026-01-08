@@ -1111,8 +1111,8 @@ header,
   color: rgba(15, 23, 42, 0.5) !important;
 }
 
-/* Funds Grid */
-.funds-grid {
+/* Groups Grid */
+.groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: var(--spacing-lg);
@@ -2708,7 +2708,7 @@ header,
     color: var(--text-secondary);
   }
   
-  .funds-grid {
+  .groups-grid {
     grid-template-columns: 1fr;
   }
   
@@ -2807,7 +2807,7 @@ header,
   }
   
   /* Make fund cards more compact */
-  .funds-grid {
+  .groups-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
