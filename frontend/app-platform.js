@@ -5741,7 +5741,7 @@ async function depositToFund() {
         
         
         // Show message BEFORE MetaMask popup
-        showToast("?? Confirm the deposit in your wallet...", "info");
+        showToast("Confirm the deposit in your wallet...", "info");
         
         const amountWei = ethers.parseEther(amount);
         const tx = await currentFundContract.deposit({ value: amountWei });
@@ -5809,7 +5809,7 @@ async function inviteMember() {
         
         // Check if inviting yourself
         if (targetAddress.toLowerCase() === userAddress.toLowerCase()) {
-            showToast("?? You cannot invite yourself", "warning");
+            showToast("You cannot invite yourself", "warning");
             return;
         }
         
@@ -5951,7 +5951,7 @@ async function createProposal() {
         // IMPORTANT: Verify the creator is included in involved members
         const userIsInvolved = selectedMembers.some(addr => addr.toLowerCase() === userAddress.toLowerCase());
         if (!userIsInvolved) {
-            showToast("?? You must include yourself in the involved members to vote on this proposal. Check your own checkbox!", "warning");
+            showToast("You must include yourself in the involved members to vote on this proposal. Check your own checkbox!", "warning");
             return;
         }
         
@@ -6008,7 +6008,7 @@ async function createProposal() {
         // PROBLEM 2 FIX: Check if user is a contributor before allowing proposal
         const userContribution = await currentFundContract.contributions(userAddress);
         if (userContribution === 0n) {
-            showToast("?? You must deposit funds before creating proposals. Go to the 'Deposit' tab first.", "warning");
+            showToast("You must deposit funds before creating proposals. Go to the 'Deposit' tab first.", "warning");
             return;
         }
         
@@ -6023,7 +6023,7 @@ async function createProposal() {
         
         
         // Show message BEFORE MetaMask popup
-        showToast("?? Confirm the transaction in your wallet...", "info");
+        showToast("Confirm the transaction in your wallet...", "info");
         
         const tx = await currentFundContract.createProposal(
             recipientAddress, 
@@ -6065,13 +6065,13 @@ async function createProposal() {
         // PROBLEM 2 FIX: Better error messages for common issues
         let errorMsg = "Error creating proposal";
         if (error.message.includes("No eres contribuyente")) {
-            errorMsg = "?? You must deposit funds before creating proposals. Go to the 'Deposit' tab first.";
+            errorMsg = "You must deposit funds before creating proposals. Go to the 'Deposit' tab first.";
         } else if (error.message.includes("Monto excede limite")) {
-            errorMsg = "?? Amount cannot exceed 80% of fund balance";
+            errorMsg = "Amount cannot exceed 80% of fund balance";
         } else if (error.message.includes("Only active members")) {
-            errorMsg = "?? Only active members can create proposals. Accept your invitation first.";
+            errorMsg = "Only active members can create proposals. Accept your invitation first.";
         } else if (error.message.includes("Debe seleccionar al menos un miembro")) {
-            errorMsg = "?? You must select at least one involved member";
+            errorMsg = "You must select at least one involved member";
         } else {
             errorMsg = "Error creating proposal: " + error.message;
         }
@@ -6248,7 +6248,7 @@ async function loadMembers() {
                     <div class="member-card">
                         <div class="member-avatar">${avatar}</div>
                         <div class="member-info">
-                            <h4>${displayName} ${isCreator ? '??' : ''}</h4>
+                            <h4>${displayName} ${isCreator ? '(Creator)' : ''}</h4>
                             <p class="member-address" title="${address}">${formatAddress(address)}</p>
                         </div>
                         <div class="member-contribution">
@@ -6431,7 +6431,7 @@ async function loadProposals() {
 async function voteProposal(proposalId, inFavor) {
     try {
         // Show message BEFORE MetaMask popup
-        showToast("?? Confirm the vote in your wallet...", "info");
+        showToast("Confirm the vote in your wallet...", "info");
         
         const tx = await currentFundContract.vote(proposalId, inFavor);
         
@@ -6449,7 +6449,7 @@ async function voteProposal(proposalId, inFavor) {
         await refreshCurrentView();
         
         // Show manual refresh option if needed
-        showToast("?? If vote doesn't appear, refresh the page (F5)", "info");
+        showToast("If vote doesn't appear, refresh the page (F5)", "info");
         
         hideLoading();
         
@@ -6460,12 +6460,12 @@ async function voteProposal(proposalId, inFavor) {
         // Better error message for common case
         let errorMsg = "Error voting";
         if (error.message.includes("No estas involucrado") || error.message.includes("not involved")) {
-            errorMsg = "?? You cannot vote on this proposal!\n\n" +
+            errorMsg = "You cannot vote on this proposal!\n\n" +
                       "Reason: You were not selected as an 'involved member' when this proposal was created.\n\n" +
                       "Only members checked in the 'Involved Members' section during proposal creation can vote.\n\n" +
                       "Tip: When creating proposals, make sure to check YOUR OWN checkbox if you want to vote!";
         } else if (error.message.includes("Ya votaste")) {
-            errorMsg = "?? You already voted on this proposal";
+            errorMsg = "You already voted on this proposal";
         } else {
             errorMsg = "Error voting: " + error.message;
         }
@@ -6477,7 +6477,7 @@ async function voteProposal(proposalId, inFavor) {
 async function executeProposal(proposalId) {
     try {
         // Show message BEFORE MetaMask popup
-        showToast("?? Confirm the execution in your wallet...", "info");
+        showToast("Confirm the execution in your wallet...", "info");
         
         const tx = await currentFundContract.executeProposal(proposalId);
         
@@ -6572,16 +6572,16 @@ async function loadHistory() {
                 statusBadge = '<span class="status-badge status-executed">? Executed</span>';
                 statusClass = 'proposal-executed';
             } else if (proposal.cancelled) {
-                statusBadge = '<span class="status-badge status-cancelled">? Cancelled</span>';
+                statusBadge = '<span class="status-badge status-cancelled">Cancelled</span>';
                 statusClass = 'proposal-cancelled';
             } else if (proposal.expired) {
-                statusBadge = '<span class="status-badge status-expired">?? Expired</span>';
+                statusBadge = '<span class="status-badge status-expired">Expired</span>';
                 statusClass = 'proposal-expired';
             } else if (proposal.approved) {
-                statusBadge = '<span class="status-badge status-approved">?? Approved</span>';
+                statusBadge = '<span class="status-badge status-approved">Approved</span>';
                 statusClass = 'proposal-approved';
             } else {
-                statusBadge = '<span class="status-badge status-active">?? Active</span>';
+                statusBadge = '<span class="status-badge status-active">Active</span>';
                 statusClass = 'proposal-active';
             }
             
@@ -6720,7 +6720,7 @@ async function loadBalances() {
             const isNegative = member.balance < 0n;
             const statusClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
             const statusText = isPositive ? 'Should receive' : isNegative ? 'Should pay' : 'Balanced';
-            const statusIcon = isPositive ? '??' : isNegative ? '??' : '?';
+            const statusIcon = isPositive ? '↑' : isNegative ? '↓' : '=';
             
             const avatar = member.nickname && member.nickname !== formatAddress(member.address)
                 ? member.nickname.substring(0, 2).toUpperCase()
@@ -6981,22 +6981,22 @@ async function closeFund() {
         const contractCreator = await currentFundContract.creator();
         
         if (contractCreator.toLowerCase() !== userAddress.toLowerCase()) {
-            showToast("?? Solo el creador del fondo puede cerrarlo", "error");
+            showToast("Solo el creador del fondo puede cerrarlo", "error");
             return;
         }
         
         // Confirmation
         const confirmed = confirm(
-            "?? ADVERTENCIA: Esta acci�n es IRREVERSIBLE\n\n" +
-            "Se cerrar� el fondo permanentemente y se distribuir�n todos los fondos restantes proporcionalmente.\n\n" +
-            "�Est�s seguro de que deseas continuar?"
+            "ADVERTENCIA: Esta acción es IRREVERSIBLE\n\n" +
+            "Se cerrará el fondo permanentemente y se distribuirán todos los fondos restantes proporcionalmente.\n\n" +
+            "¿Estás seguro de que deseas continuar?"
         );
         
         if (!confirmed) return;
         
         // Double confirmation
         const doubleConfirmed = confirm(
-            "?? FINAL CONFIRMATION\n\n" +
+            "FINAL CONFIRMATION\n\n" +
             "This is your last chance to cancel.\n\n" +
             "Do you really want to close and distribute the fund?"
         );
@@ -7021,9 +7021,9 @@ async function closeFund() {
         
         let errorMsg = "Error al cerrar el fondo";
         if (error.message.includes("Only creator")) {
-            errorMsg = "?? Only the fund creator can close it";
+            errorMsg = "Only the fund creator can close it";
         } else if (error.message.includes("ya esta cerrado")) {
-            errorMsg = "?? The fund is already closed";
+            errorMsg = "The fund is already closed";
         } else {
             errorMsg = "Error closing fund: " + error.message;
         }
@@ -8351,11 +8351,11 @@ async function checkBudgetThresholdNotifications(status) {
                 notificationMessage = `Group "${currentFund.name}" has exceeded its budget. Spent: ${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)} (${percentage.toFixed(0)}%)`;
             } else if (thresholdToNotify >= 80) {
                 notificationType = 'budget_warning';
-                notificationTitle = '?? Budget Warning';
+                notificationTitle = 'Budget Warning';
                 notificationMessage = `Group "${currentFund.name}" is at ${percentage.toFixed(0)}% of budget (${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)})`;
             } else {
                 notificationType = 'budget_alert';
-                notificationTitle = '?? Budget Alert';
+                notificationTitle = 'Budget Alert';
                 notificationMessage = `Group "${currentFund.name}" has reached ${thresholdToNotify}% of budget (${formatCurrency(status.spent, status.currency)} of ${formatCurrency(status.budget, status.currency)})`;
             }
             
@@ -9691,7 +9691,7 @@ function toggleDarkModeSetting(checkbox) {
         document.documentElement.setAttribute('data-theme', theme);
     }
     
-    showToast(isDark ? '?? Dark mode enabled' : '?? Light mode enabled', 'success');
+    showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled', 'success');
 }
 
 /**
@@ -9723,7 +9723,7 @@ async function togglePushNotifications(checkbox) {
         // Disable push notifications
         await removeFCMToken();
         localStorage.setItem('pushNotificationsEnabled', 'false');
-        showToast('?? Push notifications disabled', 'success');
+        showToast('Push notifications disabled', 'success');
     }
 }
 
@@ -9733,7 +9733,7 @@ async function togglePushNotifications(checkbox) {
 function toggleNotificationsSetting(checkbox) {
     const isEnabled = checkbox.checked;
     localStorage.setItem('notificationsEnabled', isEnabled ? 'true' : 'false');
-    showToast(isEnabled ? '?? In-app notifications enabled' : '?? In-app notifications disabled', 'success');
+    showToast(isEnabled ? 'In-app notifications enabled' : 'In-app notifications disabled', 'success');
 }
 
 /**
