@@ -147,11 +147,13 @@ let quickTapStartTime = 0;
 let currentCallback = null;
 let quickTapEarlyClickTime = null;
 let isWaitingForGreen = false;
+let roundStartTime = 0;
 
 function startQuickTapRound(playerAddress) {
     const gameArea = document.getElementById('gamePlayArea');
     isWaitingForGreen = true;
     quickTapEarlyClickTime = null;
+    roundStartTime = Date.now(); // Track when waiting period starts
     
     // Create waiting screen with click detection
     gameArea.innerHTML = `
@@ -185,11 +187,13 @@ function handleEarlyClick(playerAddress) {
     if (!isWaitingForGreen) return; // Already processed or green is showing
     
     isWaitingForGreen = false;
-    quickTapEarlyClickTime = Date.now();
+    const clickTime = Date.now();
     
-    // Mark player as eliminated with penalty time
-    const waitTime = quickTapEarlyClickTime - (Date.now() - 5000); // Negative time indicates early click
-    challengeState.scores[playerAddress] = -waitTime; // Store how long they waited before clicking early
+    // Calculate how long they waited before clicking early (lower = worse)
+    const waitTime = clickTime - roundStartTime;
+    
+    // Store as negative to indicate elimination, value is how long they waited
+    challengeState.scores[playerAddress] = -waitTime;
     
     const gameArea = document.getElementById('gamePlayArea');
     const player = challengeState.players.find(p => p.address === playerAddress);
