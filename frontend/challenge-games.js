@@ -516,6 +516,8 @@ function showResults(scoringType, extraInfo = null) {
         let scoreDisplay;
         if (item.eliminated) {
             scoreDisplay = `<span style="color: #e74c3c;">ELIMINATED (${item.score.toFixed(0)}ms)</span>`;
+        } else if (item.score === Infinity) {
+            scoreDisplay = `<span style="color: #888;">Did not play</span>`;
         } else if (challengeState.gameType === 'numberGuess') {
             // For number guess, show: "Guessed X (off by Y)"
             const originalGuess = challengeState.guesses[item.player.address];
@@ -538,7 +540,9 @@ function showResults(scoringType, extraInfo = null) {
     
     // Generate explanation for why loser was selected
     let explanationText = '';
-    if (loser.eliminated) {
+    if (loser.score === Infinity) {
+        explanationText = `<p class="loser-explanation">Did not complete their turn</p>`;
+    } else if (loser.eliminated) {
         explanationText = `<p class="loser-explanation">Clicked too early! Only waited ${loser.score.toFixed(0)}ms before the green button appeared.</p>`;
     } else if (challengeState.gameType === 'quickTap') {
         explanationText = `<p class="loser-explanation">Slowest reaction time: ${loser.score}ms</p>`;
