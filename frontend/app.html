@@ -1484,9 +1484,12 @@
                     <form id="addExpenseForm" class="expense-form-clean">
                         <div class="form-header-clean">
                             <h3>Add Expense</h3>
-                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
                                 <button type="button" class="btn-scan-receipt" onclick="triggerReceiptScan()">
                                     📸 Scan Receipt
+                                </button>
+                                <button type="button" class="btn-challenge-mode" onclick="showChallengeModeSelection()">
+                                    🎮 Challenge Mode
                                 </button>
                                 <input 
                                     type="file" 
@@ -3052,6 +3055,121 @@
             showToast('You\'re offline. Using cached version 📴', 'warning', 0);
         });
     </script>
+
+    <!-- Challenge Mode Modal -->
+    <div id="challengeModeModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>🎮 Challenge Mode</h2>
+                <button class="modal-close" onclick="closeChallengeModal()">&times;</button>
+            </div>
+            
+            <!-- Step 1: Mode Selection -->
+            <div id="challengeModeSelection" class="challenge-step">
+                <div class="challenge-intro">
+                    <h3>Who will pay?</h3>
+                    <p>Make it fun! Choose how to decide who pays for this expense.</p>
+                </div>
+                
+                <div class="mode-options">
+                    <div class="mode-card" onclick="selectChallengeMode('physical')">
+                        <div class="mode-icon">🎯</div>
+                        <h4>We're Together</h4>
+                        <p>Play mini-games by passing the phone around</p>
+                        <div class="mode-badge">Interactive Games</div>
+                    </div>
+                    
+                    <div class="mode-card" onclick="selectChallengeMode('remote')">
+                        <div class="mode-icon">🎲</div>
+                        <h4>We're Apart</h4>
+                        <p>Automatic selection methods</p>
+                        <div class="mode-badge">Quick & Easy</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2a: Game Selection (Physical Mode) -->
+            <div id="gameSelection" class="challenge-step" style="display: none;">
+                <div class="challenge-intro">
+                    <button class="btn-back" onclick="resetChallengeState()">← Back</button>
+                    <h3>Choose Your Game</h3>
+                    <p>Everyone will play - the loser pays!</p>
+                </div>
+                
+                <div class="game-grid">
+                    <div class="game-card" onclick="selectGame('quickTap')">
+                        <div class="game-icon">⚡</div>
+                        <h4>Quick Tap</h4>
+                        <p>Tap when the button turns green!</p>
+                        <div class="game-difficulty easy">EASY</div>
+                    </div>
+                    
+                    <div class="game-card" onclick="selectGame('numberGuess')">
+                        <div class="game-icon">🎯</div>
+                        <h4>Number Guess</h4>
+                        <p>Guess a number between 1-100</p>
+                        <div class="game-difficulty medium">MEDIUM</div>
+                    </div>
+                    
+                    <div class="game-card disabled" title="Coming soon!">
+                        <div class="game-icon">🎨</div>
+                        <h4>Color Match</h4>
+                        <p>Say the color, not the word!</p>
+                        <div class="game-difficulty medium">COMING SOON</div>
+                    </div>
+                    
+                    <div class="game-card disabled" title="Coming soon!">
+                        <div class="game-icon">📳</div>
+                        <h4>Shake It!</h4>
+                        <p>Shake your phone the hardest!</p>
+                        <div class="game-difficulty fun">COMING SOON</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2b: Remote Selection Options -->
+            <div id="remoteSelection" class="challenge-step" style="display: none;">
+                <div class="challenge-intro">
+                    <button class="btn-back" onclick="resetChallengeState()">← Back</button>
+                    <h3>Selection Method</h3>
+                    <p>How should we choose who pays?</p>
+                </div>
+                
+                <div class="remote-options">
+                    <div class="remote-card" onclick="selectRemoteMethod('random')">
+                        <div class="remote-icon">🎰</div>
+                        <h4>Random Spin</h4>
+                        <p>Purely random selection</p>
+                        <div class="remote-badge">Most Fair</div>
+                    </div>
+                    
+                    <div class="remote-card" onclick="selectRemoteMethod('fair')">
+                        <div class="remote-icon">⚖️</div>
+                        <h4>Fair Rotation</h4>
+                        <p>Selects who has paid the least</p>
+                        <div class="remote-badge">Balanced</div>
+                    </div>
+                    
+                    <div class="remote-card" onclick="selectRemoteMethod('balance')">
+                        <div class="remote-icon">💰</div>
+                        <h4>By Balance</h4>
+                        <p>Based on current group balance</p>
+                        <div class="remote-badge">Smart</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3: Game Play Area -->
+            <div id="gamePlay" class="challenge-step" style="display: none;">
+                <div id="gamePlayArea">
+                    <!-- Game content will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Challenge Games Script -->
+    <script src="challenge-games.js"></script>
 
 </body>
 </html>
