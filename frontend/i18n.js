@@ -175,11 +175,11 @@ const translations = {
                 explorer: "Explorer",
                 github: "GitHub",
                 baseNetwork: "Base Network",
-                technology: "Technology",
-                ethereum: "Ethereum",
-                baseL2: "Base L2",
-                solidity: "Solidity",
-                hardhat: "Hardhat"
+                technology: "Built With",
+                firebase: "Firebase",
+                javascript: "JavaScript",
+                opensource: "Open Source",
+                community: "Community"
             }
         },
         // App Platform
@@ -765,11 +765,11 @@ const translations = {
                 explorer: "Explorador",
                 github: "GitHub",
                 baseNetwork: "Base Network",
-                technology: "Tecnología",
-                ethereum: "Ethereum",
-                baseL2: "Base L2",
-                solidity: "Solidity",
-                hardhat: "Hardhat"
+                technology: "Construido Con",
+                firebase: "Firebase",
+                javascript: "JavaScript",
+                opensource: "Código Abierto",
+                community: "Comunidad"
             }
         },
         // App Platform
