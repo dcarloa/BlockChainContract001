@@ -172,7 +172,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     } else {
     }
     
-    // Show dashboard
+    // Always show dashboard on page load/refresh
     showDashboard();
     
     // Load user funds (both Simple and Blockchain modes)
@@ -849,6 +849,11 @@ window.openInvitedFund = async function(fundAddress) {
 }
 
 function showDashboard() {
+    // Clear any active group state
+    currentFund = null;
+    currentFundContract = null;
+    currentFundId = null;
+    
     // Hide FAB button and action card when showing dashboard
     const fabBtn = document.getElementById('addExpenseBtn');
     if (fabBtn) fabBtn.style.display = 'none';
