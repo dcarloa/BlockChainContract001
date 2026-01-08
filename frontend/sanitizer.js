@@ -159,7 +159,8 @@ const Validators = {
             name: Sanitizer.sanitizeText(groupInfo.name.trim()),
             description: Sanitizer.sanitizeText((groupInfo.description || '').trim()),
             targetAmount: groupInfo.targetAmount ? Sanitizer.sanitizeNumber(groupInfo.targetAmount) : 0,
-            currency: groupInfo.currency ? groupInfo.currency.toUpperCase() : 'USD'
+            currency: groupInfo.currency ? groupInfo.currency.toUpperCase() : 'USD',
+            icon: groupInfo.icon || '📦'
         };
     },
     
