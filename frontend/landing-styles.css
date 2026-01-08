@@ -1524,6 +1524,39 @@ body {
     opacity: 1;
 }
 
+/* Light Mode: ALL buttons MUST have dark text for contrast */
+[data-theme="light"] .setting-option,
+[data-theme="light"] .setting-option span,
+[data-theme="light"] .setting-option.active,
+[data-theme="light"] .setting-option.active span {
+    color: #0f172a !important;
+}
+
+/* Active button backgrounds for better visibility */
+[data-theme="dark"] .setting-option.active {
+    background: rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="light"] .setting-option.active {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+/* Light mode border improvements */
+[data-theme="light"] .setting-option {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+[data-theme="light"] .setting-option:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+[data-theme="light"] .setting-option.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
 /* ============================================ */
 /* LIGHT MODE ENHANCEMENTS */
 /* ============================================ */
