@@ -93,27 +93,16 @@
     <div id="signInModal" class="modal" style="display: none;">
         <div class="modal-content modal-medium">
             <div class="modal-header">
-                <h2>🔐 Get Started - No Wallet Needed!</h2>
+                <h2>� Welcome to Ant Pool</h2>
                 <button class="modal-close" onclick="closeSignInModal()">&times;</button>
             </div>
             
             <div class="sign-in-content">
-                <p class="sign-in-message">Start with Google/Email for <strong>Simple Mode</strong> (expense tracking). Connect wallet later if you want blockchain features.</p>
+                <p class="sign-in-message">Track expenses with your team. Simple, fast, and free.</p>
                 
                 <div class="sign-in-buttons">
-                    <button class="btn btn-wallet" onclick="signInWithWallet()">
-                        <span class="btn-icon">🦊</span>
-                        <span>Connect Wallet (MetaMask)</span>
-                    </button>
-                    <div class="sign-in-hint">
-                        <strong>✅ Full Access:</strong> Simple Mode + Blockchain Mode with automatic payments
-                    </div>
-                    
-                    <div class="divider-text">
-                        <span>or</span>
-                    </div>
-                    
-                    <button class="btn btn-google" onclick="signInWithGoogleOnly()">
+                    <!-- Primary: Google Sign In -->
+                    <button class="btn btn-google btn-primary-auth" onclick="signInWithGoogleOnly()">
                         <svg class="google-icon" viewBox="0 0 24 24" width="20" height="20">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -122,31 +111,50 @@
                         </svg>
                         Continue with Google
                     </button>
-                    <div class="sign-in-hint sign-in-warning">
-                        <strong>⚠️ Limited Access:</strong> Simple Mode only (expense tracking). No blockchain features.
+                    
+                    <!-- Primary: Email Sign In -->
+                    <button class="btn btn-secondary btn-primary-auth" onclick="showEmailSignIn()">
+                        <span class="btn-icon">📧</span>
+                        Sign in with Email
+                    </button>
+                    
+                    <!-- Divider -->
+                    <div class="divider-text">
+                        <span>Advanced</span>
                     </div>
                     
-                    <button class="btn btn-secondary" onclick="showEmailSignIn()">
-                        📧 Sign in with Email
-                    </button>
-                    <div class="sign-in-hint sign-in-warning">
-                        <strong>⚠️ Limited Access:</strong> Simple Mode only (expense tracking). No blockchain features.
-                    </div>
+                    <!-- Secondary: Blockchain Mode (collapsed by default) -->
+                    <details class="blockchain-option">
+                        <summary class="blockchain-summary">
+                            <span class="summary-icon">🦊</span>
+                            <span class="summary-text">Blockchain Mode (Optional)</span>
+                            <span class="summary-arrow">▼</span>
+                        </summary>
+                        <div class="blockchain-content">
+                            <p class="blockchain-description">
+                                Connect your MetaMask wallet for automatic on-chain payments and settlements.
+                            </p>
+                            <button class="btn btn-wallet" onclick="signInWithWallet()">
+                                <span class="btn-icon">🦊</span>
+                                <span>Connect MetaMask Wallet</span>
+                            </button>
+                            <div class="sign-in-hint">
+                                <small>Requires MetaMask extension installed</small>
+                            </div>
+                        </div>
+                    </details>
                 </div>
                 
+                <!-- Email Sign In Form (Hidden by default) -->
                 <div id="emailSignInForm" style="display: none;">
-                    <div class="sign-in-hint sign-in-warning" style="margin-bottom: 1rem;">
-                        <strong>⚠️ Limited Access</strong>
-                        Without wallet: Simple Mode only. Connect wallet later for blockchain features.
-                    </div>
                     <form onsubmit="handleEmailSignIn(event)">
                         <div class="form-group">
                             <label for="signInEmail">Email</label>
-                            <input type="email" id="signInEmail" class="input-modern" required>
+                            <input type="email" id="signInEmail" class="input-modern" required placeholder="your@email.com">
                         </div>
                         <div class="form-group">
                             <label for="signInPassword">Password</label>
-                            <input type="password" id="signInPassword" class="input-modern" required>
+                            <input type="password" id="signInPassword" class="input-modern" required placeholder="••••••••">
                         </div>
                         <button type="submit" class="btn btn-primary" style="width: 100%;">
                             Sign In
@@ -160,23 +168,20 @@
                     </form>
                 </div>
                 
+                <!-- Create Account Form (Hidden by default) -->
                 <div id="createAccountForm" style="display: none;">
-                    <div class="sign-in-hint sign-in-warning" style="margin-bottom: 1rem;">
-                        <strong>⚠️ Limited Access</strong>
-                        Without wallet: Simple Mode only. Connect wallet later for blockchain features.
-                    </div>
                     <form onsubmit="handleCreateAccount(event)">
                         <div class="form-group">
                             <label for="createName">Display Name</label>
-                            <input type="text" id="createName" class="input-modern" required>
+                            <input type="text" id="createName" class="input-modern" required placeholder="Your Name">
                         </div>
                         <div class="form-group">
                             <label for="createEmail">Email</label>
-                            <input type="email" id="createEmail" class="input-modern" required>
+                            <input type="email" id="createEmail" class="input-modern" required placeholder="your@email.com">
                         </div>
                         <div class="form-group">
                             <label for="createPassword">Password</label>
-                            <input type="password" id="createPassword" class="input-modern" required minlength="6">
+                            <input type="password" id="createPassword" class="input-modern" required minlength="6" placeholder="Minimum 6 characters">
                         </div>
                         <button type="submit" class="btn btn-primary" style="width: 100%;">
                             Create Account
