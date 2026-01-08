@@ -90,6 +90,7 @@ class ModeManager {
                 id: groupId,
                 name: validatedInfo.name,
                 description: validatedInfo.description || '',
+                icon: validatedInfo.icon || '📦',
                 mode: MODE_TYPES.SIMPLE,
                 createdBy: user.uid,
                 createdByEmail: user.email,
