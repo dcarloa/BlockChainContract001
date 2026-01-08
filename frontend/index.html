@@ -179,20 +179,20 @@
                                     <div class="preview-avatar">🌴</div>
                                     <div class="preview-info">
                                         <div class="preview-name">Cancun Trip 2025</div>
-                                        <div class="preview-meta">4 members • 0.45 ETH</div>
+                                        <div class="preview-meta">4 members • $450 USD</div>
                                     </div>
                                     <div class="preview-badge">Active</div>
                                 </div>
                                 
                                 <div class="preview-stats">
                                     <div class="stat-item">
-                                        <div class="stat-value">0.45 ETH</div>
-                                        <div class="stat-label">Total Balance</div>
+                                        <div class="stat-value">$450</div>
+                                        <div class="stat-label">Total Expenses</div>
                                     </div>
                                     <div class="stat-divider"></div>
                                     <div class="stat-item">
-                                        <div class="stat-value">0.60 ETH</div>
-                                        <div class="stat-label">Goal</div>
+                                        <div class="stat-value">$600</div>
+                                        <div class="stat-label">Budget</div>
                                     </div>
                                 </div>
 
@@ -208,12 +208,12 @@
 
                                 <div class="preview-actions">
                                     <div class="action-card">
-                                        <span class="action-icon">💰</span>
-                                        <span class="action-label">Deposit</span>
+                                        <span class="action-icon">�</span>
+                                        <span class="action-label">Add Expense</span>
                                     </div>
                                     <div class="action-card">
-                                        <span class="action-icon">🗳️</span>
-                                        <span class="action-label">Vote</span>
+                                        <span class="action-icon">📄</span>
+                                        <span class="action-label">Timeline</span>
                                     </div>
                                     <div class="action-card">
                                         <span class="action-icon">👥</span>
@@ -224,20 +224,20 @@
                                 <div class="preview-transactions">
                                     <div class="transaction-header">Recent Activity</div>
                                     <div class="transaction-item">
-                                        <div class="transaction-icon">🔥</div>
+                                        <div class="transaction-icon">🍔</div>
                                         <div class="transaction-info">
-                                            <div class="transaction-title">Carlos deposited</div>
+                                            <div class="transaction-title">Carlos paid restaurant</div>
                                             <div class="transaction-time">2 hours ago</div>
                                         </div>
-                                        <div class="transaction-amount">+0.15 ETH</div>
+                                        <div class="transaction-amount">+$150</div>
                                     </div>
                                     <div class="transaction-item">
                                         <div class="transaction-icon">✅</div>
                                         <div class="transaction-info">
-                                            <div class="transaction-title">Proposal approved</div>
+                                            <div class="transaction-title">Settlement calculated</div>
                                             <div class="transaction-time">1 day ago</div>
                                         </div>
-                                        <div class="transaction-votes">4/4</div>
+                                        <div class="transaction-votes">4 members</div>
                                     </div>
                                 </div>
                             </div>
@@ -812,7 +812,7 @@
                 const transactionTimes = phonePreview.querySelectorAll('.transaction-time');
                 
                 if (previewName) previewName.textContent = phone.title;
-                if (previewMeta) previewMeta.textContent = `4 ${phone.members} • 0.45 ETH`;
+                if (previewMeta) previewMeta.textContent = `4 ${phone.members} • $450 USD`;
                 if (previewBadge) previewBadge.textContent = phone.active;
                 if (statLabels[0]) statLabels[0].textContent = phone.balance;
                 if (statLabels[1]) statLabels[1].textContent = phone.target;
