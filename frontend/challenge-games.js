@@ -446,6 +446,14 @@ function showRemoteResult(player, method) {
 function showResults(scoringType, extraInfo = null) {
     const gameArea = document.getElementById('gamePlayArea');
     
+    // Ensure all players have a score entry
+    challengeState.players.forEach(player => {
+        if (challengeState.scores[player.address] === undefined) {
+            // Player didn't finish their turn (shouldn't happen, but just in case)
+            challengeState.scores[player.address] = Infinity; // Worst possible score
+        }
+    });
+    
     // Separate eliminated players (negative scores = early clicks) from valid players
     const entries = Object.entries(challengeState.scores);
     const validPlayers = [];
