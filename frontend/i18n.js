@@ -1533,24 +1533,52 @@ function applyTranslations() {
     const lang = getCurrentLanguage();
     document.documentElement.lang = lang;
     
+    console.log(`[i18n] Applying translations for language: ${lang}`);
+    
     // Apply translations to elements with data-i18n attribute
-    document.querySelectorAll('[data-i18n]').forEach(element => {
+    const elements = document.querySelectorAll('[data-i18n]');
+    console.log(`[i18n] Found ${elements.length} elements with data-i18n`);
+    
+    let successCount = 0;
+    let failCount = 0;
+    
+    elements.forEach(element => {
         const key = element.getAttribute('data-i18n');
         const translation = t(key);
         
-        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-            element.placeholder = translation;
+        if (translation && translation !== key) {
+            try {
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.placeholder = translation;
+                } else {
+                    // Use textContent to safely set text (prevents XSS and preserves text-only content)
+                    element.textContent = translation;
+                }
+                successCount++;
+            } catch (error) {
+                console.error(`[i18n] Error applying translation for key ${key}:`, error);
+                failCount++;
+            }
         } else {
-            element.textContent = translation;
+            console.warn(`[i18n] Translation not found or empty for key: ${key}`);
+            failCount++;
         }
     });
+    
+    console.log(`[i18n] Translation application complete: ${successCount} successful, ${failCount} failed`);
 }
 
 // Initialize translations on page load
 if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', applyTranslations);
-    } else {
+    // Apply on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('[i18n] DOMContentLoaded - applying translations');
+        applyTranslations();
+    });
+    
+    // Also apply if DOM is already loaded
+    if (document.readyState !== 'loading') {
+        console.log('[i18n] DOM already loaded - applying translations immediately');
         applyTranslations();
     }
 }
