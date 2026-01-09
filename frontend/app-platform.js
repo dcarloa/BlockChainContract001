@@ -133,11 +133,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                 }
             };
         } else {
-            console.error("? Firebase initialization failed");
+            console.error("Firebase initialization failed");
             showToast("Firebase initialization failed. Some features may not work.", "error");
         }
     } else {
-        console.error("? FirebaseConfig not available");
+        console.error("FirebaseConfig not available");
         showToast("Firebase not loaded. Please refresh the page.", "error");
     }
     
@@ -179,7 +179,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     await loadUserFunds();
     
     } catch (error) {
-        console.error('? CRITICAL ERROR in DOMContentLoaded:', error);
+        console.error('CRITICAL ERROR in DOMContentLoaded:', error);
         console.error('Stack trace:', error.stack);
         showToast('Application initialization error. Please refresh the page.', 'error');
     }
@@ -306,7 +306,7 @@ async function connectWallet() {
         
     } catch (error) {
         hideLoading();
-        console.error("? Error connecting wallet:", error);
+        console.error("Error connecting wallet:", error);
         
         if (error.message.includes('User rejected')) {
             showToast("Connection cancelled by user", "warning");
@@ -439,7 +439,7 @@ async function autoReconnectWallet() {
             try {
                 await loadDashboard();
             } catch (dashboardError) {
-                console.error("? Error cargando dashboard:", dashboardError);
+                console.error("Error cargando dashboard:", dashboardError);
                 throw dashboardError; // Re-lanzar para que el catch general limpie el estado
             }
         } else {
@@ -460,7 +460,7 @@ async function autoReconnectWallet() {
         }
 
     } catch (error) {
-        console.error("? Error en auto-reconnect:", error);
+        console.error("Error en auto-reconnect:", error);
         console.error("   Mensaje:", error.message);
         
         // Limpiar estado en caso de error
@@ -776,7 +776,7 @@ window.acceptFundInvitation = async function(fundAddress, fundName) {
                 await registerTx.wait();
             }
         } catch (regError) {
-            console.warn("?? Could not register participant in Factory:", regError.message);
+            console.warn("Could not register participant in Factory:", regError.message);
             // Continue anyway - user is still a member of the fund
         }
         
@@ -1968,7 +1968,7 @@ async function createSimpleFund(fundInfo) {
         
     } catch (error) {
         hideLoading();
-        console.error("? Error creating simple fund:", error);
+        console.error("Error creating simple fund:", error);
         throw error;
     }
 }
@@ -2035,7 +2035,7 @@ async function createBlockchainFund(fundInfo) {
         
     } catch (error) {
         hideLoading();
-        console.error("? Error creating blockchain fund:", error);
+        console.error("Error creating blockchain fund:", error);
         throw error;
     }
 }
@@ -2140,7 +2140,7 @@ async function signInWithWallet() {
         closeSignInModal();
         await connectWallet();
     } catch (error) {
-        console.error("? Wallet connection error:", error);
+        console.error("Wallet connection error:", error);
         showToast("Wallet connection failed: " + error.message, "error");
     }
 }
@@ -2173,7 +2173,7 @@ async function signInWithGoogleOnly() {
         hideLoading();
     } catch (error) {
         hideLoading();
-        console.error("? Google sign-in error:", error);
+        console.error("Google sign-in error:", error);
         showToast("Sign in failed: " + error.message, "error");
     }
 }
@@ -2226,7 +2226,7 @@ async function handleEmailSignIn(event) {
         hideLoading();
     } catch (error) {
         hideLoading();
-        console.error("? Email sign-in error:", error);
+        console.error("Email sign-in error:", error);
         showToast("Sign in failed: " + error.message, "error");
     }
 }
@@ -2267,7 +2267,7 @@ async function handleCreateAccount(event) {
         hideLoading();
     } catch (error) {
         hideLoading();
-        console.error("? Account creation error:", error);
+        console.error("Account creation error:", error);
         showToast("Account creation failed: " + error.message, "error");
     }
 }
@@ -2298,7 +2298,7 @@ async function signOutFromFirebase() {
         hideLoading();
     } catch (error) {
         hideLoading();
-        console.error("? Sign out error:", error);
+        console.error("Sign out error:", error);
         showToast("Sign out failed: " + error.message, "error");
     }
 }
@@ -2714,7 +2714,7 @@ async function loadSimpleModeDetailView() {
         
         
     } catch (error) {
-        console.error("? Error loading Simple Mode detail:", error);
+        console.error("Error loading Simple Mode detail:", error);
         console.error("Error stack:", error.stack);
         showToast("Error loading group: " + error.message, "error");
         throw error; // Re-throw to be caught by caller
@@ -2768,7 +2768,7 @@ async function loadSimpleModeExpenses() {
     const searchSection = document.getElementById('expenseSearchSection');
     
     if (!historyContainer) {
-        console.error('? History container not found (historyList)');
+        console.error('History container not found (historyList)');
         return;
     }
     
@@ -3541,12 +3541,12 @@ async function markAllSettled() {
         const settlements = document.querySelectorAll('.settlement-item');
         
         if (settlements.length === 0) {
-            console.warn('?? No settlements to mark');
+            console.warn('No settlements to mark');
             return;
         }
         
         if (currentSettlements.length === 0) {
-            console.warn('?? No settlements data available');
+            console.warn('No settlements data available');
             return;
         }
         
@@ -3593,7 +3593,7 @@ async function markAllSettled() {
         }, 500);
     
     } catch (error) {
-        console.error('? Error recording settlements:', error);
+        console.error('Error recording settlements:', error);
         console.error('Stack:', error.stack);
         showToast('Error recording payments: ' + error.message, 'error');
     }
@@ -3976,7 +3976,7 @@ async function leaveGroup() {
         const groupName = currentFund.fundName || currentFund.name;
         const confirmed = confirm(
             `Leave "${groupName}"?\n\n` +
-            `? You have no pending balances\n\n` +
+            `You have no pending balances\n\n` +
             `This will:\n` +
             `- Remove you from the group permanently\n` +
             `- You won't be able to access this group\n` +
@@ -4060,7 +4060,7 @@ async function removeMemberWithValidation(memberId) {
 
         const confirmed = confirm(
             `Remove ${memberName} from the group?\n\n` +
-            `? Member has no pending balances\n\n` +
+            `Member has no pending balances\n\n` +
             `This will:\n` +
             `- Remove them from the group permanently\n` +
             `- They won't be able to access this group\n` +
@@ -4278,7 +4278,7 @@ async function approveRemovalRequest(requestId) {
 
         const confirmed = confirm(
             `Approve removal of ${request.targetMemberName}?\n\n` +
-            `? Member has no pending balances\n\n` +
+            `Member has no pending balances\n\n` +
             `This will remove them from the group permanently.`
         );
 
@@ -4450,7 +4450,7 @@ async function showExpenseComments(expenseId) {
         const expense = await window.FirebaseConfig.readDb(expensePath);
         
         if (!expense) {
-            console.error('? Expense not found at path:', expensePath);
+            console.error('Expense not found at path:', expensePath);
             showToast('Expense not found', 'error');
             return;
         }
@@ -4500,7 +4500,7 @@ async function showExpenseComments(expenseId) {
         document.body.appendChild(modal);
 
     } catch (error) {
-        console.error('? Error showing comments:', error);
+        console.error('Error showing comments:', error);
         console.error('Stack:', error.stack);
         showToast('Error loading comments: ' + error.message, 'error');
     }
@@ -4639,10 +4639,10 @@ async function requestDeleteExpense(expenseId) {
                     }
                 }
             } else {
-                console.error('? createNotification function not available');
+                console.error('createNotification function not available');
             }
         } else {
-            console.warn('?? Expense not found, cannot send notification');
+            console.warn('Expense not found, cannot send notification');
         }
 
         showToast('Deletion request sent', 'success');
@@ -5197,7 +5197,7 @@ function showAddExpenseModal() {
     
     const modal = document.getElementById('addExpenseModal');
     if (!modal) {
-        console.error('? Modal not found');
+        console.error('Modal not found');
         return;
     }
 
@@ -5249,11 +5249,11 @@ function populateExpenseMembers() {
 
 
     if (!paidByContainer) {
-        console.error('? Paid by container not found');
+        console.error('Paid by container not found');
         return;
     }
     if (!splitContainer) {
-        console.error('? Split container not found');
+        console.error('Split container not found');
         return;
     }
 
@@ -5442,7 +5442,7 @@ async function fetchExchangeRates() {
         return exchangeRatesCache;
 
     } catch (error) {
-        console.error('? Error fetching exchange rates:', error);
+        console.error('Error fetching exchange rates:', error);
         // Fallback rates (approximate, updated Dec 2024)
         return {
             USD: 1,
@@ -5477,7 +5477,7 @@ async function convertToUSD(amount, fromCurrency = 'USD') {
         const rate = rates[fromCurrency];
         
         if (!rate) {
-            console.warn(`?? No exchange rate for ${fromCurrency}, using 1:1`);
+            console.warn(`No exchange rate for ${fromCurrency}, using 1:1`);
             return amount;
         }
 
@@ -5625,7 +5625,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (expenseForm) {
         expenseForm.addEventListener('submit', handleExpenseSubmission);
     } else {
-        console.error('? addExpenseForm not found in DOM');
+        console.error('addExpenseForm not found in DOM');
     }
     
     const paymentForm = document.getElementById('recordPaymentForm');
@@ -5893,7 +5893,7 @@ async function acceptInvitation() {
                 await registerTx.wait();
             }
         } catch (regError) {
-            console.warn("?? Could not register participant in Factory:", regError.message);
+            console.warn("Could not register participant in Factory:", regError.message);
             // Continue anyway - user is still a member of the fund
         }
         
@@ -5989,13 +5989,13 @@ async function createProposal() {
                 const borrowedPerPerson = borrowedAmount / BigInt(nonInvolvedCount);
                 
                 const confirmBorrow = confirm(
-                    `?? IMPORTANT NOTICE:\n\n` +
+                    `IMPORTANT NOTICE:\n\n` +
                     `The involved members' contributions (${ethers.formatEther(totalFromInvolved)} ETH) ` +
                     `are not enough to cover ${amount} ETH.\n\n` +
                     `This proposal will BORROW ${ethers.formatEther(borrowedAmount)} ETH ` +
                     `from non-involved members (~${ethers.formatEther(borrowedPerPerson)} ETH each).\n\n` +
-                    `? All members will be notified and included in the vote.\n` +
-                    `? 100% approval required when borrowing funds.\n\n` +
+                    `All members will be notified and included in the vote.\n` +
+                    `100% approval required when borrowing funds.\n\n` +
                     `Do you want to continue?`
                 );
                 
@@ -6890,7 +6890,7 @@ async function loadKickMembersList() {
 async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
     try {
         const confirmed = confirm(
-            `?? Remove ${memberNickname}?\n\n` +
+            `Remove ${memberNickname}?\n\n` +
             `This action:\n` +
             `� Will permanently remove the member from the group\n` +
             `� Will refund ${refundAmount.toFixed(4)} ETH\n` +
@@ -7469,7 +7469,7 @@ function clearExpenseFilters() {
     if (endDate) endDate.value = '';
     if (myExpenses) myExpenses.checked = false;
     
-    console.log('?? Filters cleared');
+    console.log('Filters cleared');
     
     filterExpenses();
 }
@@ -7762,7 +7762,7 @@ async function checkAndProcessRecurring() {
         }
         
     } catch (error) {
-        console.error('? Error processing recurring expenses:', error);
+        console.error('Error processing recurring expenses:', error);
     }
 }
 
@@ -7784,7 +7784,7 @@ function startRecurringExpensesTimer() {
         checkAndProcessRecurring();
     }, 5 * 60 * 1000); // 5 minutes
     
-    console.log('? Recurring expenses timer started (checks every 5 minutes)');
+    console.log('Recurring expenses timer started (checks every 5 minutes)');
 }
 
 /**
@@ -7794,7 +7794,7 @@ function stopRecurringExpensesTimer() {
     if (recurringProcessTimer) {
         clearInterval(recurringProcessTimer);
         recurringProcessTimer = null;
-        console.log('?? Recurring expenses timer stopped');
+        console.log('Recurring expenses timer stopped');
     }
 }
 
@@ -8927,7 +8927,7 @@ function initNotificationSystem() {
     const markAllReadBtn = document.getElementById('markAllReadBtn');
     
     if (!notificationsBtn || !notificationsPanel) {
-        console.error('? Notification elements not found in DOM');
+        console.error('Notification elements not found in DOM');
         return;
     }
     
@@ -9042,7 +9042,7 @@ function renderNotifications() {
     const emptyState = document.getElementById('emptyNotifications');
     
     if (!notificationsList) {
-        console.error('? notificationsList element not found!');
+        console.error('notificationsList element not found!');
         return;
     }
     
@@ -9050,7 +9050,7 @@ function renderNotifications() {
         if (emptyState) {
             emptyState.classList.remove('hidden');
         } else {
-            console.warn('?? emptyNotifications element not found');
+            console.warn('emptyNotifications element not found');
         }
         notificationsList.innerHTML = '';
         return;
@@ -9145,6 +9145,7 @@ function getNotificationTitle(type) {
         'member_left': 'Member Left Group',
         'removal_requested': 'Removal Request',
         'fund_goal_reached': 'Goal Reached',
+        'recurring_expense_created': 'Recurring Expense Created',
         'default': 'Notification'
     };
     return titles[type] || titles.default;
@@ -9272,7 +9273,7 @@ async function deleteAllNotifications() {
         showToast('All notifications deleted', 'success');
         
     } catch (error) {
-        console.error('? Error deleting notifications:', error);
+        console.error('Error deleting notifications:', error);
         showToast('Error deleting notifications', 'error');
     }
 }
@@ -9787,7 +9788,7 @@ function handleNotificationClick(notificationId, type, fundId, expenseId) {
         if (typeof openFund === 'function') {
             openFund(fundId);
         } else {
-            console.warn('?? openFund function not available');
+            console.warn('openFund function not available');
         }
     }
     
@@ -9822,7 +9823,7 @@ async function createNotification(userId, notificationData) {
         
         
     } catch (error) {
-        console.error('? Error creating notification:', error);
+        console.error('Error creating notification:', error);
     }
 }
 
@@ -9879,7 +9880,7 @@ async function loadSubscriptionStatus() {
         const snapshot = await subscriptionRef.once('value');
         const subscription = snapshot.val();
 
-        console.log('?? Subscription data:', subscription);
+        console.log('Subscription data:', subscription);
 
         // Update UI based on subscription status
         updateSubscriptionUI(subscription);
@@ -9932,7 +9933,7 @@ function updateSubscriptionUI(subscription) {
             }
         }
 
-        console.log('?? PRO user detected');
+        console.log('PRO user detected');
     } else {
         // User is FREE
         freeBadge.textContent = 'CURRENT PLAN';
@@ -9956,7 +9957,7 @@ function updateSubscriptionUI(subscription) {
             }
         }
 
-        console.log('?? Free user detected');
+        console.log('Free user detected');
     }
 }
 
@@ -10047,11 +10048,11 @@ function checkStripePricingTable() {
             const hasContent = pricingTable.shadowRoot && pricingTable.shadowRoot.children.length > 0;
             
             if (!hasContent) {
-                console.warn('?? Stripe Pricing Table not loaded, showing fallback button');
+                console.warn('Stripe Pricing Table not loaded, showing fallback button');
                 pricingTable.style.display = 'none';
                 fallbackBtn.style.display = 'block';
             } else {
-                console.log('? Stripe Pricing Table loaded successfully');
+                console.log('Stripe Pricing Table loaded successfully');
             }
         }
     }, 3000); // Wait 3 seconds for Stripe to load
