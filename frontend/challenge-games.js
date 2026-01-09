@@ -917,7 +917,10 @@ async function playAntPoolRoulette() {
             description: 'The ant who carried the least weight',
             icon: '💸',
             selector: () => selectByLeastSpent(),
-            getJustification: (player) => `${player.nickname} has contributed the least to the colony's resources`
+            getJustification: (player) => {
+                const amount = player.totalSpent || 0;
+                return `${player.nickname} has the smallest contribution: ${amount.toFixed(2)} ${player.currency || 'USD'}`;
+            }
         },
         {
             id: 'least_transactions',
@@ -925,7 +928,10 @@ async function playAntPoolRoulette() {
             description: 'The ant who made fewest trips',
             icon: '📊',
             selector: () => selectByFewestTransactions(),
-            getJustification: (player) => `${player.nickname} has made the fewest transactions in the group`
+            getJustification: (player) => {
+                const count = player.transactionCount || 0;
+                return `${player.nickname} has made the fewest expenses: ${count} transaction${count !== 1 ? 's' : ''}`;
+            }
         },
         {
             id: 'device_owner',
@@ -960,12 +966,52 @@ async function playAntPoolRoulette() {
             getJustification: (player) => `${player.nickname}'s name comes first in alphabetical order`
         },
         {
+            id: 'reverse_alphabetical',
+            name: '🐜 Last in Line',
+            description: 'The ant whose name comes last alphabetically',
+            icon: '🔠',
+            selector: () => selectReverseAlphabetical(),
+            getJustification: (player) => `${player.nickname}'s name comes last in alphabetical order`
+        },
+        {
             id: 'longest_name',
             name: '🐜 Longest Name',
             description: 'The ant with the most letters in their name',
             icon: '📝',
             selector: () => selectLongestName(),
             getJustification: (player) => `${player.nickname} has the longest name (${player.nickname.length} characters)`
+        },
+        {
+            id: 'shortest_name',
+            name: '🐜 Shortest Name',
+            description: 'The ant with the fewest letters in their name',
+            icon: '✏️',
+            selector: () => selectShortestName(),
+            getJustification: (player) => `${player.nickname} has the shortest name (${player.nickname.length} characters)`
+        },
+        {
+            id: 'most_recent',
+            name: '🐜 Newest Recruit',
+            description: 'The ant who joined the colony most recently',
+            icon: '🆕',
+            selector: () => selectMostRecentJoin(),
+            getJustification: (player) => `${player.nickname} is the newest member of the colony`
+        },
+        {
+            id: 'oldest_member',
+            name: '🐜 Veteran Ant',
+            description: 'The ant who joined the colony first',
+            icon: '⏳',
+            selector: () => selectOldestMember(),
+            getJustification: (player) => `${player.nickname} is the oldest member of the colony`
+        },
+        {
+            id: 'lucky_number',
+            name: '🐜 Lucky Number',
+            description: 'Random selection based on colony numbers',
+            icon: '🍀',
+            selector: () => selectByLuckyNumber(),
+            getJustification: (player) => `${player.nickname} was chosen by the colony's lucky number algorithm`
         }
     ];
     
@@ -1101,15 +1147,61 @@ async function spinCriteriaRoulette(criteria) {
 
 function selectByLeastSpent() {
     const players = challengeState.players;
-    // In a real implementation, this would check actual expense data
-    // For now, random selection as placeholder
+    
+    // Calculate total spent per player from group expenses
+    if (currentFund && currentFund.expenses) {
+        players.forEach(player => {
+            let totalSpent = 0;
+            let transactionCount = 0;
+            
+            Object.values(currentFund.expenses).forEach(expense => {
+                if (expense.paidBy === player.address) {
+                    totalSpent += Math.abs(expense.amount || 0);
+                    transactionCount++;
+                }
+            });
+            
+            player.totalSpent = totalSpent;
+            player.transactionCount = transactionCount;
+            player.currency = currentFund.currency || 'USD';
+        });
+        
+        // Sort by total spent (ascending) and return the one with least contribution
+        const sorted = [...players].sort((a, b) => (a.totalSpent || 0) - (b.totalSpent || 0));
+        return sorted[0];
+    }
+    
+    // Fallback to random if no expense data available
     return players[Math.floor(Math.random() * players.length)];
 }
 
 function selectByFewestTransactions() {
     const players = challengeState.players;
-    // In a real implementation, this would check transaction count
-    // For now, random selection as placeholder
+    
+    // Calculate transaction count per player
+    if (currentFund && currentFund.expenses) {
+        players.forEach(player => {
+            let count = 0;
+            let totalSpent = 0;
+            
+            Object.values(currentFund.expenses).forEach(expense => {
+                if (expense.paidBy === player.address) {
+                    count++;
+                    totalSpent += Math.abs(expense.amount || 0);
+                }
+            });
+            
+            player.transactionCount = count;
+            player.totalSpent = totalSpent;
+            player.currency = currentFund.currency || 'USD';
+        });
+        
+        // Sort by transaction count (ascending)
+        const sorted = [...players].sort((a, b) => (a.transactionCount || 0) - (b.transactionCount || 0));
+        return sorted[0];
+    }
+    
+    // Fallback to random
     return players[Math.floor(Math.random() * players.length)];
 }
 
@@ -1141,6 +1233,64 @@ function selectLongestName() {
     const players = challengeState.players;
     const sorted = [...players].sort((a, b) => b.nickname.length - a.nickname.length);
     return sorted[0];
+}
+
+function selectShortestName() {
+    const players = challengeState.players;
+    const sorted = [...players].sort((a, b) => a.nickname.length - b.nickname.length);
+    return sorted[0];
+}
+
+function selectReverseAlphabetical() {
+    const players = challengeState.players;
+    const sorted = [...players].sort((a, b) => b.nickname.localeCompare(a.nickname));
+    return sorted[0];
+}
+
+function selectMostRecentJoin() {
+    const players = challengeState.players;
+    
+    // Check if we have join date information
+    if (currentFund && currentFund.members) {
+        players.forEach(player => {
+            const memberData = currentFund.members[player.address];
+            player.joinedAt = memberData?.joinedAt || Date.now();
+        });
+        
+        // Sort by join date (descending - most recent first)
+        const sorted = [...players].sort((a, b) => (b.joinedAt || 0) - (a.joinedAt || 0));
+        return sorted[0];
+    }
+    
+    // Fallback to random
+    return players[Math.floor(Math.random() * players.length)];
+}
+
+function selectOldestMember() {
+    const players = challengeState.players;
+    
+    // Check if we have join date information
+    if (currentFund && currentFund.members) {
+        players.forEach(player => {
+            const memberData = currentFund.members[player.address];
+            player.joinedAt = memberData?.joinedAt || Date.now();
+        });
+        
+        // Sort by join date (ascending - oldest first)
+        const sorted = [...players].sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
+        return sorted[0];
+    }
+    
+    // Fallback to random
+    return players[Math.floor(Math.random() * players.length)];
+}
+
+function selectByLuckyNumber() {
+    const players = challengeState.players;
+    // Use a pseudo-random selection based on timestamp + player count
+    const seed = Date.now() % players.length;
+    const luckyIndex = (seed + Math.floor(Math.random() * players.length)) % players.length;
+    return players[luckyIndex];
 }
 
 // ============================================
