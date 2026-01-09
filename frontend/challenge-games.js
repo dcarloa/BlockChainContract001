@@ -521,8 +521,11 @@ async function spinTheWheel(preselected = null) {
         const selectedIndex = players.findIndex(p => p.address === selected.address);
         
         // Calculate final rotation to land on selected player
+        // The pointer is at the top (0 degrees), segments are positioned clockwise
         const segmentAngle = 360 / players.length;
-        const targetAngle = 360 - (selectedIndex * segmentAngle) + (segmentAngle / 2);
+        // We need to rotate so the selected segment is under the pointer (top)
+        // Subtract 180 to fix the offset issue
+        const targetAngle = (selectedIndex * segmentAngle) - (segmentAngle / 2);
         const spins = 360 * 5; // 5 full rotations
         const finalRotation = spins + targetAngle;
         
@@ -1270,8 +1273,6 @@ function selectTriviaAnswer(selected, correct) {
             window.triviaResolve = null;
         }, 500);
     }
-}
-    document.getElementById('gamePlay').style.display = 'none';
 }
 
 // ============================================
