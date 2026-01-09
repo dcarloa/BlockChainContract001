@@ -356,16 +356,16 @@
     <!-- Notifications Panel -->
     <div id="notificationsPanel" class="notifications-panel hidden">
         <div class="notifications-header">
-            <h3>🔔 Notifications</h3>
+            <h3 data-i18n="app.notifications.title">🔔 Notifications</h3>
             <div class="notifications-header-actions">
-                <button class="btn-text" onclick="markAllNotificationsAsRead()" id="markAllReadBtn" style="display: none;">Mark all as read</button>
-                <button class="btn-text" onclick="deleteAllNotifications()" id="deleteAllBtn" title="Delete all notifications">🗑️</button>
+                <button class="btn-text" onclick="markAllNotificationsAsRead()" id="markAllReadBtn" style="display: none;" data-i18n="app.notifications.markAllRead">Mark all as read</button>
+                <button class="btn-text" onclick="deleteAllNotifications()" id="deleteAllBtn" title="Delete all notifications" data-i18n="app.notifications.deleteAll">🗑️</button>
                 <button id="closeNotificationsBtn" class="btn-icon-close">&times;</button>
             </div>
         </div>
         <div id="emptyNotifications" class="empty-notifications hidden">
-            <span class="empty-icon">🔕</span>
-            <p>No notifications yet</p>
+            <span class="empty-icon" data-i18n="app.notifications.empty">🔕</span>
+            <p data-i18n="app.notifications.noNotifications">No notifications yet</p>
         </div>
         <div id="notificationsList" class="notifications-list">
         </div>
@@ -430,16 +430,16 @@
             <!-- Tabs Navigation -->
             <div class="profile-tabs">
                 <button class="profile-tab active" data-tab="overview" onclick="switchProfileTab('overview')">
-                    <span>📊</span> Overview
+                    <span>📊</span> <span data-i18n="app.profile.tabs.overview">Overview</span>
                 </button>
                 <button class="profile-tab" data-tab="groups" onclick="switchProfileTab('groups')">
-                    <span>👥</span> Groups
+                    <span>👥</span> <span data-i18n="app.profile.tabs.groups">Groups</span>
                 </button>
                 <button class="profile-tab" data-tab="subscription" onclick="switchProfileTab('subscription')">
-                    <span>💎</span> Plan
+                    <span>💎</span> <span data-i18n="app.profile.tabs.subscription">Plan</span>
                 </button>
                 <button class="profile-tab" data-tab="settings" onclick="switchProfileTab('settings')">
-                    <span>⚙️</span> Settings
+                    <span>⚙️</span> <span data-i18n="app.profile.tabs.settings">Settings</span>
                 </button>
             </div>
 
@@ -448,27 +448,27 @@
                 <!-- Overview Tab -->
                 <div id="profileTabOverview" class="profile-tab-panel active">
                     <div class="profile-section">
-                        <h4>Account Information</h4>
+                        <h4 data-i18n="app.profile.overview.accountInfo">Account Information</h4>
                         <div class="profile-info-grid">
                             <div class="profile-info-item">
-                                <label>Email</label>
+                                <label data-i18n="app.profile.overview.email">Email</label>
                                 <span id="profileInfoEmail">-</span>
                             </div>
                             <div class="profile-info-item">
-                                <label>Member Since</label>
+                                <label data-i18n="app.profile.overview.memberSince">Member Since</label>
                                 <span id="profileInfoMemberSince">-</span>
                             </div>
                             <div class="profile-info-item">
-                                <label>Last Login</label>
+                                <label data-i18n="app.profile.overview.lastLogin">Last Login</label>
                                 <span id="profileInfoLastLogin">-</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="profile-section">
-                        <h4>Recent Activity</h4>
+                        <h4 data-i18n="app.profile.overview.recentActivity">Recent Activity</h4>
                         <div id="profileRecentActivity" class="profile-activity-list">
-                            <p class="empty-state-text">No recent activity</p>
+                            <p class="empty-state-text" data-i18n="app.profile.overview.noActivity">No recent activity</p>
                         </div>
                     </div>
                 </div>
@@ -477,13 +477,13 @@
                 <div id="profileTabGroups" class="profile-tab-panel">
                     <div class="profile-section">
                         <div class="section-header">
-                            <h4>My Groups</h4>
+                            <h4 data-i18n="app.profile.groups.title">My Groups</h4>
                             <button class="btn btn-sm btn-primary" onclick="closeProfilePanel(); document.getElementById('createFundBtn').click();">
-                                <span>➕</span> New Group
+                                <span>➕</span> <span data-i18n="app.profile.groups.newGroup">New Group</span>
                             </button>
                         </div>
                         <div id="profileGroupsList" class="profile-groups-list">
-                            <p class="empty-state-text">No groups yet</p>
+                            <p class="empty-state-text" data-i18n="app.profile.groups.empty">No groups yet</p>
                         </div>
                     </div>
                 </div>
@@ -492,47 +492,47 @@
                 <div id="profileTabSubscription" class="profile-tab-panel">
                     <div class="profile-section">
                         <div class="subscription-header">
-                            <h4>🐜 Subscription Plans</h4>
-                            <p>Unlock premium features and support Ant Pool development</p>
+                            <h4 data-i18n="app.profile.subscription.title">🐜 Subscription Plans</h4>
+                            <p data-i18n="app.profile.subscription.subtitle">Unlock premium features and support Ant Pool development</p>
                         </div>
                         
                         <div class="subscription-plans">
                             <!-- FREE Plan -->
                             <div id="freePlanCard" class="subscription-card free-plan">
-                                <div class="plan-badge current">CURRENT PLAN</div>
+                                <div class="plan-badge current" data-i18n="app.profile.subscription.currentPlan">CURRENT PLAN</div>
                                 <div class="plan-icon">🆓</div>
-                                <h3>Free</h3>
+                                <h3 data-i18n="app.profile.subscription.free">Free</h3>
                                 <div class="plan-price">
                                     <span class="price">$0</span>
-                                    <span class="period">/month</span>
+                                    <span class="period" data-i18n="app.profile.subscription.perMonth">/month</span>
                                 </div>
-                                <p class="plan-description">Perfect for getting started</p>
+                                <p class="plan-description" data-i18n="app.profile.subscription.freeDesc">Perfect for getting started</p>
                             </div>
                             
                             <!-- PRO Plan -->
                             <div id="proPlanCard" class="subscription-card pro-plan">
-                                <div id="proPlanBadge" class="plan-badge recommended">RECOMMENDED</div>
+                                <div id="proPlanBadge" class="plan-badge recommended" data-i18n="app.profile.subscription.recommended">RECOMMENDED</div>
                                 <div class="plan-icon">💎</div>
-                                <h3>PRO</h3>
+                                <h3 data-i18n="app.profile.subscription.pro">PRO</h3>
                                 <div class="plan-price">
                                     <span class="price">$2.99</span>
-                                    <span class="period">/month</span>
+                                    <span class="period" data-i18n="app.profile.subscription.perMonth">/month</span>
                                 </div>
                                 <div class="plan-price-annual">
-                                    or $29/year <span class="save-badge">Save 19%</span>
+                                    <span data-i18n="app.profile.subscription.or">or</span> $29<span data-i18n="app.profile.subscription.perYear">/year</span> <span class="save-badge" data-i18n="app.profile.subscription.savePercent">Save 19%</span>
                                 </div>
-                                <p class="plan-description">Support development and get premium features</p>
+                                <p class="plan-description" data-i18n="app.profile.subscription.proDesc">Support development and get premium features</p>
                                 
                                 <!-- Stripe Checkout Button (shown when not subscribed) -->
                                 <div id="stripeButtonContainer" class="stripe-button-container">
-                                    <button class="btn btn-primary btn-block" onclick="openStripeCheckout()">
+                                    <button class="btn btn-primary btn-block" onclick="openStripeCheckout()" data-i18n="app.profile.subscription.subscribePro">
                                         💎 Subscribe to PRO - $2.99/month
                                     </button>
                                 </div>
                                 
                                 <!-- Manage Subscription Button (shown when subscribed) -->
                                 <div id="manageSubscriptionContainer" class="stripe-button-container" style="display: none;">
-                                    <button class="btn btn-primary btn-block" onclick="openCustomerPortal()">
+                                    <button class="btn btn-primary btn-block" onclick="openCustomerPortal()" data-i18n="app.profile.subscription.manageSubscription">
                                         ⚙️ Manage Subscription
                                     </button>
                                     <p id="subscriptionStatus" style="margin-top: 1rem; text-align: center; color: #43e97b; font-weight: 600;"></p>
@@ -541,7 +541,7 @@
                         </div>
                         
                         <div class="subscription-footer">
-                            <p>💡 Early adopters get lifetime discounts!</p>
+                            <p data-i18n="app.profile.subscription.earlyAdopter">💡 Early adopters get lifetime discounts!</p>
                         </div>
                     </div>
                 </div>
@@ -549,12 +549,12 @@
                 <!-- Settings Tab -->
                 <div id="profileTabSettings" class="profile-tab-panel">
                     <div class="profile-section">
-                        <h4>Preferences</h4>
+                        <h4 data-i18n="app.profile.settings.preferences">Preferences</h4>
                         <div class="settings-list">
                             <div class="setting-item">
                                 <div class="setting-info">
-                                    <div class="setting-label">🌙 Dark Mode</div>
-                                    <div class="setting-description">Toggle dark theme</div>
+                                    <div class="setting-label" data-i18n="app.profile.settings.darkMode">🌙 Dark Mode</div>
+                                    <div class="setting-description" data-i18n="app.profile.settings.darkModeDesc">Toggle dark theme</div>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="settingDarkMode" onchange="toggleDarkModeSetting(this)">
@@ -563,8 +563,8 @@
                             </div>
                             <div class="setting-item">
                                 <div class="setting-info">
-                                    <div class="setting-label">🔔 Push Notifications</div>
-                                    <div class="setting-description">Get alerts on your device</div>
+                                    <div class="setting-label" data-i18n="app.profile.settings.pushNotifications">🔔 Push Notifications</div>
+                                    <div class="setting-description" data-i18n="app.profile.settings.pushNotificationsDesc">Get alerts on your device</div>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="settingPushNotifications" onchange="togglePushNotifications(this)">
@@ -573,8 +573,8 @@
                             </div>
                             <div class="setting-item">
                                 <div class="setting-info">
-                                    <div class="setting-label">🔔 In-App Notifications</div>
-                                    <div class="setting-description">Show notification panel</div>
+                                    <div class="setting-label" data-i18n="app.profile.settings.inAppNotifications">🔔 In-App Notifications</div>
+                                    <div class="setting-description" data-i18n="app.profile.settings.inAppNotificationsDesc">Show notification panel</div>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="settingNotifications" checked onchange="toggleNotificationsSetting(this)">
@@ -585,16 +585,16 @@
                     </div>
 
                     <div class="profile-section">
-                        <h4>Account Actions</h4>
+                        <h4 data-i18n="app.profile.settings.accountActions">Account Actions</h4>
                         <div class="action-buttons">
-                            <button class="btn btn-secondary btn-block" onclick="closeProfilePanel(); openAppSettings();">
-                                <span>⚙️</span> App Settings
+                            <button class="btn btn-secondary btn-block" onclick="closeProfilePanel(); openAppSettings();" data-i18n="app.profile.settings.appSettings">
+                                ⚙️ App Settings
                             </button>
-                            <button class="btn btn-secondary btn-block" onclick="exportUserData();">
-                                <span>📥</span> Export My Data
+                            <button class="btn btn-secondary btn-block" onclick="exportUserData();" data-i18n="app.profile.settings.exportData">
+                                📥 Export My Data
                             </button>
-                            <button class="btn btn-danger btn-block" onclick="confirmSignOut();">
-                                <span>🚪</span> Sign Out
+                            <button class="btn btn-danger btn-block" onclick="confirmSignOut();" data-i18n="app.profile.settings.signOut">
+                                🚪 Sign Out
                             </button>
                         </div>
                     </div>

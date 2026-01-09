@@ -376,7 +376,32 @@ const translations = {
                 namePlaceholder: "Your Name",
                 passwordPlaceholder: "Minimum 6 characters",
                 createAccount: "Create Account",
-                backToSignIn: "← Back to Sign In"
+                backToSignIn: "← Back to Sign In",
+                // Limited Access Warnings
+                limitedAccessGoogle: "Sign in with Google (Limited Access)",
+                limitedAccessEmail: "Sign in with Email (Limited Access)",
+                limitedAccessCreate: "Creating Account (Limited Access)",
+                onlyAccess: "You will ONLY have access to Simple Mode features:",
+                canDo: {
+                    trackExpenses: "✅ Track expenses",
+                    splitBills: "✅ Split bills with friends",
+                    viewBalances: "✅ View balances",
+                    simpleMode: "✅ Simple Mode - Expense tracking",
+                    viewWhoOwes: "✅ View who owes what"
+                },
+                cannotDo: {
+                    title: "You will NOT be able to:",
+                    blockchain: "❌ Use Blockchain Mode",
+                    autoPayments: "❌ Create automatic payments",
+                    smartContracts: "❌ Use smart contracts",
+                    onChain: "❌ Automatic smart contract payments",
+                    transactions: "❌ On-chain transactions"
+                },
+                walletLater: "You can connect a wallet later to unlock blockchain features.",
+                confirmGoogle: "Continue with Google Sign-In?",
+                confirmCreate: "Create account with limited access?",
+                withoutWallet: "Without a crypto wallet, you will ONLY have Simple Mode:",
+                withoutMetaMask: "Without a crypto wallet (MetaMask), you will ONLY have access to:"
             },
             // User Menu
             userMenu: {
@@ -392,45 +417,62 @@ const translations = {
             profile: {
                 title: "Profile",
                 tabs: {
-                    info: "Info",
+                    overview: "Overview",
                     groups: "Groups",
-                    achievements: "Achievements",
-                    subscription: "PRO",
+                    subscription: "Plan",
                     settings: "Settings"
                 },
-                info: {
-                    displayName: "Display Name",
+                overview: {
+                    accountInfo: "Account Information",
                     email: "Email",
-                    memberSince: "Member Since"
+                    memberSince: "Member Since",
+                    lastLogin: "Last Login",
+                    recentActivity: "Recent Activity",
+                    noActivity: "No recent activity"
                 },
                 groups: {
                     title: "My Groups",
+                    newGroup: "New Group",
                     empty: "No groups yet"
                 },
-                achievements: {
-                    title: "Achievements",
-                    empty: "No achievements yet"
-                },
                 subscription: {
-                    title: "Upgrade to PRO",
-                    free: "Free Plan",
-                    pro: "PRO Plan"
+                    title: "🐜 Subscription Plans",
+                    subtitle: "Unlock premium features and support Ant Pool development",
+                    currentPlan: "CURRENT PLAN",
+                    recommended: "RECOMMENDED",
+                    free: "Free",
+                    pro: "PRO",
+                    perMonth: "/month",
+                    perYear: "/year",
+                    savePercent: "Save 19%",
+                    freeDesc: "Perfect for getting started",
+                    proDesc: "Support development and get premium features",
+                    subscribePro: "💎 Subscribe to PRO - $2.99/month",
+                    manageSubscription: "⚙️ Manage Subscription",
+                    earlyAdopter: "💡 Early adopters get lifetime discounts!",
+                    or: "or"
                 },
                 settings: {
-                    title: "Account Settings",
-                    privacy: "Privacy",
-                    notifications: "Notifications",
                     preferences: "Preferences",
-                    appSettings: "App Settings",
-                    signOutButton: "Sign Out"
+                    darkMode: "🌙 Dark Mode",
+                    darkModeDesc: "Toggle dark theme",
+                    pushNotifications: "🔔 Push Notifications",
+                    pushNotificationsDesc: "Get alerts on your device",
+                    inAppNotifications: "🔔 In-App Notifications",
+                    inAppNotificationsDesc: "Show notification panel",
+                    accountActions: "Account Actions",
+                    appSettings: "⚙️ App Settings",
+                    exportData: "📥 Export My Data",
+                    signOut: "🚪 Sign Out"
                 }
             },
             // Notifications
             notifications: {
-                title: "Notifications",
+                title: "🔔 Notifications",
                 markAllRead: "Mark all as read",
-                empty: "No notifications",
-                emptyDesc: "You're all caught up!"
+                deleteAll: "🗑️",
+                empty: "🔕",
+                noNotifications: "No notifications yet"
             },
             header: {
                 subtitle: "Shared Expense Manager",
@@ -1213,7 +1255,32 @@ const translations = {
                 namePlaceholder: "Tu Nombre",
                 passwordPlaceholder: "Mínimo 6 caracteres",
                 createAccount: "Crear Cuenta",
-                backToSignIn: "← Volver a Iniciar Sesión"
+                backToSignIn: "← Volver a Iniciar Sesión",
+                // Limited Access Warnings
+                limitedAccessGoogle: "Iniciar sesión con Google (Acceso Limitado)",
+                limitedAccessEmail: "Iniciar sesión con Email (Acceso Limitado)",
+                limitedAccessCreate: "Crear Cuenta (Acceso Limitado)",
+                onlyAccess: "SOLO tendrás acceso a funciones de Modo Simple:",
+                canDo: {
+                    trackExpenses: "✅ Rastrear gastos",
+                    splitBills: "✅ Dividir cuentas con amigos",
+                    viewBalances: "✅ Ver balances",
+                    simpleMode: "✅ Modo Simple - Rastreo de gastos",
+                    viewWhoOwes: "✅ Ver quién debe qué"
+                },
+                cannotDo: {
+                    title: "NO podrás:",
+                    blockchain: "❌ Usar Modo Blockchain",
+                    autoPayments: "❌ Crear pagos automáticos",
+                    smartContracts: "❌ Usar contratos inteligentes",
+                    onChain: "❌ Pagos automáticos con contratos inteligentes",
+                    transactions: "❌ Transacciones en cadena"
+                },
+                walletLater: "Puedes conectar una wallet más tarde para desbloquear funciones blockchain.",
+                confirmGoogle: "¿Continuar con inicio de sesión de Google?",
+                confirmCreate: "¿Crear cuenta con acceso limitado?",
+                withoutWallet: "Sin una billetera cripto, SOLO tendrás Modo Simple:",
+                withoutMetaMask: "Sin una billetera cripto (MetaMask), SOLO tendrás acceso a:"
             },
             // User Menu
             userMenu: {
@@ -1229,45 +1296,62 @@ const translations = {
             profile: {
                 title: "Perfil",
                 tabs: {
-                    info: "Info",
+                    overview: "Resumen",
                     groups: "Grupos",
-                    achievements: "Logros",
-                    subscription: "PRO",
+                    subscription: "Plan",
                     settings: "Ajustes"
                 },
-                info: {
-                    displayName: "Nombre para Mostrar",
+                overview: {
+                    accountInfo: "Información de Cuenta",
                     email: "Email",
-                    memberSince: "Miembro Desde"
+                    memberSince: "Miembro Desde",
+                    lastLogin: "Último Acceso",
+                    recentActivity: "Actividad Reciente",
+                    noActivity: "Sin actividad reciente"
                 },
                 groups: {
                     title: "Mis Grupos",
+                    newGroup: "Nuevo Grupo",
                     empty: "Sin grupos aún"
                 },
-                achievements: {
-                    title: "Logros",
-                    empty: "Sin logros aún"
-                },
                 subscription: {
-                    title: "Mejorar a PRO",
-                    free: "Plan Gratis",
-                    pro: "Plan PRO"
+                    title: "🐜 Planes de Suscripción",
+                    subtitle: "Desbloquea funciones premium y apoya el desarrollo de Ant Pool",
+                    currentPlan: "PLAN ACTUAL",
+                    recommended: "RECOMENDADO",
+                    free: "Gratis",
+                    pro: "PRO",
+                    perMonth: "/mes",
+                    perYear: "/año",
+                    savePercent: "Ahorra 19%",
+                    freeDesc: "Perfecto para comenzar",
+                    proDesc: "Apoya el desarrollo y obtén funciones premium",
+                    subscribePro: "💎 Suscribirse a PRO - $2.99/mes",
+                    manageSubscription: "⚙️ Gestionar Suscripción",
+                    earlyAdopter: "💡 ¡Los primeros usuarios obtienen descuentos de por vida!",
+                    or: "o"
                 },
                 settings: {
-                    title: "Configuración de Cuenta",
-                    privacy: "Privacidad",
-                    notifications: "Notificaciones",
                     preferences: "Preferencias",
-                    appSettings: "Configuración de App",
-                    signOutButton: "Cerrar Sesión"
+                    darkMode: "🌙 Modo Oscuro",
+                    darkModeDesc: "Activar tema oscuro",
+                    pushNotifications: "🔔 Notificaciones Push",
+                    pushNotificationsDesc: "Recibe alertas en tu dispositivo",
+                    inAppNotifications: "🔔 Notificaciones en App",
+                    inAppNotificationsDesc: "Mostrar panel de notificaciones",
+                    accountActions: "Acciones de Cuenta",
+                    appSettings: "⚙️ Configuración de App",
+                    exportData: "📥 Exportar Mis Datos",
+                    signOut: "🚪 Cerrar Sesión"
                 }
             },
             // Notifications
             notifications: {
-                title: "Notificaciones",
+                title: "🔔 Notificaciones",
                 markAllRead: "Marcar todo como leído",
-                empty: "Sin notificaciones",
-                emptyDesc: "¡Estás al día!"
+                deleteAll: "🗑️",
+                empty: "🔕",
+                noNotifications: "Sin notificaciones aún"
             },
             header: {
                 subtitle: "Gestor de Gastos Compartidos",
