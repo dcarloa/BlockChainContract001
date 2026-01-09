@@ -870,14 +870,14 @@
                     <!-- Header Content -->
                     <div class="fund-header-content">
                         <div class="fund-header-icon" id="fundHeaderIcon">🌴</div>
-                        <div style="flex: 1;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <h1 id="fundDetailName" class="fund-header-title">Cargando...</h1>
-                                <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none;" title="Edit group info">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+                                <h1 id="fundDetailName" class="fund-header-title" style="margin: 0;">Cargando...</h1>
+                                <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none; flex-shrink: 0;" title="Edit group info">
                                     ✏️
                                 </button>
                             </div>
-                            <p id="fundDetailDescription" class="fund-header-description">-</p>
+                            <p id="fundDetailDescription" class="fund-header-description" style="margin: 0;">-</p>
                         </div>
                         <div class="fund-badges">
                             <span class="badge" id="fundTypeBadge">Tipo</span>

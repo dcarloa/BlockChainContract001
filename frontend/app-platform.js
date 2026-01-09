@@ -8527,7 +8527,7 @@ function showEditGroupModal() {
     // Check if current user is creator
     const currentUserId = firebase.auth().currentUser?.uid;
     if (currentFund.mode === 'simple') {
-        if (currentFund.creatorId !== currentUserId) {
+        if (currentFund.createdBy !== currentUserId) {
             showToast('Only the group creator can edit group info', 'error');
             return;
         }

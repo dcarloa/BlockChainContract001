@@ -1649,6 +1649,32 @@ header,
   margin-right: auto;
 }
 
+/* Edit Group Button */
+#editGroupInfoBtn {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+#editGroupInfoBtn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+}
+
+#editGroupInfoBtn:active {
+  transform: translateY(0);
+}
+
 .fund-badges {
   display: flex;
   justify-content: center;
