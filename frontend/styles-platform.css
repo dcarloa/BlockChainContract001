@@ -8608,6 +8608,7 @@ header,
     margin-bottom: 0.5rem;
     background: var(--primary-gradient);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -8859,6 +8860,7 @@ header,
     font-weight: 700;
     background: var(--primary-gradient);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -8941,6 +8943,7 @@ header,
     font-weight: 700;
     background: var(--primary-gradient);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 1rem 0;
 }
@@ -9009,10 +9012,18 @@ header,
     padding-top: 20px;
     background: linear-gradient(
         to bottom right,
-        rgba(255, 255, 255, calc(0.2 + (var(--index) % 2) * 0.1)),
-        rgba(255, 255, 255, calc(0.05 + (var(--index) % 2) * 0.05))
+        rgba(255, 255, 255, 0.25),
+        rgba(255, 255, 255, 0.08)
     );
     border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.wheel-segment:nth-child(even) {
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.03)
+    );
 }
 
 .segment-text {
@@ -9162,6 +9173,7 @@ header,
     font-weight: 700;
     background: var(--primary-gradient);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
