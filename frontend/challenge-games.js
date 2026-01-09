@@ -511,40 +511,37 @@ async function spinTheWheel(preselected = null) {
         const selected = preselected || players[Math.floor(Math.random() * players.length)];
         const selectedIndex = players.findIndex(p => p.address === selected.address);
         
-        // Add spinning class for continuous rotation
-        wheel.classList.add('spinning');
+        // Calculate final rotation to land on selected player
+        const segmentAngle = 360 / players.length;
+        const targetAngle = 360 - (selectedIndex * segmentAngle) + (segmentAngle / 2);
+        const spins = 360 * 5; // 5 full rotations
+        const finalRotation = spins + targetAngle;
+        
+        // Add active glow effect
         container.classList.add('active');
         statusEl.textContent = '🎲 Spinning...';
         statusEl.style.animation = 'pulse 0.8s ease-in-out infinite';
         
-        // Spin for 2 seconds with continuous animation
+        // Apply single smooth animation from start to finish
+        // Starts fast, ends slow - no pause
+        wheel.style.transition = 'transform 4.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        wheel.style.transform = `rotate(${finalRotation}deg)`;
+        
+        // Update status at midpoint
         setTimeout(() => {
-            // Remove spinning class
-            wheel.classList.remove('spinning');
-            
-            // Calculate final rotation to land on selected player
-            const segmentAngle = 360 / players.length;
-            const targetAngle = 360 - (selectedIndex * segmentAngle) + (segmentAngle / 2);
-            const spins = 360 * 4; // 4 full rotations
-            const finalRotation = spins + targetAngle;
-            
-            // Apply final deceleration animation
-            wheel.style.transition = 'transform 2.5s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
-            wheel.style.transform = `rotate(${finalRotation}deg)`;
-            
             statusEl.textContent = '🎯 Slowing down...';
+        }, 2500);
+        
+        // After animation completes
+        setTimeout(() => {
+            container.classList.remove('active');
+            statusEl.textContent = `🎉 ${selected.nickname} selected!`;
+            statusEl.style.animation = 'none';
             
-            // After deceleration completes
             setTimeout(() => {
-                container.classList.remove('active');
-                statusEl.textContent = `🎉 ${selected.nickname} selected!`;
-                statusEl.style.animation = 'none';
-                
-                setTimeout(() => {
-                    resolve(selected);
-                }, 800);
-            }, 2500);
-        }, 2000);
+                resolve(selected);
+            }, 800);
+        }, 4500);
     });
 }
 
