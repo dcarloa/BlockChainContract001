@@ -1516,13 +1516,26 @@ function t(path) {
     const keys = path.split('.');
     let value = translations[lang];
     
+    // Debug logging for howItWorks paths
+    if (path.includes('howItWorks')) {
+        console.log(`[i18n.t] Resolving path: ${path} for lang: ${lang}`);
+        console.log(`[i18n.t] Starting value:`, value);
+    }
+    
     for (const key of keys) {
         if (value && typeof value === 'object') {
             value = value[key];
+            if (path.includes('howItWorks')) {
+                console.log(`[i18n.t] After key '${key}':`, value);
+            }
         } else {
             console.warn(`Translation not found: ${path} for language ${lang}`);
             return path;
         }
+    }
+    
+    if (path.includes('howItWorks')) {
+        console.log(`[i18n.t] Final value for ${path}:`, value);
     }
     
     return value || path;
@@ -1586,13 +1599,4 @@ if (typeof document !== 'undefined') {
 // Export for use in modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { t, setLanguage, getCurrentLanguage, translations, applyTranslations };
-}
-
-// Debug: Log howItWorks translations on load
-if (typeof console !== 'undefined') {
-    console.log('[i18n] Testing howItWorks translations:');
-    console.log('[i18n] EN threeSteps:', translations.en?.landing?.howItWorks?.threeSteps);
-    console.log('[i18n] ES threeSteps:', translations.es?.landing?.howItWorks?.threeSteps);
-    console.log('[i18n] EN step1.title:', translations.en?.landing?.howItWorks?.step1?.title);
-    console.log('[i18n] ES step1.title:', translations.es?.landing?.howItWorks?.step1?.title);
 }
