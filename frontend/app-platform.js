@@ -897,6 +897,12 @@ async function updateUIForFirebaseUser(user) {
     } else {
         // User is signed out - update unified session badge
         updateUnifiedSessionBadge();
+        
+        // Reset profile display to show not signed in
+        const userName = document.getElementById('profileUserName');
+        const userEmail = document.getElementById('profileUserEmail');
+        if (userName) userName.textContent = 'Not signed in';
+        if (userEmail) userEmail.textContent = 'Please sign in to continue';
     }
 }
 
@@ -1086,10 +1092,34 @@ Would you like to sign in now?`;
 
 async function loadUserFunds() {
     try {
+        // Check if user is authenticated (either Firebase or Wallet)
+        const hasFirebaseAuth = window.FirebaseConfig && window.FirebaseConfig.isAuthenticated();
+        const hasWallet = !!userAddress;
+        
         // Show loading state
         const loadingGroups = document.getElementById('loadingGroups');
         const groupsGrid = document.getElementById('groupsGrid');
         const emptyState = document.getElementById('emptyState');
+        
+        // If no authentication at all, show empty state with sign-in prompt
+        if (!hasFirebaseAuth && !hasWallet) {
+            if (loadingGroups) loadingGroups.style.display = 'none';
+            if (groupsGrid) groupsGrid.style.display = 'none';
+            if (emptyState) {
+                emptyState.style.display = 'flex';
+                emptyState.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔐</div>
+                        <h3>Sign In Required</h3>
+                        <p>Please sign in to view and manage your groups</p>
+                        <button class="btn btn-primary" onclick="openSignInModal()" style="margin-top: 1rem;">
+                            🔑 Sign In
+                        </button>
+                    </div>
+                `;
+            }
+            return;
+        }
         
         if (loadingGroups) loadingGroups.style.display = 'flex';
         if (groupsGrid) groupsGrid.style.display = 'none';
