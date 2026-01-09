@@ -922,21 +922,20 @@ const translations = {
                 }
             },
             howItWorks: {
-                title: "¿Cómo Funciona?",
-                subtitle: "Crea tu grupo en 3 simples pasos",
-                steps: {
-                    create: {
-                        title: "Crear Grupo",
-                        desc: "Elige un nombre, selecciona una moneda e invita a tus amigos con email."
-                    },
-                    deposit: {
-                        title: "Rastrear Gastos",
-                        desc: "Cada miembro agrega sus gastos. Todo registrado transparentemente en la línea de tiempo."
-                    },
-                    vote: {
-                        title: "Liquidaciones Inteligentes",
-                        desc: "Ve quién le debe a quién con pagos optimizados. Liquida deudas fuera de la app."
-                    }
+                title: "Cómo Cooperan las Hormigas",
+                subtitle: "Sigue el rastro de hormigas hacia el éxito colectivo",
+                threeSteps: "Tres Pasos Para el Éxito de la Colonia",
+                step1: {
+                    title: "Crea Tu Colonia",
+                    desc: "Nombra tu grupo, selecciona tu moneda (12 soportadas) e invita miembros vía email. Privado o público—tú eliges."
+                },
+                step2: {
+                    title: "Agrega Gastos Según Ocurran",
+                    desc: "Cada hormiga agrega sus gastos a la línea de tiempo. Los filtros de fecha te permiten rastrear períodos semanales, mensuales o personalizados."
+                },
+                step3: {
+                    title: "Liquidaciones Inteligentes",
+                    desc: "Ant Pool calcula quién le debe a quién con rutas de deuda optimizadas. Liquida fuera de la app—solo te mostramos la ruta más corta."
                 }
             },
             useCases: {
@@ -1516,26 +1515,13 @@ function t(path) {
     const keys = path.split('.');
     let value = translations[lang];
     
-    // Debug logging for howItWorks paths
-    if (path.includes('howItWorks')) {
-        console.log(`[i18n.t] Resolving path: ${path} for lang: ${lang}`);
-        console.log(`[i18n.t] Starting value:`, value);
-    }
-    
     for (const key of keys) {
         if (value && typeof value === 'object') {
             value = value[key];
-            if (path.includes('howItWorks')) {
-                console.log(`[i18n.t] After key '${key}':`, value);
-            }
         } else {
             console.warn(`Translation not found: ${path} for language ${lang}`);
             return path;
         }
-    }
-    
-    if (path.includes('howItWorks')) {
-        console.log(`[i18n.t] Final value for ${path}:`, value);
     }
     
     return value || path;
