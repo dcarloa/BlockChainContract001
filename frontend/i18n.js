@@ -43,13 +43,109 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "Split Expenses Like Ants Work Together",
-                subtitle: "Track shared expenses, split bills, and settle debts with smart optimization. 12 currencies supported. Free forever.",
-                cta: "Start Free",
+                title: "Work Together Like Ants",
+                title2: "Build Wealth, Your Way",
+                subtitle: "Just like ants work together, Ant Pool helps you track and split expenses effortlessly. Every ant contributes. Every ant benefits. Support 12 currencies worldwide with smart debt optimization.",
+                cta: "Start Free Now",
+                ctaExplore: "Explore Features",
                 stats: {
-                    users: "Active Users",
-                    funds: "Total Groups",
-                    confirmation: "Confirmation"
+                    free: "FREE",
+                    forever: "Forever",
+                    currencies: "12",
+                    currenciesLabel: "Currencies",
+                    smart: "SMART",
+                    settlements: "Settlements"
+                }
+            },
+            modesSection: {
+                title: "Why Colonies Choose Ant Pool",
+                subtitle: "Everything you need to manage shared expenses like nature intended",
+                currencies12: {
+                    title: "12 Currencies",
+                    desc: "USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Track expenses in your local currency."
+                },
+                smartSettlements: {
+                    title: "Smart Settlements",
+                    desc: "AI-powered debt optimization. Minimize transactions automatically—like ants finding the shortest path."
+                },
+                free: {
+                    title: "100% Free",
+                    desc: "No subscriptions. No premium tiers. No ads. Free forever for unlimited groups and members."
+                },
+                mobileFirst: {
+                    title: "Mobile First",
+                    desc: "Optimized for phones, tablets, and desktop. Ants work everywhere, so does Ant Pool."
+                },
+                realTime: {
+                    title: "Real-Time Updates",
+                    desc: "Live expense tracking. Timeline filters. Instant notifications when colony members add expenses."
+                },
+                easySignIn: {
+                    title: "Easy Sign-In",
+                    desc: "Google or Email login. No technical knowledge needed. Join in seconds and start tracking."
+                }
+            },
+            philosophy: {
+                title: "The Ant Pool Philosophy",
+                subtitle: "Inspired by nature's most efficient cooperators",
+                workTogether: "Work Together",
+                likeNature: "Like Nature Intended",
+                multiCurrency: {
+                    title: "Multi-Currency Support",
+                    desc: "Track expenses in USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Global colonies, local currencies."
+                },
+                settlements: {
+                    title: "Smart Settlements",
+                    desc: "Debt optimization algorithm minimizes transactions. If Alice owes Bob and Bob owes Charlie, Alice pays Charlie directly."
+                },
+                timeline: {
+                    title: "Timeline & Filters",
+                    desc: "View expenses by week, month, or custom range. Every contribution is recorded and searchable with date filters."
+                },
+                updates: {
+                    title: "Real-Time Updates",
+                    desc: "All transactions visible to colony members. Instant notifications when expenses are added or modified."
+                },
+                mobile: {
+                    title: "Mobile-First Design",
+                    desc: "Compact cards, responsive layout, touch-optimized. Manage your colony from any device, anywhere."
+                }
+            },
+            howItWorks: {
+                title: "How Ants Cooperate",
+                subtitle: "Follow the ant trail to collective success",
+                threeSteps: "Three Steps to Colony Success",
+                step1: {
+                    title: "Create Your Colony",
+                    desc: "Name your group, select your currency (12 supported), and invite members via email. Private or public—your choice."
+                },
+                step2: {
+                    title: "Add Expenses as They Happen",
+                    desc: "Every ant adds their expenses to the timeline. Date filters let you track weekly, monthly, or custom periods."
+                },
+                step3: {
+                    title: "Smart Settlements",
+                    desc: "Ant Pool calculates who owes whom with optimized debt paths. Settle outside the app—we just show you the shortest route."
+                }
+            },
+            whereAnts: {
+                title: "Where Ants Cooperate",
+                subtitle: "Build your colony for any shared goal",
+                travel: {
+                    title: "Travel Colonies",
+                    desc: "Explore the world as a swarm. Pool resources for adventures where every ant contributes and votes."
+                },
+                living: {
+                    title: "Living Colonies",
+                    desc: "Build your nest together. Share rent, utilities, groceries - just like ants share their home."
+                },
+                celebration: {
+                    title: "Celebration Colonies",
+                    desc: "Organize epic gatherings. From weddings to festivals - collective resources for collective joy."
+                },
+                business: {
+                    title: "Business Colonies",
+                    desc: "Build enterprises like anthills. Startup resources, investments, projects - transparent cooperation wins."
                 }
             },
             features: {
@@ -123,37 +219,89 @@ const translations = {
             },
             benefits: {
                 title: "Why Ant Pool Wins",
-                noIntermediaries: {
+                subtitle: "Compare Ant Pool with competitors",
+                globalColony: {
                     title: "Global Ant Colony",
-                    desc: "12 currencies supported. Track expenses in USD, COP, EUR, MXN, and more. Your colony works worldwide."
+                    desc: "12 currencies supported. Track expenses in USD, COP, EUR, MXN, and more. Like ants gathering from different sources, your colony works worldwide."
                 },
-                immutable: {
+                freeForever: {
                     title: "100% Free Forever",
-                    desc: "No subscriptions. No premium tiers. No ads. Like ants sharing food freely in their colony."
+                    desc: "No subscriptions. No premium tiers. No ads. Like ants sharing food freely in their colony, Ant Pool is completely free for everyone."
                 },
-                openSource: {
+                smartDebt: {
                     title: "Smart Debt Optimization",
-                    desc: "Like ants finding the shortest path, our algorithm minimizes transactions automatically."
+                    desc: "Like ants finding the shortest path, our settlement algorithm minimizes transactions. If A owes B and B owes C, A pays C directly."
                 },
-                available: {
-                    title: "Available 24/7",
-                    desc: "Access your colony anytime from any device. Mobile-optimized design. Real-time updates."
+                neverSleep: {
+                    title: "Ants Never Sleep",
+                    desc: "Access your colony 24/7 from any device. Mobile-optimized design. Timeline filters. Real-time updates. Work happens when it needs to."
                 },
                 comparisonTitle: "Ant Pool vs Competitors",
                 comparisonFeature: "Feature",
                 comparisonSE: "Ant Pool",
                 comparisonTraditional: "Splitwise/Tricount",
-                transparency: "Price",
-                total: "FREE Forever",
-                limited: "$3-5/month Premium",
-                fees: "Currencies",
-                control: "Smart Settlements",
-                yours: "Yours",
-                company: "Company",
-                audit: "Audit",
-                public: "Public",
-                private: "Private",
-                availability: "Availability"
+                price: "Price",
+                priceFree: "FREE Forever",
+                pricePremium: "$3-5/month Premium",
+                currencies: "Currencies",
+                currencies12: "12 Currencies",
+                currenciesLimited: "Limited (paid)",
+                settlements: "Smart Settlements",
+                settlementsAuto: "Auto-Optimized",
+                settlementsManual: "Manual/Basic",
+                timelineFilters: "Timeline Filters",
+                dateFilters: "Date Filters",
+                basicHistory: "Basic history",
+                ads: "Ads",
+                noAds: "No Ads",
+                adsFreeTier: "Ads (free tier)",
+                philosophy: "Philosophy",
+                antColony: "Ant Colony",
+                justApp: "Just an app"
+            },
+            faq: {
+                title: "Frequently Asked Questions",
+                subtitle: "Everything you need to know",
+                q1: {
+                    question: "Why is Ant Pool better than Splitwise or Tricount?",
+                    answer: "Ant Pool is 100% free forever with no premium tiers or ads. We support 12 currencies (vs their limited free options), have smart settlement optimization to minimize transactions, and timeline filters for better expense tracking. Plus, our ant colony philosophy makes collaboration fun!"
+                },
+                q2: {
+                    question: "How do I sign up for Ant Pool?",
+                    answer: "Simply sign in with your Google account or Email. No downloads, no complicated setup. Create a group in seconds and start inviting your colony members!"
+                },
+                q3: {
+                    question: "What currencies can I use?",
+                    answer: "We support 12 currencies: USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Track expenses in multiple currencies within the same group. Perfect for international trips or global teams."
+                },
+                q4: {
+                    question: "How does smart settlement optimization work?",
+                    answer: "Our algorithm analyzes all debts and finds the minimum number of transactions needed. If Alice owes Bob $10 and Bob owes Charlie $10, instead of 2 transactions, Alice pays Charlie $10 directly. Just like ants finding the shortest path!"
+                },
+                q5: {
+                    question: "Is my data secure?",
+                    answer: "Absolutely! All data is protected by Firebase security. Only you and your group members can access your colony's information. We don't sell data, show ads, or track you."
+                },
+                q6: {
+                    question: "Can I use Ant Pool on my phone?",
+                    answer: "Yes! Ant Pool is mobile-first. Works perfectly on phones, tablets, and desktops. Progressive Web App (PWA) support means you can add it to your home screen."
+                },
+                q7: {
+                    question: "How do I invite members to my group?",
+                    answer: "Simply share the invite link or send email invitations from within the app. Members can join with Google or Email login - no downloads required."
+                },
+                q8: {
+                    question: "What if someone doesn't pay their share?",
+                    answer: "Ant Pool shows who owes what with complete transparency. Settlements happen outside the app (bank transfers, cash, etc.). We provide the calculations - you handle the payments."
+                },
+                q9: {
+                    question: "Can I delete expenses or modify them?",
+                    answer: "Yes! Group members can edit or delete expenses. All changes are recorded in the timeline for full transparency."
+                },
+                q10: {
+                    question: "Is there a limit to how many groups I can create?",
+                    answer: "No limits! Create unlimited groups for trips, roommates, family savings, events - whatever your colony needs. Completely free forever."
+                }
             },
             cta: {
                 title: "Ready to transform your shared expenses?",
@@ -633,13 +781,109 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "Divide Gastos Como Hormigas Trabajan Juntas",
-                subtitle: "Rastrea gastos compartidos, divide cuentas y liquida deudas con optimización inteligente. 12 monedas soportadas. Gratis para siempre.",
-                cta: "Comenzar Gratis",
+                title: "Trabaja Junto Como Hormigas",
+                title2: "Construye Riqueza, A Tu Manera",
+                subtitle: "Al igual que las hormigas trabajan juntas, Ant Pool te ayuda a rastrear y dividir gastos sin esfuerzo. Cada hormiga contribuye. Cada hormiga se beneficia. Soporta 12 monedas en todo el mundo con optimización inteligente de deudas.",
+                cta: "Comenzar Gratis Ahora",
+                ctaExplore: "Explorar Características",
                 stats: {
-                    users: "Usuarios Activos",
-                    funds: "Grupos Totales",
-                    confirmation: "Confirmación"
+                    free: "GRATIS",
+                    forever: "Para Siempre",
+                    currencies: "12",
+                    currenciesLabel: "Monedas",
+                    smart: "INTELIGENTE",
+                    settlements: "Liquidaciones"
+                }
+            },
+            modesSection: {
+                title: "Por Qué las Colonias Eligen Ant Pool",
+                subtitle: "Todo lo que necesitas para gestionar gastos compartidos como la naturaleza lo intentó",
+                currencies12: {
+                    title: "12 Monedas",
+                    desc: "USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Rastrea gastos en tu moneda local."
+                },
+                smartSettlements: {
+                    title: "Liquidaciones Inteligentes",
+                    desc: "Optimización de deudas con IA. Minimiza transacciones automáticamente—como hormigas encontrando el camino más corto."
+                },
+                free: {
+                    title: "100% Gratis",
+                    desc: "Sin suscripciones. Sin niveles premium. Sin anuncios. Gratis para siempre para grupos y miembros ilimitados."
+                },
+                mobileFirst: {
+                    title: "Móvil Primero",
+                    desc: "Optimizado para teléfonos, tabletas y escritorio. Las hormigas trabajan en todas partes, Ant Pool también."
+                },
+                realTime: {
+                    title: "Actualizaciones en Tiempo Real",
+                    desc: "Rastreo de gastos en vivo. Filtros de línea de tiempo. Notificaciones instantáneas cuando los miembros de la colonia agregan gastos."
+                },
+                easySignIn: {
+                    title: "Inicio de Sesión Fácil",
+                    desc: "Inicio con Google o Email. No se necesita conocimiento técnico. Únete en segundos y comienza a rastrear."
+                }
+            },
+            philosophy: {
+                title: "La Filosofía de Ant Pool",
+                subtitle: "Inspirado en los cooperadores más eficientes de la naturaleza",
+                workTogether: "Trabajar Juntos",
+                likeNature: "Como La Naturaleza Lo Intentó",
+                multiCurrency: {
+                    title: "Soporte Multi-Moneda",
+                    desc: "Rastrea gastos en USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Colonias globales, monedas locales."
+                },
+                settlements: {
+                    title: "Liquidaciones Inteligentes",
+                    desc: "El algoritmo de optimización de deudas minimiza transacciones. Si Alicia le debe a Bob y Bob le debe a Carlos, Alicia le paga directamente a Carlos."
+                },
+                timeline: {
+                    title: "Línea de Tiempo y Filtros",
+                    desc: "Ve gastos por semana, mes o rango personalizado. Cada contribución se registra y es buscable con filtros de fecha."
+                },
+                updates: {
+                    title: "Actualizaciones en Tiempo Real",
+                    desc: "Todas las transacciones visibles para los miembros de la colonia. Notificaciones instantáneas cuando se agregan o modifican gastos."
+                },
+                mobile: {
+                    title: "Diseño Móvil Primero",
+                    desc: "Tarjetas compactas, diseño responsivo, optimizado para táctil. Gestiona tu colonia desde cualquier dispositivo, en cualquier lugar."
+                }
+            },
+            howItWorks: {
+                title: "Cómo Cooperan las Hormigas",
+                subtitle: "Sigue el rastro de hormigas hacia el éxito colectivo",
+                threeSteps: "Tres Pasos Para el Éxito de la Colonia",
+                step1: {
+                    title: "Crea Tu Colonia",
+                    desc: "Nombra tu grupo, selecciona tu moneda (12 soportadas) e invita miembros vía email. Privado o público—tú eliges."
+                },
+                step2: {
+                    title: "Agrega Gastos Según Ocurran",
+                    desc: "Cada hormiga agrega sus gastos a la línea de tiempo. Los filtros de fecha te permiten rastrear períodos semanales, mensuales o personalizados."
+                },
+                step3: {
+                    title: "Liquidaciones Inteligentes",
+                    desc: "Ant Pool calcula quién le debe a quién con rutas de deuda optimizadas. Liquida fuera de la app—solo te mostramos la ruta más corta."
+                }
+            },
+            whereAnts: {
+                title: "Dónde Cooperan las Hormigas",
+                subtitle: "Construye tu colonia para cualquier objetivo compartido",
+                travel: {
+                    title: "Colonias de Viaje",
+                    desc: "Explora el mundo como un enjambre. Agrupa recursos para aventuras donde cada hormiga contribuye y vota."
+                },
+                living: {
+                    title: "Colonias de Vivienda",
+                    desc: "Construye tu nido juntos. Comparte renta, servicios, víveres - como las hormigas comparten su hogar."
+                },
+                celebration: {
+                    title: "Colonias de Celebración",
+                    desc: "Organiza reuniones épicas. Desde bodas hasta festivales - recursos colectivos para alegría colectiva."
+                },
+                business: {
+                    title: "Colonias de Negocios",
+                    desc: "Construye empresas como hormigueros. Recursos de startup, inversiones, proyectos - la cooperación transparente gana."
                 }
             },
             features: {
@@ -712,38 +956,90 @@ const translations = {
                 }
             },
             benefits: {
-                title: "¿Por qué Ant Pool Gana?",
-                noIntermediaries: {
+                title: "Por Qué Ant Pool Gana",
+                subtitle: "Compara Ant Pool con competidores",
+                globalColony: {
                     title: "Colonia de Hormigas Global",
-                    desc: "12 monedas soportadas. Rastrea gastos en USD, COP, EUR, MXN, y más. Tu colonia funciona en todo el mundo."
+                    desc: "12 monedas soportadas. Rastrea gastos en USD, COP, EUR, MXN, y más. Como hormigas recolectando de diferentes fuentes, tu colonia funciona en todo el mundo."
                 },
-                immutable: {
+                freeForever: {
                     title: "100% Gratis Para Siempre",
-                    desc: "Sin suscripciones. Sin niveles premium. Sin anuncios. Como hormigas compartiendo comida libremente en su colonia."
+                    desc: "Sin suscripciones. Sin niveles premium. Sin anuncios. Como hormigas compartiendo comida libremente en su colonia, Ant Pool es completamente gratis para todos."
                 },
-                openSource: {
+                smartDebt: {
                     title: "Optimización Inteligente de Deudas",
-                    desc: "Como hormigas encontrando el camino más corto, nuestro algoritmo minimiza transacciones automáticamente."
+                    desc: "Como hormigas encontrando el camino más corto, nuestro algoritmo de liquidación minimiza transacciones. Si A le debe a B y B le debe a C, A le paga directamente a C."
                 },
-                available: {
-                    title: "Disponible 24/7",
-                    desc: "Accede a tu colonia en cualquier momento desde cualquier dispositivo. Diseño optimizado para móviles. Actualizaciones en tiempo real."
+                neverSleep: {
+                    title: "Las Hormigas Nunca Duermen",
+                    desc: "Accede a tu colonia 24/7 desde cualquier dispositivo. Diseño optimizado para móviles. Filtros de línea de tiempo. Actualizaciones en tiempo real. El trabajo ocurre cuando necesita."
                 },
                 comparisonTitle: "Ant Pool vs Competidores",
                 comparisonFeature: "Característica",
                 comparisonSE: "Ant Pool",
                 comparisonTraditional: "Splitwise/Tricount",
-                transparency: "Precio",
-                total: "GRATIS Para Siempre",
-                limited: "$3-5/mes Premium",
-                fees: "Monedas",
-                control: "Liquidaciones Inteligentes",
-                yours: "Tuyo",
-                company: "Empresa",
-                audit: "Auditoría",
-                public: "Pública",
-                private: "Privada",
-                availability: "Disponibilidad"
+                price: "Precio",
+                priceFree: "GRATIS Para Siempre",
+                pricePremium: "$3-5/mes Premium",
+                currencies: "Monedas",
+                currencies12: "12 Monedas",
+                currenciesLimited: "Limitadas (pago)",
+                settlements: "Liquidaciones Inteligentes",
+                settlementsAuto: "Auto-Optimizado",
+                settlementsManual: "Manual/Básico",
+                timelineFilters: "Filtros de Línea de Tiempo",
+                dateFilters: "Filtros de Fecha",
+                basicHistory: "Historial básico",
+                ads: "Anuncios",
+                noAds: "Sin Anuncios",
+                adsFreeTier: "Anuncios (gratis)",
+                philosophy: "Filosofía",
+                antColony: "Colonia de Hormigas",
+                justApp: "Solo una app"
+            },
+            faq: {
+                title: "Preguntas Frecuentes",
+                subtitle: "Todo lo que necesitas saber",
+                q1: {
+                    question: "¿Por qué Ant Pool es mejor que Splitwise o Tricount?",
+                    answer: "Ant Pool es 100% gratis para siempre sin niveles premium ni anuncios. Soportamos 12 monedas (vs sus opciones gratuitas limitadas), tenemos optimización inteligente de liquidación para minimizar transacciones, y filtros de línea de tiempo para mejor seguimiento de gastos. ¡Además, nuestra filosofía de colonia de hormigas hace que la colaboración sea divertida!"
+                },
+                q2: {
+                    question: "¿Cómo me registro en Ant Pool?",
+                    answer: "Simplemente inicia sesión con tu cuenta de Google o Email. Sin descargas, sin configuración complicada. ¡Crea un grupo en segundos y comienza a invitar a los miembros de tu colonia!"
+                },
+                q3: {
+                    question: "¿Qué monedas puedo usar?",
+                    answer: "Soportamos 12 monedas: USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Rastrea gastos en múltiples monedas dentro del mismo grupo. Perfecto para viajes internacionales o equipos globales."
+                },
+                q4: {
+                    question: "¿Cómo funciona la optimización inteligente de liquidación?",
+                    answer: "Nuestro algoritmo analiza todas las deudas y encuentra el número mínimo de transacciones necesarias. Si Alicia le debe a Bob $10 y Bob le debe a Carlos $10, en lugar de 2 transacciones, Alicia le paga $10 directamente a Carlos. ¡Como hormigas encontrando el camino más corto!"
+                },
+                q5: {
+                    question: "¿Mis datos están seguros?",
+                    answer: "¡Absolutamente! Todos los datos están protegidos por la seguridad de Firebase. Solo tú y los miembros de tu grupo pueden acceder a la información de tu colonia. No vendemos datos, no mostramos anuncios, ni te rastreamos."
+                },
+                q6: {
+                    question: "¿Puedo usar Ant Pool en mi teléfono?",
+                    answer: "¡Sí! Ant Pool es móvil primero. Funciona perfectamente en teléfonos, tabletas y escritorios. El soporte de Aplicación Web Progresiva (PWA) significa que puedes agregarlo a tu pantalla de inicio."
+                },
+                q7: {
+                    question: "¿Cómo invito miembros a mi grupo?",
+                    answer: "Simplemente comparte el enlace de invitación o envía invitaciones por email desde dentro de la app. Los miembros pueden unirse con inicio de sesión de Google o Email - sin descargas requeridas."
+                },
+                q8: {
+                    question: "¿Qué pasa si alguien no paga su parte?",
+                    answer: "Ant Pool muestra quién debe qué con transparencia completa. Las liquidaciones ocurren fuera de la app (transferencias bancarias, efectivo, etc.). Nosotros proporcionamos los cálculos - tú manejas los pagos."
+                },
+                q9: {
+                    question: "¿Puedo eliminar gastos o modificarlos?",
+                    answer: "¡Sí! Los miembros del grupo pueden editar o eliminar gastos. Todos los cambios se registran en la línea de tiempo para transparencia total."
+                },
+                q10: {
+                    question: "¿Hay un límite de cuántos grupos puedo crear?",
+                    answer: "¡Sin límites! Crea grupos ilimitados para viajes, roommates, ahorros familiares, eventos - lo que tu colonia necesite. Completamente gratis para siempre."
+                }
             },
             cta: {
                 title: "¿Listo para transformar tus gastos compartidos?",
