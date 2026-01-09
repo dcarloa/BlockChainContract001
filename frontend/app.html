@@ -870,8 +870,15 @@
                     <!-- Header Content -->
                     <div class="fund-header-content">
                         <div class="fund-header-icon" id="fundHeaderIcon">🌴</div>
-                        <h1 id="fundDetailName" class="fund-header-title">Cargando...</h1>
-                        <p id="fundDetailDescription" class="fund-header-description">-</p>
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <h1 id="fundDetailName" class="fund-header-title">Cargando...</h1>
+                                <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none;" title="Edit group info">
+                                    ✏️
+                                </button>
+                            </div>
+                            <p id="fundDetailDescription" class="fund-header-description">-</p>
+                        </div>
                         <div class="fund-badges">
                             <span class="badge" id="fundTypeBadge">Tipo</span>
                             <span class="badge" id="groupStatusBadge">Estado</span>
@@ -2725,6 +2732,90 @@
                     </button>
                     <button type="submit" class="btn btn-primary">
                         💰 Set Budget
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Group Info Modal -->
+    <div id="editGroupModal" class="modal" style="display: none;">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2>✏️ Edit Group Info</h2>
+                <button class="modal-close" onclick="closeEditGroupModal()">&times;</button>
+            </div>
+            
+            <form id="editGroupForm" class="expense-form-clean">
+                <div class="form-header-clean" style="padding: 1rem 1.5rem 0;">
+                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin: 0;">
+                        Update your group's icon, name, and description. Only the group creator can make these changes.
+                    </p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="editGroupIcon" class="form-label">Group Icon</label>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div id="editGroupIconPreview" style="font-size: 3rem; padding: 0.5rem;">📦</div>
+                            <select id="editGroupIcon" class="form-input" onchange="updateEditGroupIconPreview()">
+                                <option value="📦">📦 Box</option>
+                                <option value="🌴">🌴 Palm Tree</option>
+                                <option value="✈️">✈️ Airplane</option>
+                                <option value="🏠">🏠 House</option>
+                                <option value="🍕">🍕 Pizza</option>
+                                <option value="🎉">🎉 Party</option>
+                                <option value="🏖️">🏖️ Beach</option>
+                                <option value="🎓">🎓 Graduation</option>
+                                <option value="💼">💼 Briefcase</option>
+                                <option value="🎮">🎮 Game Controller</option>
+                                <option value="🎸">🎸 Guitar</option>
+                                <option value="⚽">⚽ Soccer Ball</option>
+                                <option value="🎬">🎬 Movie</option>
+                                <option value="🍔">🍔 Burger</option>
+                                <option value="🎨">🎨 Art Palette</option>
+                                <option value="🚗">🚗 Car</option>
+                                <option value="🏔️">🏔️ Mountain</option>
+                                <option value="🌊">🌊 Ocean Wave</option>
+                                <option value="🔥">🔥 Fire</option>
+                                <option value="⭐">⭐ Star</option>
+                            </select>
+                        </div>
+                        <small class="field-hint">Choose an icon that represents your group</small>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="editGroupName" class="form-label">Group Name *</label>
+                        <input 
+                            type="text" 
+                            id="editGroupName"
+                            class="form-input"
+                            placeholder="My Awesome Group"
+                            maxlength="50"
+                            required
+                        >
+                        <small class="field-hint">Maximum 50 characters</small>
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="editGroupDescription" class="form-label">Description</label>
+                        <textarea 
+                            id="editGroupDescription"
+                            class="form-input"
+                            placeholder="Tell us about this group..."
+                            rows="3"
+                            maxlength="200"
+                        ></textarea>
+                        <small class="field-hint">Optional, maximum 200 characters</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditGroupModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Changes
                     </button>
                 </div>
             </form>

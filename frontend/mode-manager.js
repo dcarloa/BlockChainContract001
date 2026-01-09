@@ -147,6 +147,55 @@ class ModeManager {
     }
     
     /**
+     * Update group info (icon, name, description)
+     * Only creator can update
+     * @param {Object} updateInfo Updated information
+     * @returns {Promise<boolean>}
+     */
+    async updateGroupInfo(updateInfo) {
+        try {
+            if (!this.currentGroupId) {
+                throw new Error("No group selected");
+            }
+            
+            const user = window.FirebaseConfig.getCurrentUser();
+            const groupData = await window.FirebaseConfig.readDb(`groups/${this.currentGroupId}`);
+            
+            // Verify user is creator
+            if (groupData.createdBy !== user.uid) {
+                throw new Error("Only the group creator can edit group info");
+            }
+            
+            // Validate inputs
+            const validatedInfo = window.Validators.validateGroupInfo({
+                name: updateInfo.name,
+                description: updateInfo.description || '',
+                icon: updateInfo.icon || '📦'
+            });
+            
+            // Update only the specified fields
+            const updates = {
+                name: validatedInfo.name,
+                description: validatedInfo.description,
+                icon: validatedInfo.icon,
+                updatedAt: Date.now(),
+                updatedBy: user.uid
+            };
+            
+            await window.FirebaseConfig.updateDb(
+                `groups/${this.currentGroupId}`,
+                updates
+            );
+            
+            return true;
+            
+        } catch (error) {
+            console.error("❌ Failed to update group info:", error);
+            throw error;
+        }
+    }
+    
+    /**
      * Load Simple Mode group data
      * @param {string} groupId Group ID
      * @returns {Promise<Object>} Group data

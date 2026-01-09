@@ -2615,6 +2615,22 @@ async function loadSimpleModeDetailView() {
         safeUpdate('fundMembers', 'textContent', members.toString());
         safeUpdate('fundProposals', 'textContent', expenses.toString());
         
+        // Show/hide edit button based on creator status
+        const editGroupBtn = document.getElementById('editGroupInfoBtn');
+        const currentUserId = firebase.auth().currentUser?.uid;
+        if (editGroupBtn) {
+            if (groupData.createdBy === currentUserId) {
+                editGroupBtn.style.display = 'inline-block';
+            } else {
+                editGroupBtn.style.display = 'none';
+            }
+        }
+        
+        // Update header icon with group icon
+        if (headerIcon && groupData.icon) {
+            headerIcon.textContent = groupData.icon;
+        }
+        
         // User's share/balance
         const myBalance = calculateMyBalance(groupData);
         const userBalanceText = myBalance >= 0 
@@ -8234,6 +8250,52 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // Handle edit group form submission
+    const editGroupForm = document.getElementById('editGroupForm');
+    if (editGroupForm) {
+        editGroupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                if (!currentFund) {
+                    showToast('No group loaded', 'error');
+                    return;
+                }
+                
+                const icon = document.getElementById('editGroupIcon').value;
+                const name = document.getElementById('editGroupName').value.trim();
+                const description = document.getElementById('editGroupDescription').value.trim();
+                
+                if (!name) {
+                    showToast('Group name is required', 'error');
+                    return;
+                }
+                
+                showLoading('Updating group info...');
+                
+                window.modeManager.currentGroupId = currentFund.fundId;
+                
+                await window.modeManager.updateGroupInfo({
+                    icon,
+                    name,
+                    description
+                });
+                
+                hideLoading();
+                showToast('Group info updated successfully!', 'success');
+                closeEditGroupModal();
+                
+                // Refresh the view to show updated info
+                await refreshCurrentView();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error updating group info:', error);
+                showToast('Error: ' + error.message, 'error');
+            }
+        });
+    }
 });
 
 async function loadBudgetStatus() {
@@ -8417,6 +8479,57 @@ async function deleteBudget() {
         console.error('Error deleting budget:', error);
         showToast('Error deleting budget', 'error');
     }
+}
+
+// ============================================
+// EDIT GROUP INFO
+// ============================================
+
+/**
+ * Show edit group modal (only for creator)
+ */
+function showEditGroupModal() {
+    if (!currentFund) {
+        showToast('No group loaded', 'error');
+        return;
+    }
+    
+    // Check if current user is creator
+    const currentUserId = firebase.auth().currentUser?.uid;
+    if (currentFund.mode === 'simple') {
+        if (currentFund.creatorId !== currentUserId) {
+            showToast('Only the group creator can edit group info', 'error');
+            return;
+        }
+    }
+    
+    // Load current values
+    document.getElementById('editGroupIcon').value = currentFund.icon || '📦';
+    document.getElementById('editGroupIconPreview').textContent = currentFund.icon || '📦';
+    document.getElementById('editGroupName').value = currentFund.fundName || currentFund.name || '';
+    document.getElementById('editGroupDescription').value = currentFund.description || '';
+    
+    // Show modal
+    const modal = document.getElementById('editGroupModal');
+    modal.style.display = 'flex';
+}
+
+/**
+ * Close edit group modal
+ */
+function closeEditGroupModal() {
+    const modal = document.getElementById('editGroupModal');
+    modal.style.display = 'none';
+    document.getElementById('editGroupForm').reset();
+}
+
+/**
+ * Update icon preview when selection changes
+ */
+function updateEditGroupIconPreview() {
+    const select = document.getElementById('editGroupIcon');
+    const preview = document.getElementById('editGroupIconPreview');
+    preview.textContent = select.value;
 }
 
 // Toggle collapsible sections
