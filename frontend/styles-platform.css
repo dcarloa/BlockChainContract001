@@ -8713,6 +8713,26 @@ header,
     background: #ccc;
 }
 
+/* Dark Mode Support for Player Selection */
+[data-theme="dark"] .player-checkbox-item {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+
+[data-theme="dark"] .player-checkbox-item:hover {
+    border-color: #667eea;
+    background: #374151;
+}
+
+[data-theme="dark"] .player-checkbox-item.selected {
+    background: linear-gradient(135deg, #667eea25 0%, #764ba225 100%);
+    border-color: #667eea;
+}
+
+[data-theme="dark"] .player-checkbox-name {
+    color: #e2e8f0;
+}
+
 /* Challenge Mode Button */
 .btn-challenge-mode {
     display: inline-flex;
