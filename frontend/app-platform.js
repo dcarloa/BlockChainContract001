@@ -1009,32 +1009,6 @@ function updateUserMenu() {
             myProfileBtn.style.cursor = 'pointer';
         }
         
-        // Check user plan (default to FREE)
-        const userPlan = firebaseUser.plan || 'FREE';
-        const isPro = userPlan === 'PRO';
-        
-        if (upgradeProBtn) {
-            upgradeProBtn.disabled = false;
-            upgradeProBtn.style.opacity = '1';
-            upgradeProBtn.style.cursor = 'pointer';
-            const textSpan = upgradeProBtn.querySelector('.upgrade-text');
-            if (textSpan) {
-                textSpan.textContent = isPro ? 'PRO' : 'FREE';
-            }
-            upgradeProBtn.title = isPro ? 'PRO Member' : 'Upgrade to PRO';
-        }
-        if (notificationsBtn) {
-            notificationsBtn.disabled = false;
-            notificationsBtn.style.opacity = '1';
-            notificationsBtn.style.cursor = 'pointer';
-            notificationsBtn.title = 'Notifications';
-        }
-        if (myProfileBtn) {
-            myProfileBtn.disabled = false;
-            myProfileBtn.style.opacity = '1';
-            myProfileBtn.style.cursor = 'pointer';
-        }
-        
     } else if (firebaseUser && !hasWallet) {
         // Firebase only - limited access
         menuIcon.textContent = '👤';
@@ -1113,31 +1087,6 @@ function updateUserMenu() {
         // Disable My Profile, PRO and Notifications buttons when not logged in
         const upgradeProBtn = document.getElementById('upgradeProBtn');
         const notificationsBtn = document.getElementById('notificationsBtn');
-        const myProfileBtn = document.getElementById('myProfileBtn');
-        
-        if (upgradeProBtn) {
-            upgradeProBtn.disabled = true;
-            upgradeProBtn.style.opacity = '0.5';
-            upgradeProBtn.style.cursor = 'not-allowed';
-            upgradeProBtn.title = 'Sign in to upgrade to PRO';
-            const textSpan = upgradeProBtn.querySelector('.upgrade-text');
-            if (textSpan) {
-                textSpan.textContent = 'FREE';
-            }
-        }
-        if (notificationsBtn) {
-            notificationsBtn.disabled = true;
-            notificationsBtn.style.opacity = '0.5';
-            notificationsBtn.style.cursor = 'not-allowed';
-            notificationsBtn.title = 'Sign in to view notifications';
-        }
-        if (myProfileBtn) {
-            myProfileBtn.disabled = true;
-            myProfileBtn.style.opacity = '0.5';
-            myProfileBtn.style.cursor = 'not-allowed';
-        }
-    }
-}
         const myProfileBtn = document.getElementById('myProfileBtn');
         
         if (upgradeProBtn) {
