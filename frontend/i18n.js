@@ -304,15 +304,15 @@ const translations = {
                 }
             },
             cta: {
-                title: "Ready to transform your shared expenses?",
-                subtitle: "Join thousands of users already using Ant Pool",
-                button: "Start for Free",
-                noRegistration: "No subscriptions • No ads • Pure cooperation"
+                title: "🐜 Ready to Join the Colony?",
+                subtitle: "Be part of the cooperative finance revolution. Work together like ants. Build collective wealth.",
+                button: "🐜 Enter the Ant Pool",
+                noRegistration: "No queen ant • No worker exploitation • Pure cooperation"
             },
             footer: {
                 tagline: "Made with ❤️ for cooperative expense management.",
-                subtitle: "Free forever • Mobile-first • Collaborative",
-                description: "The most transparent way to manage shared expenses with smart optimization.",
+                subtitle: "🐜 Open source • Community-driven • Built with ❤️",
+                description: "🐜 Work together like ants. Track and split expenses cooperatively. Nature's wisdom meets modern expense management.",
                 product: "Product",
                 features: "Features",
                 howItWorks: "How It Works",
@@ -324,10 +324,15 @@ const translations = {
                 github: "GitHub",
                 baseNetwork: "Base Network",
                 technology: "Built With",
+                legal: "Legal",
+                privacy: "Privacy Policy",
+                terms: "Terms of Service",
+                cookies: "Cookie Settings",
                 firebase: "Firebase",
                 javascript: "JavaScript",
                 opensource: "Open Source",
-                community: "Community"
+                community: "Community",
+                copyright: "© 2025 Ant Pool. Built by the colony, for the colony. Powered by modern web technologies."
             }
         },
         // App Platform
@@ -1042,15 +1047,15 @@ const translations = {
                 }
             },
             cta: {
-                title: "¿Listo para transformar tus gastos compartidos?",
-                subtitle: "Únete a miles de usuarios que ya usan Ant Pool",
-                button: "Comenzar Gratis",
-                noRegistration: "Sin suscripciones • Sin anuncios • Pura cooperación"
+                title: "🐜 ¿Listo para Unirte a la Colonia?",
+                subtitle: "Sé parte de la revolución de finanzas cooperativas. Trabaja junto como hormigas. Construye riqueza colectiva.",
+                button: "🐜 Entrar al Ant Pool",
+                noRegistration: "Sin hormiga reina • Sin explotación laboral • Pura cooperación"
             },
             footer: {
                 tagline: "Hecho con ❤️ para la gestión cooperativa de gastos.",
-                subtitle: "Gratis para siempre • Enfocado en móviles • Colaborativo",
-                description: "La forma más transparente de gestionar gastos compartidos con optimización inteligente.",
+                subtitle: "🐜 Código abierto • Impulsado por la comunidad • Hecho con ❤️",
+                description: "🐜 Trabaja junto como hormigas. Rastrea y divide gastos cooperativamente. La sabiduría de la naturaleza encuentra la gestión moderna de gastos.",
                 product: "Producto",
                 features: "Características",
                 howItWorks: "Cómo Funciona",
@@ -1062,10 +1067,15 @@ const translations = {
                 github: "GitHub",
                 baseNetwork: "Base Network",
                 technology: "Construido Con",
+                legal: "Legal",
+                privacy: "Política de Privacidad",
+                terms: "Términos de Servicio",
+                cookies: "Configuración de Cookies",
                 firebase: "Firebase",
                 javascript: "JavaScript",
                 opensource: "Código Abierto",
-                community: "Comunidad"
+                community: "Comunidad",
+                copyright: "© 2025 Ant Pool. Construido por la colonia, para la colonia. Impulsado por tecnologías web modernas."
             }
         },
         // App Platform
