@@ -793,20 +793,15 @@
 
                 <!-- Fund Filters -->
                 <div class="fund-filters">
-                    <button class="filter-btn active" data-filter="all">
-                        <span data-i18n="app.dashboard.filters.all">📋 All</span> (<span id="countAll">0</span>)
+                    <button class="filter-btn active" data-filter="all" data-i18n="app.dashboard.filters.all">📋 All (<span id="countAll">0</span>)
                     </button>
-                    <button class="filter-btn" data-filter="created">
-                        <span data-i18n="app.dashboard.filters.created">👑 Created by me</span> (<span id="countCreated">0</span>)
+                    <button class="filter-btn" data-filter="created" data-i18n="app.dashboard.filters.created">👑 Created by me (<span id="countCreated">0</span>)
                     </button>
-                    <button class="filter-btn" data-filter="participating">
-                        <span data-i18n="app.dashboard.filters.participating">👥 Member of</span> (<span id="countParticipating">0</span>)
+                    <button class="filter-btn" data-filter="participating" data-i18n="app.dashboard.filters.participating">👥 Member of (<span id="countParticipating">0</span>)
                     </button>
-                    <button class="filter-btn" data-filter="simple">
-                        <span data-i18n="app.dashboard.filters.simple">📝 Simple Mode</span> (<span id="countSimple">0</span>)
+                    <button class="filter-btn" data-filter="simple" data-i18n="app.dashboard.filters.simple">📝 Simple Mode (<span id="countSimple">0</span>)
                     </button>
-                    <button class="filter-btn" data-filter="blockchain">
-                        <span data-i18n="app.dashboard.filters.blockchain">⛓️ Blockchain</span> (<span id="countBlockchain">0</span>)
+                    <button class="filter-btn" data-filter="blockchain" data-i18n="app.dashboard.filters.blockchain">⛓️ Blockchain (<span id="countBlockchain">0</span>)
                     </button>
                 </div>
 
@@ -1742,7 +1737,7 @@
             <div id="createFundModal" class="modal" style="display: none;">
                 <div class="modal-content modal-large create-group-modal">
                     <div class="modal-header">
-                        <h2>✨ Create New Group</h2>
+                        <h2 data-i18n="app.createFund.title">✨ Create New Group</h2>
                         <button class="modal-close" onclick="closeCreateFundModal()">&times;</button>
                     </div>
                     
@@ -1751,40 +1746,41 @@
                         <div class="step-indicator">
                             <div class="step active" data-step="1">
                                 <div class="step-number">1</div>
-                                <div class="step-label">Basic Info</div>
+                                <div class="step-label" data-i18n="app.createFund.steps.basicInfo">Basic Info</div>
                                 <div class="step-connector"></div>
                             </div>
                             <div class="step" data-step="2">
                                 <div class="step-number">2</div>
-                                <div class="step-label">Mode</div>
+                                <div class="step-label" data-i18n="app.createFund.steps.mode">Mode</div>
                             </div>
                         </div>
 
                         <!-- Step 1: Basic Info -->
                         <div class="form-step" data-step="1" style="display: block;">
-                            <h3>📝 What's your group name?</h3>
-                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Give it a name everyone will easily recognize</p>
+                            <h3 data-i18n="app.createFund.step1.title">📝 What's your group name?</h3>
+                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;" data-i18n="app.createFund.step1.subtitle">Give it a name everyone will easily recognize</p>
                             
                             <div class="form-group">
                                 <label for="fundName">
-                                    <span class="label-text">Group Name</span>
+                                    <span class="label-text" data-i18n="app.createFund.fields.name">Group Name</span>
                                     <span class="label-required">*</span>
                                 </label>
                                 <input 
                                     type="text" 
                                     id="fundName" 
+                                    data-i18n-placeholder="app.createFund.fields.namePlaceholder"
                                     placeholder="E.g: Dog Expenses, Cancun Trip, Roommates 2025" 
                                     required 
                                     class="input-modern input-large"
                                 />
-                                <small class="form-hint">💡 Use a clear and descriptive name</small>
+                                <small class="form-hint" data-i18n="app.createFund.fields.nameHint">💡 Use a clear and descriptive name</small>
                             </div>
 
                             <!-- Icon Selection -->
                             <div class="form-group">
                                 <label>
-                                    <span class="label-text">Group Icon</span>
-                                    <span class="label-badge">Optional</span>
+                                    <span class="label-text" data-i18n="app.createFund.step1.groupIcon">Group Icon</span>
+                                    <span class="label-badge" data-i18n="app.createFund.fields.budgetBadge">Optional</span>
                                 </label>
                                 <div class="icon-selection-grid">
                                     <input type="radio" name="groupIcon" value="🐕" id="icon-dog" checked />
@@ -1823,17 +1819,18 @@
                                     <input type="radio" name="groupIcon" value="💎" id="icon-diamond" />
                                     <label for="icon-diamond" class="icon-option">💎</label>
                                 </div>
-                                <small class="form-hint">Choose an icon that represents your group</small>
+                                <small class="form-hint" data-i18n="app.createFund.step1.iconHint">Choose an icon that represents your group</small>
                             </div>
 
                             <div class="form-group">
                                 <label for="fundDescription">
-                                    <span class="label-text">Description</span>
-                                    <span class="label-badge">Optional</span>
+                                    <span class="label-text" data-i18n="app.createFund.fields.description">Description</span>
+                                    <span class="label-badge" data-i18n="app.createFund.fields.budgetBadge">Optional</span>
                                 </label>
                                 <textarea 
                                     id="fundDescription" 
                                     rows="3" 
+                                    data-i18n-placeholder="app.createFund.fields.descriptionPlaceholder"
                                     placeholder="E.g: Shared expenses for food, walks, and pet care"
                                     class="input-modern"
                                 ></textarea>
@@ -1844,10 +1841,10 @@
                             <input type="hidden" id="fundType" value="0" />
                             
                             <div class="form-step-buttons">
-                                <button type="button" class="btn-step btn-step-back" onclick="closeCreateFundModal()">
+                                <button type="button" class="btn-step btn-step-back" onclick="closeCreateFundModal()" data-i18n="app.createFund.buttons.cancel">
                                     Cancel
                                 </button>
-                                <button type="button" class="btn-step btn-step-next" onclick="nextStep(2)">
+                                <button type="button" class="btn-step btn-step-next" onclick="nextStep(2)" data-i18n="app.createFund.buttons.next">
                                     Next →
                                 </button>
                             </div>
@@ -1855,45 +1852,45 @@
 
                         <!-- Step 2: Mode Selection -->
                         <div class="form-step" data-step="2" style="display: none;">
-                            <h3>⚡ How do you want to manage expenses?</h3>
-                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;">Choose the mode that best fits your group</p>
+                            <h3 data-i18n="app.createFund.step2.title">⚡ How do you want to manage expenses?</h3>
+                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;" data-i18n="app.createFund.step2.subtitle">Choose the mode that best fits your group</p>
                             
                             <div class="mode-selection-grid">
                                 <label class="mode-card">
                                     <input type="radio" name="groupMode" value="simple" checked />
-                                    <span class="mode-recommended">✨ Recommended</span>
+                                    <span class="mode-recommended" data-i18n="app.createFund.modes.simple.recommended">✨ Recommended</span>
                                     <div class="mode-title">
                                         <span>📝</span>
-                                        <span>Simple Mode</span>
+                                        <span data-i18n="app.createFund.modes.simple.title">Simple Mode</span>
                                     </div>
-                                    <div class="mode-description">
+                                    <div class="mode-description" data-i18n="app.createFund.modes.simple.description">
                                         Perfect to get started. No wallet needed. Easily track expenses and split bills.
                                     </div>
                                     <ul class="mode-features">
-                                        <li>Login with Google or Email</li>
-                                        <li>Track debts</li>
-                                        <li>Collaborative approval</li>
-                                        <li>Settle outside the app</li>
+                                        <li data-i18n="app.createFund.modes.simple.features.login">Login with Google or Email</li>
+                                        <li data-i18n="app.createFund.modes.simple.features.track">Track debts</li>
+                                        <li data-i18n="app.createFund.modes.simple.features.approval">Collaborative approval</li>
+                                        <li data-i18n="app.createFund.modes.simple.features.settle">Settle outside the app</li>
                                     </ul>
                                 </label>
                                 
                                 <label class="mode-card mode-disabled" id="blockchainModeCard" style="opacity: 0.5; cursor: not-allowed; position: relative;">
                                     <input type="radio" name="groupMode" value="blockchain" disabled />
-                                    <span class="mode-recommended" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">🚀 Coming Soon</span>
+                                    <span class="mode-recommended" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);" data-i18n="app.createFund.modes.blockchain.comingSoon">🚀 Coming Soon</span>
                                     <div class="mode-title">
                                         <span>⛓️</span>
-                                        <span>Blockchain Mode</span>
+                                        <span data-i18n="app.createFund.modes.blockchain.title">Blockchain Mode</span>
                                     </div>
-                                    <div class="mode-description">
+                                    <div class="mode-description" data-i18n="app.createFund.modes.blockchain.description">
                                         Automatic smart contracts. On-chain voting and total transparency.
                                     </div>
                                     <ul class="mode-features">
-                                        <li>Requires crypto wallet</li>
-                                        <li>Automatic payments</li>
-                                        <li>Blockchain voting</li>
-                                        <li>Trustless execution</li>
+                                        <li data-i18n="app.createFund.modes.blockchain.features.wallet">Requires crypto wallet</li>
+                                        <li data-i18n="app.createFund.modes.blockchain.features.automatic">Automatic payments</li>
+                                        <li data-i18n="app.createFund.modes.blockchain.features.voting">Blockchain voting</li>
+                                        <li data-i18n="app.createFund.modes.blockchain.features.trustless">Trustless execution</li>
                                     </ul>
-                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: #f59e0b; white-space: nowrap;">IN DEVELOPMENT</div>
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: #f59e0b; white-space: nowrap;" data-i18n="app.createFund.modes.blockchain.inDevelopment">IN DEVELOPMENT</div>
                                 </label>
                             </div>
 

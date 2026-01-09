@@ -544,7 +544,46 @@ const translations = {
                 }
             },
             createFund: {
-                title: "Create New Group",
+                title: "✨ Create New Group",
+                steps: {
+                    basicInfo: "Basic Info",
+                    mode: "Mode"
+                },
+                step1: {
+                    title: "📝 What's your group name?",
+                    subtitle: "Give it a name everyone will easily recognize",
+                    groupIcon: "Group Icon",
+                    iconHint: "Choose an icon that represents your group"
+                },
+                step2: {
+                    title: "⚡ How do you want to manage expenses?",
+                    subtitle: "Choose the mode that best fits your group"
+                },
+                modes: {
+                    simple: {
+                        title: "📝 Simple Mode",
+                        recommended: "✨ Recommended",
+                        description: "Perfect to get started. No wallet needed. Easily track expenses and split bills.",
+                        features: {
+                            login: "Login with Google or Email",
+                            track: "Track debts",
+                            approval: "Collaborative approval",
+                            settle: "Settle outside the app"
+                        }
+                    },
+                    blockchain: {
+                        title: "⛓️ Blockchain Mode",
+                        comingSoon: "🚀 Coming Soon",
+                        inDevelopment: "IN DEVELOPMENT",
+                        description: "Automatic smart contracts. On-chain voting and total transparency.",
+                        features: {
+                            wallet: "Requires crypto wallet",
+                            automatic: "Automatic payments",
+                            voting: "Blockchain voting",
+                            trustless: "Trustless execution"
+                        }
+                    }
+                },
                 sections: {
                     type: "Group Type",
                     typeDesc: "Select the main purpose",
@@ -567,9 +606,10 @@ const translations = {
                 },
                 fields: {
                     name: "Group Name",
-                    namePlaceholder: "E.g.: Trip to Cancun 2025",
+                    namePlaceholder: "E.g: Dog Expenses, Cancun Trip, Roommates 2025",
+                    nameHint: "💡 Use a clear and descriptive name",
                     description: "Description",
-                    descriptionPlaceholder: "Describe the group's purpose and what type of expenses will be managed...",
+                    descriptionPlaceholder: "E.g: Shared expenses for food, walks, and pet care",
                     budget: "Budget or Goal",
                     budgetBadge: "Optional",
                     budgetHint: "Leave at 0 for unlimited expenses",
@@ -582,6 +622,7 @@ const translations = {
                 },
                 buttons: {
                     cancel: "Cancel",
+                    next: "Next →",
                     create: "Create Group",
                     creating: "Creating..."
                 },
@@ -1434,7 +1475,46 @@ const translations = {
                 }
             },
             createFund: {
-                title: "Crear Nuevo Grupo",
+                title: "✨ Crear Nuevo Grupo",
+                steps: {
+                    basicInfo: "Información",
+                    mode: "Modo"
+                },
+                step1: {
+                    title: "📝 ¿Cuál es el nombre de tu grupo?",
+                    subtitle: "Dale un nombre que todos reconozcan fácilmente",
+                    groupIcon: "Ícono del Grupo",
+                    iconHint: "Elige un ícono que represente a tu grupo"
+                },
+                step2: {
+                    title: "⚡ ¿Cómo quieres gestionar los gastos?",
+                    subtitle: "Elige el modo que mejor se adapte a tu grupo"
+                },
+                modes: {
+                    simple: {
+                        title: "📝 Modo Simple",
+                        recommended: "✨ Recomendado",
+                        description: "Perfecto para comenzar. No necesitas wallet. Rastrea gastos y divide cuentas fácilmente.",
+                        features: {
+                            login: "Ingreso con Google o Email",
+                            track: "Rastreo de deudas",
+                            approval: "Aprobación colaborativa",
+                            settle: "Liquidación fuera de la app"
+                        }
+                    },
+                    blockchain: {
+                        title: "⛓️ Modo Blockchain",
+                        comingSoon: "🚀 Próximamente",
+                        inDevelopment: "EN DESARROLLO",
+                        description: "Contratos inteligentes automáticos. Votación on-chain y transparencia total.",
+                        features: {
+                            wallet: "Requiere wallet cripto",
+                            automatic: "Pagos automáticos",
+                            voting: "Votación blockchain",
+                            trustless: "Ejecución sin confianza"
+                        }
+                    }
+                },
                 sections: {
                     type: "Tipo de Grupo",
                     typeDesc: "Selecciona el propósito principal",
@@ -1457,9 +1537,10 @@ const translations = {
                 },
                 fields: {
                     name: "Nombre del Grupo",
-                    namePlaceholder: "Ej: Viaje a Cancún 2025",
+                    namePlaceholder: "Ej: Gastos de Perro, Viaje Cancún, Roommates 2025",
+                    nameHint: "💡 Usa un nombre claro y descriptivo",
                     description: "Descripción",
-                    descriptionPlaceholder: "Describe el propósito del grupo y qué tipo de gastos se manejarán...",
+                    descriptionPlaceholder: "Ej: Gastos compartidos para comida, paseos y cuidado de mascotas",
                     budget: "Presupuesto o Meta",
                     budgetBadge: "Opcional",
                     budgetHint: "Deja en 0 para gastos sin límite",
@@ -1472,6 +1553,7 @@ const translations = {
                 },
                 buttons: {
                     cancel: "Cancelar",
+                    next: "Siguiente →",
                     create: "Crear Grupo",
                     creating: "Creando..."
                 },
