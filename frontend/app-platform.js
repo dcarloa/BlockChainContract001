@@ -978,6 +978,22 @@ function updateUserMenu() {
         document.getElementById('menuUserEmail').textContent = firebaseUser.email || '';
         document.getElementById('menuWalletAddress').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
         
+        // Enable PRO and Notifications buttons
+        const upgradeProBtn = document.getElementById('upgradeProBtn');
+        const notificationsBtn = document.getElementById('notificationsBtn');
+        if (upgradeProBtn) {
+            upgradeProBtn.disabled = false;
+            upgradeProBtn.style.opacity = '1';
+            upgradeProBtn.style.cursor = 'pointer';
+            upgradeProBtn.title = 'Upgrade to PRO';
+        }
+        if (notificationsBtn) {
+            notificationsBtn.disabled = false;
+            notificationsBtn.style.opacity = '1';
+            notificationsBtn.style.cursor = 'pointer';
+            notificationsBtn.title = 'Notifications';
+        }
+        
     } else if (firebaseUser && !hasWallet) {
         // Firebase only - limited access
         menuIcon.textContent = '👤';
@@ -994,6 +1010,22 @@ function updateUserMenu() {
         document.getElementById('menuUserAvatar').textContent = firebaseUser.displayName?.charAt(0) || '👤';
         document.getElementById('menuUserDisplayName').textContent = firebaseUser.displayName || 'User';
         document.getElementById('menuUserEmail').textContent = firebaseUser.email || '';
+        
+        // Enable PRO and Notifications buttons
+        const upgradeProBtn = document.getElementById('upgradeProBtn');
+        const notificationsBtn = document.getElementById('notificationsBtn');
+        if (upgradeProBtn) {
+            upgradeProBtn.disabled = false;
+            upgradeProBtn.style.opacity = '1';
+            upgradeProBtn.style.cursor = 'pointer';
+            upgradeProBtn.title = 'Upgrade to PRO';
+        }
+        if (notificationsBtn) {
+            notificationsBtn.disabled = false;
+            notificationsBtn.style.opacity = '1';
+            notificationsBtn.style.cursor = 'pointer';
+            notificationsBtn.title = 'Notifications';
+        }
         
     } else if (!firebaseUser && hasWallet) {
         // Wallet only
@@ -1021,6 +1053,22 @@ function updateUserMenu() {
         menuWalletInfo.style.display = 'none';
         menuSignOutFirebase.style.display = 'none';
         menuDisconnectWallet.style.display = 'none';
+        
+        // Disable PRO and Notifications buttons when not logged in
+        const upgradeProBtn = document.getElementById('upgradeProBtn');
+        const notificationsBtn = document.getElementById('notificationsBtn');
+        if (upgradeProBtn) {
+            upgradeProBtn.disabled = true;
+            upgradeProBtn.style.opacity = '0.5';
+            upgradeProBtn.style.cursor = 'not-allowed';
+            upgradeProBtn.title = 'Sign in to upgrade to PRO';
+        }
+        if (notificationsBtn) {
+            notificationsBtn.disabled = true;
+            notificationsBtn.style.opacity = '0.5';
+            notificationsBtn.style.cursor = 'not-allowed';
+            notificationsBtn.title = 'Sign in to view notifications';
+        }
     }
 }
 
