@@ -10176,3 +10176,62 @@ header,
 [data-theme="dark"] .card-result-item.loser {
     background: rgba(245, 87, 108, 0.2);
 }
+
+/* Ant Pool Roulette Styles */
+.ant-march {
+    display: inline-block;
+    animation: ant-walk 3s linear infinite;
+}
+
+@keyframes ant-walk {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(10px); }
+    50% { transform: translateX(0); }
+    75% { transform: translateX(-10px); }
+}
+
+.criteria-roulette {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 16px;
+    margin: 1rem 0;
+}
+
+/* Enhanced game icons with ant theme */
+.game-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.remote-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Ant-themed pulse animation */
+@keyframes ant-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+/* Dark mode for ant elements */
+[data-theme="dark"] .criteria-roulette {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+[data-theme="dark"] .ant-march {
+    filter: brightness(1.2);
+}

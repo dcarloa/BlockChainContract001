@@ -269,7 +269,7 @@ async function showQuickTapTurn(player) {
                     <h2>${player.nickname}'s Turn</h2>
                 </div>
                 <div class="game-instructions">
-                    <p>Tap the button as fast as you can when it turns green!</p>
+                    <p>🐜 Tap the button as fast as a worker ant when it turns green!</p>
                     <div class="ready-indicator">GET READY...</div>
                 </div>
                 <button class="btn btn-secondary" onclick="startQuickTapRound('${player.address}')">
@@ -297,8 +297,8 @@ function startQuickTapRound(playerAddress) {
         <div class="game-turn-screen" onclick="handleEarlyClick('${playerAddress}')">
             <div class="quick-tap-waiting">
                 <div class="pulse-indicator"></div>
-                <p>WAIT FOR GREEN...</p>
-                <small style="color: #888; margin-top: 10px;">⚠️ Don't click yet!</small>
+                <p>🐜 WAIT FOR GREEN...</p>
+                <small style="color: #888; margin-top: 10px;">⚠️ Patient like an ant!</small>
             </div>
         </div>
     `;
@@ -341,8 +341,8 @@ function handleEarlyClick(playerAddress) {
                 <div class="score-icon" style="font-size: 4rem;">❌</div>
                 <h2>${player.nickname}</h2>
                 <div class="score-value" style="color: #e74c3c;">ELIMINATED!</div>
-                <p>You clicked too early!</p>
-                <small style="color: #888;">Wait for the green button next time</small>
+                <p>🐜 You clicked too early!</p>
+                <small style="color: #888;">Wait for the green like a disciplined ant</small>
             </div>
             <button class="btn btn-primary" onclick="nextPlayer()">
                 Next Player →
@@ -421,8 +421,8 @@ async function showNumberGuessTurn(player, secretNumber) {
                     <h2>${player.nickname}'s Turn</h2>
                 </div>
                 <div class="game-instructions">
-                    <h3>🎯 Guess the Number</h3>
-                    <p>I'm thinking of a number between 1 and 100...</p>
+                    <h3>🎯🐜 Guess the Number</h3>
+                    <p>Use your ant intuition to find the hidden number between 1 and 100...</p>
                 </div>
                 ${previousGuesses ? `<div class="previous-guesses">${previousGuesses}</div>` : ''}
                 <input type="number" 
@@ -516,6 +516,9 @@ async function executeRemoteSelection(method) {
         case 'cards':
             selectedPlayer = await playCardDraw();
             break;
+        case 'antPool':
+            selectedPlayer = await playAntPoolRoulette();
+            break;
     }
     
     showRemoteResult(selectedPlayer, method);
@@ -590,7 +593,8 @@ function showRemoteResult(player, method) {
         'fair': 'Fair Rotation',
         'balance': 'Balance-Based',
         'dice': 'Dice Battle',
-        'cards': 'Card Draw'
+        'cards': 'Card Draw',
+        'antPool': '🐜 Ant Pool Roulette'
     };
     
     gameArea.innerHTML = `
@@ -865,6 +869,215 @@ async function showCardDraw(player, cards, suits) {
             setTimeout(() => resolve({rank, suit}), 1000);
         }, 1500);
     });
+}
+
+// ============================================
+// ANT POOL ROULETTE - COLONY INTELLIGENCE
+// ============================================
+
+async function playAntPoolRoulette() {
+    const gameArea = document.getElementById('gamePlayArea');
+    const players = challengeState.players;
+    
+    // Show intro with ant animation
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div style="text-align: center; padding: 2rem;">
+                <div class="ant-march" style="font-size: 4rem; margin-bottom: 1rem;">
+                    🐜🐜🐜
+                </div>
+                <h2>🐜 Ant Pool Roulette</h2>
+                <p style="font-size: 1.2rem; margin: 1rem 0;">The colony is analyzing...</p>
+                <p style="color: var(--text-secondary);">Using ant intelligence to select based on group metadata!</p>
+            </div>
+        </div>
+    `;
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Define possible criteria with ant-themed names
+    const criteria = [
+        {
+            id: 'least_spent',
+            name: '🐜 Smallest Contribution',
+            description: 'The ant who carried the least weight',
+            icon: '💸',
+            selector: () => selectByLeastSpent()
+        },
+        {
+            id: 'least_transactions',
+            name: '🐜 Laziest Worker',
+            description: 'The ant who made fewest trips',
+            icon: '📊',
+            selector: () => selectByFewestTransactions()
+        },
+        {
+            id: 'device_owner',
+            name: '🐜 Tunnel Owner',
+            description: 'The ant who owns this device',
+            icon: '📱',
+            selector: () => selectDeviceOwner()
+        },
+        {
+            id: 'group_creator',
+            name: '🐜 Queen Ant',
+            description: 'The ant who created this colony',
+            icon: '👑',
+            selector: () => selectGroupCreator()
+        },
+        {
+            id: 'random_ant',
+            name: '🐜 Random Scout',
+            description: 'A randomly chosen ant from the colony',
+            icon: '🎲',
+            selector: () => players[Math.floor(Math.random() * players.length)]
+        },
+        {
+            id: 'alphabetical',
+            name: '🐜 First in Line',
+            description: 'The ant whose name comes first',
+            icon: '🔤',
+            selector: () => selectAlphabetical()
+        }
+    ];
+    
+    // Spin the roulette to select a criterion
+    const selectedCriterion = await spinCriteriaRoulette(criteria);
+    
+    // Show selected criterion
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">${selectedCriterion.icon}</div>
+                <h2>${selectedCriterion.name}</h2>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin: 1rem 0;">
+                    ${selectedCriterion.description}
+                </p>
+                <div class="ant-march" style="margin-top: 2rem;">
+                    🐜 Analyzing colony data... 🐜
+                </div>
+            </div>
+        </div>
+    `;
+    
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    // Execute the selection
+    const selectedPlayer = selectedCriterion.selector();
+    
+    // Show result with ant theme
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 5rem; margin-bottom: 1rem;">🐜</div>
+                <h2>Colony Decision!</h2>
+                <div style="margin: 2rem 0; padding: 2rem; background: rgba(102, 126, 234, 0.1); border-radius: 16px;">
+                    <div style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                        ${selectedCriterion.name}
+                    </div>
+                    <h3 style="font-size: 2rem; color: var(--primary); margin: 1rem 0;">
+                        ${selectedPlayer.nickname}
+                    </h3>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">
+                        ${selectedCriterion.description}
+                    </p>
+                </div>
+                <div class="ant-march" style="margin-top: 1rem;">
+                    🐜🐜🐜 The colony has spoken! 🐜🐜🐜
+                </div>
+            </div>
+        </div>
+    `;
+    
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return selectedPlayer;
+}
+
+async function spinCriteriaRoulette(criteria) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div style="text-align: center; padding: 2rem;">
+                    <h2 style="margin-bottom: 2rem;">🐜 Spinning the Colony Wheel...</h2>
+                    <div class="criteria-roulette" id="criteriaDisplay">
+                        <div style="font-size: 3rem; padding: 2rem;">
+                            ${criteria[0].icon}
+                        </div>
+                    </div>
+                    <div class="ant-march" style="margin-top: 2rem;">
+                        🐜 🐜 🐜
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const displayEl = document.getElementById('criteriaDisplay');
+        let spinCount = 0;
+        const maxSpins = 20;
+        
+        const spinInterval = setInterval(() => {
+            const randomCriterion = criteria[Math.floor(Math.random() * criteria.length)];
+            displayEl.innerHTML = `
+                <div style="font-size: 3rem; padding: 2rem; animation: pulse 0.3s;">
+                    ${randomCriterion.icon}
+                </div>
+                <p style="font-size: 1.2rem; font-weight: 600;">${randomCriterion.name}</p>
+            `;
+            spinCount++;
+            
+            if (spinCount >= maxSpins) {
+                clearInterval(spinInterval);
+                const finalCriterion = criteria[Math.floor(Math.random() * criteria.length)];
+                displayEl.innerHTML = `
+                    <div style="font-size: 5rem; padding: 2rem; animation: dice-land 0.5s;">
+                        ${finalCriterion.icon}
+                    </div>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${finalCriterion.name}</p>
+                `;
+                setTimeout(() => resolve(finalCriterion), 1000);
+            }
+        }, 150);
+    });
+}
+
+function selectByLeastSpent() {
+    const players = challengeState.players;
+    // In a real implementation, this would check actual expense data
+    // For now, random selection as placeholder
+    return players[Math.floor(Math.random() * players.length)];
+}
+
+function selectByFewestTransactions() {
+    const players = challengeState.players;
+    // In a real implementation, this would check transaction count
+    // For now, random selection as placeholder
+    return players[Math.floor(Math.random() * players.length)];
+}
+
+function selectDeviceOwner() {
+    const players = challengeState.players;
+    // Try to find the current user (device owner)
+    if (window.currentAccount) {
+        const owner = players.find(p => p.address.toLowerCase() === window.currentAccount.toLowerCase());
+        if (owner) return owner;
+    }
+    // Fallback to random
+    return players[Math.floor(Math.random() * players.length)];
+}
+
+function selectGroupCreator() {
+    const players = challengeState.players;
+    // In a real implementation, this would check who created the group
+    // For now, select first member as placeholder
+    return players[0];
+}
+
+function selectAlphabetical() {
+    const players = challengeState.players;
+    const sorted = [...players].sort((a, b) => a.nickname.localeCompare(b.nickname));
+    return sorted[0];
 }
 
 // ============================================
