@@ -1587,3 +1587,12 @@ if (typeof document !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { t, setLanguage, getCurrentLanguage, translations, applyTranslations };
 }
+
+// Debug: Log howItWorks translations on load
+if (typeof console !== 'undefined') {
+    console.log('[i18n] Testing howItWorks translations:');
+    console.log('[i18n] EN threeSteps:', translations.en?.landing?.howItWorks?.threeSteps);
+    console.log('[i18n] ES threeSteps:', translations.es?.landing?.howItWorks?.threeSteps);
+    console.log('[i18n] EN step1.title:', translations.en?.landing?.howItWorks?.step1?.title);
+    console.log('[i18n] ES step1.title:', translations.es?.landing?.howItWorks?.step1?.title);
+}
