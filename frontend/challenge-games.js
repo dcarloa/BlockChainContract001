@@ -597,6 +597,19 @@ function showRemoteResult(player, method) {
         'antPool': '🐜 Ant Pool Roulette'
     };
     
+    // Get justification for Ant Pool method
+    let justificationHTML = '';
+    if (method === 'antPool' && challengeState.antPoolJustification) {
+        justificationHTML = `
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                <p style="font-size: 0.95rem; color: var(--text-secondary);">
+                    <strong>🐜 ${challengeState.antPoolCriterion}</strong><br>
+                    ${challengeState.antPoolJustification}
+                </p>
+            </div>
+        `;
+    }
+    
     gameArea.innerHTML = `
         <div class="game-turn-screen">
             <div class="result-screen">
@@ -610,6 +623,7 @@ function showRemoteResult(player, method) {
                 <div class="result-method">
                     <small>Method: ${methodNames[method]}</small>
                 </div>
+                ${justificationHTML}
             </div>
             <div class="result-actions">
                 <button class="btn btn-secondary" onclick="executeRemoteSelection('${method}')">
@@ -887,13 +901,13 @@ async function playAntPoolRoulette() {
                     🐜🐜🐜
                 </div>
                 <h2>🐜 Ant Pool Roulette</h2>
-                <p style="font-size: 1.2rem; margin: 1rem 0;">The colony is analyzing...</p>
-                <p style="color: var(--text-secondary);">Using ant intelligence to select based on group metadata!</p>
+                <p style="font-size: 1.2rem; margin: 1rem 0;">The colony is gathering data...</p>
+                <p style="color: var(--text-secondary);">Using ant intelligence to analyze group metadata!</p>
             </div>
         </div>
     `;
     
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 2500));
     
     // Define possible criteria with ant-themed names
     const criteria = [
@@ -902,85 +916,123 @@ async function playAntPoolRoulette() {
             name: '🐜 Smallest Contribution',
             description: 'The ant who carried the least weight',
             icon: '💸',
-            selector: () => selectByLeastSpent()
+            selector: () => selectByLeastSpent(),
+            getJustification: (player) => `${player.nickname} has contributed the least to the colony's resources`
         },
         {
             id: 'least_transactions',
             name: '🐜 Laziest Worker',
             description: 'The ant who made fewest trips',
             icon: '📊',
-            selector: () => selectByFewestTransactions()
+            selector: () => selectByFewestTransactions(),
+            getJustification: (player) => `${player.nickname} has made the fewest transactions in the group`
         },
         {
             id: 'device_owner',
             name: '🐜 Tunnel Owner',
             description: 'The ant who owns this device',
             icon: '📱',
-            selector: () => selectDeviceOwner()
+            selector: () => selectDeviceOwner(),
+            getJustification: (player) => `${player.nickname} is the owner of this device`
         },
         {
             id: 'group_creator',
             name: '🐜 Queen Ant',
             description: 'The ant who created this colony',
             icon: '👑',
-            selector: () => selectGroupCreator()
+            selector: () => selectGroupCreator(),
+            getJustification: (player) => `${player.nickname} created this group (the queen must contribute!)`
         },
         {
             id: 'random_ant',
             name: '🐜 Random Scout',
             description: 'A randomly chosen ant from the colony',
             icon: '🎲',
-            selector: () => players[Math.floor(Math.random() * players.length)]
+            selector: () => players[Math.floor(Math.random() * players.length)],
+            getJustification: (player) => `${player.nickname} was randomly selected by the colony`
         },
         {
             id: 'alphabetical',
             name: '🐜 First in Line',
-            description: 'The ant whose name comes first',
+            description: 'The ant whose name comes first alphabetically',
             icon: '🔤',
-            selector: () => selectAlphabetical()
+            selector: () => selectAlphabetical(),
+            getJustification: (player) => `${player.nickname}'s name comes first in alphabetical order`
+        },
+        {
+            id: 'longest_name',
+            name: '🐜 Longest Name',
+            description: 'The ant with the most letters in their name',
+            icon: '📝',
+            selector: () => selectLongestName(),
+            getJustification: (player) => `${player.nickname} has the longest name (${player.nickname.length} characters)`
         }
     ];
     
     // Spin the roulette to select a criterion
     const selectedCriterion = await spinCriteriaRoulette(criteria);
     
-    // Show selected criterion
+    // Show selected criterion with more detail
     gameArea.innerHTML = `
         <div class="game-turn-screen">
             <div style="text-align: center; padding: 2rem;">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">${selectedCriterion.icon}</div>
-                <h2>${selectedCriterion.name}</h2>
-                <p style="font-size: 1.1rem; color: var(--text-secondary); margin: 1rem 0;">
+                <div style="font-size: 5rem; margin-bottom: 1rem;">${selectedCriterion.icon}</div>
+                <h2 style="color: var(--primary);">${selectedCriterion.name}</h2>
+                <p style="font-size: 1.2rem; color: var(--text-secondary); margin: 1.5rem 0;">
                     ${selectedCriterion.description}
                 </p>
-                <div class="ant-march" style="margin-top: 2rem;">
-                    🐜 Analyzing colony data... 🐜
+                <div style="padding: 1.5rem; background: rgba(102, 126, 234, 0.1); border-radius: 12px; margin-top: 2rem;">
+                    <p style="font-size: 1.1rem;">🐜 The colony has chosen this criterion...</p>
                 </div>
+                <div class="ant-march" style="margin-top: 2rem;">
+                    🐜 Analyzing all members... 🐜
+                </div>
+            </div>
+        </div>
+    `;
+    
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Execute the selection
+    const selectedPlayer = selectedCriterion.selector();
+    const justification = selectedCriterion.getJustification(selectedPlayer);
+    
+    // Show suspense before revealing
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 6rem; margin-bottom: 1rem;">🤔</div>
+                <h2>The colony is deciding...</h2>
+                <div class="ant-march" style="margin-top: 2rem; font-size: 3rem;">
+                    🐜🐜🐜🐜🐜
+                </div>
+                <p style="color: var(--text-secondary); margin-top: 2rem; font-size: 1.1rem;">
+                    Calculating based on: ${selectedCriterion.name}
+                </p>
             </div>
         </div>
     `;
     
     await new Promise(resolve => setTimeout(resolve, 2500));
     
-    // Execute the selection
-    const selectedPlayer = selectedCriterion.selector();
-    
-    // Show result with ant theme
+    // Show result with clear justification
     gameArea.innerHTML = `
         <div class="game-turn-screen">
             <div style="text-align: center; padding: 2rem;">
                 <div style="font-size: 5rem; margin-bottom: 1rem;">🐜</div>
-                <h2>Colony Decision!</h2>
-                <div style="margin: 2rem 0; padding: 2rem; background: rgba(102, 126, 234, 0.1); border-radius: 16px;">
-                    <div style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                        ${selectedCriterion.name}
+                <h2 style="margin-bottom: 2rem;">Colony Decision!</h2>
+                <div style="margin: 2rem 0; padding: 2.5rem; background: rgba(245, 87, 108, 0.15); border: 2px solid #f5576c; border-radius: 16px;">
+                    <div style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                        ${selectedCriterion.icon} ${selectedCriterion.name}
                     </div>
-                    <h3 style="font-size: 2rem; color: var(--primary); margin: 1rem 0;">
+                    <h3 style="font-size: 2.5rem; color: #f5576c; margin: 1.5rem 0;">
                         ${selectedPlayer.nickname}
                     </h3>
-                    <p style="color: var(--text-secondary); margin-top: 1rem;">
-                        ${selectedCriterion.description}
-                    </p>
+                    <div style="padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; margin-top: 1.5rem;">
+                        <p style="font-size: 1.1rem; line-height: 1.6;">
+                            ℹ️ <strong>Reason:</strong> ${justification}
+                        </p>
+                    </div>
                 </div>
                 <div class="ant-march" style="margin-top: 1rem;">
                     🐜🐜🐜 The colony has spoken! 🐜🐜🐜
@@ -990,6 +1042,11 @@ async function playAntPoolRoulette() {
     `;
     
     await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Store justification for final results screen
+    challengeState.antPoolJustification = justification;
+    challengeState.antPoolCriterion = selectedCriterion.name;
+    
     return selectedPlayer;
 }
 
@@ -1080,6 +1137,12 @@ function selectAlphabetical() {
     return sorted[0];
 }
 
+function selectLongestName() {
+    const players = challengeState.players;
+    const sorted = [...players].sort((a, b) => b.nickname.length - a.nickname.length);
+    return sorted[0];
+}
+
 // ============================================
 // RESULTS DISPLAY
 // ============================================
@@ -1158,6 +1221,8 @@ function showResults(scoringType, extraInfo = null) {
             scoreDisplay = `Guessed ${originalGuess} <span style="color: #888; font-size: 0.85em;">(off by ${distance})</span>`;
         } else if (challengeState.gameType === 'quickTap') {
             scoreDisplay = `${item.score}ms`;
+        } else if (challengeState.gameType === 'memoryCards') {
+            scoreDisplay = item.score === 999 ? 'Gave Up' : `${item.score.toFixed(1)}s`;
         } else {
             scoreDisplay = `${item.score}`;
         }
@@ -1327,8 +1392,9 @@ function showResultsWithTiebreaker(mode) {
         
         let scoreDisplay = item.score;
         if (challengeState.gameType === 'memoryCards') {
-            // Memory cards now uses pairs found (0-6), not time
-            scoreDisplay = item.score === 0 ? 'Gave Up' : `${item.score} pairs`;
+            scoreDisplay = item.score === 999 ? 'Gave Up' : `${item.score.toFixed(1)}s`;
+        } else if (challengeState.gameType === 'shakeIt') {
+            scoreDisplay = `${item.score} shakes`;
         }
         
         return `
@@ -1670,11 +1736,11 @@ async function playMemoryCards() {
         // Show player intro
         await showPlayerIntro(player, 'Memory Cards', 'Find all matching pairs as fast as you can!');
         
-        const pairsFound = await showMemoryCardsTurn(player);
-        challengeState.scores[player.address] = pairsFound;
+        const time = await showMemoryCardsTurn(player);
+        challengeState.scores[player.address] = time; // Store time in seconds
     }
     
-    showResultsWithTiebreaker('higher_wins');
+    showResults('lower_wins'); // Lower time wins (fastest)
 }
 
 async function showMemoryCardsTurn(player) {
@@ -1723,8 +1789,8 @@ async function showMemoryCardsTurn(player) {
         
         window.giveUpMemory = () => {
             if (timer) clearInterval(timer);
-            const pairsFound = 0; // No pairs if giving up
-            resolve(pairsFound);
+            const elapsed = 999; // Penalty time for giving up
+            resolve(elapsed);
         };
         
         const timer = setInterval(() => {
@@ -1734,7 +1800,7 @@ async function showMemoryCardsTurn(player) {
             if (window.memoryGameData.pairsFound >= 6) {
                 clearInterval(timer);
                 setTimeout(() => {
-                    resolve(window.memoryGameData.pairsFound);
+                    resolve(elapsed);
                 }, 500);
             }
         }, 100);
