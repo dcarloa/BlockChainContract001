@@ -510,6 +510,12 @@ async function executeRemoteSelection(method) {
             selectedPlayer = selectByBalance();
             await spinTheWheel(selectedPlayer);
             break;
+        case 'dice':
+            selectedPlayer = await playDiceBattle();
+            break;
+        case 'cards':
+            selectedPlayer = await playCardDraw();
+            break;
     }
     
     showRemoteResult(selectedPlayer, method);
@@ -582,7 +588,9 @@ function showRemoteResult(player, method) {
     const methodNames = {
         'random': 'Random Selection',
         'fair': 'Fair Rotation',
-        'balance': 'Balance-Based'
+        'balance': 'Balance-Based',
+        'dice': 'Dice Battle',
+        'cards': 'Card Draw'
     };
     
     gameArea.innerHTML = `
@@ -601,7 +609,7 @@ function showRemoteResult(player, method) {
             </div>
             <div class="result-actions">
                 <button class="btn btn-secondary" onclick="executeRemoteSelection('${method}')">
-                    🔄 Spin Again
+                    🔄 Try Again
                 </button>
                 <button class="btn btn-primary" onclick="confirmChallengeResult('${player.address}')">
                     Confirm & Create Expense
@@ -609,6 +617,254 @@ function showRemoteResult(player, method) {
             </div>
         </div>
     `;
+}
+
+// ============================================
+// NEW REMOTE METHODS: DICE BATTLE & CARD DRAW
+// ============================================
+
+async function playDiceBattle() {
+    const gameArea = document.getElementById('gamePlayArea');
+    const players = challengeState.players;
+    const rolls = {};
+    
+    // Show intro
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 5rem; margin-bottom: 1rem;">🎲</div>
+                <h2>Dice Battle!</h2>
+                <p style="font-size: 1.2rem; margin: 1rem 0;">Each member will roll the dice...</p>
+                <p style="color: var(--text-secondary);">Lowest roll loses!</p>
+            </div>
+        </div>
+    `;
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Roll for each player
+    for (const player of players) {
+        const roll = await showDiceRoll(player);
+        rolls[player.address] = roll;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+    
+    // Show all results and determine loser
+    const results = Object.entries(rolls).map(([addr, roll]) => ({
+        player: players.find(p => p.address === addr),
+        roll
+    }));
+    
+    results.sort((a, b) => a.roll - b.roll);
+    const loser = results[0].player;
+    const losersWithSameRoll = results.filter(r => r.roll === results[0].roll);
+    
+    let finalLoser = loser;
+    let tieMessage = '';
+    
+    if (losersWithSameRoll.length > 1) {
+        finalLoser = losersWithSameRoll[Math.floor(Math.random() * losersWithSameRoll.length)].player;
+        const otherLosers = losersWithSameRoll
+            .filter(r => r.player.address !== finalLoser.address)
+            .map(r => r.player.nickname)
+            .join(', ');
+        tieMessage = `⚖️ Tied at ${results[0].roll} with ${otherLosers}. Selected randomly.`;
+    }
+    
+    // Show final results
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <h2 style="text-align: center; margin-bottom: 2rem;">🎲 Dice Results</h2>
+            <div class="dice-results">
+                ${results.map((r, idx) => `
+                    <div class="dice-result-item ${r.player.address === finalLoser.address ? 'loser' : ''}">
+                        <div class="dice-result-medal">
+                            ${idx === 0 ? '💸' : idx === results.length - 1 ? '🎉' : '🎲'}
+                        </div>
+                        <div class="dice-result-info">
+                            <div class="dice-result-name">${r.player.nickname}</div>
+                            <div class="dice-result-roll">Rolled: ${r.roll}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            ${tieMessage ? `<div class="tie-explanation">${tieMessage}</div>` : ''}
+            <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: rgba(245, 87, 108, 0.1); border-radius: 12px;">
+                <h3 style="margin: 0;">${finalLoser.nickname} pays! 💸</h3>
+            </div>
+        </div>
+    `;
+    
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return finalLoser;
+}
+
+async function showDiceRoll(player) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div style="text-align: center; padding: 2rem;">
+                    <h2 style="margin-bottom: 2rem;">${player.nickname}'s Turn</h2>
+                    <div class="dice-container">
+                        <div class="dice rolling" id="diceDisplay">🎲</div>
+                    </div>
+                    <p style="margin-top: 2rem; color: var(--text-secondary);">Rolling...</p>
+                </div>
+            </div>
+        `;
+        
+        const diceEl = document.getElementById('diceDisplay');
+        const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+        let rollCount = 0;
+        
+        const rollInterval = setInterval(() => {
+            diceEl.textContent = diceFaces[Math.floor(Math.random() * 6)];
+            rollCount++;
+            
+            if (rollCount > 15) {
+                clearInterval(rollInterval);
+                const finalRoll = Math.floor(Math.random() * 6) + 1;
+                diceEl.textContent = diceFaces[finalRoll - 1];
+                diceEl.classList.remove('rolling');
+                diceEl.classList.add('final');
+                
+                setTimeout(() => {
+                    gameArea.innerHTML = `
+                        <div class="game-turn-screen">
+                            <div style="text-align: center; padding: 2rem;">
+                                <h2>${player.nickname}</h2>
+                                <div class="dice-container">
+                                    <div class="dice final" style="font-size: 8rem;">${diceFaces[finalRoll - 1]}</div>
+                                </div>
+                                <h3 style="margin-top: 1rem; color: var(--primary);">Rolled ${finalRoll}</h3>
+                            </div>
+                        </div>
+                    `;
+                    setTimeout(() => resolve(finalRoll), 1000);
+                }, 500);
+            }
+        }, 100);
+    });
+}
+
+async function playCardDraw() {
+    const gameArea = document.getElementById('gamePlayArea');
+    const players = challengeState.players;
+    const draws = {};
+    
+    const cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const suits = ['♠️', '♥️', '♦️', '♣️'];
+    const cardValues = {'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13};
+    
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 5rem; margin-bottom: 1rem;">🎴</div>
+                <h2>Card Draw!</h2>
+                <p style="font-size: 1.2rem; margin: 1rem 0;">Each member draws a card...</p>
+                <p style="color: var(--text-secondary);">Lowest card loses!</p>
+            </div>
+        </div>
+    `;
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    for (const player of players) {
+        const card = await showCardDraw(player, cards, suits);
+        draws[player.address] = card;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+    
+    const results = Object.entries(draws).map(([addr, card]) => ({
+        player: players.find(p => p.address === addr),
+        card,
+        value: cardValues[card.rank]
+    }));
+    
+    results.sort((a, b) => a.value - b.value);
+    const loser = results[0].player;
+    const losersWithSameCard = results.filter(r => r.value === results[0].value);
+    
+    let finalLoser = loser;
+    let tieMessage = '';
+    
+    if (losersWithSameCard.length > 1) {
+        finalLoser = losersWithSameCard[Math.floor(Math.random() * losersWithSameCard.length)].player;
+        const otherLosers = losersWithSameCard
+            .filter(r => r.player.address !== finalLoser.address)
+            .map(r => r.player.nickname)
+            .join(', ');
+        tieMessage = `⚖️ Tied with ${losersWithSameCard[0].card.rank}. Selected randomly from: ${otherLosers}.`;
+    }
+    
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <h2 style="text-align: center; margin-bottom: 2rem;">🎴 Card Results</h2>
+            <div class="card-results">
+                ${results.map((r, idx) => `
+                    <div class="card-result-item ${r.player.address === finalLoser.address ? 'loser' : ''}">
+                        <div class="card-result-medal">
+                            ${idx === 0 ? '💸' : idx === results.length - 1 ? '🎉' : '🎴'}
+                        </div>
+                        <div class="card-result-info">
+                            <div class="card-result-name">${r.player.nickname}</div>
+                            <div class="playing-card ${r.card.suit === '♥️' || r.card.suit === '♦️' ? 'red' : 'black'}">
+                                ${r.card.rank}${r.card.suit}
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            ${tieMessage ? `<div class="tie-explanation">${tieMessage}</div>` : ''}
+            <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: rgba(245, 87, 108, 0.1); border-radius: 12px;">
+                <h3 style="margin: 0;">${finalLoser.nickname} pays! 💸</h3>
+            </div>
+        </div>
+    `;
+    
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return finalLoser;
+}
+
+async function showCardDraw(player, cards, suits) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div style="text-align: center; padding: 2rem;">
+                    <h2 style="margin-bottom: 2rem;">${player.nickname}'s Turn</h2>
+                    <div class="card-draw-container">
+                        <div class="card-back flipping">🎴</div>
+                    </div>
+                    <p style="margin-top: 2rem; color: var(--text-secondary);">Drawing card...</p>
+                </div>
+            </div>
+        `;
+        
+        setTimeout(() => {
+            const rank = cards[Math.floor(Math.random() * cards.length)];
+            const suit = suits[Math.floor(Math.random() * suits.length)];
+            const isRed = suit === '♥️' || suit === '♦️';
+            
+            gameArea.innerHTML = `
+                <div class="game-turn-screen">
+                    <div style="text-align: center; padding: 2rem;">
+                        <h2>${player.nickname}</h2>
+                        <div class="card-draw-container">
+                            <div class="playing-card large ${isRed ? 'red' : 'black'}" style="font-size: 6rem; padding: 2rem;">
+                                ${rank}${suit}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => resolve({rank, suit}), 1000);
+        }, 1500);
+    });
 }
 
 // ============================================
