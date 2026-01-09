@@ -345,9 +345,8 @@ class ModeManager {
      */
     async deleteRecurringExpense(recurringId) {
         try {
-            await window.FirebaseConfig.updateDb(
-                `groups/${this.currentGroupId}/recurringExpenses/${recurringId}`,
-                { isActive: false }
+            await window.FirebaseConfig.deleteDb(
+                `groups/${this.currentGroupId}/recurringExpenses/${recurringId}`
             );
             return true;
         } catch (error) {
