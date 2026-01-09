@@ -3416,7 +3416,7 @@ async function loadSmartSettlements() {
             
             html += `
                 <div class="settlement-item" id="settlement-${index}">
-                    <div class="settlement-arrow">?</div>
+                    <div class="settlement-arrow">→</div>
                     <div class="settlement-content">
                         <div class="settlement-from">
                             <div class="settlement-avatar">${fromName.charAt(0).toUpperCase()}</div>
@@ -3432,7 +3432,7 @@ async function loadSmartSettlements() {
                         </div>
                     </div>
                     <button class="settlement-mark-btn" onclick="markSettlementComplete(${index})" title="Mark as complete">
-                        <span class="btn-icon">?</span>
+                        <span class="btn-icon">✓</span>
                     </button>
                 </div>
             `;
@@ -5750,7 +5750,7 @@ async function depositToFund() {
         showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
-        showToast(`? Deposit of ${amount} ETH successful!`, "success");
+        showToast(`Deposit of ${amount} ETH successful!`, "success");
         
         // Give time for state to update - longer delay for balance recalculation
         showLoading(t('app.loading.recalculatingBalances'));
@@ -5798,11 +5798,11 @@ async function inviteMember() {
             try {
                 targetAddress = await factoryContract.getAddressByNickname(addressOrNickname);
                 if (targetAddress === ethers.ZeroAddress) {
-                    showToast(`? El nickname "${addressOrNickname}" no existe`, "error");
+                    showToast(`El nickname "${addressOrNickname}" no existe`, "error");
                     return;
                 }
             } catch (e) {
-                showToast(`? El nickname "${addressOrNickname}" no existe`, "error");
+                showToast(`El nickname "${addressOrNickname}" no existe`, "error");
                 return;
             }
         }
@@ -5819,11 +5819,11 @@ async function inviteMember() {
         // ?? DEBUG: Verificar estado del destinatario
         
         if (memberStatus === 1n) {
-            showToast(`?? ${addressOrNickname} already has a pending invitation`, "warning");
+            showToast(`${addressOrNickname} already has a pending invitation`, "warning");
             return;
         }
         if (memberStatus === 2n) {
-            showToast(`?? ${addressOrNickname} is already an active member of the fund`, "warning");
+            showToast(`${addressOrNickname} is already an active member of the fund`, "warning");
             return;
         }
         try {
@@ -5846,7 +5846,7 @@ async function inviteMember() {
         
         const receipt = await tx.wait();
         
-        showToast(`? Invitation sent to ${addressOrNickname}!`, "success");
+        showToast(`Invitation sent to ${addressOrNickname}!`, "success");
         
         // Give time for state to update
         showLoading(t('app.loading.updatingMembers'));
@@ -5897,7 +5897,7 @@ async function acceptInvitation() {
             // Continue anyway - user is still a member of the fund
         }
         
-        showToast("? Invitation accepted! You are now an active member", "success");
+        showToast("Invitation accepted! You are now an active member", "success");
         
         // Give time for state to update
         showLoading(t('app.loading.updatingColonies'));
@@ -5974,7 +5974,7 @@ async function createProposal() {
         // Warn if involved members have insufficient funds
         if (insufficientMembers.length > 0) {
             const memberList = insufficientMembers.join(', ');
-            showToast(`?? Warning: ${memberList} ha${insufficientMembers.length > 1 ? 've' : 's'} not contributed yet. They won't be able to cover their share.`, "warning");
+            showToast(`Warning: ${memberList} ha${insufficientMembers.length > 1 ? 've' : 's'} not contributed yet. They won't be able to cover their share.`, "warning");
         }
         
         // Calculate if we need to borrow from non-involved members
@@ -6439,7 +6439,7 @@ async function voteProposal(proposalId, inFavor) {
         showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
-        showToast(`? Vote ${inFavor ? 'for' : 'against'} registered!`, "success");
+        showToast(`Vote ${inFavor ? 'for' : 'against'} registered!`, "success");
         
         // Dar tiempo para que el estado se actualice
         showLoading(t('app.loading.syncingVoteCount'));
@@ -6485,7 +6485,7 @@ async function executeProposal(proposalId) {
         showLoading(t('app.loading.waitingBlockchainConfirmation'));
         const receipt = await tx.wait();
         
-        showToast("? Proposal executed! Funds transferred.", "success");
+        showToast("Proposal executed! Funds transferred.", "success");
         
         // Dar tiempo para que el estado se actualice
         showLoading(t('app.loading.updatingBalances'));
@@ -6788,7 +6788,7 @@ function settleDebt(amount) {
         }
         
         // Show informative message
-        showToast(`?? Amount pre-filled: ${amount.toFixed(4)} ETH. Confirm to settle your debt.`, 'info');
+        showToast(`Amount pre-filled: ${amount.toFixed(4)} ETH. Confirm to settle your debt.`, 'info');
         
     } catch (error) {
         console.error("Error in settleDebt:", error);
@@ -6909,7 +6909,7 @@ async function kickMemberConfirm(memberAddress, memberNickname, refundAmount) {
         await refreshCurrentView();
         
         hideLoading();
-        showToast(`? ${memberNickname} has been removed from the group`, "success");
+        showToast(`${memberNickname} has been removed from the group`, "success");
         
     } catch (error) {
         hideLoading();
@@ -7013,7 +7013,7 @@ async function closeFund() {
         
         hideLoading();
         
-        showToast("? Fund closed and funds distributed successfully!", "success");
+        showToast("Fund closed and funds distributed successfully!", "success");
         
     } catch (error) {
         hideLoading();
@@ -7105,7 +7105,7 @@ function onScanSuccess(decodedText, decodedResult) {
     // Validate Ethereum address format
     if (!isValidEthereumAddress(address)) {
         const t = translations[getCurrentLanguage()];
-        showToast(`?? ${t.app.fundDetail.qrScanner.invalidQR}`, "error");
+        showToast(`${t.app.fundDetail.qrScanner.invalidQR}`, "error");
         isProcessingScan = false;
         return;
     }
@@ -7159,12 +7159,12 @@ function confirmScannedAddress() {
     const t = translations[getCurrentLanguage()];
     
     if (!scannedAddressValue) {
-        showToast(`?? ${t.app.fundDetail.qrScanner.noAddress}`, "error");
+        showToast(`${t.app.fundDetail.qrScanner.noAddress}`, "error");
         return;
     }
     
     if (!document.getElementById('qrConfirmCheckbox').checked) {
-        showToast(`?? ${t.app.fundDetail.qrScanner.mustConfirm}`, "warning");
+        showToast(`${t.app.fundDetail.qrScanner.mustConfirm}`, "warning");
         return;
     }
     
@@ -7172,7 +7172,7 @@ function confirmScannedAddress() {
     document.getElementById('proposalRecipient').value = scannedAddressValue;
     
     // Show success message
-    showToast(`? ${t.app.fundDetail.qrScanner.scanSuccess}`, "success");
+    showToast(`${t.app.fundDetail.qrScanner.scanSuccess}`, "success");
     
     // Close modal
     closeQRScanner();
@@ -7723,7 +7723,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 hideLoading();
-                showToast('? Recurring expense created!', 'success');
+                showToast('Recurring expense created!', 'success');
                 closeRecurringExpenseModal();
                 
                 // Reload recurring expenses list
@@ -7758,7 +7758,7 @@ async function checkAndProcessRecurring() {
             // Reload recurring list to update nextDue display
             await loadRecurringExpenses();
             
-            showToast(`? ${createdCount} recurring expense(s) created automatically`, 'success');
+            showToast(`${createdCount} recurring expense(s) created automatically`, 'success');
         }
         
     } catch (error) {
@@ -8221,7 +8221,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 hideLoading();
-                showToast('? Budget set successfully!', 'success');
+                showToast('Budget set successfully!', 'success');
                 closeBudgetModal();
                 
                 // Reload budget status
@@ -8466,7 +8466,7 @@ function saveOpenAIConfig() {
     }
     
     localStorage.setItem('openai_api_key', apiKey);
-    showToast('? API key saved successfully!', 'success');
+    showToast('API key saved successfully!', 'success');
     closeOpenAIConfigModal();
 }
 
@@ -8512,7 +8512,7 @@ async function handleReceiptImage(event) {
         // Fill form with extracted data
         if (extractedData) {
             fillExpenseFormFromReceipt(extractedData);
-            showToast('? Receipt scanned successfully!', 'success');
+            showToast('Receipt scanned successfully!', 'success');
         }
         
     } catch (error) {
@@ -8891,7 +8891,7 @@ async function exportToCSV() {
         a.download = `${currentFund.name}_analytics_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
         
-        showToast('? CSV exported', 'success');
+        showToast('CSV exported', 'success');
         
     } catch (error) {
         console.error('Error exporting CSV:', error);
@@ -9707,17 +9707,17 @@ async function togglePushNotifications(checkbox) {
             
             if (token) {
                 localStorage.setItem('pushNotificationsEnabled', 'true');
-                showToast('? Push notifications enabled', 'success');
+                showToast('Push notifications enabled', 'success');
             } else {
                 // Permission denied, uncheck
                 checkbox.checked = false;
                 localStorage.setItem('pushNotificationsEnabled', 'false');
-                showToast('? Notification permission denied', 'error');
+                showToast('Notification permission denied', 'error');
             }
         } catch (error) {
             console.error('Error enabling push notifications:', error);
             checkbox.checked = false;
-            showToast('? Failed to enable push notifications', 'error');
+            showToast('Failed to enable push notifications', 'error');
         }
     } else {
         // Disable push notifications
