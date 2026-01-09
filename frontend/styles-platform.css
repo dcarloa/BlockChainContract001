@@ -9040,8 +9040,8 @@ header,
 .memory-stats {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 1.5rem;
-    padding: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.25rem;
     background: rgba(102, 126, 234, 0.1);
     border-radius: 12px;
 }
@@ -9050,17 +9050,17 @@ header,
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
 }
 
 .memory-stats .stat-label {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
     font-weight: 500;
 }
 
 .memory-stats .stat-value {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary);
 }
@@ -9068,10 +9068,10 @@ header,
 .memory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
-    max-width: 350px;
-    margin: 0 auto;
-    padding: 1rem;
+    gap: 1rem;
+    max-width: 380px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1rem;
 }
 
 .memory-card {

@@ -1194,11 +1194,11 @@ async function playMemoryCards() {
         // Show player intro
         await showPlayerIntro(player, 'Memory Cards', 'Find all matching pairs as fast as you can!');
         
-        const time = await showMemoryCardsTurn(player);
-        challengeState.scores[player.address] = time;
+        const pairsFound = await showMemoryCardsTurn(player);
+        challengeState.scores[player.address] = pairsFound;
     }
     
-    showResultsWithTiebreaker('lower_wins');
+    showResultsWithTiebreaker('higher_wins');
 }
 
 async function showMemoryCardsTurn(player) {
@@ -1247,8 +1247,8 @@ async function showMemoryCardsTurn(player) {
         
         window.giveUpMemory = () => {
             if (timer) clearInterval(timer);
-            const elapsed = 999; // Penalty time for giving up
-            resolve(elapsed);
+            const pairsFound = 0; // No pairs if giving up
+            resolve(pairsFound);
         };
         
         const timer = setInterval(() => {
@@ -1258,7 +1258,7 @@ async function showMemoryCardsTurn(player) {
             if (window.memoryGameData.pairsFound >= 6) {
                 clearInterval(timer);
                 setTimeout(() => {
-                    resolve(elapsed);
+                    resolve(window.memoryGameData.pairsFound);
                 }, 500);
             }
         }, 100);
@@ -1325,8 +1325,8 @@ async function showMathChallengeTurn(player, round, totalRounds) {
     return new Promise((resolve) => {
         const gameArea = document.getElementById('gamePlayArea');
         // Easier math: smaller numbers and simpler operations
-        const a = Math.floor(Math.random() * 12) + 1; // 1-12
-        const b = Math.floor(Math.random() * 12) + 1; // 1-12
+        let a = Math.floor(Math.random() * 12) + 1; // 1-12
+        let b = Math.floor(Math.random() * 12) + 1; // 1-12
         const ops = ['+', '-', '*'];
         const op = ops[Math.floor(Math.random() * ops.length)];
         let answer;
