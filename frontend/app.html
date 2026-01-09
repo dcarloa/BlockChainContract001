@@ -713,25 +713,26 @@
             <!-- Nickname Setup Modal (first time users) -->
             <div id="nicknameModal" class="modal" style="display: none;">
                 <div class="modal-content">
-                    <h2>👋 Welcome to Ant Pool!</h2>
-                    <p>Share expenses simply or use blockchain for automatic payments. <strong>No wallet needed to start.</strong></p>
-                    <p>First, set a <strong>nickname</strong> to identify yourself in groups.</p>
+                    <h2 data-i18n="app.nickname.title">👋 Welcome to Ant Pool!</h2>
+                    <p data-i18n="app.nickname.subtitle">Share expenses simply or use blockchain for automatic payments. <strong>No wallet needed to start.</strong></p>
+                    <p data-i18n="app.nickname.firstSet">First, set a <strong>nickname</strong> to identify yourself in groups.</p>
                     
                     <div class="form-group">
-                        <label for="nicknameInput">Your Nickname *</label>
+                        <label for="nicknameInput" data-i18n="app.nickname.label">Your Nickname *</label>
                         <input 
                             type="text" 
                             id="nicknameInput" 
+                            data-i18n-placeholder="app.nickname.placeholder"
                             placeholder="Ex: John, Maria123, etc."
                             minlength="3"
                             maxlength="32"
                             pattern="[a-zA-Z0-9]+"
                             required
                         >
-                        <small>3-32 characters, letters and numbers only. It will identify you in all your groups.</small>
+                        <small data-i18n="app.nickname.help">3-32 characters, letters and numbers only. It will identify you in all your groups.</small>
                     </div>
                     
-                    <button id="setNicknameBtn" class="btn btn-primary btn-block">
+                    <button id="setNicknameBtn" class="btn btn-primary btn-block" data-i18n="app.nickname.button">
                         Set Nickname and Continue
                     </button>
                 </div>
@@ -746,7 +747,7 @@
                         <div class="stat-icon">📊</div>
                         <div class="stat-content">
                             <h3 id="totalGroupsCreated">0</h3>
-                            <p>Groups Created</p>
+                            <p data-i18n="app.stats.groupsCreated">Groups Created</p>
                         </div>
                     </div>
                     
@@ -754,7 +755,7 @@
                         <div class="stat-icon">👥</div>
                         <div class="stat-content">
                             <h3 id="totalGroupsParticipating">0</h3>
-                            <p>Active Groups</p>
+                            <p data-i18n="app.stats.activeGroups">Active Groups</p>
                         </div>
                     </div>
                     
@@ -762,7 +763,7 @@
                         <div class="stat-icon">🎉</div>
                         <div class="stat-content">
                             <h3 id="totalGroupsJoined">0</h3>
-                            <p>Groups Joined</p>
+                            <p data-i18n="app.stats.groupsJoined">Groups Joined</p>
                         </div>
                     </div>
                 </div>
@@ -770,7 +771,7 @@
                 <!-- Pending Invitations Banner -->
                 <div id="pendingInvitationsSection" class="pending-invitations-section" style="display: none;">
                     <div class="invitations-header">
-                        <h3>🎫 Pending Invitations</h3>
+                        <h3 data-i18n="app.invitations.title">🎫 Pending Invitations</h3>
                         <span class="invitations-count" id="invitationsCount">0</span>
                     </div>
                     <div id="invitationsList" class="invitations-list">
@@ -780,12 +781,12 @@
 
                 <!-- Action Bar -->
                 <div class="action-bar">
-                    <h2>My Groups</h2>
+                    <h2 data-i18n="app.dashboard.title">My Groups</h2>
                     <button id="createFundBtn" class="btn btn-primary btn-create-group" title="Create a new expense group">
                         <span class="btn-icon">➕</span>
                         <span class="btn-text">
-                            <strong>Create New Group</strong>
-                            <small>Tap here to create group</small>
+                            <strong data-i18n="app.dashboard.createButton">Create New Group</strong>
+                            <small data-i18n="app.dashboard.createTapHere">Tap here to create group</small>
                         </span>
                     </button>
                 </div>
@@ -793,19 +794,19 @@
                 <!-- Fund Filters -->
                 <div class="fund-filters">
                     <button class="filter-btn active" data-filter="all">
-                        📋 All (<span id="countAll">0</span>)
+                        <span data-i18n="app.dashboard.filters.all">📋 All</span> (<span id="countAll">0</span>)
                     </button>
                     <button class="filter-btn" data-filter="created">
-                        👑 Created by me (<span id="countCreated">0</span>)
+                        <span data-i18n="app.dashboard.filters.created">👑 Created by me</span> (<span id="countCreated">0</span>)
                     </button>
                     <button class="filter-btn" data-filter="participating">
-                        👥 Member of (<span id="countParticipating">0</span>)
+                        <span data-i18n="app.dashboard.filters.participating">👥 Member of</span> (<span id="countParticipating">0</span>)
                     </button>
                     <button class="filter-btn" data-filter="simple">
-                        📝 Simple Mode (<span id="countSimple">0</span>)
+                        <span data-i18n="app.dashboard.filters.simple">📝 Simple Mode</span> (<span id="countSimple">0</span>)
                     </button>
                     <button class="filter-btn" data-filter="blockchain">
-                        ⛓️ Blockchain (<span id="countBlockchain">0</span>)
+                        <span data-i18n="app.dashboard.filters.blockchain">⛓️ Blockchain</span> (<span id="countBlockchain">0</span>)
                     </button>
                 </div>
 
@@ -816,17 +817,18 @@
                             type="text" 
                             id="groupSearchInput" 
                             class="search-input" 
+                            data-i18n-placeholder="app.dashboard.searchPlaceholder"
                             placeholder="🔍 Search groups by name..."
                             onkeyup="filterAndSortGroups()"
                         />
                     </div>
                     <div class="sort-controls">
-                        <label for="sortOrder" class="sort-label">Sort by:</label>
+                        <label for="sortOrder" class="sort-label" data-i18n="app.dashboard.sortBy">Sort by:</label>
                         <select id="sortOrder" class="sort-select" onchange="filterAndSortGroups()">
-                            <option value="recent">📅 Most Recent</option>
-                            <option value="oldest">📅 Oldest First</option>
-                            <option value="name-asc">🔤 A → Z</option>
-                            <option value="name-desc">🔤 Z → A</option>
+                            <option value="recent" data-i18n="app.dashboard.sortRecent">📅 Most Recent</option>
+                            <option value="oldest" data-i18n="app.dashboard.sortOldest">📅 Oldest First</option>
+                            <option value="name-asc" data-i18n="app.dashboard.sortNameAsc">🔤 A → Z</option>
+                            <option value="name-desc" data-i18n="app.dashboard.sortNameDesc">🔤 Z → A</option>
                         </select>
                     </div>
                 </div>
@@ -834,8 +836,8 @@
                 <!-- Loading State -->
                 <div id="loadingGroups" class="loading-groups-state" style="display: none;">
                     <div class="loading-spinner"></div>
-                    <h3>Loading your groups...</h3>
-                    <p>Please wait while we fetch your expense groups</p>
+                    <h3 data-i18n="app.dashboard.loading">Loading your groups...</h3>
+                    <p data-i18n="app.dashboard.loadingDesc">Please wait while we fetch your expense groups</p>
                 </div>
 
                 <!-- Groups Grid -->
@@ -846,11 +848,11 @@
                 <!-- Empty State -->
                 <div id="emptyState" class="empty-state" style="display: none;">
                     <div class="empty-icon">🚀</div>
-                    <h3>Start your first adventure!</h3>
-                    <p>Create your first group to manage shared expenses. <strong>No wallet needed</strong> - start with Simple Mode or use blockchain for automatic payments.</p>
+                    <h3 data-i18n="app.dashboard.empty.title">Start your first adventure!</h3>
+                    <p data-i18n="app.dashboard.empty.subtitle">Create your first group to manage shared expenses. <strong>No wallet needed</strong> - start with Simple Mode or use blockchain for automatic payments.</p>
                     <button class="btn btn-primary" onclick="document.getElementById('createFundBtn').click()">
                         <span class="btn-icon">✨</span>
-                        <span>Create My First Group</span>
+                        <span data-i18n="app.dashboard.empty.button">Create My First Group</span>
                     </button>
                 </div>
 

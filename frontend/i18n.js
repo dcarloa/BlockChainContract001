@@ -493,9 +493,10 @@ const translations = {
             },
             nickname: {
                 title: "Welcome to Ant Pool!",
-                subtitle: "You need to set a nickname to identify yourself in groups and create them.",
+                subtitle: "Share expenses simply or use blockchain for automatic payments. <strong>No wallet needed to start.</strong>",
+                firstSet: "First, set a <strong>nickname</strong> to identify yourself in groups.",
                 label: "Your Nickname *",
-                placeholder: "e.g.: John, Maria123, etc.",
+                placeholder: "Ex: John, Maria123, etc.",
                 help: "3-32 characters, letters and numbers only. It will identify you in all your groups.",
                 button: "Set Nickname and Continue",
                 save: "Save Nickname",
@@ -507,23 +508,33 @@ const translations = {
                 groupsJoined: "Groups Joined"
             },
             invitations: {
-                title: "Pending Invitations"
+                title: "Pending Invitations",
+                count: "0"
             },
             dashboard: {
                 title: "My Groups",
                 createNew: "Create New Group",
+                createButton: "Create New Group",
+                createTapHere: "Tap here to create group",
+                loading: "Loading your groups...",
+                loadingDesc: "Please wait while we fetch your expense groups",
+                searchPlaceholder: "🔍 Search groups by name...",
+                sortBy: "Sort by:",
+                sortRecent: "📅 Most Recent",
+                sortOldest: "📅 Oldest First",
+                sortNameAsc: "🔤 A → Z",
+                sortNameDesc: "🔤 Z → A",
                 empty: {
                     title: "Start your first adventure!",
-                    subtitle: "Create your first group to manage shared expenses with friends, family or colleagues. It's fast, secure and transparent.",
+                    subtitle: "Create your first group to manage shared expenses. <strong>No wallet needed</strong> - start with Simple Mode or use blockchain for automatic payments.",
                     button: "Create My First Group"
                 },
                 filters: {
-                    all: "All",
-                    created: "Created",
-                    participating: "Participating",
-                    travel: "Travel",
-                    savings: "Savings",
-                    shared: "Shared"
+                    all: "📋 All",
+                    created: "👑 Created by me",
+                    participating: "👥 Member of",
+                    simple: "📝 Simple Mode",
+                    blockchain: "⛓️ Blockchain"
                 },
                 card: {
                     members: "members",
@@ -1372,7 +1383,8 @@ const translations = {
             },
             nickname: {
                 title: "¡Bienvenido a Ant Pool!",
-                subtitle: "Necesitas establecer un nickname para identificarte en los grupos y poder crearlos.",
+                subtitle: "Comparte gastos simplemente o usa blockchain para pagos automáticos. <strong>No necesitas wallet para empezar.</strong>",
+                firstSet: "Primero, establece un <strong>nickname</strong> para identificarte en los grupos.",
                 label: "Tu Nickname *",
                 placeholder: "Ej: Juan, Maria123, etc.",
                 help: "3-32 caracteres, solo letras y números. Te identificará en todos tus grupos.",
@@ -1386,23 +1398,33 @@ const translations = {
                 groupsJoined: "Grupos Unidos"
             },
             invitations: {
-                title: "Invitaciones Pendientes"
+                title: "Invitaciones Pendientes",
+                count: "0"
             },
             dashboard: {
                 title: "Mis Grupos",
                 createNew: "Crear Nuevo Grupo",
+                createButton: "Crear Nuevo Grupo",
+                createTapHere: "Toca aquí para crear grupo",
+                loading: "Cargando tus grupos...",
+                loadingDesc: "Por favor espera mientras obtenemos tus grupos de gastos",
+                searchPlaceholder: "🔍 Buscar grupos por nombre...",
+                sortBy: "Ordenar por:",
+                sortRecent: "📅 Más Recientes",
+                sortOldest: "📅 Más Antiguos",
+                sortNameAsc: "🔤 A → Z",
+                sortNameDesc: "🔤 Z → A",
                 empty: {
                     title: "¡Comienza tu primera aventura!",
-                    subtitle: "Crea tu primer grupo para gestionar gastos compartidos con amigos, familia o compañeros. Es rápido, seguro y transparente.",
+                    subtitle: "Crea tu primer grupo para gestionar gastos compartidos. <strong>No necesitas wallet</strong> - empieza con Modo Simple o usa blockchain para pagos automáticos.",
                     button: "Crear Mi Primer Grupo"
                 },
                 filters: {
-                    all: "Todos",
-                    created: "Creados",
-                    participating: "Participando",
-                    travel: "Viajes",
-                    savings: "Ahorros",
-                    shared: "Compartidos"
+                    all: "📋 Todos",
+                    created: "👑 Creados por mí",
+                    participating: "👥 Miembro de",
+                    simple: "📝 Modo Simple",
+                    blockchain: "⛓️ Blockchain"
                 },
                 card: {
                     members: "miembros",
