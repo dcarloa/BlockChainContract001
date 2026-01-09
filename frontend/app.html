@@ -3179,6 +3179,35 @@
                 </div>
             </div>
             
+            <!-- Step 1.5: Player Selection -->
+            <div id="playerSelection" class="challenge-step" style="display: none;">
+                <div class="challenge-intro">
+                    <button class="btn-back" onclick="backToModeSelection()">← Back</button>
+                    <h3>Select Players</h3>
+                    <p>Choose who will participate (minimum 2 players)</p>
+                </div>
+                
+                <div class="player-selection-controls">
+                    <button class="btn-select-all" onclick="toggleSelectAllPlayers()">
+                        <span id="selectAllIcon">☑️</span>
+                        <span id="selectAllText">Select All</span>
+                    </button>
+                    <div class="selected-count">
+                        <span id="selectedPlayerCount">0</span> players selected
+                    </div>
+                </div>
+                
+                <div id="playerSelectionList" class="player-selection-list">
+                    <!-- Player checkboxes will be inserted here -->
+                </div>
+                
+                <div class="player-selection-footer">
+                    <button id="confirmPlayersBtn" class="btn-primary" onclick="confirmPlayerSelection()" disabled>
+                        Continue
+                    </button>
+                </div>
+            </div>
+            
             <!-- Step 2a: Game Selection (Physical Mode) -->
             <div id="gameSelection" class="challenge-step" style="display: none;">
                 <div class="challenge-intro">

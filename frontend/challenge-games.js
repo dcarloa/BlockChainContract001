@@ -7,6 +7,7 @@ let challengeState = {
     mode: null, // 'physical' or 'remote'
     gameType: null,
     players: [],
+    allMembers: [], // All fund members for selection
     scores: {},
     currentPlayerIndex: 0,
     expenseData: null
@@ -26,13 +27,10 @@ function showChallengeModeSelection() {
 
 function selectChallengeMode(mode) {
     challengeState.mode = mode;
-    challengeState.players = getCurrentFundMembers();
+    challengeState.allMembers = getCurrentFundMembers();
     
-    if (mode === 'physical') {
-        showGameSelection();
-    } else {
-        showRemoteOptions();
-    }
+    // Show player selection screen
+    showPlayerSelection();
 }
 
 function getCurrentFundMembers() {
@@ -43,11 +41,135 @@ function getCurrentFundMembers() {
     const membersArray = Object.entries(currentFund.members).map(([uid, memberData]) => {
         return {
             address: uid,
-            nickname: memberData.name || memberData.email || 'Member'
+            nickname: memberData.name || memberData.email || 'Member',
+            selected: true // Default all selected
         };
     });
     
     return membersArray;
+}
+
+// ============================================
+// PLAYER SELECTION
+// ============================================
+
+function showPlayerSelection() {
+    document.getElementById('challengeModeSelection').style.display = 'none';
+    document.getElementById('playerSelection').style.display = 'block';
+    
+    renderPlayerSelectionList();
+    updateSelectedCount();
+}
+
+function renderPlayerSelectionList() {
+    const listContainer = document.getElementById('playerSelectionList');
+    
+    if (!challengeState.allMembers || challengeState.allMembers.length === 0) {
+        listContainer.innerHTML = '<p style="text-align: center; color: #888;">No members available</p>';
+        return;
+    }
+    
+    listContainer.innerHTML = challengeState.allMembers.map((member, index) => {
+        const initial = member.nickname.charAt(0).toUpperCase();
+        const checked = member.selected ? 'checked' : '';
+        const selectedClass = member.selected ? 'selected' : '';
+        
+        return `
+            <div class="player-checkbox-item ${selectedClass}" onclick="togglePlayerSelection(${index}, event)">
+                <input type="checkbox" ${checked} onchange="togglePlayerSelection(${index}, event)">
+                <div class="player-checkbox-info">
+                    <div class="player-checkbox-avatar">${initial}</div>
+                    <div class="player-checkbox-name">${member.nickname}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function togglePlayerSelection(index, event) {
+    // Prevent double-toggle from clicking both container and checkbox
+    if (event && event.target.type === 'checkbox') {
+        event.stopPropagation();
+    } else if (event && event.target.type !== 'checkbox') {
+        event.preventDefault();
+    }
+    
+    challengeState.allMembers[index].selected = !challengeState.allMembers[index].selected;
+    renderPlayerSelectionList();
+    updateSelectedCount();
+}
+
+function toggleSelectAllPlayers() {
+    const allSelected = challengeState.allMembers.every(m => m.selected);
+    
+    // Toggle all
+    challengeState.allMembers.forEach(m => {
+        m.selected = !allSelected;
+    });
+    
+    renderPlayerSelectionList();
+    updateSelectedCount();
+    
+    // Update button text
+    const selectAllText = document.getElementById('selectAllText');
+    const selectAllIcon = document.getElementById('selectAllIcon');
+    if (!allSelected) {
+        selectAllText.textContent = 'Deselect All';
+        selectAllIcon.textContent = '☑️';
+    } else {
+        selectAllText.textContent = 'Select All';
+        selectAllIcon.textContent = '☐';
+    }
+}
+
+function updateSelectedCount() {
+    const selectedCount = challengeState.allMembers.filter(m => m.selected).length;
+    document.getElementById('selectedPlayerCount').textContent = selectedCount;
+    
+    // Enable/disable continue button
+    const confirmBtn = document.getElementById('confirmPlayersBtn');
+    if (selectedCount >= 2) {
+        confirmBtn.disabled = false;
+    } else {
+        confirmBtn.disabled = true;
+    }
+    
+    // Update Select All button state
+    const allSelected = challengeState.allMembers.every(m => m.selected);
+    const selectAllText = document.getElementById('selectAllText');
+    const selectAllIcon = document.getElementById('selectAllIcon');
+    if (allSelected) {
+        selectAllText.textContent = 'Deselect All';
+        selectAllIcon.textContent = '☑️';
+    } else {
+        selectAllText.textContent = 'Select All';
+        selectAllIcon.textContent = '☐';
+    }
+}
+
+function confirmPlayerSelection() {
+    // Set selected players
+    challengeState.players = challengeState.allMembers.filter(m => m.selected);
+    
+    if (challengeState.players.length < 2) {
+        alert('Please select at least 2 players');
+        return;
+    }
+    
+    // Hide player selection and show next step
+    document.getElementById('playerSelection').style.display = 'none';
+    
+    if (challengeState.mode === 'physical') {
+        showGameSelection();
+    } else {
+        showRemoteOptions();
+    }
+}
+
+function backToModeSelection() {
+    document.getElementById('playerSelection').style.display = 'none';
+    document.getElementById('challengeModeSelection').style.display = 'block';
+    challengeState.mode = null;
 }
 
 function getMemberNickname(address) {
