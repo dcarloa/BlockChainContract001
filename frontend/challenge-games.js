@@ -463,7 +463,8 @@ async function executeRemoteSelection(method) {
     
     gameArea.innerHTML = `
         <div class="game-turn-screen">
-            <div class="spinner-wheel-container">
+            <h2 style="margin-bottom: 1rem; color: var(--text-primary);">🎲 Selecting Player...</h2>
+            <div class="spinner-wheel-container" id="wheelContainer">
                 <div class="spinner-pointer">▼</div>
                 <div class="spinner-wheel" id="spinnerWheel">
                     ${challengeState.players.map((p, i) => `
@@ -473,9 +474,12 @@ async function executeRemoteSelection(method) {
                     `).join('')}
                 </div>
             </div>
-            <div class="spinner-status">🎲 Spinning...</div>
+            <div class="spinner-status" id="spinStatus">🎯 Get ready...</div>
         </div>
     `;
+    
+    // Small delay before starting spin
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     let selectedPlayer;
     
@@ -499,25 +503,48 @@ async function executeRemoteSelection(method) {
 async function spinTheWheel(preselected = null) {
     return new Promise((resolve) => {
         const wheel = document.getElementById('spinnerWheel');
+        const container = document.getElementById('wheelContainer');
+        const statusEl = document.getElementById('spinStatus');
         const players = challengeState.players;
         
         // Determine selected player
         const selected = preselected || players[Math.floor(Math.random() * players.length)];
         const selectedIndex = players.findIndex(p => p.address === selected.address);
         
-        // Calculate rotation to land on selected player
-        const segmentAngle = 360 / players.length;
-        const targetAngle = 360 - (selectedIndex * segmentAngle) + (segmentAngle / 2);
-        const spins = 360 * 5; // 5 full rotations
-        const finalRotation = spins + targetAngle;
+        // Add spinning class for continuous rotation
+        wheel.classList.add('spinning');
+        container.classList.add('active');
+        statusEl.textContent = '🎲 Spinning...';
+        statusEl.style.animation = 'pulse 0.8s ease-in-out infinite';
         
-        // Apply spin animation
-        wheel.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-        wheel.style.transform = `rotate(${finalRotation}deg)`;
-        
+        // Spin for 2 seconds with continuous animation
         setTimeout(() => {
-            resolve(selected);
-        }, 3000);
+            // Remove spinning class
+            wheel.classList.remove('spinning');
+            
+            // Calculate final rotation to land on selected player
+            const segmentAngle = 360 / players.length;
+            const targetAngle = 360 - (selectedIndex * segmentAngle) + (segmentAngle / 2);
+            const spins = 360 * 4; // 4 full rotations
+            const finalRotation = spins + targetAngle;
+            
+            // Apply final deceleration animation
+            wheel.style.transition = 'transform 2.5s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+            wheel.style.transform = `rotate(${finalRotation}deg)`;
+            
+            statusEl.textContent = '🎯 Slowing down...';
+            
+            // After deceleration completes
+            setTimeout(() => {
+                container.classList.remove('active');
+                statusEl.textContent = `🎉 ${selected.nickname} selected!`;
+                statusEl.style.animation = 'none';
+                
+                setTimeout(() => {
+                    resolve(selected);
+                }, 800);
+            }, 2500);
+        }, 2000);
     });
 }
 

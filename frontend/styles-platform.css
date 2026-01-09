@@ -9134,34 +9134,73 @@ header,
 /* Spinner Wheel (Remote Mode) */
 .spinner-wheel-container {
     position: relative;
-    width: 320px;
-    height: 320px;
+    width: 350px;
+    height: 350px;
     margin: 2rem auto;
+    filter: drop-shadow(0 10px 30px rgba(102, 126, 234, 0.4));
 }
 
 .spinner-pointer {
     position: absolute;
-    top: -15px;
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 2rem;
-    color: var(--primary);
+    font-size: 3rem;
+    color: #f5576c;
     z-index: 10;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 4px 8px rgba(245, 87, 108, 0.6));
+    animation: pulse-pointer 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-pointer {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-5px) scale(1.1);
+    }
 }
 
 .spinner-wheel {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 6px solid var(--primary);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 8px solid #764ba2;
+    background: conic-gradient(
+        from 0deg,
+        #667eea 0deg,
+        #764ba2 90deg,
+        #f093fb 180deg,
+        #667eea 270deg,
+        #764ba2 360deg
+    );
     box-shadow: 
-        0 0 0 12px rgba(102, 126, 234, 0.2),
-        0 8px 24px rgba(0,0,0,0.3),
-        inset 0 0 50px rgba(255,255,255,0.1);
+        0 0 0 16px rgba(102, 126, 234, 0.15),
+        0 0 0 24px rgba(118, 75, 162, 0.1),
+        0 12px 40px rgba(0,0,0,0.4),
+        inset 0 0 60px rgba(255,255,255,0.15);
     position: relative;
     overflow: hidden;
+    will-change: transform;
+}
+
+/* Center circle decoration */
+.spinner-wheel::before {
+    content: '🎯';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    z-index: 5;
 }
 
 .wheel-segment {
@@ -9176,39 +9215,69 @@ header,
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 20px;
+    padding-top: 30px;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.35),
+        rgba(255, 255, 255, 0.08)
+    );
+    border-right: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.wheel-segment:nth-child(odd) {
     background: linear-gradient(
         to bottom right,
         rgba(255, 255, 255, 0.25),
-        rgba(255, 255, 255, 0.08)
+        rgba(255, 255, 255, 0.05)
     );
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .wheel-segment:nth-child(even) {
     background: linear-gradient(
         to bottom right,
-        rgba(255, 255, 255, 0.15),
-        rgba(255, 255, 255, 0.03)
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.03)
     );
 }
 
 .segment-text {
     color: white;
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    font-weight: 800;
+    font-size: 1rem;
+    text-shadow: 
+        0 2px 4px rgba(0,0,0,0.6),
+        0 0 10px rgba(0,0,0,0.4);
     transform: rotate(calc(180deg / var(--total)));
     white-space: nowrap;
     user-select: none;
+    letter-spacing: 0.5px;
 }
 
-@keyframes spin {
+/* Spinning animation */
+.spinner-wheel.spinning {
+    animation: continuous-spin 0.8s linear infinite;
+}
+
+@keyframes continuous-spin {
     0% {
         transform: rotate(0deg);
     }
     100% {
-        transform: rotate(1800deg);
+        transform: rotate(360deg);
+    }
+}
+
+/* Glow effect during spin */
+.spinner-wheel-container.active {
+    animation: glow-pulse 1s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+    0%, 100% {
+        filter: drop-shadow(0 10px 30px rgba(102, 126, 234, 0.4));
+    }
+    50% {
+        filter: drop-shadow(0 10px 50px rgba(245, 87, 108, 0.6)) drop-shadow(0 0 30px rgba(102, 126, 234, 0.8));
     }
 }
 
