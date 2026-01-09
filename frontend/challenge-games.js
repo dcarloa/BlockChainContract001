@@ -1327,7 +1327,8 @@ function showResultsWithTiebreaker(mode) {
         
         let scoreDisplay = item.score;
         if (challengeState.gameType === 'memoryCards') {
-            scoreDisplay = item.score === 999 ? 'Gave Up' : `${item.score.toFixed(1)}s`;
+            // Memory cards now uses pairs found (0-6), not time
+            scoreDisplay = item.score === 0 ? 'Gave Up' : `${item.score} pairs`;
         }
         
         return `
