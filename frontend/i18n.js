@@ -337,6 +337,101 @@ const translations = {
         },
         // App Platform
         app: {
+            // Loading Overlay
+            loadingOverlay: {
+                loading: "Loading..."
+            },
+            // PWA Install Prompt
+            pwa: {
+                installTitle: "Install Ant Pool",
+                installDesc: "Get the full app experience with offline access",
+                installButton: "Install",
+                dismissButton: "×"
+            },
+            // Sign In Modal
+            signIn: {
+                brandSubtitle: "Track expenses with your team.<br>Simple, fast, and free.",
+                features: {
+                    splitExpenses: "Split expenses easily",
+                    realTimeTracking: "Real-time tracking",
+                    securePrivate: "Secure & private"
+                },
+                getStarted: "Get Started",
+                chooseMethod: "Choose your preferred sign-in method",
+                continueWithGoogle: "Continue with Google",
+                signInWithEmail: "Sign in with Email",
+                advancedOptions: "Advanced Options",
+                blockchainMode: "Blockchain Mode",
+                optional: "Optional",
+                blockchainDesc: "Connect your MetaMask wallet for automatic on-chain payments and settlements.",
+                connectMetaMask: "Connect MetaMask",
+                requiresMetaMask: "Requires MetaMask extension",
+                emailAddress: "Email Address",
+                emailPlaceholder: "your@email.com",
+                password: "Password",
+                signInButton: "Sign In",
+                createNewAccount: "Create new account",
+                backToOptions: "← Back to options",
+                displayName: "Display Name",
+                namePlaceholder: "Your Name",
+                passwordPlaceholder: "Minimum 6 characters",
+                createAccount: "Create Account",
+                backToSignIn: "← Back to Sign In"
+            },
+            // User Menu
+            userMenu: {
+                signIn: "Sign In",
+                accessSimpleMode: "Access Simple Mode",
+                walletConnected: "Wallet Connected",
+                account: "Account",
+                profile: "Profile",
+                signOut: "Sign Out",
+                disconnectWallet: "Disconnect Wallet"
+            },
+            // Profile Panel
+            profile: {
+                title: "Profile",
+                tabs: {
+                    info: "Info",
+                    groups: "Groups",
+                    achievements: "Achievements",
+                    subscription: "PRO",
+                    settings: "Settings"
+                },
+                info: {
+                    displayName: "Display Name",
+                    email: "Email",
+                    memberSince: "Member Since"
+                },
+                groups: {
+                    title: "My Groups",
+                    empty: "No groups yet"
+                },
+                achievements: {
+                    title: "Achievements",
+                    empty: "No achievements yet"
+                },
+                subscription: {
+                    title: "Upgrade to PRO",
+                    free: "Free Plan",
+                    pro: "PRO Plan"
+                },
+                settings: {
+                    title: "Account Settings",
+                    privacy: "Privacy",
+                    notifications: "Notifications",
+                    preferences: "Preferences",
+                    appSettings: "App Settings",
+                    signOutButton: "Sign Out"
+                }
+            },
+            // Notifications
+            notifications: {
+                title: "Notifications",
+                markAllRead: "Mark all as read",
+                empty: "No notifications",
+                emptyDesc: "You're all caught up!"
+            },
             header: {
                 subtitle: "Shared Expense Manager",
                 connect: "Connect Wallet",
@@ -1079,6 +1174,101 @@ const translations = {
         },
         // App Platform
         app: {
+            // Loading Overlay
+            loadingOverlay: {
+                loading: "Cargando..."
+            },
+            // PWA Install Prompt
+            pwa: {
+                installTitle: "Instalar Ant Pool",
+                installDesc: "Obtén la experiencia completa con acceso sin conexión",
+                installButton: "Instalar",
+                dismissButton: "×"
+            },
+            // Sign In Modal
+            signIn: {
+                brandSubtitle: "Rastrea gastos con tu equipo.<br>Simple, rápido y gratis.",
+                features: {
+                    splitExpenses: "Divide gastos fácilmente",
+                    realTimeTracking: "Seguimiento en tiempo real",
+                    securePrivate: "Seguro y privado"
+                },
+                getStarted: "Comenzar",
+                chooseMethod: "Elige tu método de inicio de sesión",
+                continueWithGoogle: "Continuar con Google",
+                signInWithEmail: "Iniciar sesión con Email",
+                advancedOptions: "Opciones Avanzadas",
+                blockchainMode: "Modo Blockchain",
+                optional: "Opcional",
+                blockchainDesc: "Conecta tu wallet MetaMask para pagos y liquidaciones automáticas en cadena.",
+                connectMetaMask: "Conectar MetaMask",
+                requiresMetaMask: "Requiere extensión MetaMask",
+                emailAddress: "Correo Electrónico",
+                emailPlaceholder: "tu@email.com",
+                password: "Contraseña",
+                signInButton: "Iniciar Sesión",
+                createNewAccount: "Crear nueva cuenta",
+                backToOptions: "← Volver a opciones",
+                displayName: "Nombre para Mostrar",
+                namePlaceholder: "Tu Nombre",
+                passwordPlaceholder: "Mínimo 6 caracteres",
+                createAccount: "Crear Cuenta",
+                backToSignIn: "← Volver a Iniciar Sesión"
+            },
+            // User Menu
+            userMenu: {
+                signIn: "Iniciar Sesión",
+                accessSimpleMode: "Acceder a Modo Simple",
+                walletConnected: "Wallet Conectada",
+                account: "Cuenta",
+                profile: "Perfil",
+                signOut: "Cerrar Sesión",
+                disconnectWallet: "Desconectar Wallet"
+            },
+            // Profile Panel
+            profile: {
+                title: "Perfil",
+                tabs: {
+                    info: "Info",
+                    groups: "Grupos",
+                    achievements: "Logros",
+                    subscription: "PRO",
+                    settings: "Ajustes"
+                },
+                info: {
+                    displayName: "Nombre para Mostrar",
+                    email: "Email",
+                    memberSince: "Miembro Desde"
+                },
+                groups: {
+                    title: "Mis Grupos",
+                    empty: "Sin grupos aún"
+                },
+                achievements: {
+                    title: "Logros",
+                    empty: "Sin logros aún"
+                },
+                subscription: {
+                    title: "Mejorar a PRO",
+                    free: "Plan Gratis",
+                    pro: "Plan PRO"
+                },
+                settings: {
+                    title: "Configuración de Cuenta",
+                    privacy: "Privacidad",
+                    notifications: "Notificaciones",
+                    preferences: "Preferencias",
+                    appSettings: "Configuración de App",
+                    signOutButton: "Cerrar Sesión"
+                }
+            },
+            // Notifications
+            notifications: {
+                title: "Notificaciones",
+                markAllRead: "Marcar todo como leído",
+                empty: "Sin notificaciones",
+                emptyDesc: "¡Estás al día!"
+            },
             header: {
                 subtitle: "Gestor de Gastos Compartidos",
                 connect: "Conectar Wallet",

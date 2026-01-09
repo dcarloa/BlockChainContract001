@@ -63,7 +63,7 @@
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
-            <p id="loadingText" class="loading-text">Cargando...</p>
+            <p id="loadingText" class="loading-text" data-i18n="app.loadingOverlay.loading">Cargando...</p>
         </div>
     </div>
 
@@ -75,15 +75,15 @@
         <div class="pwa-install-content">
             <div class="pwa-install-icon">📱</div>
             <div class="pwa-install-text">
-                <strong>Install Ant Pool</strong>
-                <p>Get the full app experience with offline access</p>
+                <strong data-i18n="app.pwa.installTitle">Install Ant Pool</strong>
+                <p data-i18n="app.pwa.installDesc">Get the full app experience with offline access</p>
             </div>
             <div class="pwa-install-actions">
                 <button id="installPWAButton" class="btn btn-primary btn-sm">
-                    <span>Install</span>
+                    <span data-i18n="app.pwa.installButton">Install</span>
                 </button>
                 <button id="dismissPWAPrompt" class="btn btn-ghost btn-sm">
-                    <span>×</span>
+                    <span data-i18n="app.pwa.dismissButton">×</span>
                 </button>
             </div>
         </div>
@@ -100,19 +100,19 @@
                     <div class="brand-content">
                         <div class="brand-icon"></div>
                         <h1 class="brand-title">Ant Pool</h1>
-                        <p class="brand-subtitle">Track expenses with your team.<br>Simple, fast, and free.</p>
+                        <p class="brand-subtitle" data-i18n="app.signIn.brandSubtitle">Track expenses with your team.<br>Simple, fast, and free.</p>
                         <div class="brand-features">
                             <div class="feature-item">
                                 <span class="feature-icon"></span>
-                                <span>Split expenses easily</span>
+                                <span data-i18n="app.signIn.features.splitExpenses">Split expenses easily</span>
                             </div>
                             <div class="feature-item">
                                 <span class="feature-icon"></span>
-                                <span>Real-time tracking</span>
+                                <span data-i18n="app.signIn.features.realTimeTracking">Real-time tracking</span>
                             </div>
                             <div class="feature-item">
                                 <span class="feature-icon"></span>
-                                <span>Secure & private</span>
+                                <span data-i18n="app.signIn.features.securePrivate">Secure & private</span>
                             </div>
                         </div>
                     </div>
@@ -121,8 +121,8 @@
                 <!-- Right Side - Sign In Form -->
                 <div class="auth-form-container">
                     <div class="auth-form-content">
-                        <h2 class="auth-title">Get Started</h2>
-                        <p class="auth-description">Choose your preferred sign-in method</p>
+                        <h2 class="auth-title" data-i18n="app.signIn.getStarted">Get Started</h2>
+                        <p class="auth-description" data-i18n="app.signIn.chooseMethod">Choose your preferred sign-in method</p>
                         
                         <!-- Main Sign In Options -->
                         <div id="mainSignInOptions" class="auth-options">
@@ -133,35 +133,35 @@
                                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                                 </svg>
-                                <span class="auth-btn-text">Continue with Google</span>
+                                <span class="auth-btn-text" data-i18n="app.signIn.continueWithGoogle">Continue with Google</span>
                             </button>
                             
                             <button class="auth-btn auth-btn-email" onclick="showEmailSignIn()">
                                 <span class="auth-btn-icon"></span>
-                                <span class="auth-btn-text">Sign in with Email</span>
+                                <span class="auth-btn-text" data-i18n="app.signIn.signInWithEmail">Sign in with Email</span>
                             </button>
                             
                             <!-- Advanced Options Toggle -->
                             <div class="auth-divider">
-                                <span>Advanced Options</span>
+                                <span data-i18n="app.signIn.advancedOptions">Advanced Options</span>
                             </div>
                             
                             <details class="auth-advanced">
                                 <summary class="auth-advanced-summary">
                                     <span class="advanced-icon"></span>
-                                    <span class="advanced-text">Blockchain Mode</span>
-                                    <span class="advanced-badge">Optional</span>
+                                    <span class="advanced-text" data-i18n="app.signIn.blockchainMode">Blockchain Mode</span>
+                                    <span class="advanced-badge" data-i18n="app.signIn.optional">Optional</span>
                                     <span class="advanced-arrow"></span>
                                 </summary>
                                 <div class="auth-advanced-content">
-                                    <p class="advanced-description">
+                                    <p class="advanced-description" data-i18n="app.signIn.blockchainDesc">
                                         Connect your MetaMask wallet for automatic on-chain payments and settlements.
                                     </p>
                                     <button class="auth-btn auth-btn-metamask" onclick="signInWithWallet()">
                                         <span class="auth-btn-icon"></span>
-                                        <span class="auth-btn-text">Connect MetaMask</span>
+                                        <span class="auth-btn-text" data-i18n="app.signIn.connectMetaMask">Connect MetaMask</span>
                                     </button>
-                                    <p class="advanced-note">Requires MetaMask extension</p>
+                                    <p class="advanced-note" data-i18n="app.signIn.requiresMetaMask">Requires MetaMask extension</p>
                                 </div>
                             </details>
                         </div>
@@ -170,20 +170,20 @@
                         <div id="emailSignInForm" style="display: none;">
                             <form onsubmit="handleEmailSignIn(event)">
                                 <div class="form-group">
-                                    <label for="signInEmail">Email Address</label>
-                                    <input type="email" id="signInEmail" class="input-modern" required placeholder="your@email.com">
+                                    <label for="signInEmail" data-i18n="app.signIn.emailAddress">Email Address</label>
+                                    <input type="email" id="signInEmail" class="input-modern" required data-i18n-placeholder="app.signIn.emailPlaceholder" placeholder="your@email.com">
                                 </div>
                                 <div class="form-group">
-                                    <label for="signInPassword">Password</label>
+                                    <label for="signInPassword" data-i18n="app.signIn.password">Password</label>
                                     <input type="password" id="signInPassword" class="input-modern" required placeholder="">
                                 </div>
-                                <button type="submit" class="auth-btn auth-btn-primary" style="width: 100%;">
+                                <button type="submit" class="auth-btn auth-btn-primary" style="width: 100%;" data-i18n="app.signIn.signInButton">
                                     Sign In
                                 </button>
-                                <button type="button" class="btn btn-link" onclick="showCreateAccount()">
+                                <button type="button" class="btn btn-link" onclick="showCreateAccount()" data-i18n="app.signIn.createNewAccount">
                                     Create new account
                                 </button>
-                                <button type="button" class="btn btn-link" onclick="closeEmailSignIn()">
+                                <button type="button" class="btn btn-link" onclick="closeEmailSignIn()" data-i18n="app.signIn.backToOptions">
                                      Back to options
                                 </button>
                             </form>
@@ -193,21 +193,21 @@
                         <div id="createAccountForm" style="display: none;">
                             <form onsubmit="handleCreateAccount(event)">
                                 <div class="form-group">
-                                    <label for="createName">Display Name</label>
-                                    <input type="text" id="createName" class="input-modern" required placeholder="Your Name">
+                                    <label for="createName" data-i18n="app.signIn.displayName">Display Name</label>
+                                    <input type="text" id="createName" class="input-modern" required data-i18n-placeholder="app.signIn.namePlaceholder" placeholder="Your Name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="createEmail">Email Address</label>
-                                    <input type="email" id="createEmail" class="input-modern" required placeholder="your@email.com">
+                                    <label for="createEmail" data-i18n="app.signIn.emailAddress">Email Address</label>
+                                    <input type="email" id="createEmail" class="input-modern" required data-i18n-placeholder="app.signIn.emailPlaceholder" placeholder="your@email.com">
                                 </div>
                                 <div class="form-group">
-                                    <label for="createPassword">Password</label>
-                                    <input type="password" id="createPassword" class="input-modern" required minlength="6" placeholder="Minimum 6 characters">
+                                    <label for="createPassword" data-i18n="app.signIn.password">Password</label>
+                                    <input type="password" id="createPassword" class="input-modern" required minlength="6" data-i18n-placeholder="app.signIn.passwordPlaceholder" placeholder="Minimum 6 characters">
                                 </div>
-                                <button type="submit" class="auth-btn auth-btn-primary" style="width: 100%;">
+                                <button type="submit" class="auth-btn auth-btn-primary" style="width: 100%;" data-i18n="app.signIn.createAccount">
                                     Create Account
                                 </button>
-                                <button type="button" class="btn btn-link" onclick="showEmailSignIn()">
+                                <button type="button" class="btn btn-link" onclick="showEmailSignIn()" data-i18n="app.signIn.backToSignIn">
                                      Back to Sign In
                                 </button>
                             </form>
@@ -273,8 +273,8 @@
                                     <button class="menu-item" onclick="showSignInModal(); closeUserMenu();">
                                         <span class="menu-icon">🔐</span>
                                         <div class="menu-content">
-                                            <div class="menu-title">Sign In</div>
-                                            <div class="menu-desc">Access Simple Mode</div>
+                                            <div class="menu-title" data-i18n="app.userMenu.signIn">Sign In</div>
+                                            <div class="menu-desc" data-i18n="app.userMenu.accessSimpleMode">Access Simple Mode</div>
                                         </div>
                                     </button>
                                 </div>
@@ -297,7 +297,7 @@
                                     <div class="menu-item-static">
                                         <span class="menu-icon">🦊</span>
                                         <div class="menu-content">
-                                            <div class="menu-title">Wallet Connected</div>
+                                            <div class="menu-title" data-i18n="app.userMenu.walletConnected">Wallet Connected</div>
                                             <div id="menuWalletAddress" class="menu-desc wallet-address"></div>
                                         </div>
                                     </div>
@@ -309,7 +309,7 @@
                                 <button id="myProfileBtn" class="menu-item" onclick="openProfilePanel(); closeUserMenu();">
                                     <span class="menu-icon">👤</span>
                                     <div class="menu-content">
-                                        <div class="menu-title">My Profile</div>
+                                        <div class="menu-title" data-i18n="app.userMenu.profile">My Profile</div>
                                     </div>
                                 </button>
                                 
@@ -320,7 +320,7 @@
                                     <button id="signOutFirebase" class="menu-item menu-item-danger" onclick="signOutFromFirebase(); closeUserMenu();">
                                         <span class="menu-icon">🚪</span>
                                         <div class="menu-content">
-                                            <div class="menu-title">Sign Out</div>
+                                            <div class="menu-title" data-i18n="app.userMenu.signOut">Sign Out</div>
                                             <div class="menu-desc">From Simple Mode</div>
                                         </div>
                                     </button>
@@ -330,7 +330,7 @@
                                     <button id="disconnectWallet" class="menu-item menu-item-danger" onclick="closeUserMenu();">
                                         <span class="menu-icon">🔌</span>
                                         <div class="menu-content">
-                                            <div class="menu-title">Disconnect Wallet</div>
+                                            <div class="menu-title" data-i18n="app.userMenu.disconnectWallet">Disconnect Wallet</div>
                                             <div class="menu-desc">From Blockchain Mode</div>
                                         </div>
                                     </button>
