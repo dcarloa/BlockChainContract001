@@ -237,6 +237,12 @@ async function startPhysicalGame(gameType) {
         case 'aiTrivia':
             await playAITrivia();
             break;
+        case 'rhythmBattle':
+            await playRhythmBattle();
+            break;
+        case 'emojiHunt':
+            await playEmojiHunt();
+            break;
     }
 }
 
@@ -1496,6 +1502,265 @@ function selectTriviaAnswer(selected, correct) {
         setTimeout(() => {
             window.triviaResolve(isCorrect);
             window.triviaResolve = null;
+        }, 500);
+    }
+}
+
+// ============================================
+// NEW GAMES: RHYTHM BATTLE & EMOJI HUNT
+// ============================================
+
+// Rhythm Battle Game
+async function playRhythmBattle() {
+    challengeState.scores = {};
+    
+    for (let i = 0; i < challengeState.players.length; i++) {
+        const player = challengeState.players[i];
+        
+        await showPlayerIntro(player, 'Rhythm Battle', 'Watch the pattern and repeat it perfectly!');
+        
+        const score = await showRhythmBattleTurn(player);
+        challengeState.scores[player.address] = score;
+    }
+    
+    showResultsWithTiebreaker('higher_wins');
+}
+
+async function showRhythmBattleTurn(player) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        const colors = ['red', 'blue', 'green', 'yellow'];
+        const rounds = 5;
+        let currentRound = 1;
+        let totalScore = 0;
+        
+        function startRound() {
+            if (currentRound > rounds) {
+                resolve(totalScore);
+                return;
+            }
+            
+            const patternLength = currentRound + 2;
+            const pattern = [];
+            for (let i = 0; i < patternLength; i++) {
+                pattern.push(colors[Math.floor(Math.random() * colors.length)]);
+            }
+            
+            showPattern(pattern);
+        }
+        
+        async function showPattern(pattern) {
+            const colorEmojis = {red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡'};
+            
+            gameArea.innerHTML = `
+                <div class="game-turn-screen">
+                    <div class="game-player-indicator">
+                        <h2>${player.nickname} - Round ${currentRound}/${rounds}</h2>
+                        <p>Watch the pattern carefully!</p>
+                    </div>
+                    <div class="rhythm-display" id="rhythmDisplay">
+                        <div style="font-size: 3rem; padding: 2rem;">👀 Watch...</div>
+                    </div>
+                    <div class="rhythm-buttons" style="opacity: 0.3; pointer-events: none;">
+                        ${colors.map(color => `
+                            <button class="rhythm-btn rhythm-${color}" data-color="${color}">
+                                ${colorEmojis[color]}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="rhythm-score">Score: ${totalScore}</div>
+                </div>
+            `;
+            
+            for (let i = 0; i < pattern.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, 600));
+                const btn = document.querySelector(`.rhythm-${pattern[i]}`);
+                btn.style.transform = 'scale(1.2)';
+                btn.style.boxShadow = '0 0 30px currentColor';
+                
+                await new Promise(resolve => setTimeout(resolve, 400));
+                btn.style.transform = 'scale(1)';
+                btn.style.boxShadow = '';
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            getPlayerInput(pattern);
+        }
+        
+        function getPlayerInput(pattern) {
+            const buttonsDiv = document.querySelector('.rhythm-buttons');
+            buttonsDiv.style.opacity = '1';
+            buttonsDiv.style.pointerEvents = 'auto';
+            
+            document.getElementById('rhythmDisplay').innerHTML = `
+                <div style="font-size: 2rem; padding: 2rem;">🎵 Repeat the pattern!</div>
+            `;
+            
+            let playerPattern = [];
+            
+            const buttons = document.querySelectorAll('.rhythm-btn');
+            buttons.forEach(btn => {
+                btn.onclick = () => {
+                    const color = btn.dataset.color;
+                    playerPattern.push(color);
+                    
+                    btn.style.transform = 'scale(1.2)';
+                    setTimeout(() => btn.style.transform = 'scale(1)', 200);
+                    
+                    const currentIndex = playerPattern.length - 1;
+                    if (playerPattern[currentIndex] !== pattern[currentIndex]) {
+                        showRoundResult(false, pattern, playerPattern);
+                        return;
+                    }
+                    
+                    if (playerPattern.length === pattern.length) {
+                        totalScore += pattern.length;
+                        showRoundResult(true, pattern, playerPattern);
+                    }
+                };
+            });
+        }
+        
+        async function showRoundResult(success, pattern, playerPattern) {
+            const colorEmojis = {red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡'};
+            const patternStr = pattern.map(c => colorEmojis[c]).join(' ');
+            const playerStr = playerPattern.map(c => colorEmojis[c]).join(' ');
+            
+            gameArea.innerHTML = `
+                <div class="game-turn-screen">
+                    <div style="font-size: 5rem; margin: 2rem 0;">
+                        ${success ? '✅' : '❌'}
+                    </div>
+                    <h3>${success ? 'Perfect!' : 'Oops!'}</h3>
+                    <p>Pattern was: ${patternStr}</p>
+                    ${!success ? `<p>You got: ${playerStr}</p>` : ''}
+                    <div class="rhythm-score">Total Score: ${totalScore}</div>
+                </div>
+            `;
+            
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            currentRound++;
+            startRound();
+        }
+        
+        startRound();
+    });
+}
+
+// Emoji Hunt Game
+async function playEmojiHunt() {
+    challengeState.times = {};
+    
+    for (let i = 0; i < challengeState.players.length; i++) {
+        const player = challengeState.players[i];
+        
+        await showPlayerIntro(player, 'Emoji Hunt', 'Find all the matching emojis as fast as you can!');
+        
+        const time = await showEmojiHuntTurn(player);
+        challengeState.times[player.address] = time;
+    }
+    
+    showResultsWithTime('lower_wins');
+}
+
+async function showEmojiHuntTurn(player) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        const allEmojis = ['🍎', '🍌', '🍒', '🍇', '🍊', '🍓', '🥝', '🍑', '🍋', '🍉', 
+                           '🍍', '🥥', '🥑', '🍆', '🥕', '🌽', '🥒', '🥦', '🍅', '🥔'];
+        const targetEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
+        const targetCount = 3 + Math.floor(Math.random() * 3);
+        
+        const gridSize = 40;
+        const emojis = [];
+        
+        for (let i = 0; i < targetCount; i++) {
+            emojis.push({ emoji: targetEmoji, isTarget: true });
+        }
+        
+        while (emojis.length < gridSize) {
+            const randomEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
+            if (randomEmoji !== targetEmoji || Math.random() < 0.1) {
+                emojis.push({ emoji: randomEmoji, isTarget: randomEmoji === targetEmoji });
+            }
+        }
+        
+        emojis.sort(() => Math.random() - 0.5);
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div class="game-player-indicator">
+                    <h2>${player.nickname}'s Turn</h2>
+                    <p>Find all: <span style="font-size: 2rem;">${targetEmoji}</span></p>
+                </div>
+                <div class="emoji-hunt-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">⏱️ Time:</span>
+                        <span id="emojiTime" class="stat-value">0.0s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">🎯 Found:</span>
+                        <span id="emojiFound" class="stat-value">0/${targetCount}</span>
+                    </div>
+                </div>
+                <div class="emoji-hunt-grid">
+                    ${emojis.map((item, idx) => `
+                        <div class="emoji-cell" data-index="${idx}" data-target="${item.isTarget}" onclick="clickEmojiCell(this)">
+                            ${item.emoji}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        window.emojiHuntData = {
+            targetCount,
+            found: 0,
+            startTime: Date.now(),
+            resolve
+        };
+        
+        const timer = setInterval(() => {
+            if (!window.emojiHuntData) {
+                clearInterval(timer);
+                return;
+            }
+            
+            const elapsed = (Date.now() - window.emojiHuntData.startTime) / 1000;
+            document.getElementById('emojiTime').textContent = elapsed.toFixed(1) + 's';
+            
+            if (window.emojiHuntData.found >= targetCount) {
+                clearInterval(timer);
+                setTimeout(() => {
+                    resolve(elapsed);
+                    window.emojiHuntData = null;
+                }, 500);
+            }
+        }, 100);
+    });
+}
+
+function clickEmojiCell(cell) {
+    if (!window.emojiHuntData || cell.classList.contains('found') || cell.classList.contains('wrong')) return;
+    
+    const isTarget = cell.dataset.target === 'true';
+    
+    if (isTarget) {
+        cell.classList.add('found');
+        cell.style.background = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+        cell.style.transform = 'scale(1.2)';
+        setTimeout(() => cell.style.transform = 'scale(1)', 200);
+        
+        window.emojiHuntData.found++;
+        document.getElementById('emojiFound').textContent = `${window.emojiHuntData.found}/${window.emojiHuntData.targetCount}`;
+    } else {
+        cell.classList.add('wrong');
+        cell.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)';
+        cell.style.animation = 'shake 0.3s';
+        setTimeout(() => {
+            cell.style.background = '';
+            cell.style.animation = '';
+            cell.classList.remove('wrong');
         }, 500);
     }
 }

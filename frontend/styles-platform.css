@@ -9826,3 +9826,136 @@ header,
 [data-theme="dark"] .player-transition h2 {
     color: #f9fafb;
 }
+
+/* Rhythm Battle Game Styles */
+.rhythm-display {
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 2rem 0;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rhythm-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.rhythm-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    border: none;
+    border-radius: 16px;
+    font-size: 3rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.rhythm-red {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+}
+
+.rhythm-blue {
+    background: linear-gradient(135deg, #4dabf7 0%, #339af0 100%);
+}
+
+.rhythm-green {
+    background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+}
+
+.rhythm-yellow {
+    background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+}
+
+.rhythm-btn:active {
+    transform: scale(0.95) !important;
+}
+
+.rhythm-score {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-top: 1.5rem;
+}
+
+/* Emoji Hunt Game Styles */
+.emoji-hunt-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 12px;
+}
+
+.emoji-hunt-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.5rem;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.emoji-cell {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.emoji-cell:hover:not(.found):not(.wrong) {
+    transform: scale(1.1);
+    border-color: var(--primary);
+}
+
+.emoji-cell.found {
+    border-color: #43e97b;
+    box-shadow: 0 0 15px rgba(67, 233, 123, 0.5);
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Dark mode support for new games */
+[data-theme="dark"] .rhythm-display {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+[data-theme="dark"] .emoji-hunt-stats {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+[data-theme="dark"] .emoji-cell {
+    background: rgba(102, 126, 234, 0.2);
+}
+
+/* Responsive for new games */
+@media (max-width: 768px) {
+    .emoji-hunt-grid {
+        grid-template-columns: repeat(6, 1fr);
+        max-width: 350px;
+    }
+    
+    .rhythm-buttons {
+        max-width: 250px;
+    }
+}
