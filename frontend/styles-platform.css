@@ -9041,16 +9041,37 @@ header,
     display: flex;
     justify-content: space-around;
     margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
+    padding: 1rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 12px;
+}
+
+.memory-stats .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.memory-stats .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.memory-stats .stat-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
 }
 
 .memory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    max-width: 400px;
+    gap: 0.75rem;
+    max-width: 350px;
     margin: 0 auto;
+    padding: 1rem;
 }
 
 .memory-card {
@@ -9065,6 +9086,7 @@ header,
     transition: all 0.3s ease;
     position: relative;
     transform-style: preserve-3d;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .memory-card .card-front,
@@ -9088,8 +9110,43 @@ header,
     transform: rotateY(180deg);
 }
 
-.memory-card:hover {
+.memory-card:hover:not(.flipped) {
     transform: scale(1.05);
+}
+
+/* Player Transition Screen */
+.player-transition {
+    text-align: center;
+    padding: 2rem;
+}
+
+.player-avatar-large {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.game-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 1rem 0;
+}
+
+.game-instructions {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 1.5rem 0;
+}
+
+/* Tie Explanation */
+.tie-explanation {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 3px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
 }
 
 /* Math Challenge Styles */
@@ -9678,4 +9735,94 @@ header,
         width: 250px;
         height: 250px;
     }
+}
+
+/* Player Transition Screen Styles */
+.player-transition {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: var(--radius-lg);
+    margin: 2rem 0;
+}
+
+.player-transition h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.player-avatar-large {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.game-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 1rem 0;
+}
+
+.game-instructions {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin: 1.5rem 0 2rem;
+    line-height: 1.6;
+}
+
+.player-transition .btn {
+    font-size: 1.2rem;
+    padding: 1rem 3rem;
+    margin-top: 1rem;
+}
+
+/* Tie Explanation Styles */
+.tie-explanation {
+    margin-top: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: rgba(245, 158, 11, 0.12);
+    border-left: 4px solid #f59e0b;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Enhanced Memory Stats */
+.memory-stats .stat-item {
+    text-align: center;
+}
+
+/* Dark Mode Support for New Elements */
+[data-theme="dark"] .memory-stats {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+[data-theme="dark"] .memory-stats .stat-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .memory-card .card-back {
+    background: #2d3748;
+    color: #fff;
+}
+
+[data-theme="dark"] .player-transition {
+    background: rgba(102, 126, 234, 0.08);
+}
+
+[data-theme="dark"] .tie-explanation {
+    background: rgba(245, 158, 11, 0.18);
+    color: rgba(255, 255, 255, 0.85);
+    border-left-color: #fbbf24;
+}
+
+[data-theme="dark"] .game-name {
+    color: #818cf8;
+}
+
+[data-theme="dark"] .player-transition h2 {
+    color: #f9fafb;
 }

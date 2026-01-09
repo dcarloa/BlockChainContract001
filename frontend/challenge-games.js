@@ -742,6 +742,154 @@ function showResults(scoringType, extraInfo = null) {
 // CONFIRMATION & EXPENSE CREATION
 // ============================================
 
+function showResultsWithTime(mode) {
+    const gameArea = document.getElementById('gamePlayArea');
+    
+    // Get all players with their scores and times
+    const playerResults = challengeState.players.map(player => ({
+        player,
+        score: challengeState.scores[player.address] || 0,
+        time: challengeState.times[player.address] || 0
+    }));
+    
+    // Sort by score first, then by time for tiebreaker
+    playerResults.sort((a, b) => {
+        if (mode === 'higher_wins') {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.time - b.time; // Lower time is better
+        } else {
+            if (a.score !== b.score) return a.score - b.score;
+            return a.time - b.time; // Lower time is better
+        }
+    });
+    
+    const loser = playerResults[playerResults.length - 1];
+    const winner = playerResults[0];
+    
+    // Check for ties at loser position
+    const loserScore = loser.score;
+    const losersWithSameScore = playerResults.filter(p => p.score === loserScore);
+    let tieExplanation = '';
+    
+    if (losersWithSameScore.length > 1 && loser.time > 0) {
+        tieExplanation = `<p class="tie-explanation">🎯 Tied at ${loserScore} correct! Lost by time: ${loser.time.toFixed(1)}s vs ${losersWithSameScore[0].time.toFixed(1)}s</p>`;
+    }
+    
+    const resultsHTML = playerResults.map((item, index) => {
+        const isLoser = index === playerResults.length - 1;
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : isLoser ? '💸' : '';
+        
+        return `
+            <div class="result-row ${isLoser ? 'loser-row' : ''}">
+                <span class="result-medal">${medal}</span>
+                <span class="result-name">${item.player.nickname}</span>
+                <span class="result-score">${item.score} correct (${item.time.toFixed(1)}s)</span>
+            </div>
+        `;
+    }).join('');
+    
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div class="result-screen">
+                <div class="result-icon">🏆</div>
+                <h2>Results</h2>
+            </div>
+            <div class="results-list">
+                ${resultsHTML}
+            </div>
+            <div class="result-announcement">
+                <div class="loser-badge">💸</div>
+                <h3>${loser.player.nickname} will pay!</h3>
+                ${tieExplanation}
+            </div>
+            <div class="result-actions">
+                <button class="btn btn-secondary" onclick="startPhysicalGame('${challengeState.gameType}')">
+                    🔄 Play Again
+                </button>
+                <button class="btn btn-primary" onclick="confirmChallengeResult('${loser.player.address}')">
+                    Confirm & Create Expense
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function showResultsWithTiebreaker(mode) {
+    const gameArea = document.getElementById('gamePlayArea');
+    
+    const playerResults = challengeState.players.map(player => ({
+        player,
+        score: challengeState.scores[player.address] || 0
+    }));
+    
+    // Sort by score
+    playerResults.sort((a, b) => {
+        if (mode === 'higher_wins') {
+            return b.score - a.score;
+        } else {
+            return a.score - b.score;
+        }
+    });
+    
+    // Check for ties at loser position
+    let loser;
+    const loserScore = playerResults[playerResults.length - 1].score;
+    const losersWithSameScore = playerResults.filter(p => p.score === loserScore);
+    
+    let tieExplanation = '';
+    if (losersWithSameScore.length > 1) {
+        // Random selection among tied losers
+        loser = losersWithSameScore[Math.floor(Math.random() * losersWithSameScore.length)];
+        const otherLosers = losersWithSameScore.filter(p => p.player.address !== loser.player.address).map(p => p.player.nickname).join(', ');
+        tieExplanation = `<p class="tie-explanation">⚖️ Tied with ${otherLosers} at ${loserScore}. Selected randomly.</p>`;
+    } else {
+        loser = playerResults[playerResults.length - 1];
+    }
+    
+    const resultsHTML = playerResults.map((item, index) => {
+        const isLoser = item.player.address === loser.player.address;
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : isLoser ? '💸' : '';
+        
+        let scoreDisplay = item.score;
+        if (challengeState.gameType === 'memoryCards') {
+            scoreDisplay = item.score === 999 ? 'Gave Up' : `${item.score.toFixed(1)}s`;
+        }
+        
+        return `
+            <div class="result-row ${isLoser ? 'loser-row' : ''}">
+                <span class="result-medal">${medal}</span>
+                <span class="result-name">${item.player.nickname}</span>
+                <span class="result-score">${scoreDisplay}</span>
+            </div>
+        `;
+    }).join('');
+    
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div class="result-screen">
+                <div class="result-icon">🏆</div>
+                <h2>Results</h2>
+            </div>
+            <div class="results-list">
+                ${resultsHTML}
+            </div>
+            <div class="result-announcement">
+                <div class="loser-badge">💸</div>
+                <h3>${loser.player.nickname} will pay!</h3>
+                ${tieExplanation}
+            </div>
+            <div class="result-actions">
+                <button class="btn btn-secondary" onclick="startPhysicalGame('${challengeState.gameType}')">
+                    🔄 Play Again
+                </button>
+                <button class="btn btn-primary" onclick="confirmChallengeResult('${loser.player.address}')">
+                    Confirm & Create Expense
+                </button>
+            </div>
+        </div>
+    `;
+}
+
 function confirmChallengeResult(payerAddress) {
     // Store the payer information
     challengeState.selectedPayer = payerAddress;
@@ -830,9 +978,16 @@ async function playColorMatch() {
         { name: 'ORANGE', color: '#FF8C00' }
     ];
     
+    challengeState.times = {}; // Track times for tiebreaker
+    
     for (let i = 0; i < challengeState.players.length; i++) {
         const player = challengeState.players[i];
+        
+        // Show player intro
+        await showPlayerIntro(player, 'Color Match', 'Tap the COLOR of the text, not the word!');
+        
         let correctAnswers = 0;
+        let totalTime = 0;
         const rounds = 5;
         
         for (let round = 0; round < rounds; round++) {
@@ -840,13 +995,40 @@ async function playColorMatch() {
             const textColor = colors[Math.floor(Math.random() * colors.length)];
             
             const result = await showColorMatchRound(player, wordColor, textColor, round + 1, rounds);
-            if (result) correctAnswers++;
+            if (result.correct) correctAnswers++;
+            totalTime += result.time;
         }
         
         challengeState.scores[player.address] = correctAnswers;
+        challengeState.times[player.address] = totalTime;
     }
     
-    showResults('higher_wins');
+    showResultsWithTime('higher_wins');
+}
+
+async function showPlayerIntro(player, gameName, instructions) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div class="player-transition">
+                    <div class="player-avatar-large">👤</div>
+                    <h2>${player.nickname}'s Turn</h2>
+                    <div class="game-name">${gameName}</div>
+                    <p class="game-instructions">${instructions}</p>
+                    <button class="btn btn-primary" onclick="continueGame()">
+                        I'm Ready!
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        window.continueGame = () => {
+            resolve();
+            window.continueGame = null;
+        };
+    });
 }
 
 async function showColorMatchRound(player, wordColor, textColor, round, totalRounds) {
@@ -874,7 +1056,7 @@ async function showColorMatchRound(player, wordColor, textColor, round, totalRou
                     ].map(c => `
                         <button class="color-option-btn" 
                                 style="background: ${c.color};"
-                                onclick="selectColorAnswer('${c.name}', '${textColor.name}', ${Date.now()}, ${startTime}, this)">
+                                onclick="selectColorAnswer('${c.name}', '${textColor.name}', this)">
                             ${c.name}
                         </button>
                     `).join('')}
@@ -882,11 +1064,14 @@ async function showColorMatchRound(player, wordColor, textColor, round, totalRou
             </div>
         `;
         
-        window.colorMatchResolve = resolve;
+        window.colorMatchResolve = (isCorrect) => {
+            const time = (Date.now() - startTime) / 1000;
+            resolve({ correct: isCorrect, time });
+        };
     });
 }
 
-function selectColorAnswer(selected, correct, clickTime, startTime, btn) {
+function selectColorAnswer(selected, correct, btn) {
     const isCorrect = selected === correct;
     btn.style.opacity = '0.6';
     
@@ -902,11 +1087,15 @@ function selectColorAnswer(selected, correct, clickTime, startTime, btn) {
 async function playShakeIt() {
     for (let i = 0; i < challengeState.players.length; i++) {
         const player = challengeState.players[i];
+        
+        // Show player intro
+        await showPlayerIntro(player, 'Shake It!', 'Shake your phone as hard as you can!');
+        
         const shakeCount = await showShakeItTurn(player);
         challengeState.scores[player.address] = shakeCount;
     }
     
-    showResults('higher_wins');
+    showResultsWithTiebreaker('higher_wins');
 }
 
 async function showShakeItTurn(player) {
@@ -1001,11 +1190,15 @@ function startShaking() {
 async function playMemoryCards() {
     for (let i = 0; i < challengeState.players.length; i++) {
         const player = challengeState.players[i];
+        
+        // Show player intro
+        await showPlayerIntro(player, 'Memory Cards', 'Find all matching pairs as fast as you can!');
+        
         const time = await showMemoryCardsTurn(player);
         challengeState.scores[player.address] = time;
     }
     
-    showResults('lower_wins');
+    showResultsWithTiebreaker('lower_wins');
 }
 
 async function showMemoryCardsTurn(player) {
@@ -1021,8 +1214,14 @@ async function showMemoryCardsTurn(player) {
                     <p>Find all matching pairs!</p>
                 </div>
                 <div class="memory-stats">
-                    <div>Time: <span id="memoryTime">0.0s</span></div>
-                    <div>Pairs: <span id="memoryPairs">0/6</span></div>
+                    <div class="stat-item">
+                        <span class="stat-label">⏱️ Time:</span>
+                        <span id="memoryTime" class="stat-value">0.0s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">🎯 Pairs:</span>
+                        <span id="memoryPairs" class="stat-value">0/6</span>
+                    </div>
                 </div>
                 <div class="memory-grid">
                     ${cards.map((emoji, idx) => `
@@ -1032,6 +1231,9 @@ async function showMemoryCardsTurn(player) {
                         </div>
                     `).join('')}
                 </div>
+                <button class="btn btn-secondary" style="margin-top: 1.5rem;" onclick="giveUpMemory()">
+                    🏳️ Give Up
+                </button>
             </div>
         `;
         
@@ -1041,6 +1243,12 @@ async function showMemoryCardsTurn(player) {
             startTime: Date.now(),
             pairsFound: 0,
             resolve
+        };
+        
+        window.giveUpMemory = () => {
+            if (timer) clearInterval(timer);
+            const elapsed = 999; // Penalty time for giving up
+            resolve(elapsed);
         };
         
         const timer = setInterval(() => {
@@ -1088,30 +1296,47 @@ function flipMemoryCard(card) {
 
 // Math Challenge Game
 async function playMathChallenge() {
+    challengeState.times = {}; // Track times for tiebreaker
+    
     for (let i = 0; i < challengeState.players.length; i++) {
         const player = challengeState.players[i];
+        
+        // Show player intro
+        await showPlayerIntro(player, 'Math Challenge', 'Solve equations as fast as you can!');
+        
         let correctAnswers = 0;
+        let totalTime = 0;
         const rounds = 5;
         
         for (let round = 0; round < rounds; round++) {
             const result = await showMathChallengeTurn(player, round + 1, rounds);
             if (result.correct) correctAnswers++;
+            totalTime += result.time;
         }
         
         challengeState.scores[player.address] = correctAnswers;
+        challengeState.times[player.address] = totalTime;
     }
     
-    showResults('higher_wins');
+    showResultsWithTime('higher_wins');
 }
 
 async function showMathChallengeTurn(player, round, totalRounds) {
     return new Promise((resolve) => {
         const gameArea = document.getElementById('gamePlayArea');
-        const a = Math.floor(Math.random() * 20) + 1;
-        const b = Math.floor(Math.random() * 20) + 1;
+        // Easier math: smaller numbers and simpler operations
+        const a = Math.floor(Math.random() * 12) + 1; // 1-12
+        const b = Math.floor(Math.random() * 12) + 1; // 1-12
         const ops = ['+', '-', '*'];
         const op = ops[Math.floor(Math.random() * ops.length)];
         let answer;
+        
+        // Make sure subtraction doesn't result in negative
+        if (op === '-' && b > a) {
+            const temp = a;
+            a = b;
+            b = temp;
+        }
         
         switch(op) {
             case '+': answer = a + b; break;
