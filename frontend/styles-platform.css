@@ -8951,6 +8951,211 @@ header,
     color: #f093fb;
 }
 
+.game-difficulty.hard {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.game-difficulty.special {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+    color: #667eea;
+}
+
+/* Color Match Game Styles */
+.color-match-word {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.color-match-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.color-option-btn {
+    padding: 1.5rem;
+    border: 3px solid white;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.color-option-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Shake It Game Styles */
+.shake-counter {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.shake-icon {
+    font-size: 4rem;
+    animation: shake-icon 0.5s infinite;
+}
+
+.shake-count {
+    font-size: 4rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 1rem 0;
+}
+
+.shake-label {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.shake-timer {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 1rem 0;
+}
+
+@keyframes shake-icon {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+@keyframes shake-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Memory Cards Game Styles */
+.memory-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.memory-card {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.memory-card .card-front,
+.memory-card .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    border-radius: 12px;
+}
+
+.memory-card .card-back {
+    transform: rotateY(180deg);
+    background: white;
+}
+
+.memory-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.memory-card:hover {
+    transform: scale(1.05);
+}
+
+/* Math Challenge Styles */
+.math-equation {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 2rem 0;
+    color: var(--primary);
+}
+
+/* AI Trivia Styles */
+.trivia-question {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary);
+}
+
+.trivia-question h3 {
+    margin: 0;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.trivia-options {
+    display: grid;
+    gap: 1rem;
+}
+
+.trivia-option-btn {
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    color: #333;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.trivia-option-btn:hover {
+    border-color: var(--primary);
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateX(5px);
+}
+
+[data-theme="dark"] .trivia-option-btn {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .trivia-option-btn:hover {
+    background: #374151;
+}
+
+.loading-spinner {
+    text-align: center;
+    font-size: 2rem;
+    padding: 3rem;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
 /* Remote Selection Options */
 .remote-options {
     display: grid;

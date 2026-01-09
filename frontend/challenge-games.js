@@ -228,6 +228,15 @@ async function startPhysicalGame(gameType) {
         case 'numberGuess':
             await playNumberGuess();
             break;
+        case 'memoryCards':
+            await playMemoryCards();
+            break;
+        case 'mathChallenge':
+            await playMathChallenge();
+            break;
+        case 'aiTrivia':
+            await playAITrivia();
+            break;
     }
 }
 
@@ -789,6 +798,7 @@ function resetChallengeState() {
         mode: null,
         gameType: null,
         players: [],
+        allMembers: [],
         scores: {},
         currentPlayerIndex: 0,
         expenseData: null
@@ -796,8 +806,471 @@ function resetChallengeState() {
     
     // Reset modal views
     document.getElementById('challengeModeSelection').style.display = 'block';
+    document.getElementById('playerSelection').style.display = 'none';
     document.getElementById('gameSelection').style.display = 'none';
     document.getElementById('remoteSelection').style.display = 'none';
+    document.getElementById('gamePlay').style.display = 'none';
+}
+
+// ============================================
+// GAME IMPLEMENTATIONS
+// ============================================
+
+// Color Match Game
+async function playColorMatch() {
+    const colors = [
+        { name: 'RED', color: '#FF0000' },
+        { name: 'BLUE', color: '#0000FF' },
+        { name: 'GREEN', color: '#00FF00' },
+        { name: 'YELLOW', color: '#FFFF00' },
+        { name: 'PURPLE', color: '#9932CC' },
+        { name: 'ORANGE', color: '#FF8C00' }
+    ];
+    
+    for (let i = 0; i < challengeState.players.length; i++) {
+        const player = challengeState.players[i];
+        let correctAnswers = 0;
+        const rounds = 5;
+        
+        for (let round = 0; round < rounds; round++) {
+            const wordColor = colors[Math.floor(Math.random() * colors.length)];
+            const textColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            const result = await showColorMatchRound(player, wordColor, textColor, round + 1, rounds);
+            if (result) correctAnswers++;
+        }
+        
+        challengeState.scores[player.address] = correctAnswers;
+    }
+    
+    showResults('higher_wins');
+}
+
+async function showColorMatchRound(player, wordColor, textColor, round, totalRounds) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        const startTime = Date.now();
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div class="game-player-indicator">
+                    <h2>${player.nickname} - Round ${round}/${totalRounds}</h2>
+                    <p>What COLOR is the text? (Not the word!)</p>
+                </div>
+                <div class="color-match-word" style="color: ${textColor.color}; font-size: 3rem; font-weight: bold; margin: 2rem 0;">
+                    ${wordColor.name}
+                </div>
+                <div class="color-match-options">
+                    ${[
+                        { name: 'RED', color: '#FF0000' },
+                        { name: 'BLUE', color: '#0000FF' },
+                        { name: 'GREEN', color: '#00FF00' },
+                        { name: 'YELLOW', color: '#FFFF00' },
+                        { name: 'PURPLE', color: '#9932CC' },
+                        { name: 'ORANGE', color: '#FF8C00' }
+                    ].map(c => `
+                        <button class="color-option-btn" 
+                                style="background: ${c.color};"
+                                onclick="selectColorAnswer('${c.name}', '${textColor.name}', ${Date.now()}, ${startTime}, this)">
+                            ${c.name}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        window.colorMatchResolve = resolve;
+    });
+}
+
+function selectColorAnswer(selected, correct, clickTime, startTime, btn) {
+    const isCorrect = selected === correct;
+    btn.style.opacity = '0.6';
+    
+    setTimeout(() => {
+        if (window.colorMatchResolve) {
+            window.colorMatchResolve(isCorrect);
+            window.colorMatchResolve = null;
+        }
+    }, 300);
+}
+
+// Shake It Game
+async function playShakeIt() {
+    for (let i = 0; i < challengeState.players.length; i++) {
+        const player = challengeState.players[i];
+        const shakeCount = await showShakeItTurn(player);
+        challengeState.scores[player.address] = shakeCount;
+    }
+    
+    showResults('higher_wins');
+}
+
+async function showShakeItTurn(player) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        let shakeCount = 0;
+        let lastTime = Date.now();
+        let lastX = 0, lastY = 0, lastZ = 0;
+        const shakeDuration = 5000; // 5 seconds
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div class="game-player-indicator">
+                    <h2>${player.nickname}'s Turn</h2>
+                    <p>Shake your phone as hard as you can!</p>
+                </div>
+                <div class="shake-counter">
+                    <div class="shake-icon">📳</div>
+                    <div class="shake-count" id="shakeCount">0</div>
+                    <div class="shake-label">shakes</div>
+                </div>
+                <div class="shake-timer" id="shakeTimer">5.0s</div>
+                <button class="btn btn-primary" id="startShakeBtn" onclick="startShaking()">
+                    Start Shaking!
+                </button>
+            </div>
+        `;
+        
+        window.shakeGameResolve = resolve;
+        window.shakeGameData = { shakeCount, shakeDuration, lastTime, lastX, lastY, lastZ };
+    });
+}
+
+function startShaking() {
+    const btn = document.getElementById('startShakeBtn');
+    btn.style.display = 'none';
+    
+    const { shakeDuration } = window.shakeGameData;
+    const startTime = Date.now();
+    
+    const timer = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, (shakeDuration - elapsed) / 1000);
+        document.getElementById('shakeTimer').textContent = remaining.toFixed(1) + 's';
+        
+        if (remaining <= 0) {
+            clearInterval(timer);
+            if (window.deviceMotionHandler) {
+                window.removeEventListener('devicemotion', window.deviceMotionHandler);
+            }
+            if (window.shakeGameResolve) {
+                window.shakeGameResolve(window.shakeGameData.shakeCount);
+                window.shakeGameResolve = null;
+            }
+        }
+    }, 100);
+    
+    window.deviceMotionHandler = function(event) {
+        const { acceleration } = event;
+        if (!acceleration) return;
+        
+        const currentTime = Date.now();
+        const { lastTime, lastX, lastY, lastZ } = window.shakeGameData;
+        
+        if (currentTime - lastTime > 100) {
+            const deltaX = Math.abs(acceleration.x - lastX);
+            const deltaY = Math.abs(acceleration.y - lastY);
+            const deltaZ = Math.abs(acceleration.z - lastZ);
+            
+            const totalDelta = deltaX + deltaY + deltaZ;
+            
+            if (totalDelta > 30) {
+                window.shakeGameData.shakeCount++;
+                document.getElementById('shakeCount').textContent = window.shakeGameData.shakeCount;
+                document.getElementById('shakeCount').style.animation = 'none';
+                setTimeout(() => {
+                    document.getElementById('shakeCount').style.animation = 'shake-pulse 0.3s';
+                }, 10);
+            }
+            
+            window.shakeGameData.lastX = acceleration.x;
+            window.shakeGameData.lastY = acceleration.y;
+            window.shakeGameData.lastZ = acceleration.z;
+            window.shakeGameData.lastTime = currentTime;
+        }
+    };
+    
+    window.addEventListener('devicemotion', window.deviceMotionHandler);
+}
+
+// Memory Cards Game
+async function playMemoryCards() {
+    for (let i = 0; i < challengeState.players.length; i++) {
+        const player = challengeState.players[i];
+        const time = await showMemoryCardsTurn(player);
+        challengeState.scores[player.address] = time;
+    }
+    
+    showResults('lower_wins');
+}
+
+async function showMemoryCardsTurn(player) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        const emojis = ['🍎', '🍌', '🍒', '🍇', '🍊', '🍓'];
+        const cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div class="game-player-indicator">
+                    <h2>${player.nickname}'s Turn</h2>
+                    <p>Find all matching pairs!</p>
+                </div>
+                <div class="memory-stats">
+                    <div>Time: <span id="memoryTime">0.0s</span></div>
+                    <div>Pairs: <span id="memoryPairs">0/6</span></div>
+                </div>
+                <div class="memory-grid">
+                    ${cards.map((emoji, idx) => `
+                        <div class="memory-card" data-emoji="${emoji}" data-index="${idx}" onclick="flipMemoryCard(this)">
+                            <div class="card-front">❓</div>
+                            <div class="card-back">${emoji}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        window.memoryGameData = {
+            flipped: [],
+            matched: [],
+            startTime: Date.now(),
+            pairsFound: 0,
+            resolve
+        };
+        
+        const timer = setInterval(() => {
+            const elapsed = (Date.now() - window.memoryGameData.startTime) / 1000;
+            document.getElementById('memoryTime').textContent = elapsed.toFixed(1) + 's';
+            
+            if (window.memoryGameData.pairsFound >= 6) {
+                clearInterval(timer);
+                setTimeout(() => {
+                    resolve(elapsed);
+                }, 500);
+            }
+        }, 100);
+    });
+}
+
+function flipMemoryCard(card) {
+    if (!window.memoryGameData) return;
+    const { flipped, matched } = window.memoryGameData;
+    
+    const index = parseInt(card.dataset.index);
+    if (flipped.includes(index) || matched.includes(index) || flipped.length >= 2) return;
+    
+    card.classList.add('flipped');
+    flipped.push(index);
+    
+    if (flipped.length === 2) {
+        const card1 = document.querySelector(`[data-index="${flipped[0]}"]`);
+        const card2 = document.querySelector(`[data-index="${flipped[1]}"]`);
+        
+        if (card1.dataset.emoji === card2.dataset.emoji) {
+            matched.push(...flipped);
+            window.memoryGameData.pairsFound++;
+            document.getElementById('memoryPairs').textContent = `${window.memoryGameData.pairsFound}/6`;
+            flipped.length = 0;
+        } else {
+            setTimeout(() => {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+                flipped.length = 0;
+            }, 800);
+        }
+    }
+}
+
+// Math Challenge Game
+async function playMathChallenge() {
+    for (let i = 0; i < challengeState.players.length; i++) {
+        const player = challengeState.players[i];
+        let correctAnswers = 0;
+        const rounds = 5;
+        
+        for (let round = 0; round < rounds; round++) {
+            const result = await showMathChallengeTurn(player, round + 1, rounds);
+            if (result.correct) correctAnswers++;
+        }
+        
+        challengeState.scores[player.address] = correctAnswers;
+    }
+    
+    showResults('higher_wins');
+}
+
+async function showMathChallengeTurn(player, round, totalRounds) {
+    return new Promise((resolve) => {
+        const gameArea = document.getElementById('gamePlayArea');
+        const a = Math.floor(Math.random() * 20) + 1;
+        const b = Math.floor(Math.random() * 20) + 1;
+        const ops = ['+', '-', '*'];
+        const op = ops[Math.floor(Math.random() * ops.length)];
+        let answer;
+        
+        switch(op) {
+            case '+': answer = a + b; break;
+            case '-': answer = a - b; break;
+            case '*': answer = a * b; break;
+        }
+        
+        const startTime = Date.now();
+        
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div class="game-player-indicator">
+                    <h2>${player.nickname} - Round ${round}/${totalRounds}</h2>
+                </div>
+                <div class="math-equation">
+                    ${a} ${op} ${b} = ?
+                </div>
+                <input type="number" 
+                       id="mathAnswer" 
+                       class="form-input" 
+                       placeholder="Your answer"
+                       autofocus>
+                <button class="btn btn-primary" onclick="submitMathAnswer(${answer}, ${startTime})">
+                    Submit
+                </button>
+            </div>
+        `;
+        
+        window.mathChallengeResolve = resolve;
+        
+        document.getElementById('mathAnswer').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitMathAnswer(answer, startTime);
+            }
+        });
+    });
+}
+
+function submitMathAnswer(correct, startTime) {
+    const userAnswer = parseInt(document.getElementById('mathAnswer').value);
+    const time = (Date.now() - startTime) / 1000;
+    
+    if (window.mathChallengeResolve) {
+        window.mathChallengeResolve({
+            correct: userAnswer === correct,
+            time
+        });
+        window.mathChallengeResolve = null;
+    }
+}
+
+// AI Trivia Game (requires OpenAI API)
+async function playAITrivia() {
+    // Check if OpenAI API key is configured
+    const apiKey = localStorage.getItem('openai_api_key');
+    
+    if (!apiKey) {
+        const gameArea = document.getElementById('gamePlayArea');
+        gameArea.innerHTML = `
+            <div class="game-turn-screen">
+                <div class="result-screen">
+                    <div class="result-icon">⚠️</div>
+                    <h2>OpenAI API Required</h2>
+                    <p>This game requires an OpenAI API key to generate questions.</p>
+                    <p>Please configure your API key in Settings → Configure OpenAI API first.</p>
+                    <button class="btn btn-primary" onclick="resetChallengeState()">
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    for (let i = 0; i < challengeState.players.length; i++) {
+        const player = challengeState.players[i];
+        let correctAnswers = 0;
+        const rounds = 3;
+        
+        for (let round = 0; round < rounds; round++) {
+            const result = await showAITriviaTurn(player, apiKey, round + 1, rounds);
+            if (result) correctAnswers++;
+        }
+        
+        challengeState.scores[player.address] = correctAnswers;
+    }
+    
+    showResults('higher_wins');
+}
+
+async function showAITriviaTurn(player, apiKey, round, totalRounds) {
+    const gameArea = document.getElementById('gamePlayArea');
+    
+    gameArea.innerHTML = `
+        <div class="game-turn-screen">
+            <div class="loading-spinner">🤖 Generating question...</div>
+        </div>
+    `;
+    
+    try {
+        const question = await generateTriviaQuestion(apiKey);
+        
+        return new Promise((resolve) => {
+            gameArea.innerHTML = `
+                <div class="game-turn-screen">
+                    <div class="game-player-indicator">
+                        <h2>${player.nickname} - Round ${round}/${totalRounds}</h2>
+                    </div>
+                    <div class="trivia-question">
+                        <h3>${question.question}</h3>
+                    </div>
+                    <div class="trivia-options">
+                        ${question.options.map((opt, idx) => `
+                            <button class="trivia-option-btn" onclick="selectTriviaAnswer(${idx}, ${question.correctIndex})">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            window.triviaResolve = resolve;
+        });
+    } catch (error) {
+        console.error('AI Trivia error:', error);
+        showToast('Failed to generate question', 'error');
+        return false;
+    }
+}
+
+async function generateTriviaQuestion(apiKey) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [{
+                role: 'user',
+                content: 'Generate a fun trivia question with 4 multiple choice options. Return ONLY a JSON object with this structure: {"question": "...", "options": ["A", "B", "C", "D"], "correctIndex": 0}. Make it about general knowledge, pop culture, or science.'
+            }],
+            temperature: 0.8
+        })
+    });
+    
+    const data = await response.json();
+    const content = data.choices[0].message.content;
+    return JSON.parse(content);
+}
+
+function selectTriviaAnswer(selected, correct) {
+    const isCorrect = selected === correct;
+    
+    if (window.triviaResolve) {
+        setTimeout(() => {
+            window.triviaResolve(isCorrect);
+            window.triviaResolve = null;
+        }, 500);
+    }
+}
     document.getElementById('gamePlay').style.display = 'none';
 }
 
