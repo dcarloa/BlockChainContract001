@@ -23,7 +23,7 @@
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
-}
+/* (llave eliminada: cierre incorrecto del media query) */
 /* ===================================
    SIMPLE MODE - ADD EXPENSE
    =================================== */
