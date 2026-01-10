@@ -822,11 +822,9 @@ const translations = {
                         "Individual Balance: Member's contribution - Fair share",
                         "Green (+): You contributed more, others owe you. Red (-): You owe to the group"
                     ],
-                    howItWorksSimple: [
-                        "Green (+): Others owe you money",
-                        "Red (-): You owe money to others",
-                        "Balanced transactions: Simplified to minimize payments"
-                    ],
+                    howItWorksGreen: "Others owe you money",
+                    howItWorksRed: "You owe money to others",
+                    howItWorksBalanced: "Simplified to minimize payments",
                     empty: "No members yet",
                     emptySubtitle: "Balances will appear when members start contributing to expenses"
                 },
@@ -867,25 +865,21 @@ const translations = {
                     kickDescription: "Remove a member from the group by returning their proportional share of the current balance.",
                     kickDescriptionSimple: "Remove a member from the group, returning their proportional share of the current balance.",
                     howItWorks: "💡 How it works:",
-                    kickPoints: [
-                        "The member is permanently removed from the group",
-                        "Receives: (Their contribution / Total contributions) × Current balance",
-                        "Cannot participate in future votes",
-                        "Their previous votes remain recorded"
-                    ],
+                    kickPoint1: "The member is permanently removed from the group",
+                    kickPoint2: "Receives: (Their contribution / Total contributions) × Current balance",
+                    kickPoint3: "Cannot participate in future votes",
+                    kickPoint4: "Their previous votes remain recorded",
                     noMembersToKick: "No members to remove",
                     noMembersSubtitle: "There is only one member in the group or you are not the creator",
                     dangerZone: "🚨 Danger Zone",
                     closeAndDistribute: "Close and Distribute Fund",
                     closeDescription: "This action will permanently close the group and settle all remaining balances proportionally among contributors according to their contribution.",
                     warning: "⚠️ Warning:",
-                    warningPoints: [
-                        "This action is irreversible",
-                        "Only the fund creator can execute it",
-                        "Each contributor will receive: (their contribution / total) × current balance",
-                        "The fund will be permanently closed",
-                        "No more deposits or proposals can be made"
-                    ],
+                    warningPoint1: "This action is irreversible",
+                    warningPoint2: "Only the fund creator can execute it",
+                    warningPoint3: "Each contributor will receive: (their contribution / total) × current balance",
+                    warningPoint4: "The fund will be permanently closed",
+                    warningPoint5: "No more deposits or proposals can be made",
                     distributionPreview: "📊 Distribution Preview",
                     previewButton: "Distribution Preview",
                     closeButton: "Close and Distribute Fund",
@@ -1802,11 +1796,9 @@ const translations = {
                         "Balance Individual: Aportación del miembro - Parte justa",
                         "Verde (+): Aportaste más, otros te deben. Rojo (-): Debes al grupo"
                     ],
-                    howItWorksSimple: [
-                        "Verde (+): Otros te deben dinero",
-                        "Rojo (-): Tú debes dinero a otros",
-                        "Transacciones balanceadas: Simplificadas para minimizar pagos"
-                    ],
+                    howItWorksGreen: "Otros te deben dinero",
+                    howItWorksRed: "Tú debes dinero a otros",
+                    howItWorksBalanced: "Simplificadas para minimizar pagos",
                     empty: "Aún no hay miembros",
                     emptySubtitle: "Los balances aparecerán cuando los miembros empiecen a contribuir en gastos"
                 },
@@ -1847,25 +1839,21 @@ const translations = {
                     kickDescription: "Elimina a un miembro del grupo devolviendo su parte proporcional del saldo actual.",
                     kickDescriptionSimple: "Expulsa a un miembro del grupo devolviendo su parte proporcional del saldo actual.",
                     howItWorks: "💡 Cómo funciona:",
-                    kickPoints: [
-                        "El miembro es removido del grupo permanentemente",
-                        "Recibe: (Su aportación / Total aportaciones) × Balance actual",
-                        "No podrá participar en votaciones futuras",
-                        "Sus votos anteriores quedan registrados"
-                    ],
+                    kickPoint1: "El miembro es removido del grupo permanentemente",
+                    kickPoint2: "Recibe: (Su aportación / Total aportaciones) × Balance actual",
+                    kickPoint3: "No podrá participar en votaciones futuras",
+                    kickPoint4: "Sus votos anteriores quedan registrados",
                     noMembersToKick: "No hay miembros para eliminar",
                     noMembersSubtitle: "Solo hay un miembro en el grupo o no eres el creador",
                     dangerZone: "🚨 Zona de Peligro",
                     closeAndDistribute: "Cerrar y Distribuir Fondo",
                     closeDescription: "Esta acción cerrará permanentemente el grupo y liquidará todos los saldos restantes proporcionalmente entre los contribuyentes según su aportación.",
                     warning: "⚠️ Advertencia:",
-                    warningPoints: [
-                        "Esta acción es irreversible",
-                        "Solo el creador del fondo puede ejecutarla",
-                        "Cada contribuyente recibirá: (su aportación / total) × balance actual",
-                        "El fondo quedará cerrado permanentemente",
-                        "No se podrán hacer más depósitos ni propuestas"
-                    ],
+                    warningPoint1: "Esta acción es irreversible",
+                    warningPoint2: "Solo el creador del fondo puede ejecutarla",
+                    warningPoint3: "Cada contribuyente recibirá: (su aportación / total) × balance actual",
+                    warningPoint4: "El fondo quedará cerrado permanentemente",
+                    warningPoint5: "No se podrán hacer más depósitos ni propuestas",
                     distributionPreview: "📊 Vista Previa de Distribución",
                     previewButton: "Vista Previa de Distribución",
                     closeButton: "Cerrar y Distribuir Fondo",
