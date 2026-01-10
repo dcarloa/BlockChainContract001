@@ -1,5 +1,42 @@
-/* Fix touch/click issues for Paid By checkboxes in mobile */
-/* Eliminado media query conflictivo. Todo el input será invisible y cubrirá el label en todos los dispositivos. */
+/* Custom checkbox visual restoration */
+.split-members-list .checkbox-option label.custom-checkbox-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin: 0;
+  cursor: pointer;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  padding-left: 32px;
+}
+.split-members-list .checkbox-option .custom-checkbox {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid #4b5563;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  background: #111827;
+  box-sizing: border-box;
+}
+.split-members-list .checkbox-option input[type="checkbox"]:checked + .custom-checkbox {
+  background: var(--primary);
+  border-color: var(--primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px;
+}
+.split-members-list .checkbox-option input[type="checkbox"]:focus + .custom-checkbox {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
 /* ===================================
    SIMPLE MODE - ADD EXPENSE
    =================================== */
@@ -12,6 +49,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+}
 
 .checkbox-group {
   display: flex;
@@ -988,29 +1026,18 @@
 
 /* Hidden Checkbox */
 .split-members-list .checkbox-option input[type="checkbox"] {
-  position: static;
-  opacity: 1;
-  width: 20px;
-  height: 20px;
-  min-width: 20px;
-  min-height: 20px;
-  margin-right: 0.75rem;
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
   cursor: pointer;
-  z-index: 1;
-  pointer-events: auto;
+  z-index: 2;
+  margin: 0;
 }
 
 /* Selected State */
-.split-members-list .checkbox-option:has(input[type="checkbox"]:checked) {
-/* Eliminado :has(). Usar highlight por clase .selected */
-.split-members-list .checkbox-option.selected {
-  background: rgba(var(--primary-rgb), 0.1);
-  border-color: var(--primary);
-}
-}
-
-/* Checkbox Indicator on label */
-.split-members-list .checkbox-option label {
 
 /* Label */
 /* Permitir que el label sea tocable/clicable en móvil */
@@ -1021,10 +1048,6 @@
   width: 100%;
   margin: 0;
   cursor: pointer;
-  min-height: 44px;
-  -webkit-tap-highlight-color: transparent;
-  position: relative;
-  padding-left: 32px;
 }
 }
 
@@ -1054,39 +1077,46 @@
 .member-name {
   flex: 1;
   font-size: 0.938rem;
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+/* Field Hint */
+.field-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.813rem;
+  color: #6b7280;
+  font-style: normal;
+}
+
+/* Form Hint */
+.form-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Input with Prefix */
+.input-with-prefix {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  margin: 0;
-  cursor: pointer;
-  min-height: 44px;
-  -webkit-tap-highlight-color: transparent;
-  padding-left: 32px;
 }
-.split-members-list .checkbox-option .custom-checkbox {
+
+.input-prefix {
   position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  min-width: 20px;
-  border: 2px solid #4b5563;
-  border-radius: 4px;
-  transition: all 0.15s ease;
-  background: #111827;
-  box-sizing: border-box;
+  left: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  pointer-events: none;
 }
-.split-members-list .checkbox-option input[type="checkbox"]:checked + .custom-checkbox {
-  background: var(--primary);
-  border-color: var(--primary);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 14px;
-}
+
+.input-with-prefix .input-modern {
+  padding-left: 2.5rem;
 }
 
 /* Action Card - Prominent Add Expense Button */
