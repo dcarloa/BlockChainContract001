@@ -5404,16 +5404,23 @@ function populateExpenseMembers() {
     let memberIndex = 0;
     Object.entries(currentFund.members).forEach(([uid, member]) => {
         // Add to "Paid by" checkboxes
-        const paidByDiv = document.createElement('div');
-        paidByDiv.className = 'checkbox-option';
-        paidByDiv.innerHTML = `
-            <label for="paidby_${uid}">
-                <input type="checkbox" name="paidBy" value="${uid}" id="paidby_${uid}">
-                <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
-                <span class="member-name">${member.name || member.email || uid}</span>
-            </label>
-        `;
-        paidByContainer.appendChild(paidByDiv);
+                const paidByDiv = document.createElement('div');
+                paidByDiv.className = 'checkbox-option';
+                paidByDiv.innerHTML = `
+                        <label style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:44px;cursor:pointer;">
+                                <input type="checkbox" name="paidBy" value="${uid}" id="paidby_${uid}" style="width:20px;height:20px;min-width:20px;min-height:20px;margin-right:0.75rem;">
+                                <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
+                                <span class="member-name">${member.name || member.email || uid}</span>
+                        </label>
+                `;
+                paidByDiv.querySelector('input[type="checkbox"]').addEventListener('change', function(e) {
+                    if (this.checked) {
+                        paidByDiv.classList.add('selected');
+                    } else {
+                        paidByDiv.classList.remove('selected');
+                    }
+                });
+                paidByContainer.appendChild(paidByDiv);
 
         // Add to "Split between" with share counter
         const splitDiv = document.createElement('div');
