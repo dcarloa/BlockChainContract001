@@ -2110,14 +2110,7 @@
             const createBtn = document.querySelector('#createFundBtn span:last-child');
             if (createBtn) createBtn.textContent = t.app.dashboard.createNew;
             
-            // Filters
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            if (filterBtns[0]) filterBtns[0].childNodes[0].textContent = `${t.app.dashboard.filters.all} (`;
-            if (filterBtns[1]) filterBtns[1].childNodes[0].textContent = `${t.app.dashboard.filters.created} (`;
-            if (filterBtns[2]) filterBtns[2].childNodes[0].textContent = `${t.app.dashboard.filters.participating} (`;
-            if (filterBtns[3]) filterBtns[3].childNodes[0].textContent = `🌴 ${t.app.dashboard.filters.travel} (`;
-            if (filterBtns[4]) filterBtns[4].childNodes[0].textContent = `💰 ${t.app.dashboard.filters.savings} (`;
-            if (filterBtns[5]) filterBtns[5].childNodes[0].textContent = `🤝 ${t.app.dashboard.filters.shared} (`;
+            // Filters are now handled by data-i18n attributes - no manual translation needed
             
             // Empty State
             const emptyTitle = document.querySelector('#emptyState h3');
