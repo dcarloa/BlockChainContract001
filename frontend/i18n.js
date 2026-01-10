@@ -698,7 +698,7 @@ const translations = {
                 },
                 invite: {
                     title: "Invite Members",
-                    subtitle: "Invite friends to join the group. They must accept the invitation.",
+                    subtitle: "Share this group with friends! No wallet needed for Simple Mode.",
                     infoTitle: "Information:",
                     infoPoints: [
                         "Only the group creator can invite",
@@ -711,7 +711,20 @@ const translations = {
                     addressHelp: "Enter the user's nickname or their Ethereum address",
                     button: "Send Invitation",
                     sending: "Sending...",
-                    success: "Invitation sent!"
+                    success: "Invitation sent!",
+                    // Simple Mode invite UI
+                    shareLink: "Share Link",
+                    shareLinkDesc: "Copy this link and send it via WhatsApp, email, or any messenger:",
+                    copyButton: "Copy",
+                    emailTitle: "Send Email Invitation",
+                    emailDesc: "Send an email invitation directly:",
+                    emailPlaceholder: "friend@example.com",
+                    emailButton: "Send Invitation",
+                    howItWorks: "How it works:",
+                    step1: "Friends click the link or accept the email invite",
+                    step2: "They sign in with Google or create an account",
+                    step3: "They're automatically added to the group",
+                    step4: "No cryptocurrency wallet needed!"
                 },
                 propose: {
                     title: "Propose Expense",
@@ -1672,7 +1685,7 @@ const translations = {
                 },
                 invite: {
                     title: "Invitar Miembros",
-                    subtitle: "Invita a amigos a unirse al grupo. Deben aceptar la invitación.",
+                    subtitle: "¡Comparte este grupo con amigos! No se necesita wallet para Modo Simple.",
                     infoTitle: "Información:",
                     infoPoints: [
                         "Solo el creador del grupo puede invitar",
@@ -1685,7 +1698,20 @@ const translations = {
                     addressHelp: "Ingresa el nickname del usuario o su dirección Ethereum",
                     button: "Enviar Invitación",
                     sending: "Enviando...",
-                    success: "¡Invitación enviada!"
+                    success: "¡Invitación enviada!",
+                    // Simple Mode invite UI
+                    shareLink: "Compartir Enlace",
+                    shareLinkDesc: "Copia este enlace y envíalo por WhatsApp, email o cualquier mensajero:",
+                    copyButton: "Copiar",
+                    emailTitle: "Enviar Invitación por Email",
+                    emailDesc: "Envía una invitación por email directamente:",
+                    emailPlaceholder: "amigo@ejemplo.com",
+                    emailButton: "Enviar Invitación",
+                    howItWorks: "Cómo funciona:",
+                    step1: "Los amigos hacen clic en el enlace o aceptan el email de invitación",
+                    step2: "Inician sesión con Google o crean una cuenta",
+                    step3: "Son agregados automáticamente al grupo",
+                    step4: "¡No se necesita wallet de criptomonedas!"
                 },
                 propose: {
                     title: "Proponer Gasto",

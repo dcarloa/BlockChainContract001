@@ -4901,46 +4901,50 @@ function loadSimpleModeInviteUI() {
     const inviteTabContent = document.getElementById('inviteTab');
     if (!inviteTabContent) return;
 
+    // Get translations
+    const currentLang = getCurrentLanguage();
+    const t = translations[currentLang].app.fundDetail.invite;
+
     // Generate shareable link
     const groupId = currentFund.fundId;
     const inviteLink = `${window.location.origin}${window.location.pathname}?join=${groupId}`;
 
     inviteTabContent.innerHTML = `
         <div class="tab-card">
-            <h3>🎫 Invite Members</h3>
-            <p>Share this group with friends! No wallet needed for Simple Mode.</p>
+            <h3>🎫 ${t.title}</h3>
+            <p>${t.subtitle}</p>
             
             <div class="invite-method-card">
-                <h4>🔗 Share Link</h4>
-                <p>Copy this link and send it via WhatsApp, email, or any messenger:</p>
+                <h4>🔗 ${t.shareLink}</h4>
+                <p>${t.shareLinkDesc}</p>
                 <div class="invite-link-container">
                     <input type="text" id="inviteLinkInput" class="input-modern" value="${inviteLink}" readonly>
                     <button class="btn btn-primary" onclick="copyInviteLink()">
                         <span class="btn-icon">📋</span>
-                        <span>Copy</span>
+                        <span>${t.copyButton}</span>
                     </button>
                 </div>
             </div>
 
             <div class="invite-method-card">
-                <h4>✉️ Send Email Invitation</h4>
-                <p>Send an email invitation directly:</p>
+                <h4>✉️ ${t.emailTitle}</h4>
+                <p>${t.emailDesc}</p>
                 <div class="form-group">
-                    <input type="email" id="inviteEmail" class="input-modern" placeholder="friend@example.com">
+                    <input type="email" id="inviteEmail" class="input-modern" placeholder="${t.emailPlaceholder}">
                 </div>
                 <button class="btn btn-secondary" onclick="sendEmailInvite()">
                     <span class="btn-icon">📧</span>
-                    <span>Send Invitation</span>
+                    <span>${t.emailButton}</span>
                 </button>
             </div>
 
             <div class="info-box">
-                <p><strong>💡 How it works:</strong></p>
+                <p><strong>💡 ${t.howItWorks}</strong></p>
                 <ul>
-                    <li>Friends click the link or accept the email invite</li>
-                    <li>They sign in with Google or create an account</li>
-                    <li>They're automatically added to the group</li>
-                    <li>No cryptocurrency wallet needed!</li>
+                    <li>${t.step1}</li>
+                    <li>${t.step2}</li>
+                    <li>${t.step3}</li>
+                    <li>${t.step4}</li>
                 </ul>
             </div>
         </div>

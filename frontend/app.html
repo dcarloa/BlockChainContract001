@@ -2201,10 +2201,7 @@
             const howItWorksTitle = document.querySelector('.member-management-section .info-box p strong');
             if (howItWorksTitle) howItWorksTitle.textContent = `💡 ${t.app.fundDetail.manage.howItWorks}`;
             
-            const kickPointsList = document.querySelector('.member-management-section .info-box ul');
-            if (kickPointsList) {
-                kickPointsList.innerHTML = t.app.fundDetail.manage.kickPoints.map(point => `<li>${point}</li>`).join('');
-            }
+            // kickPoints now handled by data-i18n attributes
             
             const noMembersTitle = document.querySelector('#noMembersToKick h4');
             if (noMembersTitle) noMembersTitle.textContent = t.app.fundDetail.manage.noMembersToKick;
@@ -2224,14 +2221,7 @@
             const warningTitle = document.querySelector('.warning-box p strong');
             if (warningTitle) warningTitle.textContent = `⚠️ ${t.app.fundDetail.manage.warning}`;
             
-            const warningPointsList = document.querySelector('.warning-box ul');
-            if (warningPointsList) {
-                warningPointsList.innerHTML = t.app.fundDetail.manage.warningPoints.map(point => 
-                    point.includes('irreversible') || point.includes('irreversible') 
-                        ? `<li>${point.replace('irreversible', '<strong>irreversible</strong>').replace('irreversible', '<strong>irreversible</strong>')}</li>`
-                        : `<li>${point}</li>`
-                ).join('');
-            }
+            // warningPoints now handled by data-i18n attributes
             
             const distributionPreviewTitle = document.querySelector('#closeFundPreview h5');
             if (distributionPreviewTitle) distributionPreviewTitle.textContent = `📊 ${t.app.fundDetail.manage.distributionPreview}`;
@@ -2252,8 +2242,9 @@
             const inviteInfoTitle = document.querySelector('.invite-info-box p strong');
             if (inviteInfoTitle) inviteInfoTitle.textContent = `ℹ️ ${t.app.fundDetail.invite.infoTitle}`;
             
+            // inviteInfoPoints - check if they exist before mapping
             const inviteInfoList = document.querySelector('.invite-info-box ul');
-            if (inviteInfoList) {
+            if (inviteInfoList && t.app.fundDetail.invite.infoPoints) {
                 inviteInfoList.innerHTML = t.app.fundDetail.invite.infoPoints.map(point => `<li>${point}</li>`).join('');
             }
             
