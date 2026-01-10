@@ -1015,13 +1015,15 @@
 .split-members-list .checkbox-option input[type="checkbox"] {
   position: absolute;
   opacity: 0;
-  width: 100%;
-  height: 100%;
-  top: 0;
+  width: 24px;
+  height: 24px;
   left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
   z-index: 2;
   margin: 0;
+  pointer-events: all;
 }
 
 /* Selected State */
