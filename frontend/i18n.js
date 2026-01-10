@@ -1884,7 +1884,9 @@ function setLanguage(lang) {
         return;
     }
     localStorage.setItem('language', lang);
-    location.reload(); // Reload to apply translations
+    
+    // Force hard reload bypassing cache to ensure translations apply correctly
+    window.location.href = window.location.href.split('?')[0] + '?lang=' + lang + '&t=' + Date.now();
 }
 
 // Get translation by key path (e.g., 'landing.hero.title')
