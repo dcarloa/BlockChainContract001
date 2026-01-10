@@ -5407,8 +5407,8 @@ function populateExpenseMembers() {
         const paidByDiv = document.createElement('div');
         paidByDiv.className = 'checkbox-option';
         paidByDiv.innerHTML = `
-            <input type="checkbox" name="paidBy" value="${uid}" id="paidby_${uid}">
-            <label for="paidby_${uid}">
+            <label for="paidby_${uid}" style="width:100%;display:flex;align-items:center;gap:0.75rem;cursor:pointer;">
+                <input type="checkbox" name="paidBy" value="${uid}" id="paidby_${uid}" style="margin-right:0.5rem;">
                 <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
                 <span class="member-name">${member.name || member.email || uid}</span>
             </label>
