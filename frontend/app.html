@@ -2206,7 +2206,7 @@
             const howItWorksTitle = document.querySelector('.member-management-section .info-box p strong');
             if (howItWorksTitle) howItWorksTitle.textContent = `💡 ${t.app.fundDetail.manage.howItWorks}`;
             
-            // kickPoints now handled by data-i18n attributes
+
             
             const noMembersTitle = document.querySelector('#noMembersToKick h4');
             if (noMembersTitle) noMembersTitle.textContent = t.app.fundDetail.manage.noMembersToKick;
@@ -2226,7 +2226,7 @@
             const warningTitle = document.querySelector('.warning-box p strong');
             if (warningTitle) warningTitle.textContent = `⚠️ ${t.app.fundDetail.manage.warning}`;
             
-            // warningPoints now handled by data-i18n attributes
+
             
             const distributionPreviewTitle = document.querySelector('#closeFundPreview h5');
             if (distributionPreviewTitle) distributionPreviewTitle.textContent = `📊 ${t.app.fundDetail.manage.distributionPreview}`;
@@ -2368,10 +2368,7 @@
             const balancesHowItWorks = document.querySelector('#balancesTab .info-box p strong');
             if (balancesHowItWorks) balancesHowItWorks.textContent = `💡 ${t.app.fundDetail.balances.howItWorks}`;
             
-            const balancesHowItWorksList = document.querySelector('#balancesTab .info-box ul');
-            if (balancesHowItWorksList) {
-                balancesHowItWorksList.innerHTML = t.app.fundDetail.balances.howItWorksPoints.map(point => `<li>${point}</li>`).join('');
-            }
+            // howItWorksPoints now handled by data-i18n attributes in HTML
             
             const noBalancesTitle = document.querySelector('#noBalances h4');
             if (noBalancesTitle) noBalancesTitle.textContent = t.app.fundDetail.balances.empty;
@@ -2386,16 +2383,7 @@
             const qrWarningTitle = document.querySelector('#qrWarningTitle');
             if (qrWarningTitle) qrWarningTitle.textContent = `⚠️ ${t.app.fundDetail.qrScanner.warning}`;
             
-            const qrWarningList = document.querySelector('#qrWarningList');
-            if (qrWarningList) {
-                qrWarningList.innerHTML = t.app.fundDetail.qrScanner.warningPoints.map(point => {
-                    const parts = point.split(':');
-                    if (parts.length > 1) {
-                        return `<li><strong>${parts[0]}:</strong>${parts[1]}</li>`;
-                    }
-                    return `<li>${point}</li>`;
-                }).join('');
-            }
+            // qrScanner.warningPoints now handled by data-i18n attributes in HTML
             
             const qrDetectedLabel = document.querySelector('#qrDetectedLabel');
             if (qrDetectedLabel) qrDetectedLabel.textContent = `✅ ${t.app.fundDetail.qrScanner.detected}`;
