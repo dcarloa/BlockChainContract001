@@ -7469,19 +7469,8 @@ function updateAppSettingsUI() {
  * Change language
  */
 function changeLanguage(lang) {
-    // Save language to localStorage
-    localStorage.setItem('language', lang);
-    
-    // Apply translations immediately
-    if (typeof applyAppTranslations === 'function') {
-        applyAppTranslations();
-    }
-    
-    // Update settings UI to show active language
-    updateAppSettingsUI();
-    
-    // Don't close modal - let user see the change
-    // closeAppSettings();
+    // Use the proper i18n.js setLanguage function
+    setLanguage(lang);
 }
 
 /**
