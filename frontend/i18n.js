@@ -643,6 +643,7 @@ const translations = {
                     balance: "Balance",
                     members: "Members",
                     proposals: "Proposals",
+                    expenses: "Expenses",
                     target: "Target",
                     noLimit: "No Limit",
                     progress: "Progress",
@@ -654,8 +655,10 @@ const translations = {
                     privacy: "Privacy",
                     active: "Active",
                     inactive: "Inactive",
+                    closed: "Closed",
                     public: "Public",
-                    private: "Private"
+                    private: "Private",
+                    totalBalance: "Total Balance"
                 },
                 badges: {
                     travel: "Travel",
@@ -666,8 +669,11 @@ const translations = {
                     member: "Member"
                 },
                 banners: {
-                    invitation: "You have a pending invitation to this group",
+                    invitation: "You have a pending invitation for this fund",
+                    invitationText: "You have a pending invitation for this fund",
                     accept: "Accept Invitation",
+                    closedTitle: "Closed Group",
+                    closedText: "This group has been permanently closed. Balances were settled proportionally among all members.",
                     closed: "This group is closed. No more actions allowed."
                 },
                 deposit: {
@@ -681,8 +687,9 @@ const translations = {
                     success: "Deposit successful!"
                 },
                 members: {
-                    title: "Group Members",
+                    title: "Fund Members",
                     empty: "No members yet",
+                    removalRequestsTitle: "⚠️ Pending Removal Requests",
                     role: {
                         creator: "Creator",
                         active: "Active",
@@ -764,15 +771,50 @@ const translations = {
                     title: "Proposal History",
                     description: "View all proposals that have been approved, rejected, or executed.",
                     empty: "No history",
-                    emptySubtitle: "When proposals are approved or rejected, they will appear here"
+                    emptySubtitle: "When proposals are approved or rejected, they will appear here",
+                    // Simple Mode specific
+                    addExpenseTitle: "Register an Expense",
+                    addExpenseSubtitle: "Track shared expenses with your group. Split costs fairly and keep everyone in sync.",
+                    addExpenseButton: "Add Expense",
+                    addExpenseButtonSmall: "Click to add new payment",
+                    quickActionsRecurring: "Recurring",
+                    quickActionsRecurringTitle: "Set up recurring expenses like rent or subscriptions",
+                    quickActionsBudget: "Budget",
+                    quickActionsBudgetTitle: "Set spending limits and get alerts",
+                    quickActionsAnalytics: "Analytics",
+                    quickActionsAnalyticsTitle: "View spending analytics and insights",
+                    quickActionsAISetup: "AI Setup",
+                    quickActionsAISetupTitle: "Configure OpenAI for receipt scanning",
+                    budgetTracker: "Budget Tracker",
+                    recurringExpensesTitle: "Active Recurring Expenses",
+                    recurringViewAll: "View All",
+                    searchTitle: "Search & Filter",
+                    searchPlaceholder: "🔍 Search by name...",
+                    searchFrom: "From:",
+                    searchTo: "To:",
+                    searchClear: "Clear filters",
+                    searchMyExpenses: "🙋 Only my expenses (where I'm involved)"
                 },
                 balances: {
                     title: "Group Balances",
-                    description: "View how much each member owes or is owed based on their contributions and share of approved expenses.",
+                    description: "See who owes money and who is owed based on shared expenses",
+                    descriptionFull: "View how much each member owes or is owed based on their contributions and share of approved expenses.",
                     currentBalance: "Current Balance",
                     totalContributions: "Total Contributions",
                     totalExpenses: "Total Expenses",
-                    howItWorks: "How balances are calculated:",
+                    totalExpensesSimple: "Total Expenses",
+                    perPerson: "Per Person",
+                    activeMembers: "Active Members",
+                    balanceOverview: "💰 Balance Overview",
+                    smartSettlements: "Smart Settlements",
+                    smartSettlementsSubtitle: "Simplify payments with one click",
+                    timelineTitle: "📅 Expense Timeline",
+                    timelineShow: "Show Timeline",
+                    timelineHide: "Hide Timeline",
+                    timelineFrom: "From:",
+                    timelineTo: "To:",
+                    timelineReset: "Reset",
+                    howItWorks: "💡 How balances work:",
                     howItWorksPoints: [
                         "Total Contributions: Sum of all deposits made by members",
                         "Total Expenses: Sum of all approved and executed proposals",
@@ -780,8 +822,13 @@ const translations = {
                         "Individual Balance: Member's contribution - Fair share",
                         "Green (+): You contributed more, others owe you. Red (-): You owe to the group"
                     ],
-                    empty: "No members",
-                    emptySubtitle: "Balances will appear when members start contributing"
+                    howItWorksSimple: [
+                        "Green (+): Others owe you money",
+                        "Red (-): You owe money to others",
+                        "Balanced transactions: Simplified to minimize payments"
+                    ],
+                    empty: "No members yet",
+                    emptySubtitle: "Balances will appear when members start contributing to expenses"
                 },
                 qrScanner: {
                     title: "Scan QR Code",
@@ -812,33 +859,35 @@ const translations = {
                     cameraError: "Error starting camera. Check permissions."
                 },
                 manage: {
-                    title: "Group Management",
-                    subtitle: "Advanced options to manage the group.",
-                    memberManagement: "Member Management",
-                    kickMember: "Kick Member",
-                    kickDescription: "Remove a member from the group, returning their proportional share of the current balance.",
-                    howItWorks: "How it works:",
+                    title: "Fund Management",
+                    subtitle: "Advanced options to manage the fund.",
+                    subtitleGroup: "Advanced options to manage the group.",
+                    memberManagement: "👥 Member Management",
+                    kickMember: "Remove Member",
+                    kickDescription: "Remove a member from the group by returning their proportional share of the current balance.",
+                    kickDescriptionSimple: "Remove a member from the group, returning their proportional share of the current balance.",
+                    howItWorks: "💡 How it works:",
                     kickPoints: [
-                        "Member is removed from the group permanently",
+                        "The member is permanently removed from the group",
                         "Receives: (Their contribution / Total contributions) × Current balance",
                         "Cannot participate in future votes",
                         "Their previous votes remain recorded"
                     ],
-                    noMembersToKick: "No members to kick",
-                    noMembersSubtitle: "Only one member in the group or you are not the creator",
-                    dangerZone: "Danger Zone",
-                    closeAndDistribute: "Close and Settle Group",
+                    noMembersToKick: "No members to remove",
+                    noMembersSubtitle: "There is only one member in the group or you are not the creator",
+                    dangerZone: "🚨 Danger Zone",
+                    closeAndDistribute: "Close and Distribute Fund",
                     closeDescription: "This action will permanently close the group and settle all remaining balances proportionally among contributors according to their contribution.",
-                    warning: "Warning:",
+                    warning: "⚠️ Warning:",
                     warningPoints: [
                         "This action is irreversible",
                         "Only the fund creator can execute it",
                         "Each contributor will receive: (their contribution / total) × current balance",
                         "The fund will be permanently closed",
-                        "No more deposits or proposals will be allowed"
+                        "No more deposits or proposals can be made"
                     ],
-                    distributionPreview: "Distribution Preview",
-                    previewButton: "Preview Distribution",
+                    distributionPreview: "📊 Distribution Preview",
+                    previewButton: "Distribution Preview",
                     closeButton: "Close and Distribute Fund",
                     pause: "Pause Fund",
                     pausing: "Pausing...",
@@ -1574,6 +1623,7 @@ const translations = {
                     balance: "Balance",
                     members: "Miembros",
                     proposals: "Propuestas",
+                    expenses: "Gastos",
                     target: "Meta",
                     noLimit: "Sin límite",
                     progress: "Progreso",
@@ -1585,8 +1635,10 @@ const translations = {
                     privacy: "Privacidad",
                     active: "Activo",
                     inactive: "Inactivo",
+                    closed: "Cerrado",
                     public: "Público",
-                    private: "Privado"
+                    private: "Privado",
+                    totalBalance: "Balance Total"
                 },
                 badges: {
                     travel: "Viaje",
@@ -1597,8 +1649,11 @@ const translations = {
                     member: "Miembro"
                 },
                 banners: {
-                    invitation: "Tienes una invitación pendiente a este grupo",
+                    invitation: "Tienes una invitación pendiente para este fondo",
+                    invitationText: "Tienes una invitación pendiente para este fondo",
                     accept: "Aceptar Invitación",
+                    closedTitle: "Grupo Cerrado",
+                    closedText: "Este grupo ha sido cerrado permanentemente. Los balances fueron liquidados proporcionalmente entre todos los miembros.",
                     closed: "Este grupo está cerrado. No se permiten más acciones."
                 },
                 deposit: {
@@ -1612,8 +1667,9 @@ const translations = {
                     success: "¡Depósito exitoso!"
                 },
                 members: {
-                    title: "Miembros del Grupo",
+                    title: "Miembros del Fondo",
                     empty: "Aún no hay miembros",
+                    removalRequestsTitle: "⚠️ Solicitudes de Eliminación Pendientes",
                     role: {
                         creator: "Creador",
                         active: "Activo",
@@ -1695,15 +1751,50 @@ const translations = {
                     title: "Historial de Propuestas",
                     description: "Visualiza todas las propuestas que han sido aprobadas, rechazadas o ejecutadas.",
                     empty: "Sin historial",
-                    emptySubtitle: "Cuando se aprueben o rechacen propuestas, aparecerán aquí"
+                    emptySubtitle: "Cuando se aprueben o rechacen propuestas, aparecerán aquí",
+                    // Modo Simple específico
+                    addExpenseTitle: "Registrar un Gasto",
+                    addExpenseSubtitle: "Lleva un registro de gastos compartidos con tu grupo. Divide costos de manera justa y mantén a todos sincronizados.",
+                    addExpenseButton: "Agregar Gasto",
+                    addExpenseButtonSmall: "Click para agregar nuevo pago",
+                    quickActionsRecurring: "Recurrentes",
+                    quickActionsRecurringTitle: "Configura gastos recurrentes como renta o suscripciones",
+                    quickActionsBudget: "Presupuesto",
+                    quickActionsBudgetTitle: "Establece límites de gasto y recibe alertas",
+                    quickActionsAnalytics: "Analíticas",
+                    quickActionsAnalyticsTitle: "Ver analíticas y estadísticas de gastos",
+                    quickActionsAISetup: "Config. IA",
+                    quickActionsAISetupTitle: "Configurar OpenAI para escaneo de recibos",
+                    budgetTracker: "Rastreador de Presupuesto",
+                    recurringExpensesTitle: "Gastos Recurrentes Activos",
+                    recurringViewAll: "Ver Todos",
+                    searchTitle: "Buscar y Filtrar",
+                    searchPlaceholder: "🔍 Buscar por nombre...",
+                    searchFrom: "Desde:",
+                    searchTo: "Hasta:",
+                    searchClear: "Limpiar filtros",
+                    searchMyExpenses: "🙋 Solo mis gastos (donde estoy involucrado)"
                 },
                 balances: {
                     title: "Balances del Grupo",
-                    description: "Visualiza cuánto debe o le deben a cada miembro según sus aportaciones y su parte de los gastos aprobados.",
+                    description: "Ver quién debe dinero y quién tiene saldo a favor según los gastos compartidos",
+                    descriptionFull: "Visualiza cuánto debe o le deben a cada miembro según sus aportaciones y su parte de los gastos aprobados.",
                     currentBalance: "Balance Actual",
                     totalContributions: "Total Aportaciones",
                     totalExpenses: "Total Gastos",
-                    howItWorks: "Cómo se calculan los balances:",
+                    totalExpensesSimple: "Total Gastos",
+                    perPerson: "Por Persona",
+                    activeMembers: "Miembros Activos",
+                    balanceOverview: "💰 Resumen de Balances",
+                    smartSettlements: "Liquidaciones Inteligentes",
+                    smartSettlementsSubtitle: "Simplifica los pagos con un click",
+                    timelineTitle: "📅 Línea de Tiempo de Gastos",
+                    timelineShow: "Mostrar Línea de Tiempo",
+                    timelineHide: "Ocultar Línea de Tiempo",
+                    timelineFrom: "Desde:",
+                    timelineTo: "Hasta:",
+                    timelineReset: "Resetear",
+                    howItWorks: "💡 Cómo funcionan los balances:",
                     howItWorksPoints: [
                         "Total Aportaciones: Suma de todos los depósitos realizados por los miembros",
                         "Total Gastos: Suma de todas las propuestas aprobadas y ejecutadas",
@@ -1711,8 +1802,13 @@ const translations = {
                         "Balance Individual: Aportación del miembro - Parte justa",
                         "Verde (+): Aportaste más, otros te deben. Rojo (-): Debes al grupo"
                     ],
-                    empty: "Sin miembros",
-                    emptySubtitle: "Los balances aparecerán cuando los miembros empiecen a aportar"
+                    howItWorksSimple: [
+                        "Verde (+): Otros te deben dinero",
+                        "Rojo (-): Tú debes dinero a otros",
+                        "Transacciones balanceadas: Simplificadas para minimizar pagos"
+                    ],
+                    empty: "Aún no hay miembros",
+                    emptySubtitle: "Los balances aparecerán cuando los miembros empiecen a contribuir en gastos"
                 },
                 qrScanner: {
                     title: "Escanear Código QR",
@@ -1743,38 +1839,40 @@ const translations = {
                     cameraError: "Error al iniciar la cámara. Verifica los permisos."
                 },
                 manage: {
-                    title: "Gestión del Grupo",
-                    subtitle: "Opciones avanzadas para administrar el grupo.",
-                    memberManagement: "Gestión de Miembros",
-                    kickMember: "Expulsar Miembro",
-                    kickDescription: "Expulsa a un miembro del grupo devolviendo su parte proporcional del saldo actual.",
-                    howItWorks: "Cómo funciona:",
+                    title: "Gestión del Fondo",
+                    subtitle: "Opciones avanzadas para administrar el fondo.",
+                    subtitleGroup: "Opciones avanzadas para administrar el grupo.",
+                    memberManagement: "👥 Gestión de Miembros",
+                    kickMember: "Eliminar Miembro",
+                    kickDescription: "Elimina a un miembro del grupo devolviendo su parte proporcional del saldo actual.",
+                    kickDescriptionSimple: "Expulsa a un miembro del grupo devolviendo su parte proporcional del saldo actual.",
+                    howItWorks: "💡 Cómo funciona:",
                     kickPoints: [
                         "El miembro es removido del grupo permanentemente",
                         "Recibe: (Su aportación / Total aportaciones) × Balance actual",
                         "No podrá participar en votaciones futuras",
                         "Sus votos anteriores quedan registrados"
                     ],
-                    noMembersToKick: "No hay miembros para expulsar",
+                    noMembersToKick: "No hay miembros para eliminar",
                     noMembersSubtitle: "Solo hay un miembro en el grupo o no eres el creador",
-                    dangerZone: "Zona de Peligro",
-                    closeAndDistribute: "Cerrar y Liquidar Grupo",
+                    dangerZone: "🚨 Zona de Peligro",
+                    closeAndDistribute: "Cerrar y Distribuir Fondo",
                     closeDescription: "Esta acción cerrará permanentemente el grupo y liquidará todos los saldos restantes proporcionalmente entre los contribuyentes según su aportación.",
-                    warning: "Advertencia:",
+                    warning: "⚠️ Advertencia:",
                     warningPoints: [
                         "Esta acción es irreversible",
-                        "Solo el creador del grupo puede ejecutarla",,
+                        "Solo el creador del fondo puede ejecutarla",
                         "Cada contribuyente recibirá: (su aportación / total) × balance actual",
-                        "El grupo quedará cerrado permanentemente",
+                        "El fondo quedará cerrado permanentemente",
                         "No se podrán hacer más depósitos ni propuestas"
                     ],
-                    distributionPreview: "Vista Previa de Distribución",
+                    distributionPreview: "📊 Vista Previa de Distribución",
                     previewButton: "Vista Previa de Distribución",
-                    closeButton: "Cerrar y Liquidar Grupo",
-                    pause: "Pausar Grupo",
+                    closeButton: "Cerrar y Distribuir Fondo",
+                    pause: "Pausar Fondo",
                     pausing: "Pausando...",
-                    pauseSuccess: "Grupo pausado. Ahora está en modo solo lectura.",
-                    pauseConfirm: "¿Pausar el grupo? Esto bloqueará todas las transacciones (depósitos, propuestas, votos). El grupo seguirá visible en modo solo lectura."
+                    pauseSuccess: "Fondo pausado. Ahora está en modo solo lectura.",
+                    pauseConfirm: "¿Pausar el fondo? Esto bloqueará todas las transacciones (depósitos, propuestas, votos). El fondo seguirá visible en modo solo lectura."
                 }
             },
             toast: {

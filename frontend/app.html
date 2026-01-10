@@ -866,7 +866,7 @@
                     <!-- Back Button -->
                     <button id="backToDashboard" class="back-button-integrated">
                         <span class="back-icon">←</span>
-                        <span class="back-text">Back to My Groups</span>
+                        <span class="back-text" data-i18n="app.fundDetail.info.backToDashboard">Back to My Groups</span>
                     </button>
 
                     <!-- Header Content -->
@@ -882,8 +882,8 @@
                             <p id="fundDetailDescription" class="fund-header-description" style="margin: 0;">-</p>
                         </div>
                         <div class="fund-badges">
-                            <span class="badge" id="fundTypeBadge">Tipo</span>
-                            <span class="badge" id="groupStatusBadge">Estado</span>
+                            <span class="badge" id="fundTypeBadge" data-i18n="app.fundDetail.info.type">Tipo</span>
+                            <span class="badge" id="groupStatusBadge" data-i18n="app.fundDetail.info.status">Estado</span>
                         </div>
                     </div>
 
@@ -892,7 +892,7 @@
                         <div class="fund-stat-card">
                             <div class="stat-icon">💰</div>
                             <div class="stat-content">
-                                <span class="stat-label">Total Balance</span>
+                                <span class="stat-label" data-i18n="app.fundDetail.info.totalBalance">Total Balance</span>
                                 <span class="stat-value" id="fundBalanceMain">0 ETH</span>
                                 <div class="stat-breakdown" id="fundBalanceBreakdown" style="display: none;"></div>
                             </div>
@@ -900,14 +900,14 @@
                         <div class="fund-stat-card">
                             <div class="stat-icon">👥</div>
                             <div class="stat-content">
-                                <span class="stat-label">Members</span>
+                                <span class="stat-label" data-i18n="app.fundDetail.info.members">Members</span>
                                 <span class="stat-value" id="fundMembers">0</span>
                             </div>
                         </div>
                         <div class="fund-stat-card">
                             <div class="stat-icon">💸</div>
                             <div class="stat-content">
-                                <span class="stat-label">Expenses</span>
+                                <span class="stat-label" data-i18n="app.fundDetail.info.expenses">Expenses</span>
                                 <span class="stat-value" id="fundProposals">0</span>
                             </div>
                         </div>
@@ -918,9 +918,9 @@
                 <div id="invitationBanner" class="invitation-banner" style="display: none;">
                     <div class="invitation-content">
                         <span class="invitation-icon">🎫</span>
-                        <p>You have a pending invitation for this fund</p>
+                        <p data-i18n="app.fundDetail.banners.invitationText">You have a pending invitation for this fund</p>
                     </div>
-                    <button id="acceptInvitationBtn" class="btn btn-primary">
+                    <button id="acceptInvitationBtn" class="btn btn-primary" data-i18n="app.fundDetail.banners.accept">
                         Accept Invitation
                     </button>
                 </div>
@@ -930,8 +930,8 @@
                     <div class="closed-fund-content">
                         <span class="closed-fund-icon">🔒</span>
                         <div>
-                            <h4>Closed Group</h4>
-                            <p>This group has been permanently closed. Balances were settled proportionally among all members.</p>
+                            <h4 data-i18n="app.fundDetail.banners.closedTitle">Closed Group</h4>
+                            <p data-i18n="app.fundDetail.banners.closedText">This group has been permanently closed. Balances were settled proportionally among all members.</p>
                         </div>
                     </div>
                 </div>
@@ -940,35 +940,35 @@
                 <div class="fund-tabs">
                     <button class="fund-tab-btn active" data-tab="deposit">
                         <span class="tab-icon">💵</span>
-                        <span>Deposit</span>
+                        <span data-i18n="app.fundDetail.tabs.deposit">Deposit</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="invite">
                         <span class="tab-icon">🎫</span>
-                        <span>Invite</span>
+                        <span data-i18n="app.fundDetail.tabs.invite">Invite</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="propose">
                         <span class="tab-icon">📝</span>
-                        <span>Propose</span>
+                        <span data-i18n="app.fundDetail.tabs.propose">Propose</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="vote">
                         <span class="tab-icon">🗳️</span>
-                        <span>Vote</span>
+                        <span data-i18n="app.fundDetail.tabs.vote">Vote</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="history">
                         <span class="tab-icon">📜</span>
-                        <span>History</span>
+                        <span data-i18n="app.fundDetail.tabs.history">History</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="balances">
                         <span class="tab-icon">⚖️</span>
-                        <span>Balances</span>
+                        <span data-i18n="app.fundDetail.tabs.balances">Balances</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="members">
                         <span class="tab-icon">👥</span>
-                        <span>Members</span>
+                        <span data-i18n="app.fundDetail.tabs.members">Members</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="manage">
                         <span class="tab-icon">⚙️</span>
-                        <span>Manage</span>
+                        <span data-i18n="app.fundDetail.tabs.manage">Manage</span>
                     </button>
                 </div>
 
@@ -1128,14 +1128,14 @@
                             <div class="action-card-content">
                                 <div class="action-card-icon">💸</div>
                                 <div class="action-card-text">
-                                    <h4>Register an Expense</h4>
-                                    <p>Track shared expenses with your group. Split costs fairly and keep everyone in sync.</p>
+                                    <h4 data-i18n="app.fundDetail.history.addExpenseTitle">Register an Expense</h4>
+                                    <p data-i18n="app.fundDetail.history.addExpenseSubtitle">Track shared expenses with your group. Split costs fairly and keep everyone in sync.</p>
                                 </div>
-                                <button id="addExpenseCardBtn" class="btn btn-primary btn-large btn-add-expense" title="Click to add a new expense">
+                                <button id="addExpenseCardBtn" class="btn btn-primary btn-large btn-add-expense" data-i18n-title="app.fundDetail.history.addExpenseTitle">
                                     <span class="btn-icon">💵</span>
                                     <span class="btn-text">
-                                        <strong>Add Expense</strong>
-                                        <small>Click to add new payment</small>
+                                        <strong data-i18n="app.fundDetail.history.addExpenseButton">Add Expense</strong>
+                                        <small data-i18n="app.fundDetail.history.addExpenseButtonSmall">Click to add new payment</small>
                                     </span>
                                 </button>
                             </div>
@@ -1143,24 +1143,24 @@
 
                         <!-- Quick Actions for New Features -->
                         <div id="simpleQuickActions" class="quick-actions-compact" style="display: none; margin-bottom: 1rem;">
-                            <button class="quick-action-btn-compact" onclick="showRecurringExpenseModal()" title="Set up recurring expenses like rent or subscriptions">
+                            <button class="quick-action-btn-compact" onclick="showRecurringExpenseModal()" data-i18n-title="app.fundDetail.history.quickActionsRecurringTitle">
                                 <span class="quick-icon">🔄</span>
-                                <span class="quick-label">Recurring</span>
+                                <span class="quick-label" data-i18n="app.fundDetail.history.quickActionsRecurring">Recurring</span>
                             </button>
                             
-                            <button class="quick-action-btn-compact" onclick="showBudgetModal()" title="Set spending limits and get alerts">
+                            <button class="quick-action-btn-compact" onclick="showBudgetModal()" data-i18n-title="app.fundDetail.history.quickActionsBudgetTitle">
                                 <span class="quick-icon">💰</span>
-                                <span class="quick-label">Budget</span>
+                                <span class="quick-label" data-i18n="app.fundDetail.history.quickActionsBudget">Budget</span>
                             </button>
                             
-                            <button class="quick-action-btn-compact" onclick="showAnalyticsModal()" title="View spending analytics and insights">
+                            <button class="quick-action-btn-compact" onclick="showAnalyticsModal()" data-i18n-title="app.fundDetail.history.quickActionsAnalyticsTitle">
                                 <span class="quick-icon">📊</span>
-                                <span class="quick-label">Analytics</span>
+                                <span class="quick-label" data-i18n="app.fundDetail.history.quickActionsAnalytics">Analytics</span>
                             </button>
                             
-                            <button class="quick-action-btn-compact" onclick="showOpenAIConfigModal()" title="Configure OpenAI for receipt scanning">
+                            <button class="quick-action-btn-compact" onclick="showOpenAIConfigModal()" data-i18n-title="app.fundDetail.history.quickActionsAISetupTitle">
                                 <span class="quick-icon">🔑</span>
-                                <span class="quick-label">AI Setup</span>
+                                <span class="quick-label" data-i18n="app.fundDetail.history.quickActionsAISetup">AI Setup</span>
                             </button>
                         </div>
 
@@ -1169,7 +1169,7 @@
                             <div class="collapsible-header" onclick="toggleCollapsible('budgetContent')" style="background: rgba(255,255,255,0.05); padding: 1rem 1.5rem; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s ease;">
                                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                                     <span style="font-size: 1.2rem;">💰</span>
-                                    <strong style="font-size: 1rem;">Budget Tracker</strong>
+                                    <strong style="font-size: 1rem;" data-i18n="app.fundDetail.history.budgetTracker">Budget Tracker</strong>
                                 </div>
                                 <span id="budgetContentToggle" style="font-size: 1.2rem; transition: transform 0.3s ease;">▼</span>
                             </div>
@@ -1183,7 +1183,7 @@
                             <div class="collapsible-header" onclick="toggleCollapsible('recurringContent')" style="background: rgba(255,255,255,0.05); padding: 1rem 1.5rem; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s ease;">
                                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                                     <span style="font-size: 1.2rem;">🔄</span>
-                                    <strong style="font-size: 1rem;">Active Recurring Expenses</strong>
+                                    <strong style="font-size: 1rem;" data-i18n="app.fundDetail.history.recurringExpensesTitle">Active Recurring Expenses</strong>
                                     <span id="recurringCount" class="badge-count" style="background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">0</span>
                                 </div>
                                 <span id="recurringContentToggle" style="font-size: 1.2rem; transition: transform 0.3s ease;">▼</span>
@@ -1191,7 +1191,7 @@
                             <div id="recurringContent" class="collapsible-content" style="display: none; margin-top: 0.5rem;">
                                 <div style="text-align: right; margin-bottom: 0.75rem;">
                                     <button class="btn btn-secondary btn-small" onclick="showManageRecurringModal()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
-                                        📋 View All
+                                        <span data-i18n="app.fundDetail.history.recurringViewAll">📋 View All</span>
                                     </button>
                                 </div>
                                 <div id="recurringExpensesList" class="recurring-list">
@@ -1200,15 +1200,15 @@
                             </div>
                         </div>
 
-                        <h3>📜 Proposal History</h3>
-                        <p class="tab-description">All proposals: executed, cancelled and expired</p>
+                        <h3 data-i18n="app.fundDetail.history.title">📜 Proposal History</h3>
+                        <p class="tab-description" data-i18n="app.fundDetail.history.description">All proposals: executed, cancelled and expired</p>
                         
                         <!-- Expense Search Filter - Collapsible -->
                         <div id="expenseSearchSection" style="display: none; margin-bottom: 1rem;">
                             <div class="collapsible-header" onclick="toggleCollapsible('searchContent')" style="background: rgba(255,255,255,0.05); padding: 1rem 1.5rem; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s ease;">
                                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                                     <span style="font-size: 1.2rem;">🔍</span>
-                                    <strong style="font-size: 1rem;">Search & Filter</strong>
+                                    <strong style="font-size: 1rem;" data-i18n="app.fundDetail.history.searchTitle">Search & Filter</strong>
                                 </div>
                                 <span id="searchContentToggle" style="font-size: 1.2rem; transition: transform 0.3s ease;">▼</span>
                             </div>
@@ -1219,32 +1219,33 @@
                                             <input type="text" 
                                                    id="expenseSearchInput" 
                                                    class="search-input" 
+                                                   data-i18n-placeholder="app.fundDetail.history.searchPlaceholder"
                                                    placeholder="🔍 Search by name..." 
                                                    onkeyup="filterExpenses()">
                                         </div>
                                         <div class="date-filters-row">
                                             <div class="date-filter-group">
-                                                <label class="filter-label">From:</label>
+                                                <label class="filter-label" data-i18n="app.fundDetail.history.searchFrom">From:</label>
                                                 <input type="date" 
                                                        id="expenseFilterStart" 
                                                        class="date-filter-input" 
                                                        onchange="filterExpenses()">
                                             </div>
                                             <div class="date-filter-group">
-                                                <label class="filter-label">To:</label>
+                                                <label class="filter-label" data-i18n="app.fundDetail.history.searchTo">To:</label>
                                                 <input type="date" 
                                                        id="expenseFilterEnd" 
                                                        class="date-filter-input" 
                                                        onchange="filterExpenses()">
                                             </div>
-                                            <button class="btn-clear-filters" onclick="clearExpenseFilters()" title="Clear filters">
+                                            <button class="btn-clear-filters" onclick="clearExpenseFilters()" data-i18n-title="app.fundDetail.history.searchClear">
                                                 ✕
                                             </button>
                                         </div>
                                         <div class="filter-checkbox-row" style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
                                             <label class="filter-checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                                                 <input type="checkbox" id="expenseFilterMyExpenses" onchange="filterExpenses()" style="cursor: pointer;">
-                                                <span>🙋 Only my expenses (where I'm involved)</span>
+                                                <span data-i18n="app.fundDetail.history.searchMyExpenses">🙋 Only my expenses (where I'm involved)</span>
                                             </label>
                                         </div>
                                     </div>
@@ -1257,38 +1258,38 @@
                         </div>
                         <div id="noHistory" class="empty-state" style="display: none;">
                             <div class="empty-icon">📋</div>
-                            <h4>No history yet</h4>
-                            <p>Proposal history will appear here</p>
+                            <h4 data-i18n="app.fundDetail.history.empty">No history yet</h4>
+                            <p data-i18n="app.fundDetail.history.emptySubtitle">Proposal history will appear here</p>
                         </div>
                     </div>
 
                     <!-- Balances Tab -->
                     <div id="balancesTab" class="tab-pane">
                         <div class="balances-header-simple">
-                            <h3>⚖️ Group Balances</h3>
-                            <p class="tab-description">See who owes money and who is owed based on shared expenses</p>
+                            <h3 data-i18n="app.fundDetail.balances.title">⚖️ Group Balances</h3>
+                            <p class="tab-description" data-i18n="app.fundDetail.balances.description">See who owes money and who is owed based on shared expenses</p>
                         </div>
 
                         <!-- Date Filter for Timeline -->
                         <div id="timelineFilterSection" class="timeline-filter-section" style="display: none;">
                             <div class="filter-header">
-                                <h4>📅 Expense Timeline</h4>
+                                <h4 data-i18n="app.fundDetail.balances.timelineTitle">📅 Expense Timeline</h4>
                                 <button class="toggle-timeline-btn" onclick="toggleTimeline()">
-                                    <span id="timelineToggleIcon">▼</span> <span id="timelineToggleText">Show Timeline</span>
+                                    <span id="timelineToggleIcon">▼</span> <span id="timelineToggleText" data-i18n="app.fundDetail.balances.timelineShow">Show Timeline</span>
                                 </button>
                             </div>
                             <div id="timelineContent" class="timeline-content" style="display: none;">
                                 <div class="date-range-selector">
                                     <div class="date-input-group">
-                                        <label for="startDate">From:</label>
+                                        <label for="startDate" data-i18n="app.fundDetail.balances.timelineFrom">From:</label>
                                         <input type="date" id="startDate" class="date-input" onchange="filterTimelineByDate()">
                                     </div>
                                     <div class="date-input-group">
-                                        <label for="endDate">To:</label>
+                                        <label for="endDate" data-i18n="app.fundDetail.balances.timelineTo">To:</label>
                                         <input type="date" id="endDate" class="date-input" onchange="filterTimelineByDate()">
                                     </div>
                                     <button class="btn-reset-dates" onclick="resetDateFilter()">
-                                        🔄 Reset
+                                        <span data-i18n="app.fundDetail.balances.timelineReset">🔄 Reset</span>
                                     </button>
                                 </div>
                                 <div id="expenseTimeline" class="expense-timeline">
@@ -1303,21 +1304,21 @@
                                 <div class="stat-card stat-expenses">
                                     <div class="stat-icon">💸</div>
                                     <div class="stat-content">
-                                        <span class="stat-label">Total Expenses</span>
+                                        <span class="stat-label" data-i18n="app.fundDetail.balances.totalExpensesSimple">Total Expenses</span>
                                         <span class="stat-value" id="simpleModeTotalExpenses">$0</span>
                                     </div>
                                 </div>
                                 <div class="stat-card stat-per-person">
                                     <div class="stat-icon">👤</div>
                                     <div class="stat-content">
-                                        <span class="stat-label">Per Person</span>
+                                        <span class="stat-label" data-i18n="app.fundDetail.balances.perPerson">Per Person</span>
                                         <span class="stat-value" id="simpleModePerPerson">$0</span>
                                     </div>
                                 </div>
                                 <div class="stat-card stat-members">
                                     <div class="stat-icon">👥</div>
                                     <div class="stat-content">
-                                        <span class="stat-label">Active Members</span>
+                                        <span class="stat-label" data-i18n="app.fundDetail.balances.activeMembers">Active Members</span>
                                         <span class="stat-value" id="simpleModeActiveMembers">0</span>
                                     </div>
                                 </div>
@@ -1325,7 +1326,7 @@
 
                             <!-- Visual Balance Chart -->
                             <div class="balance-chart-container">
-                                <h4 class="chart-title">💰 Balance Overview</h4>
+                                <h4 class="chart-title" data-i18n="app.fundDetail.balances.balanceOverview">💰 Balance Overview</h4>
                                 <div id="balanceChart" class="balance-chart">
                                     <!-- Chart will be rendered here -->
                                 </div>
@@ -1340,8 +1341,8 @@
                             
                             <div id="noBalances" class="empty-state" style="display: none;">
                                 <div class="empty-icon">⚖️</div>
-                                <h4>No members yet</h4>
-                                <p>Balances will appear when members start contributing to expenses</p>
+                                <h4 data-i18n="app.fundDetail.balances.empty">No members yet</h4>
+                                <p data-i18n="app.fundDetail.balances.emptySubtitle">Balances will appear when members start contributing to expenses</p>
                             </div>
                         </div>
 
@@ -1350,30 +1351,30 @@
                             <button class="btn-smart-settle" onclick="openSmartSettlements()">
                                 <span class="btn-icon">🎯</span>
                                 <div class="btn-content">
-                                    <span class="btn-title">Smart Settlements</span>
-                                    <span class="btn-subtitle">Simplify payments with one click</span>
+                                    <span class="btn-title" data-i18n="app.fundDetail.balances.smartSettlements">Smart Settlements</span>
+                                    <span class="btn-subtitle" data-i18n="app.fundDetail.balances.smartSettlementsSubtitle">Simplify payments with one click</span>
                                 </div>
                             </button>
                         </div>
 
                         <!-- How it works info -->
                         <div class="info-box-simple">
-                            <h4>💡 How balances work:</h4>
+                            <h4 data-i18n="app.fundDetail.balances.howItWorks">💡 How balances work:</h4>
                             <ul class="info-list">
-                                <li><strong>Green (+):</strong> Others owe you money</li>
-                                <li><strong>Red (-):</strong> You owe money to others</li>
-                                <li><strong>Balanced transactions:</strong> Simplified to minimize payments</li>
+                                <li><strong>Green (+):</strong> <span data-i18n="app.fundDetail.balances.howItWorksSimple[0]">Others owe you money</span></li>
+                                <li><strong>Red (-):</strong> <span data-i18n="app.fundDetail.balances.howItWorksSimple[1]">You owe money to others</span></li>
+                                <li><strong>Balanced transactions:</strong> <span data-i18n="app.fundDetail.balances.howItWorksSimple[2]">Simplified to minimize payments</span></li>
                             </ul>
                         </div>
                     </div>
 
                     <!-- Members Tab -->
                     <div id="membersTab" class="tab-pane">
-                        <h3>👥 Fund Members</h3>
+                        <h3 data-i18n="app.fundDetail.members.title">👥 Fund Members</h3>
                         
                         <!-- Removal Requests Section (Only for creator) -->
                         <div id="removalRequestsSection" style="display: none; margin-bottom: 2rem;">
-                            <h4 style="color: var(--warning); margin-bottom: 1rem;">⚠️ Pending Removal Requests</h4>
+                            <h4 style="color: var(--warning); margin-bottom: 1rem;" data-i18n="app.fundDetail.members.removalRequestsTitle">⚠️ Pending Removal Requests</h4>
                             <div id="removalRequestsList">
                                 <!-- Removal requests will be loaded here -->
                             </div>
@@ -1384,32 +1385,32 @@
                         </div>
                         <div id="noMembers" class="empty-state" style="display: none;">
                             <div class="empty-icon">👤</div>
-                            <h4>No members yet</h4>
+                            <h4 data-i18n="app.fundDetail.members.empty">No members yet</h4>
                         </div>
                     </div>
 
                     <!-- Manage Tab -->
                     <div id="manageTab" class="tab-pane">
                         <div class="tab-card">
-                            <h3>⚙️ Fund Management</h3>
-                            <p>Advanced options to manage the fund.</p>
+                            <h3 data-i18n="app.fundDetail.manage.title">⚙️ Fund Management</h3>
+                            <p data-i18n="app.fundDetail.manage.subtitleGroup">Advanced options to manage the fund.</p>
                             
                             <div class="manage-section">
                                 <!-- Kick Member Section -->
                                 <div class="member-management-section">
-                                    <h4>👥 Member Management</h4>
-                                    <p><strong>Remove Member</strong></p>
-                                    <p class="help-text">
+                                    <h4 data-i18n="app.fundDetail.manage.memberManagement">👥 Member Management</h4>
+                                    <p><strong data-i18n="app.fundDetail.manage.kickMember">Remove Member</strong></p>
+                                    <p class="help-text" data-i18n="app.fundDetail.manage.kickDescriptionSimple">
                                         Remove a member from the group by returning their proportional share of the current balance.
                                     </p>
                                     
                                     <div class="info-box">
-                                        <p><strong>💡 How it works:</strong></p>
+                                        <p><strong data-i18n="app.fundDetail.manage.howItWorks">💡 How it works:</strong></p>
                                         <ul>
-                                            <li>The member is permanently removed from the group</li>
-                                            <li>Receives: (Their contribution / Total contributions) × Current balance</li>
-                                            <li>Cannot participate in future votes</li>
-                                            <li>Their previous votes remain recorded</li>
+                                            <li data-i18n="app.fundDetail.manage.kickPoints[0]">The member is permanently removed from the group</li>
+                                            <li data-i18n="app.fundDetail.manage.kickPoints[1]">Receives: (Their contribution / Total contributions) × Current balance</li>
+                                            <li data-i18n="app.fundDetail.manage.kickPoints[2]">Cannot participate in future votes</li>
+                                            <li data-i18n="app.fundDetail.manage.kickPoints[3]">Their previous votes remain recorded</li>
                                         </ul>
                                     </div>
                                     
@@ -1419,40 +1420,40 @@
                                     
                                     <div id="noMembersToKick" class="empty-state" style="display: none;">
                                         <div class="empty-icon">👥</div>
-                                        <h4>No members to remove</h4>
-                                        <p>There is only one member in the group or you are not the creator</p>
+                                        <h4 data-i18n="app.fundDetail.manage.noMembersToKick">No members to remove</h4>
+                                        <p data-i18n="app.fundDetail.manage.noMembersSubtitle">There is only one member in the group or you are not the creator</p>
                                     </div>
                                 </div>
                                 
                                 <div class="danger-zone">
-                                    <h4>🚨 Danger Zone</h4>
-                                    <p><strong>Close and Distribute Fund</strong></p>
-                                    <p class="help-text">
+                                    <h4 data-i18n="app.fundDetail.manage.dangerZone">🚨 Danger Zone</h4>
+                                    <p><strong data-i18n="app.fundDetail.manage.closeAndDistribute">Close and Distribute Fund</strong></p>
+                                    <p class="help-text" data-i18n="app.fundDetail.manage.closeDescription">
                                         This action will permanently close the group and settle all remaining balances 
                                         proportionally among contributors according to their contribution.
                                     </p>
                                     
                                     <div class="info-box warning-box">
-                                        <p><strong>⚠️ Warning:</strong></p>
+                                        <p><strong data-i18n="app.fundDetail.manage.warning">⚠️ Warning:</strong></p>
                                         <ul>
-                                            <li>This action is <strong>irreversible</strong></li>
-                                            <li>Only the fund creator can execute it</li>
-                                            <li>Each contributor will receive: (their contribution / total) × current balance</li>
-                                            <li>The fund will be permanently closed</li>
-                                            <li>No more deposits or proposals can be made</li>
+                                            <li data-i18n="app.fundDetail.manage.warningPoints[0]">This action is <strong>irreversible</strong></li>
+                                            <li data-i18n="app.fundDetail.manage.warningPoints[1]">Only the fund creator can execute it</li>
+                                            <li data-i18n="app.fundDetail.manage.warningPoints[2]">Each contributor will receive: (their contribution / total) × current balance</li>
+                                            <li data-i18n="app.fundDetail.manage.warningPoints[3]">The fund will be permanently closed</li>
+                                            <li data-i18n="app.fundDetail.manage.warningPoints[4]">No more deposits or proposals can be made</li>
                                         </ul>
                                     </div>
                                     
                                     <div id="closeFundPreview" class="distribution-preview" style="display: none;">
-                                        <h5>📊 Distribution Preview</h5>
+                                        <h5 data-i18n="app.fundDetail.manage.distributionPreview">📊 Distribution Preview</h5>
                                         <div id="distributionList"></div>
                                     </div>
                                     
                                     <div class="button-group">
-                                        <button id="previewCloseFundBtn" class="btn btn-secondary">
+                                        <button id="previewCloseFundBtn" class="btn btn-secondary" data-i18n="app.fundDetail.manage.previewButton">
                                             📊 Distribution Preview
                                         </button>
-                                        <button id="closeFundBtn" class="btn btn-danger">
+                                        <button id="closeFundBtn" class="btn btn-danger" data-i18n="app.fundDetail.manage.closeButton">
                                             🔒 Close and Distribute Fund
                                         </button>
                                     </div>
