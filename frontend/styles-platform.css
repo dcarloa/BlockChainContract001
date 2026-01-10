@@ -5216,13 +5216,23 @@ header,
   border-top-color: #667eea;
   border-right-color: #764ba2;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.8s linear infinite !important;
   margin: 0 auto 1.5rem;
+  display: block;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.loading-groups-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.loading-groups-state .loading-spinner {
+  animation: spin 0.8s linear infinite !important;
 }
 
 .loading-groups-state h3 {
