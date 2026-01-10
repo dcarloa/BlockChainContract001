@@ -1487,19 +1487,19 @@
             <div id="addExpenseModal" class="modal" style="display: none;">
                 <div class="modal-content modal-medium">
                     <div class="modal-header">
-                        <h2>➕ Add Expense</h2>
+                        <h2 data-i18n="app.modals.addExpense.titleIcon">➕ Add Expense</h2>
                         <button class="modal-close" onclick="closeAddExpenseModal()">&times;</button>
                     </div>
                     
                     <form id="addExpenseForm" class="expense-form-clean">
                         <div class="form-header-clean">
-                            <h3>Add Expense</h3>
+                            <h3 data-i18n="app.modals.addExpense.title">Add Expense</h3>
                             <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
                                 <button type="button" class="btn-scan-receipt" onclick="triggerReceiptScan()">
-                                    📸 Scan Receipt
+                                    <span data-i18n="app.modals.addExpense.scanReceipt">📸 Scan Receipt</span>
                                 </button>
                                 <button type="button" class="btn-challenge-mode" onclick="showChallengeModeSelection()">
-                                    🎮 Challenge Mode
+                                    <span data-i18n="app.modals.addExpense.challengeMode">🎮 Challenge Mode</span>
                                 </button>
                                 <input 
                                     type="file" 
@@ -1516,8 +1516,8 @@
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
                                 <div class="spinner-small"></div>
                                 <div>
-                                    <strong style="color: #667eea;">Scanning receipt...</strong>
-                                    <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                                    <strong style="color: #667eea;" data-i18n="app.modals.addExpense.scanningReceipt">Scanning receipt...</strong>
+                                    <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.7);" data-i18n="app.modals.addExpense.extractingInfo">
                                         Extracting amount, description, and date from image
                                     </p>
                                 </div>
@@ -1526,12 +1526,13 @@
 
                         <div class="form-grid">
                             <div class="form-field">
-                                <label for="expenseDescription" class="form-label">Description *</label>
+                                <label for="expenseDescription" class="form-label" data-i18n="app.modals.addExpense.descriptionLabel">Description *</label>
                                 <input 
                                     type="text" 
                                     id="expenseDescription"
                                     name="description"
                                     class="form-input"
+                                    data-i18n-placeholder="app.modals.addExpense.descriptionPlaceholder"
                                     placeholder="What did you pay for?"
                                     required
                                     autocomplete="off"
@@ -1539,8 +1540,8 @@
                             </div>
 
                             <div class="form-field">
-                                <label for="expenseAmount" class="form-label">Amount *</label>
-                                <div class="form-hint" style="margin-bottom: 0.5rem; font-size: 0.85rem; color: #9ca3af;">
+                                <label for="expenseAmount" class="form-label" data-i18n="app.modals.addExpense.amountLabel">Amount *</label>
+                                <div class="form-hint" style="margin-bottom: 0.5rem; font-size: 0.85rem; color: #9ca3af;" data-i18n="app.modals.addExpense.amountHint">
                                     Enter a <strong>positive</strong> number for expenses, or a <strong>negative</strong> number for payments received/loans.
                                 </div>
                                 <div class="amount-input-wrapper">
@@ -1550,44 +1551,45 @@
                                         id="expenseAmount"
                                         name="amount"
                                         class="form-input amount-input"
+                                        data-i18n-placeholder="app.modals.addExpense.amountPlaceholder"
                                         placeholder="0.00"
                                         step="any"
                                         required
                                     >
                                 </div>
-                                <div class="form-examples" style="margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                                <div class="form-examples" style="margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;" data-i18n="app.modals.addExpense.amountExample">
                                     Examples: 50 (expense), -50 (payment received)
                                 </div>
                             </div>
 
                             <div class="form-field">
-                                <label for="expenseCurrency" class="form-label">Currency</label>
+                                <label for="expenseCurrency" class="form-label" data-i18n="app.modals.addExpense.currencyLabel">Currency</label>
                                 <select id="expenseCurrency" name="currency" class="form-input form-select" onchange="updateCurrencySymbol()">
-                                    <option value="USD" selected>🇺🇸 USD - US Dollar</option>
-                                    <option value="EUR">🇪🇺 EUR - Euro</option>
-                                    <option value="GBP">🇬🇧 GBP - British Pound</option>
-                                    <option value="MXN">🇲🇽 MXN - Mexican Peso</option>
-                                    <option value="COP">🇨🇴 COP - Colombian Peso</option>
-                                    <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
-                                    <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
-                                    <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
-                                    <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
-                                    <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
-                                    <option value="INR">🇮🇳 INR - Indian Rupee</option>
-                                    <option value="CHF">🇨🇭 CHF - Swiss Franc</option>
+                                    <option value="USD" selected data-i18n="app.modals.addExpense.currencyOptions.usd">🇺🇸 USD - US Dollar</option>
+                                    <option value="EUR" data-i18n="app.modals.addExpense.currencyOptions.eur">🇪🇺 EUR - Euro</option>
+                                    <option value="GBP" data-i18n="app.modals.addExpense.currencyOptions.gbp">🇬🇧 GBP - British Pound</option>
+                                    <option value="MXN" data-i18n="app.modals.addExpense.currencyOptions.mxn">🇲🇽 MXN - Mexican Peso</option>
+                                    <option value="COP" data-i18n="app.modals.addExpense.currencyOptions.cop">🇨🇴 COP - Colombian Peso</option>
+                                    <option value="BRL" data-i18n="app.modals.addExpense.currencyOptions.brl">🇧🇷 BRL - Brazilian Real</option>
+                                    <option value="CAD" data-i18n="app.modals.addExpense.currencyOptions.cad">🇨🇦 CAD - Canadian Dollar</option>
+                                    <option value="AUD" data-i18n="app.modals.addExpense.currencyOptions.aud">🇦🇺 AUD - Australian Dollar</option>
+                                    <option value="JPY" data-i18n="app.modals.addExpense.currencyOptions.jpy">🇯🇵 JPY - Japanese Yen</option>
+                                    <option value="CNY" data-i18n="app.modals.addExpense.currencyOptions.cny">🇨🇳 CNY - Chinese Yuan</option>
+                                    <option value="INR" data-i18n="app.modals.addExpense.currencyOptions.inr">🇮🇳 INR - Indian Rupee</option>
+                                    <option value="CHF" data-i18n="app.modals.addExpense.currencyOptions.chf">🇨🇭 CHF - Swiss Franc</option>
                                 </select>
                             </div>
 
                             <div class="form-field">
-                                <label class="form-label">Paid by *</label>
+                                <label class="form-label" data-i18n="app.modals.addExpense.paidByLabel">Paid by *</label>
                                 <div id="expensePaidBy" class="split-members-list">
                                     <!-- Will be populated dynamically with checkboxes -->
                                 </div>
-                                <small class="field-hint">Select who paid (can be multiple people)</small>
+                                <small class="field-hint" data-i18n="app.modals.addExpense.paidByHint">Select who paid (can be multiple people)</small>
                             </div>
 
                             <div class="form-field">
-                                <label for="expenseDate" class="form-label">Date</label>
+                                <label for="expenseDate" class="form-label" data-i18n="app.modals.addExpense.dateLabel">Date</label>
                                 <input 
                                     type="date" 
                                     id="expenseDate"
@@ -1597,26 +1599,26 @@
                             </div>
 
                             <div class="form-field">
-                                <label for="expenseCategory" class="form-label">Category</label>
+                                <label for="expenseCategory" class="form-label" data-i18n="app.modals.addExpense.categoryLabel">Category</label>
                                 <select id="expenseCategory" name="category" class="form-input form-select">
-                                    <option value="food">🍕 Food & Dining</option>
-                                    <option value="transport">🚗 Transportation</option>
-                                    <option value="housing">🏠 Housing & Rent</option>
-                                    <option value="utilities">💡 Utilities</option>
-                                    <option value="entertainment">🎬 Entertainment</option>
-                                    <option value="shopping">🛍️ Shopping</option>
-                                    <option value="health">⚕️ Health & Medical</option>
-                                    <option value="travel">✈️ Travel</option>
-                                    <option value="subscription">📺 Subscriptions</option>
-                                    <option value="other" selected>🎯 Other</option>
+                                    <option value="food" data-i18n="app.modals.addExpense.categoryOptions.food">🍕 Food & Dining</option>
+                                    <option value="transport" data-i18n="app.modals.addExpense.categoryOptions.transport">🚗 Transportation</option>
+                                    <option value="housing" data-i18n="app.modals.addExpense.categoryOptions.housing">🏠 Housing & Rent</option>
+                                    <option value="utilities" data-i18n="app.modals.addExpense.categoryOptions.utilities">💡 Utilities</option>
+                                    <option value="entertainment" data-i18n="app.modals.addExpense.categoryOptions.entertainment">🎬 Entertainment</option>
+                                    <option value="shopping" data-i18n="app.modals.addExpense.categoryOptions.shopping">🛍️ Shopping</option>
+                                    <option value="health" data-i18n="app.modals.addExpense.categoryOptions.health">⚕️ Health & Medical</option>
+                                    <option value="travel" data-i18n="app.modals.addExpense.categoryOptions.travel">✈️ Travel</option>
+                                    <option value="subscription" data-i18n="app.modals.addExpense.categoryOptions.subscription">📺 Subscriptions</option>
+                                    <option value="other" selected data-i18n="app.modals.addExpense.categoryOptions.other">🎯 Other</option>
                                 </select>
                                 <small class="field-hint">Helps with analytics and expense tracking</small>
                             </div>
 
                             <div class="form-field">
-                                <label class="form-label">Split between *</label>
+                                <label class="form-label" data-i18n="app.modals.addExpense.splitBetweenLabel">Split between *</label>
                                 <div class="info-box" style="margin-bottom: 0.75rem; background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); padding: 0.75rem;">
-                                    <p style="margin: 0; font-size: 0.85rem; display: flex; align-items: start; gap: 0.5rem;">
+                                    <p style="margin: 0; font-size: 0.85rem; display: flex; align-items: start; gap: 0.5rem;" data-i18n="app.modals.addExpense.splitBetweenInfo">
                                         <span style="font-size: 1rem;">💡</span>
                                         <span>
                                             <strong>Flexible splitting:</strong> Use the <strong>+</strong> and <strong>−</strong> buttons to add portions when a member covers for external guests. 
@@ -1627,16 +1629,17 @@
                                 <div id="expenseSplitBetween" class="split-members-list">
                                     <!-- Will be populated dynamically -->
                                 </div>
-                                <small class="field-hint">Select who should share this expense</small>
+                                <small class="field-hint" data-i18n="app.modals.addExpense.splitBetweenHint">Select who should share this expense</small>
                             </div>
 
                             <div class="form-field">
-                                <label for="expenseNotes" class="form-label">Notes <span class="optional-badge">Optional</span></label>
+                                <label for="expenseNotes" class="form-label"><span data-i18n="app.modals.addExpense.notesLabel">Notes</span> <span class="optional-badge" data-i18n="app.modals.addExpense.notesOptional">Optional</span></label>
                                 <textarea 
                                     id="expenseNotes"
                                     name="notes"
                                     class="form-input form-textarea"
                                     rows="2"
+                                    data-i18n-placeholder="app.modals.addExpense.notesPlaceholder"
                                     placeholder="Add any additional details..."
                                 ></textarea>
                             </div>
@@ -1644,10 +1647,10 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" onclick="closeAddExpenseModal()">
-                                Cancel
+                                <span data-i18n="app.modals.addExpense.cancelButton">Cancel</span>
                             </button>
                             <button type="submit" class="btn btn-primary">
-                                Save Expense
+                                <span data-i18n="app.modals.addExpense.saveButton">Save Expense</span>
                             </button>
                         </div>
                     </form>
@@ -1658,7 +1661,7 @@
             <div id="recordPaymentModal" class="modal" style="display: none;">
                 <div class="modal-content modal-small">
                     <div class="modal-header">
-                        <h2>💰 Record Payment</h2>
+                        <h2 data-i18n="app.modals.recordPayment.title">💰 Record Payment</h2>
                         <button class="modal-close" onclick="closeRecordPaymentModal()">&times;</button>
                     </div>
                     
@@ -1666,7 +1669,7 @@
                         <div class="form-group">
                             <label for="paymentAmount" class="input-label">
                                 <span class="label-icon">💵</span>
-                                <span>Amount Paid</span>
+                                <span data-i18n="app.modals.recordPayment.amountLabel">Amount Paid</span>
                             </label>
                             <div class="input-with-prefix">
                                 <span class="input-prefix">$</span>
@@ -1678,6 +1681,7 @@
                                     step="0.01" 
                                     min="0.01"
                                     required
+                                    data-i18n-placeholder="app.modals.recordPayment.amountPlaceholder"
                                     placeholder="0.00"
                                 >
                             </div>
@@ -1686,7 +1690,7 @@
                         <div class="form-group">
                             <label for="paymentTo" class="input-label">
                                 <span class="label-icon">👤</span>
-                                <span>Paid To</span>
+                                <span data-i18n="app.modals.recordPayment.paidToLabel">Paid To</span>
                             </label>
                             <input 
                                 type="text" 
@@ -1699,7 +1703,7 @@
                         <div class="form-group">
                             <label for="paymentDate" class="input-label">
                                 <span class="label-icon">📅</span>
-                                <span>Payment Date</span>
+                                <span data-i18n="app.modals.recordPayment.dateLabel">Payment Date</span>
                             </label>
                             <input 
                                 type="date" 
@@ -1713,13 +1717,14 @@
                         <div class="form-group">
                             <label for="paymentNotes" class="input-label">
                                 <span class="label-icon">📝</span>
-                                <span>Notes (Optional)</span>
+                                <span data-i18n="app.modals.recordPayment.notesLabel">Notes (Optional)</span>
                             </label>
                             <textarea 
                                 id="paymentNotes" 
                                 name="notes"
                                 class="input-modern"
                                 rows="2"
+                                data-i18n-placeholder="app.modals.recordPayment.notesPlaceholder"
                                 placeholder="Payment method, reference number, etc..."
                             ></textarea>
                         </div>
@@ -1728,11 +1733,11 @@
 
                         <div class="form-actions">
                             <button type="button" class="btn btn-secondary" onclick="closeRecordPaymentModal()">
-                                Cancel
+                                <span data-i18n="app.modals.recordPayment.cancelButton">Cancel</span>
                             </button>
                             <button type="submit" class="btn btn-success">
                                 <span class="btn-icon">✅</span>
-                                <span>Record Payment</span>
+                                <span data-i18n="app.modals.recordPayment.recordButton">Record Payment</span>
                             </button>
                         </div>
                     </form>
