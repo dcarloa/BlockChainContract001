@@ -3100,7 +3100,7 @@ function renderExpenseItem(expense, currentUserId, groupData) {
                     <div class="${amountClass}">
                         ${amountPrefix}${amountStr}${currencyLabel}
                     </div>
-                    <span class="expand-icon">▼</span>
+                    <span class="expand-icon">&#9660;</span>
                 </div>
             </div>
             
