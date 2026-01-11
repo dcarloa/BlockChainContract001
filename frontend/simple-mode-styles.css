@@ -1,3 +1,17 @@
+@media (max-width: 900px) {
+  .expense-card-compact {
+    background: #1e2532 !important;
+    border: 2px solid #2d3548 !important;
+    border-left: 4px solid var(--primary) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+    margin-bottom: 0.65rem !important;
+    padding: 0 !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease;
+  }
+}
 /* Custom checkbox visual restoration */
 .split-members-list .checkbox-option label.custom-checkbox-label {
   position: relative;
