@@ -3,12 +3,7 @@
     "groups": {
       "$groupId": {
         ".read": "auth != null",
-        ".write": "auth != null && (
-          !data.exists() ||
-          data.child('createdBy').val() === auth.uid ||
-          data.child('members').child(auth.uid).exists()
-        )",
-        
+        ".write": "auth != null && (!data.exists() || data.child('createdBy').val() === auth.uid || data.child('members').child(auth.uid).exists())",
         ".validate": "newData.hasChildren(['id', 'name', 'createdBy', 'createdAt'])",
         
         "name": {
@@ -20,7 +15,7 @@
         },
         
         "targetAmount": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000000"
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000000000"
         },
         
         "currency": {
@@ -29,10 +24,7 @@
         
         "members": {
           "$memberId": {
-            ".write": "auth != null && (
-              $memberId === auth.uid ||
-              root.child('groups').child($groupId).child('createdBy').val() === auth.uid
-            )",
+            ".write": "auth != null && ($memberId === auth.uid || root.child('groups').child($groupId).child('createdBy').val() === auth.uid)",
             
             "email": {
               ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
@@ -53,7 +45,7 @@
             },
             
             "amount": {
-              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000"
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000000000"
             },
             
             "notes": {
@@ -67,7 +59,7 @@
             ".write": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
             
             "amount": {
-              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000"
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000000000"
             },
             
             "notes": {
@@ -85,14 +77,14 @@
             },
             
             "amount": {
-              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000"
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000000000"
             }
           }
         },
         
         "budget": {
           "amount": {
-            ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 10000000"
+            ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000000000"
           }
         }
       }

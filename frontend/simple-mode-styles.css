@@ -962,9 +962,44 @@
     gap: 0.5rem !important;
   }
   
+  #addExpenseModal .modal-footer {
+    display: flex !important;
+    gap: 0.75rem !important;
+    flex-direction: column !important;
+  }
+  
   #addExpenseModal .modal-footer .btn {
-    padding: 0.75rem 1.25rem !important;
-    font-size: 0.875rem !important;
+    padding: 1.125rem 1.75rem !important;
+    font-size: 1.0625rem !important;
+    font-weight: 800 !important;
+    width: 100% !important;
+    border: 3px solid transparent !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+  }
+  
+  #addExpenseModal .modal-footer .btn-secondary {
+    background: #4b5563 !important;
+    color: #ffffff !important;
+    border-color: #6b7280 !important;
+  }
+  
+  #addExpenseModal .modal-footer .btn-secondary:active {
+    background: #374151 !important;
+    transform: scale(0.98) !important;
+  }
+  
+  #addExpenseModal .modal-footer .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5), 0 2px 8px rgba(118, 75, 162, 0.4) !important;
+  }
+  
+  #addExpenseModal .modal-footer .btn-primary:active {
+    background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%) !important;
+    transform: scale(0.98) !important;
   }
 
   /* Action Card - Mobile */

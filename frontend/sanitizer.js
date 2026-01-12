@@ -140,8 +140,8 @@ const Validators = {
                 errors.push("Monto objetivo inválido");
             } else if (amount < 0) {
                 errors.push("El monto objetivo no puede ser negativo");
-            } else if (amount > 10000000) {
-                errors.push("El monto objetivo es demasiado alto (máximo 10,000,000)");
+            } else if (amount > 1000000000000) {
+                errors.push("El monto objetivo es demasiado alto (máximo 1,000,000,000,000)");
             }
         }
         
@@ -188,8 +188,8 @@ const Validators = {
             errors.push("Monto inválido");
         } else if (amount <= 0) {
             errors.push("El monto debe ser mayor a cero");
-        } else if (amount > 1000000) {
-            errors.push("El monto es demasiado alto (máximo 1,000,000)");
+        } else if (amount > 1000000000000) {
+            errors.push("El monto es demasiado alto (máximo 1,000,000,000,000)");
         }
         
         // Validar categoría
@@ -258,8 +258,8 @@ const Validators = {
             errors.push("Monto inválido");
         } else if (amount <= 0) {
             errors.push("El monto debe ser mayor a cero");
-        } else if (amount > 1000000) {
-            errors.push("El monto es demasiado alto (máximo 1,000,000)");
+        } else if (amount > 1000000000000) {
+            errors.push("El monto es demasiado alto (máximo 1,000,000,000,000)");
         }
         
         // Validar notas
