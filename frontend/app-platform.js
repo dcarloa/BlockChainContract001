@@ -178,6 +178,32 @@ window.addEventListener('DOMContentLoaded', async () => {
     // Load user funds (both Simple and Blockchain modes)
     await loadUserFunds();
     
+    // CRITICAL: Force hide ALL modals after initialization
+    // This prevents any modal (especially Smart Settlements) from appearing on startup
+    const forceHideAllModals = () => {
+        const allModals = document.querySelectorAll('.modal-overlay');
+        allModals.forEach(modal => {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        });
+        
+        // Specifically target Smart Settlements modal
+        const smartSettlementsModal = document.getElementById('smartSettlementsModal');
+        if (smartSettlementsModal) {
+            smartSettlementsModal.classList.remove('active');
+            smartSettlementsModal.style.display = 'none';
+        }
+    };
+    
+    // Hide immediately
+    forceHideAllModals();
+    
+    // And again after multiple delays to catch any async-loaded content
+    setTimeout(forceHideAllModals, 100);
+    setTimeout(forceHideAllModals, 500);
+    setTimeout(forceHideAllModals, 1000);
+    setTimeout(forceHideAllModals, 2000);
+    
     } catch (error) {
         console.error('CRITICAL ERROR in DOMContentLoaded:', error);
         console.error('Stack trace:', error.stack);
@@ -2207,6 +2233,11 @@ function hideLoading() {
 
 function showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
+    if (!container) {
+        console.error('Toast container not found');
+        return;
+    }
+    
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
@@ -2220,7 +2251,14 @@ function showToast(message, type = 'info') {
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => {
-            container.removeChild(toast);
+            // Safe removal with multiple checks to prevent removeChild errors
+            try {
+                if (toast && toast.parentNode && toast.parentNode === container && container.contains(toast)) {
+                    container.removeChild(toast);
+                }
+            } catch (error) {
+                console.warn('Toast removal error (safely caught):', error.message);
+            }
         }, 300);
     }, 3000);
 }
