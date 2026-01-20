@@ -319,7 +319,7 @@ async function createWelcomeChest(groupId) {
         const chest = {
             weekId: weekId,
             colonyState: 'forming',
-            opened: false,
+            isOpened: false,
             createdAt: Date.now(),
             reward: {
                 itemId: welcomeItem.id,

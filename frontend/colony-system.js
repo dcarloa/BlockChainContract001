@@ -80,7 +80,7 @@ async function getWeeklyChest(groupId, weekId) {
     
     try {
         const db = firebase.database();
-        const snapshot = await db.ref(`weeklyChests/${groupId}/${weekId}`).once('value');
+        const snapshot = await db.ref(`groups/${groupId}/weeklyChests/${weekId}`).once('value');
         return snapshot.val();
     } catch (error) {
         console.error('Error getting weekly chest:', error);
@@ -128,7 +128,7 @@ async function openWeeklyChest(groupId, weekId) {
         }
         
         // Mark chest as opened
-        await db.ref(`weeklyChests/${groupId}/${weekId}`).update({
+        await db.ref(`groups/${groupId}/weeklyChests/${weekId}`).update({
             isOpened: true,
             openedBy: user.uid,
             openedAt: Date.now()
@@ -434,8 +434,19 @@ async function checkWeeklyChest(groupId) {
         return;
     }
     
+    // First check for welcome chest
+    console.log('[Colony] Checking for welcome chest:', groupId);
+    const welcomeChest = await getWeeklyChest(groupId, 'welcome');
+    
+    if (welcomeChest && !welcomeChest.isOpened) {
+        console.log('[Colony] Showing welcome chest banner');
+        showWeeklyChestBanner(groupId, { ...welcomeChest, weekId: 'welcome' });
+        return; // Show welcome chest first, don't check for weekly chest yet
+    }
+    
+    // Then check for current week chest
     const weekId = getCurrentWeekId();
-    console.log('[Colony] Checking for chest:', { groupId, weekId });
+    console.log('[Colony] Checking for weekly chest:', { groupId, weekId });
     
     const chest = await getWeeklyChest(groupId, weekId);
     console.log('[Colony] Chest data:', chest);
