@@ -1,0 +1,510 @@
+// ============================================
+// MASCOT SYSTEM - Ant Pool
+// ============================================
+// Sistema simplificado de mascota para retención de usuarios
+// NO afecta funcionalidad principal de división de gastos
+
+// Feature flag
+const MASCOT_FEATURE_ENABLED = true;
+
+// ============================================
+// WARDROBE CATALOG
+// ============================================
+
+const WARDROBE_ITEMS = {
+    // CABEZA (6 items)
+    hat_explorer: {
+        id: 'hat_explorer',
+        name: 'Sombrero Explorador',
+        emoji: '🎩',
+        category: 'head',
+        rarity: 'common',
+        description: 'Perfecto para aventuras'
+    },
+    crown_gold: {
+        id: 'crown_gold',
+        name: 'Corona Dorada',
+        emoji: '👑',
+        category: 'head',
+        rarity: 'rare',
+        description: 'Para la realeza del grupo'
+    },
+    cap_casual: {
+        id: 'cap_casual',
+        name: 'Gorra Casual',
+        emoji: '🧢',
+        category: 'head',
+        rarity: 'common',
+        description: 'Estilo relajado'
+    },
+    cap_graduate: {
+        id: 'cap_graduate',
+        name: 'Gorro Graduado',
+        emoji: '🎓',
+        category: 'head',
+        rarity: 'common',
+        description: 'Inteligencia grupal'
+    },
+    helmet_adventure: {
+        id: 'helmet_adventure',
+        name: 'Casco Aventurero',
+        emoji: '⛑️',
+        category: 'head',
+        rarity: 'rare',
+        description: 'Seguridad primero'
+    },
+    crown_flower: {
+        id: 'crown_flower',
+        name: 'Corona Floral',
+        emoji: '🌺',
+        category: 'head',
+        rarity: 'rare',
+        description: 'Belleza natural'
+    },
+    
+    // ACCESORIOS (6 items)
+    backpack: {
+        id: 'backpack',
+        name: 'Mochila Viajera',
+        emoji: '🎒',
+        category: 'accessory',
+        rarity: 'common',
+        description: 'Lista para el viaje'
+    },
+    wings: {
+        id: 'wings',
+        name: 'Alas Brillantes',
+        emoji: '🪽',
+        category: 'accessory',
+        rarity: 'rare',
+        description: 'Vuela alto'
+    },
+    pickaxe: {
+        id: 'pickaxe',
+        name: 'Pico Minero',
+        emoji: '⛏️',
+        category: 'accessory',
+        rarity: 'common',
+        description: 'Excava tesoros'
+    },
+    guitar: {
+        id: 'guitar',
+        name: 'Guitarra',
+        emoji: '🎸',
+        category: 'accessory',
+        rarity: 'rare',
+        description: 'Música grupal'
+    },
+    tablet: {
+        id: 'tablet',
+        name: 'Tablet',
+        emoji: '📱',
+        category: 'accessory',
+        rarity: 'common',
+        description: 'Tecnología moderna'
+    },
+    star_magic: {
+        id: 'star_magic',
+        name: 'Estrella Mágica',
+        emoji: '🌟',
+        category: 'accessory',
+        rarity: 'rare',
+        description: 'Brillo especial'
+    }
+};
+
+// Item levels
+const ITEM_LEVELS = {
+    basic: { name: 'Básico', stars: '⭐', copies: 1, color: '#9ca3af' },
+    silver: { name: 'Plata', stars: '⭐⭐', copies: 3, color: '#c0c0c0' },
+    gold: { name: 'Oro', stars: '⭐⭐⭐', copies: 6, color: '#ffd700' }
+};
+
+// ============================================
+// CORE FUNCTIONS
+// ============================================
+
+/**
+ * Get mascot data for a group
+ */
+async function getMascotData(groupId) {
+    if (!MASCOT_FEATURE_ENABLED) return null;
+    
+    try {
+        const db = firebase.database();
+        const snapshot = await db.ref(`groups/${groupId}/mascot`).once('value');
+        const data = snapshot.val();
+        
+        // Default mascot if not exists
+        if (!data) {
+            return {
+                equipped: {
+                    head: null,
+                    accessory: null
+                },
+                wardrobe: {}
+            };
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('[Mascot] Error getting data:', error);
+        return null;
+    }
+}
+
+/**
+ * Get item level based on copies
+ */
+function getItemLevel(copies) {
+    if (copies >= 6) return 'gold';
+    if (copies >= 3) return 'silver';
+    return 'basic';
+}
+
+/**
+ * Render mascot preview with equipped items
+ */
+function renderMascotPreview(mascotData, size = 'normal') {
+    const equipped = mascotData?.equipped || {};
+    const wardrobe = mascotData?.wardrobe || {};
+    
+    const headItem = equipped.head ? WARDROBE_ITEMS[equipped.head] : null;
+    const accessoryItem = equipped.accessory ? WARDROBE_ITEMS[equipped.accessory] : null;
+    
+    const sizeClass = size === 'small' ? 'mascot-preview-small' : 'mascot-preview';
+    
+    return `
+        <div class="${sizeClass}">
+            ${headItem ? `<div class="mascot-item-head">${headItem.emoji}</div>` : ''}
+            <div class="mascot-body">🐜</div>
+            ${accessoryItem ? `<div class="mascot-item-accessory">${accessoryItem.emoji}</div>` : ''}
+        </div>
+    `;
+}
+
+/**
+ * Equip item to mascot
+ */
+async function equipItem(groupId, itemId) {
+    if (!MASCOT_FEATURE_ENABLED) return false;
+    
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) return false;
+        
+        const item = WARDROBE_ITEMS[itemId];
+        if (!item) return false;
+        
+        const db = firebase.database();
+        
+        // Check if user is member
+        const memberSnapshot = await db.ref(`groups/${groupId}/members/${user.uid}`).once('value');
+        if (!memberSnapshot.exists()) {
+            console.error('[Mascot] User not a member');
+            return false;
+        }
+        
+        // Equip item in correct slot
+        await db.ref(`groups/${groupId}/mascot/equipped/${item.category}`).set(itemId);
+        
+        console.log(`[Mascot] Equipped ${itemId} to ${item.category}`);
+        return true;
+    } catch (error) {
+        console.error('[Mascot] Error equipping item:', error);
+        return false;
+    }
+}
+
+/**
+ * Add item to wardrobe (from chest reward)
+ */
+async function addItemToWardrobe(groupId, itemId) {
+    if (!MASCOT_FEATURE_ENABLED) return null;
+    
+    try {
+        const db = firebase.database();
+        const itemRef = db.ref(`groups/${groupId}/mascot/wardrobe/${itemId}`);
+        const snapshot = await itemRef.once('value');
+        const current = snapshot.val() || { copies: 0, level: 'basic' };
+        
+        const newCopies = current.copies + 1;
+        const newLevel = getItemLevel(newCopies);
+        const upgraded = newLevel !== current.level;
+        
+        await itemRef.set({
+            copies: newCopies,
+            level: newLevel,
+            lastObtained: Date.now()
+        });
+        
+        console.log(`[Mascot] Added ${itemId}, copies: ${newCopies}, level: ${newLevel}`);
+        
+        return {
+            itemId,
+            item: WARDROBE_ITEMS[itemId],
+            isNew: current.copies === 0,
+            upgraded,
+            oldLevel: current.level,
+            newLevel,
+            copies: newCopies
+        };
+    } catch (error) {
+        console.error('[Mascot] Error adding item:', error);
+        return null;
+    }
+}
+
+/**
+ * Get random item based on colony state
+ */
+function getRandomItemByColonyState(colonyState) {
+    const allItems = Object.values(WARDROBE_ITEMS);
+    
+    // Filter by rarity based on colony state
+    let availableItems;
+    switch (colonyState) {
+        case 'forming':
+            // Only common items
+            availableItems = allItems.filter(i => i.rarity === 'common');
+            break;
+        case 'active':
+            // 70% common, 30% rare
+            availableItems = Math.random() < 0.7
+                ? allItems.filter(i => i.rarity === 'common')
+                : allItems.filter(i => i.rarity === 'rare');
+            break;
+        case 'stable':
+            // 40% common, 60% rare
+            availableItems = Math.random() < 0.4
+                ? allItems.filter(i => i.rarity === 'common')
+                : allItems.filter(i => i.rarity === 'rare');
+            break;
+        case 'consolidated':
+            // All items available
+            availableItems = allItems;
+            break;
+        default:
+            availableItems = allItems;
+    }
+    
+    // Return random item from available
+    return availableItems[Math.floor(Math.random() * availableItems.length)];
+}
+
+/**
+ * Load mascot tab content
+ */
+async function loadMascotTab(groupId) {
+    if (!MASCOT_FEATURE_ENABLED) return;
+    
+    const container = document.getElementById('mascotTab');
+    if (!container) return;
+    
+    try {
+        const mascotData = await getMascotData(groupId);
+        const wardrobe = mascotData?.wardrobe || {};
+        const equipped = mascotData?.equipped || {};
+        
+        const totalItems = Object.keys(wardrobe).length;
+        const headItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'head');
+        const accessoryItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'accessory');
+        
+        container.innerHTML = `
+            <div class="mascot-tab-content">
+                <div class="mascot-header">
+                    <h3>🐜 Hormiga del Grupo</h3>
+                    <p class="mascot-subtitle">Colecciona prendas abriendo cofres semanales</p>
+                </div>
+                
+                <div class="mascot-preview-container">
+                    ${renderMascotPreview(mascotData, 'normal')}
+                </div>
+                
+                <div class="mascot-equipped">
+                    <h4>Equipado</h4>
+                    <div class="equipped-slots">
+                        <div class="equipped-slot" data-slot="head">
+                            <div class="slot-label">Cabeza</div>
+                            <div class="slot-item">
+                                ${equipped.head 
+                                    ? `<span class="item-emoji">${WARDROBE_ITEMS[equipped.head].emoji}</span>
+                                       <span class="item-level">${ITEM_LEVELS[wardrobe[equipped.head]?.level || 'basic'].stars}</span>`
+                                    : '<span class="slot-empty">Vacío</span>'}
+                            </div>
+                        </div>
+                        <div class="equipped-slot" data-slot="accessory">
+                            <div class="slot-label">Accesorio</div>
+                            <div class="slot-item">
+                                ${equipped.accessory 
+                                    ? `<span class="item-emoji">${WARDROBE_ITEMS[equipped.accessory].emoji}</span>
+                                       <span class="item-level">${ITEM_LEVELS[wardrobe[equipped.accessory]?.level || 'basic'].stars}</span>`
+                                    : '<span class="slot-empty">Vacío</span>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mascot-collection">
+                    <h4>Colección (${totalItems}/12)</h4>
+                    
+                    <div class="collection-category">
+                        <h5>🎩 Cabeza</h5>
+                        <div class="collection-items">
+                            ${headItems.map(item => {
+                                const owned = wardrobe[item.id];
+                                const isEquipped = equipped.head === item.id;
+                                return `
+                                    <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''}" 
+                                         data-item="${item.id}"
+                                         onclick="${owned ? `MascotSystem.equipItem('${groupId}', '${item.id}')` : ''}">
+                                        <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
+                                        ${owned ? `
+                                            <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
+                                            <div class="item-copies">${owned.copies}/6</div>
+                                        ` : '<div class="item-locked">Bloqueado</div>'}
+                                        ${isEquipped ? '<div class="equipped-badge">✓</div>' : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="collection-category">
+                        <h5>🎒 Accesorios</h5>
+                        <div class="collection-items">
+                            ${accessoryItems.map(item => {
+                                const owned = wardrobe[item.id];
+                                const isEquipped = equipped.accessory === item.id;
+                                return `
+                                    <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''}"
+                                         data-item="${item.id}"
+                                         onclick="${owned ? `MascotSystem.equipItem('${groupId}', '${item.id}')` : ''}">
+                                        <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
+                                        ${owned ? `
+                                            <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
+                                            <div class="item-copies">${owned.copies}/6</div>
+                                        ` : '<div class="item-locked">Bloqueado</div>'}
+                                        ${isEquipped ? '<div class="equipped-badge">✓</div>' : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mascot-info">
+                    <p>💡 Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</p>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('[Mascot] Error loading tab:', error);
+        container.innerHTML = '<div class="error-message">Error cargando mascota</div>';
+    }
+}
+
+/**
+ * Update mascot display in header (mini preview)
+ */
+async function updateMascotHeader(groupId) {
+    if (!MASCOT_FEATURE_ENABLED) return;
+    
+    const container = document.getElementById('mascotHeaderContainer');
+    if (!container) return;
+    
+    try {
+        const mascotData = await getMascotData(groupId);
+        const equipped = mascotData?.equipped || {};
+        
+        if (!equipped.head && !equipped.accessory) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        const headEmoji = equipped.head ? WARDROBE_ITEMS[equipped.head].emoji : '';
+        const accessoryEmoji = equipped.accessory ? WARDROBE_ITEMS[equipped.accessory].emoji : '';
+        
+        container.style.display = 'inline-flex';
+        container.innerHTML = `
+            <div class="mascot-header-mini" title="Ver Mascota" onclick="switchFundTab('mascot')">
+                ${headEmoji}🐜${accessoryEmoji}
+            </div>
+        `;
+    } catch (error) {
+        console.error('[Mascot] Error updating header:', error);
+    }
+}
+
+// ============================================
+// EXPORT
+// ============================================
+
+window.MascotSystem = {
+    getMascotData,
+    equipItem: async (groupId, itemId) => {
+        const success = await equipItem(groupId, itemId);
+        if (success) {
+            await loadMascotTab(groupId);
+            await updateMascotHeader(groupId);
+        }
+        return success;
+    },
+    addItemToWardrobe,
+    getRandomItemByColonyState,
+    loadMascotTab,
+    updateMascotHeader,
+    renderMascotPreview,
+    WARDROBE_ITEMS,
+    ITEM_LEVELS,
+    
+    // Testing Functions
+    async testAddRandomItem(groupId, colonyState = 'active') {
+        const randomItem = getRandomItemByColonyState(colonyState);
+        const result = await addItemToWardrobe(groupId, randomItem.id);
+        
+        console.log('🎁 Test item added:');
+        console.log(`   Item: ${result.item.emoji} ${result.item.name}`);
+        console.log(`   New: ${result.isNew ? 'Yes' : 'No'}`);
+        console.log(`   Upgraded: ${result.upgraded ? 'Yes (to ' + result.newLevel + ')' : 'No'}`);
+        console.log(`   Copies: ${result.copies}/6`);
+        console.log(`   Level: ${result.newLevel} ${ITEM_LEVELS[result.newLevel].stars}`);
+        
+        await updateMascotHeader(groupId);
+        return result;
+    },
+    
+    async testUnlockAllItems(groupId, level = 'basic') {
+        console.log('🔓 Unlocking all items at', level, 'level...');
+        const copies = level === 'basic' ? 1 : level === 'silver' ? 3 : 6;
+        
+        for (const itemId of Object.keys(WARDROBE_ITEMS)) {
+            for (let i = 0; i < copies; i++) {
+                await addItemToWardrobe(groupId, itemId);
+            }
+        }
+        
+        console.log('✅ All 12 items unlocked at', level, 'level');
+        await loadMascotTab(groupId);
+        await updateMascotHeader(groupId);
+    },
+    
+    async quickTestChest(groupId) {
+        console.log('🚀 Quick Test: Opening chest with random item...');
+        
+        // Use colony state if available
+        let colonyState = 'active';
+        if (window.ColonySystem) {
+            const colonyData = await window.ColonySystem.getColonyData(groupId);
+            if (colonyData) colonyState = colonyData.state;
+        }
+        
+        const result = await this.testAddRandomItem(groupId, colonyState);
+        
+        console.log('💡 Visit the Mascot tab to see your new item!');
+        return result;
+    }
+};
+
+console.log('✅ Mascot System initialized');
+console.log('💡 Total wardrobe items:', Object.keys(WARDROBE_ITEMS).length);

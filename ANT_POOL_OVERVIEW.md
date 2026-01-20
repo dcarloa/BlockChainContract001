@@ -17,11 +17,12 @@ Ants represent the ultimate model of cooperation:
 - **Efficiency**: Complex tasks accomplished through simple, coordinated actions
 - **Adaptability**: Colonies adjust to changing circumstances without central command
 
+
 Ant Pool translates these natural principles into financial cooperation:
 - **No Boss Needed**: Democratic expense management without hierarchy
 - **Automatic Fairness**: Smart algorithms calculate exact splits instantly
 - **Clear Communication**: Push notifications and real-time updates keep everyone informed
-- **Simple Actions, Powerful Results**: Add expenses with one tap, automate blockchain settlements
+- **Simple Actions, Powerful Results**: Add expenses with one tap, minijuegos para decidir quién paga, y balances automáticos
 - **Flexible Groups**: Adapt from roommate splits to business team expenses seamlessly
 
 ---
@@ -68,47 +69,32 @@ Accent Orange:      #fa709a
 
 ## 🚀 Core Features
 
-### 1️⃣ **Dual Mode Architecture**
 
-#### 🟦 Simple Mode (No Wallet Required)
-*Perfect for: Roommates, friends, casual groups*
+### 1️⃣ **Gestión de Gastos Simple y Divertida**
 
-**What It Does:**
-- Track shared expenses without blockchain complexity
-- Email/Google authentication - no crypto wallet needed
-- Manual expense logging with receipt photos
-- AI-powered receipt scanning (extracts amounts, categories, dates)
-- Split bills evenly or custom percentages
-- Real-time balance tracking per member
-- Push notifications for new expenses
-- Works 100% offline (PWA)
+Ant Pool elimina la complejidad: todo funciona con email/Google, y tu información es privada y segura en la nube.
 
-**Key Benefits:**
-- **Zero Learning Curve**: If you can use Venmo, you can use Simple Mode
-- **No Gas Fees**: No blockchain transactions = no cryptocurrency needed
-- **Instant Setup**: Create group in 30 seconds
-- **Privacy First**: Data stored in Firebase, not on public blockchain
+**Lo que puedes hacer:**
+- Registrar y dividir gastos en segundos
+- Escanear recibos con IA (GPT-4 Vision) para extraer montos, categorías y fechas
+- Dividir cuentas de forma equitativa, porcentual o personalizada
+- Recibir notificaciones push en tiempo real
+- Usar la app 100% offline (PWA)
+- Jugar minijuegos para decidir quién paga (¡hazlo divertido y justo!)
+- Balance en tiempo real por miembro
+- Soporte multi-moneda y conversión automática
 
-#### 🟣 Platform Mode (Blockchain-Powered)
-*Perfect for: Frequent travelers, crypto enthusiasts, transparency-demanding groups*
+**Minijuegos para decidir quién paga:**
+- Rueda de la fortuna: Gira y el azar elige al pagador
+- Piedra, papel o tijera: Juega directamente en la app
+- Dado virtual: El que saque el número más alto paga
+- Sorteo rápido: Selección aleatoria entre los miembros
 
-**What It Does:**
-- Everything in Simple Mode PLUS:
-- Automatic wallet connection (MetaMask, WalletConnect, Coinbase Wallet)
-- Smart contract deployment for each group
-- Automated settlement on blockchain (Polygon, Base)
-- Multi-currency support (USD, MXN, EUR + crypto)
-- On-chain transparency - all transactions verifiable
-- Scheduled automatic payments
-- Gas fee optimization (batching, timing)
-- Contract ownership transfer
-
-**Key Benefits:**
-- **Trustless**: Smart contracts execute automatically, no manual intervention
-- **Transparent**: Anyone can verify transactions on block explorer
-- **International**: Send money across borders without wire fees
-- **Crypto-Native**: Use USDC, DAI, or native tokens
-- **Permanent Record**: Blockchain provides immutable audit trail
+**Beneficios clave:**
+- Sin curva de aprendizaje: tan fácil como usar cualquier app social
+- Sin comisiones ocultas ni dependencias técnicas
+- Configuración instantánea y grupos flexibles
+- Privacidad y control total sobre tus datos
 
 ---
 
@@ -263,7 +249,6 @@ Accent Orange:      #fa709a
 #### Authentication
 - **Firebase Auth**: Industry-standard security
 - **Methods**: Email/password, Google OAuth, Apple Sign-In
-- **Wallet Auth**: Sign message with private key (Web3)
 - **2FA**: Optional two-factor authentication (PRO)
 - **Session Management**: Auto-logout after 30 days inactivity
 
@@ -296,19 +281,6 @@ Accent Orange:      #fa709a
 - **Accuracy**: Bank mid-market rates
 - **Historical**: Track conversion rate at time of expense
 
-#### Cryptocurrency (PRO+)
-**Supported Networks**:
-- Polygon (MATIC)
-- Base (ETH L2)
-- Ethereum Mainnet (high gas fees, not recommended)
-- Optimism *(coming soon)*
-- Arbitrum *(coming soon)*
-
-**Supported Tokens**:
-- **Stablecoins**: USDC, USDT, DAI
-- **Native**: ETH, MATIC, WETH
-- **Custom**: Add any ERC-20 token
-
 #### Auto-Conversion
 - **Smart Defaults**: Display in user's preferred currency
 - **Real-time Calculation**: "You owe $45 USD (€42 EUR)"
@@ -325,8 +297,6 @@ Accent Orange:      #fa709a
 - **Firebase**: Auth, database, cloud functions, hosting
 - **Stripe**: Payment processing (subscriptions)
 - **Google Analytics**: Privacy-respecting usage tracking
-- **WalletConnect**: Multi-wallet support
-- **MetaMask**: Browser wallet integration
 
 #### API Access (BUSINESS)
 **RESTful API** - Programmatic access
@@ -390,7 +360,7 @@ Events:
 - ✅ Priority email support (48h)
 - ✅ No ads
 
-**Perfect For**: Frequent travelers, crypto users, power users
+**Perfect For**: Frequent travelers, grupos sociales, power users
 
 ---
 
@@ -406,7 +376,6 @@ Events:
 - ✅ White-label branding
 - ✅ Audit logs
 - ✅ Scheduled payments
-- ✅ Multi-signature approvals
 - ✅ Priority support 24h
 - ✅ Dedicated account manager
 - ✅ Custom contract terms
@@ -469,12 +438,6 @@ Events:
 - Solution: Multi-currency, receipt scanning, blockchain settlements
 - Value Prop: Never lose a receipt, pay in crypto, transparent accounting
 
-**3. The Crypto Native** (PRO)
-- Age: 20-45
-- Use Case: DAO expenses, crypto community events
-- Pain Point: Lack of Web3-native expense tools
-- Solution: Platform Mode with smart contracts on Polygon/Base
-- Value Prop: On-chain transparency, no KYC, global payments
 
 **4. The Small Business** (BUSINESS)
 - Size: 5-50 employees
@@ -587,12 +550,6 @@ Every feature decision is guided by the question:
 - Firebase Hosting
 - Firebase Cloud Messaging
 
-**Blockchain**:
-- Ethers.js v6
-- Hardhat (Smart contract development)
-- Polygon Mumbai/Mainnet
-- Base Sepolia/Mainnet
-- OpenZeppelin Contracts
 
 **PWA**:
 - Service Workers (custom)
@@ -625,8 +582,8 @@ Every feature decision is guided by the question:
 
 ---
 
-**Last Updated**: January 5, 2026  
-**Version**: 2.0  
+**Last Updated**: January 15, 2026  
+**Version**: 2.1  
 **Status**: Production (Active Development)
 
 ---

@@ -48,6 +48,8 @@
     <link rel="stylesheet" href="simple-mode-styles.css">
     <link rel="stylesheet" href="form-wizard-styles.css">
     <link rel="stylesheet" href="new-features-styles.css">
+    <link rel="stylesheet" href="colony-styles.css">
+    <link rel="stylesheet" href="mascot-styles.css">
     
     <!-- Chart.js for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -648,6 +650,15 @@
         </div>
     </div>
 
+    <!-- Colony Weekly Chest Modal -->
+    <div id="weeklyChestModal" class="modal-overlay" onclick="if(typeof ColonySystem !== 'undefined') ColonySystem.closeChestModal(event)" style="display: none;">
+        <div class="weekly-chest-modal" onclick="event.stopPropagation()">
+            <div class="chest-modal-content">
+                <!-- Content will be injected by ColonySystem -->
+            </div>
+        </div>
+    </div>
+
     <!-- QR Scanner Modal -->
     <div id="qrScannerModal" class="modal" style="display: none;">
         <div class="modal-content qr-scanner-modal">
@@ -872,12 +883,16 @@
                     <!-- Header Content -->
                     <div class="fund-header-content">
                         <div class="fund-header-icon" id="fundHeaderIcon">🌴</div>
-                        <div style="flex: 1; min-width: 0;">
+                    <div style="flex: 1; min-width: 0;">
                             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
                                 <h1 id="fundDetailName" class="fund-header-title" style="margin: 0;">Cargando...</h1>
                                 <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none; flex-shrink: 0;" title="Edit group info">
                                     ✏️
                                 </button>
+                                <!-- Mascot Mini Display -->
+                                <div id="mascotHeaderContainer" style="display: none; flex-shrink: 0;"></div>
+                                <!-- Colony Mini Display -->
+                                <div id="colonyDisplayContainer" style="display: none; flex-shrink: 0;"></div>
                             </div>
                             <p id="fundDetailDescription" class="fund-header-description" style="margin: 0;">-</p>
                         </div>
@@ -925,6 +940,9 @@
                     </button>
                 </div>
 
+                <!-- Weekly Chest Banner Container -->
+                <div id="weeklyChestBannerContainer"></div>
+
                 <!-- Closed Fund Banner -->
                 <div id="closedFundBanner" class="closed-fund-banner" style="display: none;">
                     <div class="closed-fund-content">
@@ -965,6 +983,10 @@
                     <button class="fund-tab-btn" data-tab="members">
                         <span class="tab-icon">👥</span>
                         <span data-i18n="app.fundDetail.tabs.members">Members</span>
+                    </button>
+                    <button class="fund-tab-btn" data-tab="mascot" style="display: none;">
+                        <span class="tab-icon">🐜</span>
+                        <span>Mascota</span>
                     </button>
                     <button class="fund-tab-btn" data-tab="manage">
                         <span class="tab-icon">⚙️</span>
@@ -1389,6 +1411,15 @@
                         <div id="noMembers" class="empty-state" style="display: none;">
                             <div class="empty-icon">👤</div>
                             <h4 data-i18n="app.fundDetail.members.empty">No members yet</h4>
+                        </div>
+                    </div>
+
+                    <!-- Mascot Tab -->
+                    <div id="mascotTab" class="tab-pane">
+                        <!-- Content will be dynamically loaded by mascot-system.js -->
+                        <div style="text-align: center; padding: 3rem; color: var(--text-tertiary);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🐜</div>
+                            <p>Cargando mascota del grupo...</p>
                         </div>
                     </div>
 
@@ -2009,6 +2040,8 @@
     <script src="mode-manager.js"></script>
     <script src="wallet-connector.js"></script>
     <script src="form-wizard.js"></script>
+    <script src="colony-system.js"></script>
+    <script src="mascot-system.js"></script>
     <script src="app-platform.js"></script>
     
     <script>

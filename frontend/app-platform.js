@@ -1,5 +1,10 @@
 // FundHub Platform - Multi-Fund Management
-// Este archivo gestiona la interfaz principal con m�ltiples fondos
+// Este archivo gestiona la interfaz principal con múltiples fondos
+
+// ============================================
+// FEATURE FLAGS
+// ============================================
+window.COLONY_FEATURE_ENABLED = true; // Set to false to disable Colony system
 
 // ============================================
 // ABI CONTRACTS
@@ -2681,6 +2686,11 @@ function switchFundTab(tabName) {
         }
     }
     
+    // Load mascot when mascot tab is selected
+    if (tabName === 'mascot' && window.MascotSystem && currentFund) {
+        window.MascotSystem.loadMascotTab(currentFund.groupId);
+    }
+    
     // Load kick members list when manage tab is selected
     if (tabName === 'manage') {
         loadKickMembersList();
@@ -2820,6 +2830,7 @@ async function loadSimpleModeDetailView() {
         const membersTab = document.querySelector('.fund-tab-btn[data-tab="members"]');
         const balancesTab = document.querySelector('.fund-tab-btn[data-tab="balances"]');
         const manageTab = document.querySelector('.fund-tab-btn[data-tab="manage"]');
+        const mascotTab = document.querySelector('.fund-tab-btn[data-tab="mascot"]');
         
         // Hide blockchain tabs
         if (depositTab) depositTab.style.display = 'none';
@@ -2834,6 +2845,7 @@ async function loadSimpleModeDetailView() {
         if (membersTab) membersTab.style.display = 'flex';
         if (balancesTab) balancesTab.style.display = 'flex';
         if (manageTab) manageTab.style.display = 'none'; // Hide for now
+        if (mascotTab) mascotTab.style.display = 'flex'; // Show mascot tab in Simple Mode
         
         // Load Simple Mode invite UI
         loadSimpleModeInviteUI();
@@ -2895,6 +2907,26 @@ async function loadSimpleModeDetailView() {
         } else {
         }
         
+        // ====== COLONIA VIVA SYSTEM ======
+        // Only activate if feature is enabled and ColonySystem is available
+        if (typeof ColonySystem !== 'undefined' && window.COLONY_FEATURE_ENABLED !== false) {
+            try {
+                // Update colony visual in header
+                await ColonySystem.updateColonyDisplay(currentFund.fundAddress);
+                
+                // Check for weekly chest
+                await ColonySystem.checkWeeklyChest(currentFund.fundAddress);
+                
+                // Update mascot header if available
+                if (window.MascotSystem) {
+                    await MascotSystem.updateMascotHeader(currentFund.fundAddress);
+                }
+            } catch (colonyError) {
+                console.error("Colony system error:", colonyError);
+                // Fail silently - don't break the app if colony has issues
+            }
+        }
+        // ====== END COLONIA VIVA ======
         
     } catch (error) {
         console.error("Error loading Simple Mode detail:", error);

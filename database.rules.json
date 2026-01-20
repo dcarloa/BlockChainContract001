@@ -86,6 +86,84 @@
           "amount": {
             ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000000000"
           }
+        },
+        
+        "colony": {
+          ".read": "auth != null",
+          ".write": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
+          
+          "state": {
+            ".validate": "newData.isString() && newData.val().matches(/^(forming|active|stable|consolidated)$/)"
+          },
+          
+          "totalActivity": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          
+          "weeklyActivity": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          
+          "consecutiveActiveWeeks": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          }
+        },
+        
+        "mascot": {
+          ".read": "auth != null",
+          ".write": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
+          
+          "equipped": {
+            "head": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "accessory": {
+              ".validate": "!newData.exists() || newData.isString()"
+            }
+          },
+          
+          "wardrobe": {
+            "$itemId": {
+              "copies": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+              },
+              "level": {
+                ".validate": "newData.isString() && newData.val().matches(/^(basic|silver|gold)$/)"
+              },
+              "lastObtained": {
+                ".validate": "newData.isNumber()"
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    "weeklyChests": {
+      "$groupId": {
+        "$weekId": {
+          ".read": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
+          ".write": "auth != null",
+          
+          "state": {
+            ".validate": "newData.isString()"
+          },
+          
+          "description": {
+            ".validate": "newData.isString() && newData.val().length <= 500"
+          },
+          
+          "isOpened": {
+            ".validate": "newData.isBoolean()"
+          },
+          
+          "openedBy": {
+            ".validate": "!newData.exists() || newData.isString()"
+          },
+          
+          "openedAt": {
+            ".validate": "!newData.exists() || newData.isNumber()"
+          }
         }
       }
     },

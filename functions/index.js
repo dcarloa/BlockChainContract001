@@ -400,3 +400,345 @@ exports.createStripePortalSession = functions.https.onCall(async (data, context)
         );
     }
 });
+
+/**
+ * Cloud Function: Evaluate Weekly Chests for all active groups
+ * Runs every Monday at 00:00 UTC
+ * Creates weekly chests for groups that showed activity
+ */
+exports.evaluateWeeklyChests = functions.pubsub
+    .schedule('0 0 * * 1') // Every Monday at midnight UTC
+    .timeZone('UTC')
+    .onRun(async (context) => {
+        try {
+            console.log('🐜 Starting weekly chest evaluation...');
+            
+            const db = admin.database();
+            const now = Date.now();
+            const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
+            
+            // Get current week ID (format: YYYY-Wxx)
+            const date = new Date(now);
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+            const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+            const weekId = `${date.getFullYear()}-W${String(weekNumber).padStart(2, '0')}`;
+            
+            console.log(`📅 Creating chests for week: ${weekId}`);
+            
+            // Get all groups
+            const groupsSnapshot = await db.ref('groups').once('value');
+            const groups = groupsSnapshot.val();
+            
+            if (!groups) {
+                console.log('⚠️ No groups found');
+                return null;
+            }
+            
+            let chestsCreated = 0;
+            let groupsEvaluated = 0;
+            
+            // Evaluate each group
+            for (const [groupId, groupData] of Object.entries(groups)) {
+                try {
+                    groupsEvaluated++;
+                    
+                    // Skip if not Simple Mode or inactive
+                    if (groupData.mode !== 'simple' || groupData.isActive === false) {
+                        continue;
+                    }
+                    
+                    // Check if chest already exists for this week
+                    const existingChest = await db.ref(`weeklyChests/${groupId}/${weekId}`).once('value');
+                    if (existingChest.exists()) {
+                        console.log(`⏭️ Chest already exists for ${groupId} week ${weekId}`);
+                        continue;
+                    }
+                    
+                    // Count activity in the past week
+                    let weeklyExpenses = 0;
+                    let activeMembersCount = 0;
+                    const activeMembers = new Set();
+                    
+                    if (groupData.expenses) {
+                        for (const expense of Object.values(groupData.expenses)) {
+                            if (expense.createdAt && expense.createdAt >= oneWeekAgo) {
+                                weeklyExpenses++;
+                                if (expense.paidBy) {
+                                    activeMembers.add(expense.paidBy);
+                                }
+                            }
+                        }
+                    }
+                    
+                    activeMembersCount = activeMembers.size;
+                    
+                    // Criteria: At least 1 expense OR at least 2 active members
+                    const qualifiesForChest = weeklyExpenses >= 1 || activeMembersCount >= 2;
+                    
+                    if (!qualifiesForChest) {
+                        console.log(`⏭️ Group ${groupId} doesn't qualify (expenses: ${weeklyExpenses}, active: ${activeMembersCount})`);
+                        continue;
+                    }
+                    
+                    // Get or initialize colony data
+                    const colonySnapshot = await db.ref(`groups/${groupId}/colony`).once('value');
+                    let colonyData = colonySnapshot.val() || {
+                        state: 'forming',
+                        totalActivity: 0,
+                        consecutiveActiveWeeks: 0,
+                        weeklyActivity: 0
+                    };
+                    
+                    // Update colony stats
+                    colonyData.totalActivity = (colonyData.totalActivity || 0) + weeklyExpenses;
+                    colonyData.weeklyActivity = weeklyExpenses;
+                    colonyData.consecutiveActiveWeeks = (colonyData.consecutiveActiveWeeks || 0) + 1;
+                    colonyData.lastActivityDate = now;
+                    colonyData.lastEvaluationDate = now;
+                    
+                    // Determine colony state based on consecutive weeks
+                    const weeks = colonyData.consecutiveActiveWeeks;
+                    if (weeks >= 16) {
+                        colonyData.state = 'consolidated';
+                    } else if (weeks >= 8) {
+                        colonyData.state = 'stable';
+                    } else if (weeks >= 3) {
+                        colonyData.state = 'active';
+                    } else {
+                        colonyData.state = 'forming';
+                    }
+                    
+                    // State descriptions
+                    const stateDescriptions = {
+                        forming: 'Tu colonia está naciendo. Las primeras hormigas exploran el terreno.',
+                        active: 'Las hormigas trabajan juntas. La colonia muestra signos de organización.',
+                        stable: 'Una comunidad organizada. Los túneles se expanden con propósito.',
+                        consolidated: '¡Un imperio de cooperación! La colonia ha alcanzado su máximo esplendor.'
+                    };
+                    
+                    // Create weekly chest
+                    const chestData = {
+                        state: colonyData.state,
+                        description: stateDescriptions[colonyData.state],
+                        createdAt: now,
+                        isOpened: false,
+                        weeklyExpenses: weeklyExpenses,
+                        activeMembers: activeMembersCount,
+                        consecutiveWeeks: colonyData.consecutiveActiveWeeks
+                    };
+                    
+                    // Save to database
+                    await db.ref(`weeklyChests/${groupId}/${weekId}`).set(chestData);
+                    await db.ref(`groups/${groupId}/colony`).update(colonyData);
+                    
+                    chestsCreated++;
+                    console.log(`✅ Created chest for ${groupId}: ${colonyData.state} (${weeks} weeks)`);
+                    
+                    // Optional: Create notification for group members
+                    if (groupData.members) {
+                        for (const memberId of Object.keys(groupData.members)) {
+                            const notificationRef = db.ref(`notifications/${memberId}`).push();
+                            await notificationRef.set({
+                                type: 'weekly_chest',
+                                title: '🐜 Cofre Semanal Disponible',
+                                message: `Tu grupo "${groupData.name}" tiene un nuevo cofre semanal. ¡Ábrelo para ver el progreso de tu colonia!`,
+                                timestamp: now,
+                                fundId: groupId,
+                                read: false
+                            });
+                        }
+                    }
+                    
+                } catch (groupError) {
+                    console.error(`❌ Error evaluating group ${groupId}:`, groupError);
+                    // Continue with next group
+                }
+            }
+            
+            console.log(`✅ Weekly chest evaluation complete!`);
+            console.log(`📊 Stats: ${groupsEvaluated} groups evaluated, ${chestsCreated} chests created`);
+            
+            return {
+                success: true,
+                groupsEvaluated,
+                chestsCreated,
+                weekId
+            };
+            
+        } catch (error) {
+            console.error('❌ Error in weekly chest evaluation:', error);
+            throw error;
+        }
+    });
+
+/**
+ * Cloud Function: Manually trigger weekly chest evaluation (for testing)
+ * Can be called from client or Admin panel
+ */
+exports.evaluateWeeklyChestsManual = functions.https.onCall(async (data, context) => {
+    try {
+        // Check if user is authenticated (optional - you can restrict to admins only)
+        if (!context.auth) {
+            throw new functions.https.HttpsError(
+                'unauthenticated',
+                'User must be authenticated'
+            );
+        }
+
+        console.log(`🐜 Manual weekly chest evaluation triggered by user ${context.auth.uid}`);
+        
+        const db = admin.database();
+        const now = Date.now();
+        const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
+        
+        // Get current week ID or use provided one
+        const targetWeekId = data.weekId || (() => {
+            const date = new Date(now);
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+            const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+            return `${date.getFullYear()}-W${String(weekNumber).padStart(2, '0')}`;
+        })();
+        
+        console.log(`📅 Creating chests for week: ${targetWeekId}`);
+        
+        // Get all groups
+        const groupsSnapshot = await db.ref('groups').once('value');
+        const groups = groupsSnapshot.val();
+        
+        if (!groups) {
+            throw new functions.https.HttpsError('not-found', 'No groups found');
+        }
+        
+        let chestsCreated = 0;
+        let groupsEvaluated = 0;
+        const results = [];
+        
+        // Evaluate each group
+        for (const [groupId, groupData] of Object.entries(groups)) {
+            try {
+                groupsEvaluated++;
+                
+                // Skip if not Simple Mode or inactive
+                if (groupData.mode !== 'simple' || groupData.isActive === false) {
+                    results.push({ groupId, status: 'skipped', reason: 'not_simple_mode_or_inactive' });
+                    continue;
+                }
+                
+                // Check if chest already exists for this week
+                const existingChest = await db.ref(`weeklyChests/${groupId}/${targetWeekId}`).once('value');
+                if (existingChest.exists() && !data.forceRecreate) {
+                    results.push({ groupId, status: 'skipped', reason: 'chest_exists' });
+                    continue;
+                }
+                
+                // Count activity
+                let weeklyExpenses = 0;
+                let activeMembersCount = 0;
+                const activeMembers = new Set();
+                
+                if (groupData.expenses) {
+                    for (const expense of Object.values(groupData.expenses)) {
+                        if (expense.createdAt && expense.createdAt >= oneWeekAgo) {
+                            weeklyExpenses++;
+                            if (expense.paidBy) {
+                                activeMembers.add(expense.paidBy);
+                            }
+                        }
+                    }
+                }
+                
+                activeMembersCount = activeMembers.size;
+                
+                // Criteria: At least 1 expense OR at least 2 active members
+                const qualifiesForChest = weeklyExpenses >= 1 || activeMembersCount >= 2;
+                
+                if (!qualifiesForChest) {
+                    results.push({ 
+                        groupId, 
+                        status: 'skipped', 
+                        reason: 'insufficient_activity',
+                        weeklyExpenses,
+                        activeMembersCount
+                    });
+                    continue;
+                }
+                
+                // Get or initialize colony data
+                const colonySnapshot = await db.ref(`groups/${groupId}/colony`).once('value');
+                let colonyData = colonySnapshot.val() || {
+                    state: 'forming',
+                    totalActivity: 0,
+                    consecutiveActiveWeeks: 0,
+                    weeklyActivity: 0
+                };
+                
+                // Update colony stats
+                colonyData.totalActivity = (colonyData.totalActivity || 0) + weeklyExpenses;
+                colonyData.weeklyActivity = weeklyExpenses;
+                colonyData.consecutiveActiveWeeks = (colonyData.consecutiveActiveWeeks || 0) + 1;
+                colonyData.lastActivityDate = now;
+                colonyData.lastEvaluationDate = now;
+                
+                // Determine state
+                const weeks = colonyData.consecutiveActiveWeeks;
+                if (weeks >= 16) {
+                    colonyData.state = 'consolidated';
+                } else if (weeks >= 8) {
+                    colonyData.state = 'stable';
+                } else if (weeks >= 3) {
+                    colonyData.state = 'active';
+                } else {
+                    colonyData.state = 'forming';
+                }
+                
+                const stateDescriptions = {
+                    forming: 'Tu colonia está naciendo. Las primeras hormigas exploran el terreno.',
+                    active: 'Las hormigas trabajan juntas. La colonia muestra signos de organización.',
+                    stable: 'Una comunidad organizada. Los túneles se expanden con propósito.',
+                    consolidated: '¡Un imperio de cooperación! La colonia ha alcanzado su máximo esplendor.'
+                };
+                
+                // Create chest
+                const chestData = {
+                    state: colonyData.state,
+                    description: stateDescriptions[colonyData.state],
+                    createdAt: now,
+                    isOpened: false,
+                    weeklyExpenses: weeklyExpenses,
+                    activeMembers: activeMembersCount,
+                    consecutiveWeeks: colonyData.consecutiveActiveWeeks
+                };
+                
+                await db.ref(`weeklyChests/${groupId}/${targetWeekId}`).set(chestData);
+                await db.ref(`groups/${groupId}/colony`).update(colonyData);
+                
+                chestsCreated++;
+                results.push({ 
+                    groupId, 
+                    status: 'created', 
+                    state: colonyData.state,
+                    weeks: weeks
+                });
+                
+            } catch (groupError) {
+                results.push({ groupId, status: 'error', error: groupError.message });
+            }
+        }
+        
+        console.log(`✅ Manual evaluation complete: ${chestsCreated} chests created`);
+        
+        return {
+            success: true,
+            groupsEvaluated,
+            chestsCreated,
+            weekId: targetWeekId,
+            results
+        };
+        
+    } catch (error) {
+        console.error('❌ Error in manual evaluation:', error);
+        throw new functions.https.HttpsError('internal', error.message);
+    }
+});
