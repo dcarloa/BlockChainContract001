@@ -339,3 +339,116 @@
 [data-theme="light"] .mascot-info {
   background: rgba(102, 126, 234, 0.1);
 }
+
+/* Guide Expandable Section */
+.mascot-guide {
+  margin-top: 2rem;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.mascot-guide details {
+  background: var(--bg-tertiary);
+}
+
+.mascot-guide summary {
+  cursor: pointer;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--accent-purple);
+  background: rgba(102, 126, 234, 0.05);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.mascot-guide summary:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.mascot-guide summary::-webkit-details-marker {
+  display: none;
+}
+
+.mascot-guide summary::before {
+  content: '▶';
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.mascot-guide details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.mascot-guide .guide-content {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+  background: var(--bg-secondary);
+}
+
+.mascot-guide .guide-content h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 1.5rem 0 0.75rem 0;
+}
+
+.mascot-guide .guide-content h4:first-child {
+  margin-top: 0;
+}
+
+.mascot-guide .guide-content p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+.mascot-guide .guide-content ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+  list-style: none;
+}
+
+.mascot-guide .guide-content ul li {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  position: relative;
+}
+
+.mascot-guide .guide-content ul li::before {
+  content: '•';
+  position: absolute;
+  left: -0.75rem;
+  color: var(--accent-purple);
+  font-weight: bold;
+}
+
+.mascot-guide .guide-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+[data-theme="light"] .mascot-guide {
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+[data-theme="light"] .mascot-guide summary {
+  background: rgba(102, 126, 234, 0.08);
+}
+
+[data-theme="light"] .mascot-guide summary:hover {
+  background: rgba(102, 126, 234, 0.15);
+}
+
+[data-theme="light"] .mascot-guide .guide-content {
+  background: rgba(102, 126, 234, 0.03);
+}
