@@ -323,7 +323,7 @@ async function loadMascotTab(groupId) {
         container.innerHTML = `
             <div class="mascot-tab-content">
                 <div class="mascot-header">
-                    <h3><span data-i18n="app.fundDetail.mascot.title">🐜 Hormiga del Grupo</span></h3>
+                    <h3>🐜 <span data-i18n="app.fundDetail.mascot.title">Hormiga del Grupo</span></h3>
                     <p class="mascot-subtitle" data-i18n="app.fundDetail.mascot.subtitle">Colecciona prendas abriendo cofres semanales</p>
                 </div>
                 
@@ -359,7 +359,7 @@ async function loadMascotTab(groupId) {
                     <h4><span data-i18n="app.fundDetail.mascot.collection">Colección</span> (${totalItems}/12)</h4>
                     
                     <div class="collection-category">
-                        <h5>🎩 Cabeza</h5>
+                        <h5>🎩 <span data-i18n="app.fundDetail.mascot.head">Cabeza</span></h5>
                         <div class="collection-items">
                             ${headItems.map(item => {
                                 const owned = wardrobe[item.id];
@@ -381,7 +381,7 @@ async function loadMascotTab(groupId) {
                     </div>
                     
                     <div class="collection-category">
-                        <h5>🎒 <span data-i18n="app.fundDetail.mascot.accessory">Accesorios</span></h5>
+                        <h5>🎒 <span data-i18n="app.fundDetail.mascot.accessories">Accesorios</span></h5>
                         <div class="collection-items">
                             ${accessoryItems.map(item => {
                                 const owned = wardrobe[item.id];
@@ -404,14 +404,22 @@ async function loadMascotTab(groupId) {
                 </div>
                 
                 <div class="mascot-info">
-                    <p data-i18n="app.fundDetail.mascot.info">💡 Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</p>
+                    <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</span></p>
                 </div>
             </div>
         `;
         
+        console.log('[Mascot] HTML generated, applying translations...');
+        console.log('[Mascot] window.i18n exists?', !!window.i18n);
+        console.log('[Mascot] Current language:', window.i18n?.getCurrentLanguage?.());
+        
         // Apply translations to the newly added content
-        if (window.i18n) {
+        if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
+            console.log('[Mascot] Calling applyTranslations()...');
             window.i18n.applyTranslations();
+            console.log('[Mascot] Translations applied');
+        } else {
+            console.warn('[Mascot] window.i18n not available or applyTranslations is not a function');
         }
     } catch (error) {
         console.error('[Mascot] Error loading tab:', error);

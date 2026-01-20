@@ -637,6 +637,7 @@ const translations = {
                     history: "History",
                     balances: "Balances",
                     members: "Members",
+                    mascot: "Mascot",
                     manage: "Manage"
                 },
                 info: {
@@ -908,9 +909,11 @@ const translations = {
                     collection: "Collection",
                     head: "Head",
                     accessory: "Accessory",
+                    accessories: "Accessories",
                     empty: "Empty",
                     locked: "Locked",
-                    info: "💡 Open weekly chests to get items. Get 3 copies to upgrade to Silver. Get 6 copies to reach Gold."
+                    loading: "Loading group mascot...",
+                    info: "Open weekly chests to get items. Get 3 copies to upgrade to Silver. Get 6 copies to reach Gold."
                 },
                 colony: {
                     chestTitle: "🎁 Colony Chest",
@@ -1711,6 +1714,7 @@ const translations = {
                     history: "Historial",
                     balances: "Balances",
                     members: "Miembros",
+                    mascot: "Mascota",
                     manage: "Gestionar"
                 },
                 info: {
@@ -1982,9 +1986,11 @@ const translations = {
                     collection: "Colección",
                     head: "Cabeza",
                     accessory: "Accesorio",
+                    accessories: "Accesorios",
                     empty: "Vacío",
                     locked: "Bloqueado",
-                    info: "💡 Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro."
+                    loading: "Cargando mascota del grupo...",
+                    info: "Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro."
                 },
                 colony: {
                     chestTitle: "🎁 Cofre de la Colonia",
@@ -2249,4 +2255,10 @@ if (typeof document !== 'undefined') {
 // Export for use in modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { t, setLanguage, getCurrentLanguage, translations, applyTranslations };
+}
+
+// Export to window for browser usage
+if (typeof window !== 'undefined') {
+    window.i18n = { t, setLanguage, getCurrentLanguage, translations, applyTranslations };
+    console.log('[i18n] Exported to window.i18n');
 }
