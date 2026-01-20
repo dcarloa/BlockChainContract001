@@ -99,6 +99,7 @@ class ModeManager {
                 isActive: true,
                 targetAmount: validatedInfo.targetAmount || 0,
                 currency: validatedInfo.currency || 'USD',
+                preferredCurrency: groupInfo.preferredCurrency || 'NONE', // Default currency for expenses
                 
                 // Members
                 members: {

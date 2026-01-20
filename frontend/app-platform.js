@@ -2021,6 +2021,7 @@ async function createFund(event) {
         const fundType = document.getElementById('fundType').value; // Hidden field with default 0
         const groupMode = document.querySelector('input[name="groupMode"]:checked').value;
         const groupIcon = document.querySelector('input[name="groupIcon"]:checked')?.value || '🐶'; // Default to dog icon
+        const preferredCurrency = document.getElementById('preferredCurrency')?.value || 'NONE';
         
         if (!fundName) {
             showToast("Please enter the fund name", "warning");
@@ -2049,7 +2050,8 @@ async function createFund(event) {
                 approvalPercentage: parseInt(approvalPercentage),
                 minimumVotes: parseInt(minimumVotes),
                 fundType: parseInt(fundType),
-                icon: groupIcon
+                icon: groupIcon,
+                preferredCurrency: preferredCurrency
             });
         } else {
             // BLOCKCHAIN MODE - Smart Contract
@@ -2112,7 +2114,8 @@ async function createSimpleFund(fundInfo) {
             description: fundInfo.description,
             targetAmount: fundInfo.targetAmount,
             currency: 'USD', // Can be changed later
-            icon: fundInfo.icon || '📦'
+            icon: fundInfo.icon || '📦',
+            preferredCurrency: fundInfo.preferredCurrency || 'NONE'
         });
         
         showToast(`Group "${fundInfo.name}" created successfully!`, "success");
@@ -5425,7 +5428,6 @@ function showAddExpenseModal() {
         return;
     }
 
-
     // Populate members
     populateExpenseMembers();
 
@@ -5433,6 +5435,18 @@ function showAddExpenseModal() {
     const dateInput = document.querySelector('#addExpenseForm input[type="date"]');
     if (dateInput) {
         dateInput.valueAsDate = new Date();
+    }
+    
+    // Set preferred currency if available
+    if (currentFund && currentFund.preferredCurrency && currentFund.preferredCurrency !== 'NONE') {
+        const currencySelect = document.getElementById('expenseCurrency');
+        if (currencySelect) {
+            currencySelect.value = currentFund.preferredCurrency;
+            // Trigger change event to update currency symbol
+            if (typeof updateCurrencySymbol === 'function') {
+                updateCurrencySymbol();
+            }
+        }
     }
 
     // Show modal

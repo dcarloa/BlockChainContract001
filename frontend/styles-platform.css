@@ -1619,6 +1619,30 @@ header,
   align-items: center;
 }
 
+.fund-header-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fund-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.fund-systems-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
 .fund-header-icon {
   font-size: 4rem;
   margin-bottom: 1rem;
@@ -3027,6 +3051,15 @@ header,
 
   .fund-header-description {
     font-size: 0.875rem;
+  }
+  
+  .fund-title-row {
+    gap: 0.5rem;
+  }
+  
+  .fund-systems-row {
+    gap: 0.75rem;
+    margin-top: 0.75rem;
   }
 
   .fund-stat-card .stat-icon {

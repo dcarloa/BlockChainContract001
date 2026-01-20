@@ -9,44 +9,36 @@ let currentChestGroupId = null;
 
 const COLONY_STATES = {
     forming: {
-        name: 'Formando caminos',
         visual: {
             ant: 'simple',
             paths: 'scattered',
             base: 'basic',
             ambient: 'dim'
-        },
-        description: 'Tu grupo está empezando a organizarse'
+        }
     },
     active: {
-        name: 'Colonia activa',
         visual: {
             ant: 'moving',
             paths: 'connected',
             base: 'structured',
             ambient: 'warm'
-        },
-        description: 'Tu grupo mantiene claridad en los gastos'
+        }
     },
     stable: {
-        name: 'Orden establecido',
         visual: {
             ant: 'coordinated',
             paths: 'organized',
             base: 'solid',
             ambient: 'bright'
-        },
-        description: 'Tu grupo tiene hábitos claros'
+        }
     },
     consolidated: {
-        name: 'Colonia consolidada',
         visual: {
             ant: 'efficient',
             paths: 'optimized',
             base: 'advanced',
             ambient: 'radiant'
-        },
-        description: 'Tu grupo es ejemplo de organización'
+        }
     }
 };
 
@@ -277,6 +269,10 @@ async function openChestModal(groupId, weekId) {
         if (e.target === modal) closeChestModal();
     };
     
+    // Get translated state name and description
+    const stateName = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colonyState}.name`) : colonyState;
+    const stateDesc = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colonyState}.description`) : '';
+    
     modal.innerHTML = `
         <div class="weekly-chest-modal" onclick="event.stopPropagation()">
             <button class="close-btn" id="closeChestBtnX">&times;</button>
@@ -294,8 +290,8 @@ async function openChestModal(groupId, weekId) {
                     </div>
                     
                     <div class="chest-state-info">
-                        <h3>${config.name}</h3>
-                        <p>${chest.description || window.i18n.t('app.fundDetail.colony.defaultDescription')}</p>
+                        <h3>${stateName}</h3>
+                        <p>${chest.description || stateDesc}</p>
                     </div>
                 `}
                 
@@ -409,15 +405,18 @@ async function updateColonyDisplay(groupId) {
         return;
     }
     
-    const config = COLONY_STATES[colony.state];
     const container = document.getElementById('colonyDisplayContainer');
     
     if (container) {
+        // Get translated state name and description
+        const stateName = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colony.state}.name`) : colony.state;
+        const stateDesc = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colony.state}.description`) : '';
+        
         container.style.display = 'flex';
         container.innerHTML = `
-            <div class="colony-mini-display" title="${config.description}">
+            <div class="colony-mini-display" title="${stateDesc}">
                 ${renderColonyVisual(colony.state, 40)}
-                <span class="colony-state-label">${config.name}</span>
+                <span class="colony-state-label">${stateName}</span>
             </div>
         `;
         console.log('[Colony] Display updated with state:', colony.state);

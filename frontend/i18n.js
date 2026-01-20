@@ -613,6 +613,9 @@ const translations = {
                     budget: "Budget or Goal",
                     budgetBadge: "Optional",
                     budgetHint: "Leave at 0 for unlimited expenses",
+                    preferredCurrency: "Preferred Currency",
+                    currencyNone: "None (select per expense)",
+                    currencyHint: "💡 This will be the default currency for new expenses (you can change it later)",
                     privateToggle: "Private Group",
                     privateDesc: "Only accessible with invitation",
                     approvalPercentage: "Approval Percentage",
@@ -953,7 +956,25 @@ const translations = {
                     copies: "copies",
                     visitMascot: "Visit the 'Mascot' tab to equip your items",
                     closeButton: "Continue using Ant Pool",
-                    defaultDescription: "Thanks for keeping everything clear this week."
+                    defaultDescription: "Thanks for keeping everything clear this week.",
+                    states: {
+                        forming: {
+                            name: "Forming paths",
+                            description: "Your group is starting to organize"
+                        },
+                        active: {
+                            name: "Active colony",
+                            description: "Your group keeps expenses clear"
+                        },
+                        stable: {
+                            name: "Established order",
+                            description: "Your group has clear habits"
+                        },
+                        consolidated: {
+                            name: "Consolidated colony",
+                            description: "Your group is an example of organization"
+                        }
+                    }
                 }
             },
             modals: {
@@ -1720,6 +1741,9 @@ const translations = {
                     budget: "Presupuesto o Meta",
                     budgetBadge: "Opcional",
                     budgetHint: "Deja en 0 para gastos sin límite",
+                    preferredCurrency: "Moneda Preferida",
+                    currencyNone: "Ninguna (seleccionar por gasto)",
+                    currencyHint: "💡 Esta será la moneda por defecto para nuevos gastos (puedes cambiarla después)",
                     privateToggle: "Grupo Privado",
                     privateDesc: "Solo pueden unirse con invitación",
                     approvalPercentage: "Porcentaje de Aprobación",
@@ -2060,7 +2084,25 @@ const translations = {
                     copies: "copias",
                     visitMascot: "Visita la pestaña 'Mascota' para equipar tus prendas",
                     closeButton: "Seguir usando Ant Pool",
-                    defaultDescription: "Gracias por mantener todo claro esta semana."
+                    defaultDescription: "Gracias por mantener todo claro esta semana.",
+                    states: {
+                        forming: {
+                            name: "Formando caminos",
+                            description: "Tu grupo está empezando a organizarse"
+                        },
+                        active: {
+                            name: "Colonia activa",
+                            description: "Tu grupo mantiene claridad en los gastos"
+                        },
+                        stable: {
+                            name: "Orden establecido",
+                            description: "Tu grupo tiene hábitos claros"
+                        },
+                        consolidated: {
+                            name: "Colonia consolidada",
+                            description: "Tu grupo es ejemplo de organización"
+                        }
+                    }
                 }
             },
             modals: {

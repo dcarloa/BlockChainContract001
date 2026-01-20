@@ -896,18 +896,20 @@
                     <!-- Header Content -->
                     <div class="fund-header-content">
                         <div class="fund-header-icon" id="fundHeaderIcon">🌴</div>
-                    <div style="flex: 1; min-width: 0;">
-                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
-                                <h1 id="fundDetailName" class="fund-header-title" style="margin: 0;">Cargando...</h1>
-                                <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none; flex-shrink: 0;" title="Edit group info">
+                        <div class="fund-header-main">
+                            <div class="fund-title-row">
+                                <h1 id="fundDetailName" class="fund-header-title">Cargando...</h1>
+                                <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none;" title="Edit group info">
                                     ✏️
                                 </button>
-                                <!-- Mascot Mini Display -->
-                                <div id="mascotHeaderContainer" style="display: none; flex-shrink: 0;"></div>
-                                <!-- Colony Mini Display -->
-                                <div id="colonyDisplayContainer" style="display: none; flex-shrink: 0;"></div>
                             </div>
-                            <p id="fundDetailDescription" class="fund-header-description" style="margin: 0;">-</p>
+                            <p id="fundDetailDescription" class="fund-header-description">-</p>
+                            
+                            <!-- Mascot and Colony Display Row -->
+                            <div class="fund-systems-row">
+                                <div id="mascotHeaderContainer" style="display: none;"></div>
+                                <div id="colonyDisplayContainer" style="display: none;"></div>
+                            </div>
                         </div>
                         <div class="fund-badges">
                             <span class="badge" id="fundTypeBadge" data-i18n="app.fundDetail.info.type">Tipo</span>
@@ -1892,6 +1894,31 @@
                                     placeholder="E.g: Shared expenses for food, walks, and pet care"
                                     class="input-modern"
                                 ></textarea>
+                            </div>
+                            
+                            <!-- Preferred Currency Selection -->
+                            <div class="form-group">
+                                <label for="preferredCurrency">
+                                    <span class="label-text" data-i18n="app.createFund.fields.preferredCurrency">Preferred Currency</span>
+                                    <span class="label-badge" data-i18n="app.createFund.fields.budgetBadge">Optional</span>
+                                </label>
+                                <select id="preferredCurrency" class="input-modern">
+                                    <option value="NONE" data-i18n="app.createFund.fields.currencyNone">None (select per expense)</option>
+                                    <option value="USD">🇺🇸 USD - US Dollar</option>
+                                    <option value="EUR">🇪🇺 EUR - Euro</option>
+                                    <option value="GBP">🇬🇧 GBP - British Pound</option>
+                                    <option value="MXN">🇲🇽 MXN - Mexican Peso</option>
+                                    <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+                                    <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+                                    <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
+                                    <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
+                                    <option value="INR">🇮🇳 INR - Indian Rupee</option>
+                                    <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
+                                    <option value="ARS">🇦🇷 ARS - Argentine Peso</option>
+                                    <option value="COP">🇨🇴 COP - Colombian Peso</option>
+                                    <option value="CLP">🇨🇱 CLP - Chilean Peso</option>
+                                </select>
+                                <small class="form-hint" data-i18n="app.createFund.fields.currencyHint">💡 This will be the default currency for new expenses (you can change it later)</small>
                             </div>
                             
                             <!-- Hidden fields with default values -->
