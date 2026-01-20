@@ -7490,6 +7490,8 @@ function openAppSettings() {
         classList: Array.from(modal.classList)
     });
     
+    // Remove inline display: none that was set on initialization
+    modal.style.display = '';
     modal.classList.add('active');
     
     // Check state after adding class
@@ -7522,6 +7524,10 @@ function closeAppSettings(event) {
     if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
         console.log('✅ Closing App Settings Modal');
         modal.classList.remove('active');
+        // Re-apply display: none after transition
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300); // Match CSS transition duration
         return true;
     }
     
