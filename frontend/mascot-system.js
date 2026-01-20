@@ -561,6 +561,7 @@ window.MascotSystem = {
     loadMascotTab,
     updateMascotHeader,
     renderMascotPreview,
+    createWelcomeChest,  // ✅ Export welcome chest creation function
     WARDROBE_ITEMS,
     ITEM_LEVELS,
     

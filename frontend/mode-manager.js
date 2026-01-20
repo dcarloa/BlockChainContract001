@@ -138,9 +138,16 @@ class ModeManager {
             
             // ✅ CREATE WELCOME CHEST: Give first item to help users understand mascot system
             try {
+                console.log('🔍 Checking MascotSystem availability...');
+                console.log('   window.MascotSystem exists:', !!window.MascotSystem);
+                console.log('   createWelcomeChest function exists:', typeof window.MascotSystem?.createWelcomeChest);
+                
                 if (window.MascotSystem && typeof window.MascotSystem.createWelcomeChest === 'function') {
+                    console.log('📦 Creating welcome chest for group:', groupId);
                     await window.MascotSystem.createWelcomeChest(groupId);
                     console.log('🎁 Welcome chest created for new group');
+                } else {
+                    console.warn('⚠️ MascotSystem or createWelcomeChest not available');
                 }
             } catch (chestError) {
                 console.error('⚠️ Failed to create welcome chest (non-critical):', chestError);
