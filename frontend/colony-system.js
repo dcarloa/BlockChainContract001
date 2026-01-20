@@ -270,7 +270,7 @@ async function openChestModal(groupId, weekId) {
     
     modal.innerHTML = `
         <div class="weekly-chest-modal" onclick="event.stopPropagation()">
-            <button class="close-btn" onclick="ColonySystem.closeChestModal()">&times;</button>
+            <button class="close-btn" id="closeChestBtnX">&times;</button>
             
             <div class="chest-modal-content">
                 <h2 class="chest-modal-title">🎁 Cofre de la Colonia</h2>
@@ -303,7 +303,7 @@ async function openChestModal(groupId, weekId) {
                     <p>${config.description}</p>
                 </div>
                 
-                <button class="btn btn-primary btn-block chest-close-btn" onclick="ColonySystem.closeChestModal()">
+                <button class="btn btn-primary btn-block chest-close-btn" id="closeChestBtn">
                     Seguir usando Ant Pool
                 </button>
             </div>
@@ -312,6 +312,27 @@ async function openChestModal(groupId, weekId) {
     
     document.body.appendChild(modal);
     console.log('[Colony] Modal appended to body');
+    
+    // Attach event listeners to both close buttons
+    const closeBtn = document.getElementById('closeChestBtn');
+    const closeBtnX = document.getElementById('closeChestBtnX');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeChestModal);
+    }
+    if (closeBtnX) {
+        closeBtnX.addEventListener('click', closeChestModal);
+    }
+    
+    // Reload mascot tab if it's currently active to show new items
+    const mascotTab = document.getElementById('mascotTab');
+    if (mascotTab && mascotTab.classList.contains('active') && groupId) {
+        setTimeout(() => {
+            if (window.MascotSystem) {
+                console.log('[Colony] Reloading mascot tab after chest opening');
+                window.MascotSystem.loadMascotTab(groupId);
+            }
+        }, 500);
+    }
     
     // Mark as opened
     await openWeeklyChest(groupId, weekId);

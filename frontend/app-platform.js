@@ -2689,7 +2689,11 @@ function switchFundTab(tabName) {
     // Load mascot when mascot tab is selected
     if (tabName === 'mascot' && window.MascotSystem && currentFund) {
         const groupId = currentFund.fundAddress || currentFund.groupId;
-        window.MascotSystem.loadMascotTab(groupId);
+        if (groupId) {
+            window.MascotSystem.loadMascotTab(groupId);
+        } else {
+            console.error('[Mascot] No groupId available in currentFund:', currentFund);
+        }
     }
     
     // Load kick members list when manage tab is selected
