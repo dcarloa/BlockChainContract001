@@ -1327,6 +1327,9 @@
                             <!-- Visual Balance Chart -->
                             <div class="balance-chart-container">
                                 <h4 class="chart-title" data-i18n="app.fundDetail.balances.balanceOverview">💰 Balance Overview</h4>
+                                <p class="chart-description" style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
+                                    Este gráfico muestra quién debe y quién le deben dinero. Las barras verdes indican que a esa persona le deben (+), las rojas que esa persona debe (-). Más grande la barra = mayor el monto.
+                                </p>
                                 <div id="balanceChart" class="balance-chart">
                                     <!-- Chart will be rendered here -->
                                 </div>
@@ -2048,19 +2051,8 @@
             }
         });
         
-        // Settings Modal Functions for App
-        function openAppSettings() {
-            const modal = document.getElementById('appSettingsModal');
-            modal.classList.add('active');
-            updateAppSettingsUI();
-        }
-
-        function closeAppSettings(event) {
-            if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
-                const modal = document.getElementById('appSettingsModal');
-                modal.classList.remove('active');
-            }
-        }
+        // Settings Modal Functions are now in app-platform.js
+        // Removed duplicate definitions to avoid conflicts
 
         function applyAppTranslations() {
             const currentLang = getCurrentLanguage();
