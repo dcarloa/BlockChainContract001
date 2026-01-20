@@ -242,6 +242,16 @@ function setupEventListeners() {
     if (previewCloseFundBtn) previewCloseFundBtn.addEventListener('click', previewCloseFund);
     if (closeFundBtn) closeFundBtn.addEventListener('click', closeFund);
     
+    // Header buttons
+    const settingsBtn = document.querySelector('.settings-btn-app');
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openAppSettings();
+        });
+    }
+    
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -7465,22 +7475,35 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function openAppSettings() {
     const modal = document.getElementById('appSettingsModal');
-    if (modal) {
-        modal.classList.add('active');
-        updateAppSettingsUI();
+    if (!modal) {
+        console.error('❌ App Settings Modal not found in DOM');
+        return false;
     }
+    
+    console.log('✅ Opening App Settings Modal');
+    modal.classList.add('active');
+    updateAppSettingsUI();
+    return true;
 }
 
 /**
  * Close app settings modal
  */
 function closeAppSettings(event) {
-    if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
-        const modal = document.getElementById('appSettingsModal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
+    const modal = document.getElementById('appSettingsModal');
+    if (!modal) {
+        console.error('❌ App Settings Modal not found when closing');
+        return false;
     }
+    
+    // Close if: no event (called programmatically), click on overlay, or click on close button
+    if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
+        console.log('✅ Closing App Settings Modal');
+        modal.classList.remove('active');
+        return true;
+    }
+    
+    return false;
 }
 
 /**
