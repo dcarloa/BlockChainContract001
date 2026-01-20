@@ -299,14 +299,24 @@ async function loadMascotTab(groupId) {
     if (!MASCOT_FEATURE_ENABLED) return;
     
     const container = document.getElementById('mascotTab');
-    if (!container) return;
+    if (!container) {
+        console.error('[Mascot] Tab container not found!');
+        return;
+    }
+    
+    console.log('[Mascot] Loading tab for group:', groupId);
     
     try {
         const mascotData = await getMascotData(groupId);
+        console.log('[Mascot] Data loaded:', mascotData);
+        
         const wardrobe = mascotData?.wardrobe || {};
         const equipped = mascotData?.equipped || {};
         
         const totalItems = Object.keys(wardrobe).length;
+        console.log('[Mascot] Total items in wardrobe:', totalItems);
+        console.log('[Mascot] Wardrobe contents:', wardrobe);
+        
         const headItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'head');
         const accessoryItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'accessory');
         

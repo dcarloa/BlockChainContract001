@@ -317,9 +317,16 @@ async function openChestModal(groupId, weekId) {
     await openWeeklyChest(groupId, weekId);
     console.log('[Colony] Chest marked as opened');
     
-    // Update mascot header if available
+    // Update mascot header and tab if available
     if (window.MascotSystem) {
         await window.MascotSystem.updateMascotHeader(groupId);
+        
+        // Reload mascot tab if it's currently active
+        const mascotTab = document.getElementById('mascotTab');
+        if (mascotTab && mascotTab.classList.contains('active')) {
+            await window.MascotSystem.loadMascotTab(groupId);
+            console.log('[Colony] Mascot tab reloaded with new item');
+        }
     }
     
     // Remove banner after opening
