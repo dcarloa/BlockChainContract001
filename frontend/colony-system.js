@@ -4,6 +4,9 @@
 // Sistema de visualización de organización grupal
 // NO afecta balances ni lógica financiera
 
+// Store current chest context
+let currentChestGroupId = null;
+
 const COLONY_STATES = {
     forming: {
         name: 'Formando caminos',
@@ -243,6 +246,9 @@ function showWeeklyChestBanner(groupId, chest) {
 async function openChestModal(groupId, weekId) {
     console.log('[Colony] Opening chest modal:', { groupId, weekId });
     
+    // Store groupId for later use in closeChestModal
+    currentChestGroupId = groupId;
+    
     const chest = await getWeeklyChest(groupId, weekId);
     if (!chest) {
         console.error('[Colony] Chest not found');
@@ -323,17 +329,6 @@ async function openChestModal(groupId, weekId) {
         closeBtnX.addEventListener('click', closeChestModal);
     }
     
-    // Reload mascot tab if it's currently active to show new items
-    const mascotTab = document.getElementById('mascotTab');
-    if (mascotTab && mascotTab.classList.contains('active') && groupId) {
-        setTimeout(() => {
-            if (window.MascotSystem) {
-                console.log('[Colony] Reloading mascot tab after chest opening');
-                window.MascotSystem.loadMascotTab(groupId);
-            }
-        }, 500);
-    }
-    
     // Mark as opened
     await openWeeklyChest(groupId, weekId);
     console.log('[Colony] Chest marked as opened');
@@ -367,6 +362,18 @@ function closeChestModal() {
         modal.classList.remove('active');
         setTimeout(() => modal.remove(), 300);
     }
+    
+    // Reload mascot tab if active and we have the groupId
+    if (currentChestGroupId && window.MascotSystem) {
+        const mascotTab = document.getElementById('mascotTab');
+        if (mascotTab && mascotTab.classList.contains('active')) {
+            console.log('[Colony] Reloading mascot tab after closing chest');
+            window.MascotSystem.loadMascotTab(currentChestGroupId);
+        }
+    }
+    
+    // Clear stored groupId
+    currentChestGroupId = null;
 }
 
 /**
