@@ -323,8 +323,8 @@ async function loadMascotTab(groupId) {
         container.innerHTML = `
             <div class="mascot-tab-content">
                 <div class="mascot-header">
-                    <h3>🐜 Hormiga del Grupo</h3>
-                    <p class="mascot-subtitle">Colecciona prendas abriendo cofres semanales</p>
+                    <h3><span data-i18n="app.fundDetail.mascot.title">🐜 Hormiga del Grupo</span></h3>
+                    <p class="mascot-subtitle" data-i18n="app.fundDetail.mascot.subtitle">Colecciona prendas abriendo cofres semanales</p>
                 </div>
                 
                 <div class="mascot-preview-container">
@@ -332,31 +332,31 @@ async function loadMascotTab(groupId) {
                 </div>
                 
                 <div class="mascot-equipped">
-                    <h4>Equipado</h4>
+                    <h4 data-i18n="app.fundDetail.mascot.equipped">Equipado</h4>
                     <div class="equipped-slots">
                         <div class="equipped-slot" data-slot="head">
-                            <div class="slot-label">Cabeza</div>
+                            <div class="slot-label" data-i18n="app.fundDetail.mascot.head">Cabeza</div>
                             <div class="slot-item">
                                 ${equipped.head 
                                     ? `<span class="item-emoji">${WARDROBE_ITEMS[equipped.head].emoji}</span>
                                        <span class="item-level">${ITEM_LEVELS[wardrobe[equipped.head]?.level || 'basic'].stars}</span>`
-                                    : '<span class="slot-empty">Vacío</span>'}
+                                    : '<span class="slot-empty" data-i18n="app.fundDetail.mascot.empty">Vacío</span>'}
                             </div>
                         </div>
                         <div class="equipped-slot" data-slot="accessory">
-                            <div class="slot-label">Accesorio</div>
+                            <div class="slot-label" data-i18n="app.fundDetail.mascot.accessory">Accesorio</div>
                             <div class="slot-item">
                                 ${equipped.accessory 
                                     ? `<span class="item-emoji">${WARDROBE_ITEMS[equipped.accessory].emoji}</span>
                                        <span class="item-level">${ITEM_LEVELS[wardrobe[equipped.accessory]?.level || 'basic'].stars}</span>`
-                                    : '<span class="slot-empty">Vacío</span>'}
+                                    : '<span class="slot-empty" data-i18n="app.fundDetail.mascot.empty">Vacío</span>'}
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="mascot-collection">
-                    <h4>Colección (${totalItems}/12)</h4>
+                    <h4><span data-i18n="app.fundDetail.mascot.collection">Colección</span> (${totalItems}/12)</h4>
                     
                     <div class="collection-category">
                         <h5>🎩 Cabeza</h5>
@@ -372,7 +372,7 @@ async function loadMascotTab(groupId) {
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
                                             <div class="item-copies">${owned.copies}/6</div>
-                                        ` : '<div class="item-locked">Bloqueado</div>'}
+                                        ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
                                         ${isEquipped ? '<div class="equipped-badge">✓</div>' : ''}
                                     </div>
                                 `;
@@ -381,7 +381,7 @@ async function loadMascotTab(groupId) {
                     </div>
                     
                     <div class="collection-category">
-                        <h5>🎒 Accesorios</h5>
+                        <h5>🎒 <span data-i18n="app.fundDetail.mascot.accessory">Accesorios</span></h5>
                         <div class="collection-items">
                             ${accessoryItems.map(item => {
                                 const owned = wardrobe[item.id];
@@ -394,7 +394,7 @@ async function loadMascotTab(groupId) {
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
                                             <div class="item-copies">${owned.copies}/6</div>
-                                        ` : '<div class="item-locked">Bloqueado</div>'}
+                                        ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
                                         ${isEquipped ? '<div class="equipped-badge">✓</div>' : ''}
                                     </div>
                                 `;
@@ -404,10 +404,15 @@ async function loadMascotTab(groupId) {
                 </div>
                 
                 <div class="mascot-info">
-                    <p>💡 Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</p>
+                    <p data-i18n="app.fundDetail.mascot.info">💡 Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</p>
                 </div>
             </div>
         `;
+        
+        // Apply translations to the newly added content
+        if (window.i18n) {
+            window.i18n.applyTranslations();
+        }
     } catch (error) {
         console.error('[Mascot] Error loading tab:', error);
         container.innerHTML = '<div class="error-message">Error cargando mascota</div>';

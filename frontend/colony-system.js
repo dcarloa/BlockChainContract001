@@ -279,7 +279,7 @@ async function openChestModal(groupId, weekId) {
             <button class="close-btn" id="closeChestBtnX">&times;</button>
             
             <div class="chest-modal-content">
-                <h2 class="chest-modal-title">🎁 Cofre de la Colonia</h2>
+                <h2 class="chest-modal-title" data-i18n="app.fundDetail.colony.chestTitle">🎁 Cofre de la Colonia</h2>
                 
                 <div class="chest-visual-container">
                     ${renderColonyVisual(colonyState, 120)}
@@ -287,21 +287,21 @@ async function openChestModal(groupId, weekId) {
                 
                 <div class="chest-state-info">
                     <h3>${config.name}</h3>
-                    <p>${chest.description || 'Gracias por mantener todo claro esta semana.'}</p>
+                    <p>${chest.description || window.i18n.t('app.fundDetail.colony.defaultDescription')}</p>
                 </div>
                 
                 ${rewardItem ? `
                     <div class="chest-reward-section">
-                        <h4>✨ ¡Recompensa Obtenida!</h4>
+                        <h4 data-i18n="app.fundDetail.colony.rewardTitle">✨ ¡Recompensa Obtenida!</h4>
                         <div class="reward-item">
                             <div class="reward-emoji">${rewardItem.item.emoji}</div>
                             <div class="reward-info">
                                 <p class="reward-name">${rewardItem.item.name}</p>
-                                ${rewardItem.isNew ? '<span class="reward-badge new-badge">¡NUEVO!</span>' : ''}
-                                ${rewardItem.upgraded ? `<span class="reward-badge upgrade-badge">¡Subió a ${window.MascotSystem.ITEM_LEVELS[rewardItem.newLevel].name}!</span>` : `<span class="reward-copies">${rewardItem.copies}/6 copias</span>`}
+                                ${rewardItem.isNew ? '<span class="reward-badge new-badge" data-i18n="app.fundDetail.colony.newBadge">¡NUEVO!</span>' : ''}
+                                ${rewardItem.upgraded ? `<span class="reward-badge upgrade-badge"><span data-i18n="app.fundDetail.colony.upgradeBadge">¡Subió a</span> ${window.MascotSystem.ITEM_LEVELS[rewardItem.newLevel].name}!</span>` : `<span class="reward-copies">${rewardItem.copies}/6 <span data-i18n="app.fundDetail.colony.copies">copias</span></span>`}
                             </div>
                         </div>
-                        <p class="reward-hint">Visita la pestaña "Mascota" para equipar tus prendas</p>
+                        <p class="reward-hint" data-i18n="app.fundDetail.colony.visitMascot">Visita la pestaña "Mascota" para equipar tus prendas</p>
                     </div>
                 ` : ''}
                 
@@ -309,7 +309,7 @@ async function openChestModal(groupId, weekId) {
                     <p>${config.description}</p>
                 </div>
                 
-                <button class="btn btn-primary btn-block chest-close-btn" id="closeChestBtn">
+                <button class="btn btn-primary btn-block chest-close-btn" id="closeChestBtn" data-i18n="app.fundDetail.colony.closeButton">
                     Seguir usando Ant Pool
                 </button>
             </div>
@@ -318,6 +318,11 @@ async function openChestModal(groupId, weekId) {
     
     document.body.appendChild(modal);
     console.log('[Colony] Modal appended to body');
+    
+    // Apply translations to modal content
+    if (window.i18n) {
+        window.i18n.applyTranslations();
+    }
     
     // Attach event listeners to both close buttons
     const closeBtn = document.getElementById('closeChestBtn');

@@ -900,6 +900,27 @@ const translations = {
                     pausing: "Pausing...",
                     pauseSuccess: "Fund paused. Now in read-only mode.",
                     pauseConfirm: "Pause fund? This will block all transactions (deposits, proposals, votes). The fund will remain visible in read-only mode."
+                },
+                mascot: {
+                    title: "Group Ant",
+                    subtitle: "Collect items by opening weekly chests",
+                    equipped: "Equipped",
+                    collection: "Collection",
+                    head: "Head",
+                    accessory: "Accessory",
+                    empty: "Empty",
+                    locked: "Locked",
+                    info: "💡 Open weekly chests to get items. Get 3 copies to upgrade to Silver. Get 6 copies to reach Gold."
+                },
+                colony: {
+                    chestTitle: "🎁 Colony Chest",
+                    rewardTitle: "✨ Reward Obtained!",
+                    newBadge: "NEW!",
+                    upgradeBadge: "Upgraded to {level}!",
+                    copies: "copies",
+                    visitMascot: "Visit the 'Mascot' tab to equip your items",
+                    closeButton: "Continue using Ant Pool",
+                    defaultDescription: "Thanks for keeping everything clear this week."
                 }
             },
             modals: {
@@ -1953,6 +1974,27 @@ const translations = {
                     pausing: "Pausando...",
                     pauseSuccess: "Fondo pausado. Ahora está en modo solo lectura.",
                     pauseConfirm: "¿Pausar el fondo? Esto bloqueará todas las transacciones (depósitos, propuestas, votos). El fondo seguirá visible en modo solo lectura."
+                },
+                mascot: {
+                    title: "Hormiga del Grupo",
+                    subtitle: "Colecciona prendas abriendo cofres semanales",
+                    equipped: "Equipado",
+                    collection: "Colección",
+                    head: "Cabeza",
+                    accessory: "Accesorio",
+                    empty: "Vacío",
+                    locked: "Bloqueado",
+                    info: "💡 Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro."
+                },
+                colony: {
+                    chestTitle: "🎁 Cofre de la Colonia",
+                    rewardTitle: "✨ ¡Recompensa Obtenida!",
+                    newBadge: "¡NUEVO!",
+                    upgradeBadge: "¡Subió a",
+                    copies: "copias",
+                    visitMascot: "Visita la pestaña 'Mascota' para equipar tus prendas",
+                    closeButton: "Seguir usando Ant Pool",
+                    defaultDescription: "Gracias por mantener todo claro esta semana."
                 }
             },
             modals: {
