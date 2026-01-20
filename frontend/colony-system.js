@@ -259,6 +259,9 @@ async function openChestModal(groupId, weekId) {
     const config = COLONY_STATES[colonyState];
     console.log('[Colony] Chest state:', colonyState);
     
+    // Check if this is a welcome chest
+    const isWelcomeChest = chest.isWelcomeChest || chest.weekId === 'welcome';
+    
     // Get random item from mascot system (if available)
     let rewardItem = null;
     if (window.MascotSystem) {
@@ -279,16 +282,22 @@ async function openChestModal(groupId, weekId) {
             <button class="close-btn" id="closeChestBtnX">&times;</button>
             
             <div class="chest-modal-content">
-                <h2 class="chest-modal-title" data-i18n="app.fundDetail.colony.chestTitle">🎁 Cofre de la Colonia</h2>
+                <h2 class="chest-modal-title" data-i18n="${isWelcomeChest ? 'app.fundDetail.colony.welcomeChestTitle' : 'app.fundDetail.colony.chestTitle'}">${isWelcomeChest ? '🎁 Cofre de Bienvenida' : '🎁 Cofre de la Colonia'}</h2>
                 
-                <div class="chest-visual-container">
-                    ${renderColonyVisual(colonyState, 120)}
-                </div>
-                
-                <div class="chest-state-info">
-                    <h3>${config.name}</h3>
-                    <p>${chest.description || window.i18n.t('app.fundDetail.colony.defaultDescription')}</p>
-                </div>
+                ${isWelcomeChest ? `
+                    <div class="welcome-chest-message">
+                        <p data-i18n="app.fundDetail.colony.welcomeChestDesc">¡Bienvenido a tu nuevo grupo! Aquí está tu primera prenda para comenzar con el sistema de mascota.</p>
+                    </div>
+                ` : `
+                    <div class="chest-visual-container">
+                        ${renderColonyVisual(colonyState, 120)}
+                    </div>
+                    
+                    <div class="chest-state-info">
+                        <h3>${config.name}</h3>
+                        <p>${chest.description || window.i18n.t('app.fundDetail.colony.defaultDescription')}</p>
+                    </div>
+                `}
                 
                 ${rewardItem ? `
                     <div class="chest-reward-section">
@@ -305,9 +314,11 @@ async function openChestModal(groupId, weekId) {
                     </div>
                 ` : ''}
                 
-                <div class="chest-description">
-                    <p>${config.description}</p>
-                </div>
+                ${!isWelcomeChest ? `
+                    <div class="chest-description">
+                        <p>${config.description}</p>
+                    </div>
+                ` : ''}
                 
                 <button class="btn btn-primary btn-block chest-close-btn" id="closeChestBtn" data-i18n="app.fundDetail.colony.closeButton">
                     Seguir usando Ant Pool

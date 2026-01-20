@@ -945,6 +945,8 @@ const translations = {
                 },
                 colony: {
                     chestTitle: "🎁 Colony Chest",
+                    welcomeChestTitle: "🎁 Welcome Chest",
+                    welcomeChestDesc: "Welcome to your new group! Here's your first item to get started with the mascot system.",
                     rewardTitle: "✨ Reward Obtained!",
                     newBadge: "NEW!",
                     upgradeBadge: "Upgraded to {level}!",
@@ -2050,6 +2052,8 @@ const translations = {
                 },
                 colony: {
                     chestTitle: "🎁 Cofre de la Colonia",
+                    welcomeChestTitle: "🎁 Cofre de Bienvenida",
+                    welcomeChestDesc: "¡Bienvenido a tu nuevo grupo! Aquí está tu primera prenda para comenzar con el sistema de mascota.",
                     rewardTitle: "✨ ¡Recompensa Obtenida!",
                     newBadge: "¡NUEVO!",
                     upgradeBadge: "¡Subió a",

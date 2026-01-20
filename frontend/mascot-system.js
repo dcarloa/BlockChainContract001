@@ -293,6 +293,59 @@ function getRandomItemByColonyState(colonyState) {
 }
 
 /**
+ * Create a welcome chest for newly created groups
+ * This gives the first item to help users understand the mascot system
+ */
+async function createWelcomeChest(groupId) {
+    if (!MASCOT_FEATURE_ENABLED) return null;
+    
+    try {
+        const db = firebase.database();
+        const weekId = 'welcome'; // Special week ID for welcome chest
+        const chestRef = db.ref(`groups/${groupId}/weeklyChests/${weekId}`);
+        
+        // Check if welcome chest already exists
+        const existingChest = await chestRef.once('value');
+        if (existingChest.exists()) {
+            console.log('[Mascot] Welcome chest already exists');
+            return null;
+        }
+        
+        // Select a random common item for the welcome chest
+        const commonItems = Object.values(WARDROBE_ITEMS).filter(i => i.rarity === 'common');
+        const welcomeItem = commonItems[Math.floor(Math.random() * commonItems.length)];
+        
+        // Create the welcome chest
+        const chest = {
+            weekId: weekId,
+            colonyState: 'forming',
+            opened: false,
+            createdAt: Date.now(),
+            reward: {
+                itemId: welcomeItem.id,
+                item: {
+                    name: welcomeItem.name,
+                    emoji: welcomeItem.emoji,
+                    category: welcomeItem.category,
+                    rarity: welcomeItem.rarity
+                }
+            },
+            isWelcomeChest: true
+        };
+        
+        await chestRef.set(chest);
+        
+        console.log(`[Mascot] Welcome chest created with item: ${welcomeItem.name}`);
+        
+        return chest;
+        
+    } catch (error) {
+        console.error('[Mascot] Error creating welcome chest:', error);
+        return null;
+    }
+}
+
+/**
  * Load mascot tab content
  */
 async function loadMascotTab(groupId) {

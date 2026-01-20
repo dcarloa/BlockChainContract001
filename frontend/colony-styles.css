@@ -287,6 +287,24 @@
   font-style: italic;
 }
 
+/* Welcome Chest Message */
+.welcome-chest-message {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(147, 51, 234, 0.1));
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.welcome-chest-message p {
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 500;
+}
+
 .chest-close-btn {
   margin-top: 0.5rem;
   background: var(--primary-gradient);

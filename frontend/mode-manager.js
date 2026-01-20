@@ -135,6 +135,17 @@ class ModeManager {
                 joinedAt: Date.now()
             });
             
+            // ✅ CREATE WELCOME CHEST: Give first item to help users understand mascot system
+            try {
+                if (window.MascotSystem && typeof window.MascotSystem.createWelcomeChest === 'function') {
+                    await window.MascotSystem.createWelcomeChest(groupId);
+                    console.log('🎁 Welcome chest created for new group');
+                }
+            } catch (chestError) {
+                console.error('⚠️ Failed to create welcome chest (non-critical):', chestError);
+                // Don't fail group creation if welcome chest fails
+            }
+            
             // ✅ REGISTRAR ACCIÓN: Para rate limiting
             await window.recordRateLimitAction('createGroup');
             
