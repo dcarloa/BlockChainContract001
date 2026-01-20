@@ -1,0 +1,80 @@
+================================================================================
+                        ANT POOL - SERVICE OPERATOR INFORMATION
+================================================================================
+
+OPERATOR DETAILS:
+--------------------------------------------------------------------------------
+Full Name:          Salvador D Carlo Abad Guarro
+Country:            Mexico
+Email Contact:      support@antpool.cloud
+Alternative Email:  dcarloabad@gmail.com
+
+SERVICE INFORMATION:
+--------------------------------------------------------------------------------
+Service Name:       Ant Pool
+Website URL:        https://antpool.cloud
+Service Type:       Expense Tracking and Organization Tool
+Status:             Free Service (No Payments Processing)
+
+DESCRIPTION:
+--------------------------------------------------------------------------------
+Ant Pool is a collaborative expense tracking and organization application
+designed to help groups manage shared expenses efficiently.
+
+The service enables users to:
+- Create expense-sharing groups
+- Track shared expenses and balances
+- Calculate expense distributions automatically
+- Invite members and collaborate on expense management
+- Organize group finances with transparency
+
+IMPORTANT NOTICES:
+--------------------------------------------------------------------------------
+⚠️ FREE SERVICE:
+   Ant Pool currently operates as a completely free service. Any future paid
+   plans or premium features are not yet active.
+
+⚠️ NO PAYMENT PROCESSING:
+   Ant Pool does not process payments, hold user funds, or operate as a
+   financial institution. We are an expense tracking and calculation tool only.
+
+⚠️ FINANCIAL DISCLAIMER:
+   Users settle their own expenses outside of the platform using their
+   preferred payment methods. Ant Pool only provides expense tracking and
+   balance calculation features.
+
+LEGAL & PRIVACY:
+--------------------------------------------------------------------------------
+Privacy Policy:     Available at https://antpool.cloud/privacy-policy.html
+Terms of Service:   Available at https://antpool.cloud/terms-of-service.html
+
+Data Protection Officer Contact: support@antpool.cloud
+
+TECHNICAL INFORMATION:
+--------------------------------------------------------------------------------
+Technology Stack:   Web Application (JavaScript, Firebase)
+Hosting:            Firebase Hosting (Google Cloud Platform)
+Database:           Firebase Realtime Database
+Authentication:     Firebase Authentication (Google)
+
+SUPPORT:
+--------------------------------------------------------------------------------
+For support, questions, or concerns, please contact:
+Email: support@antpool.cloud
+
+For GDPR inquiries:
+Email: support@antpool.cloud
+Subject: GDPR Request - [Your Request Type]
+
+================================================================================
+Last Updated: January 20, 2026
+Version: 1.0
+================================================================================
+
+This document is provided for Google Ads verification and regulatory compliance
+purposes. It contains accurate information about the service operator and the
+nature of the Ant Pool service.
+
+Document prepared by: Salvador D Carlo Abad Guarro
+Date: January 20, 2026
+================================================================================

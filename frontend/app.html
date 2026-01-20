@@ -27,7 +27,7 @@
         connect-src 'self' http://127.0.0.1:8545 http://localhost:8545 https://*.base.org https://*.polygon.technology https://polygon-rpc.com https://*.basescan.org https://*.polygonscan.com wss://*.base.org wss://*.polygon.technology https://*.walletconnect.com wss://*.walletconnect.com https://cdn.jsdelivr.net https://*.coinbase.com https://chain-proxy.wallet.coinbase.com wss://*.walletlink.org https://*.walletlink.org https://www.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://*.googleapis.com https://*.cloudfunctions.net https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com https://accounts.google.com https://api.exchangerate-api.com https://api.openai.com https://www.googletagmanager.com https://*.google-analytics.com https://api.stripe.com;
     ">
     <title>Ant Pool - Cooperative Finance Colony</title>
-    <meta name="description" content="Work together like ants. Share expenses the simple way or use blockchain for automatic payments. Your choice.">
+    <meta name="description" content="Work together like ants. Track and organize shared expenses. Calculate splits and balances automatically. Your expense management tool.">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -157,7 +157,7 @@
                                 </summary>
                                 <div class="auth-advanced-content">
                                     <p class="advanced-description" data-i18n="app.signIn.blockchainDesc">
-                                        Connect your MetaMask wallet for automatic on-chain payments and settlements.
+                                        Connect your MetaMask wallet for blockchain-based expense tracking and balance settlements.
                                     </p>
                                     <button class="auth-btn auth-btn-metamask" onclick="signInWithWallet()">
                                         <span class="auth-btn-icon"></span>
@@ -240,10 +240,10 @@
                 <div class="header-actions">
                     <!-- Action Buttons Group -->
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <!-- Upgrade PRO Button -->
-                        <button id="upgradeProBtn" class="upgrade-pro-btn" onclick="openProfilePanel(); setTimeout(() => switchProfileTab('subscription'), 100);" title="Upgrade to PRO">
+                        <!-- Upgrade PRO Button - DISABLED (coming soon) -->
+                        <button id="upgradeProBtn" class="upgrade-pro-btn" onclick="alert('Premium features coming soon! 🐜 Ant Pool is currently free for all users.');" title="Premium features coming soon" style="opacity: 0.6; cursor: not-allowed;">
                             <span>💎</span>
-                            <span class="upgrade-text">PRO</span>
+                            <span class="upgrade-text">PRO (Soon)</span>
                         </button>
                         
                         <!-- Notifications -->
@@ -525,9 +525,22 @@
                                 </div>
                                 <p class="plan-description" data-i18n="app.profile.subscription.proDesc">Support development and get premium features</p>
                                 
-                                <!-- Stripe Checkout Button (shown when not subscribed) -->
-                                <div id="stripeButtonContainer" class="stripe-button-container">
-                                    <button class="btn btn-primary btn-block" onclick="openStripeCheckout()" data-i18n="app.profile.subscription.subscribePro">
+                                <!-- Premium features coming soon message -->
+                                <div id="premiumComingSoon" class="stripe-button-container" style="background: rgba(255, 193, 7, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3);">
+                                    <p style="text-align: center; color: var(--text-primary); margin: 0.5rem 0;">
+                                        <strong>🚧 Coming Soon</strong>
+                                    </p>
+                                    <p style="text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin: 0.5rem 0;">
+                                        Premium features are not yet active. Ant Pool is currently free for all users.
+                                    </p>
+                                    <button class="btn btn-secondary btn-block" disabled style="opacity: 0.6; cursor: not-allowed;" title="Not available yet">
+                                        💎 Subscribe to PRO - Coming Soon
+                                    </button>
+                                </div>
+                                
+                                <!-- Stripe Checkout Button (DISABLED - not active yet) -->
+                                <div id="stripeButtonContainer" class="stripe-button-container" style="display: none;">
+                                    <button class="btn btn-primary btn-block" onclick="alert('Premium features coming soon!')" data-i18n="app.profile.subscription.subscribePro">
                                         💎 Subscribe to PRO - $2.99/month
                                     </button>
                                 </div>
