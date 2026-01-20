@@ -7481,7 +7481,29 @@ function openAppSettings() {
     }
     
     console.log('✅ Opening App Settings Modal');
+    console.log('📊 Modal state BEFORE:', {
+        hasActiveClass: modal.classList.contains('active'),
+        display: window.getComputedStyle(modal).display,
+        opacity: window.getComputedStyle(modal).opacity,
+        pointerEvents: window.getComputedStyle(modal).pointerEvents,
+        zIndex: window.getComputedStyle(modal).zIndex,
+        classList: Array.from(modal.classList)
+    });
+    
     modal.classList.add('active');
+    
+    // Check state after adding class
+    setTimeout(() => {
+        console.log('📊 Modal state AFTER:', {
+            hasActiveClass: modal.classList.contains('active'),
+            display: window.getComputedStyle(modal).display,
+            opacity: window.getComputedStyle(modal).opacity,
+            pointerEvents: window.getComputedStyle(modal).pointerEvents,
+            zIndex: window.getComputedStyle(modal).zIndex,
+            classList: Array.from(modal.classList)
+        });
+    }, 100);
+    
     updateAppSettingsUI();
     return true;
 }
