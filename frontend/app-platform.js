@@ -7475,37 +7475,11 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function openAppSettings() {
     const modal = document.getElementById('appSettingsModal');
-    if (!modal) {
-        console.error('❌ App Settings Modal not found in DOM');
-        return false;
-    }
-    
-    console.log('✅ Opening App Settings Modal');
-    console.log('📊 Modal state BEFORE:', {
-        hasActiveClass: modal.classList.contains('active'),
-        display: window.getComputedStyle(modal).display,
-        opacity: window.getComputedStyle(modal).opacity,
-        pointerEvents: window.getComputedStyle(modal).pointerEvents,
-        zIndex: window.getComputedStyle(modal).zIndex,
-        classList: Array.from(modal.classList)
-    });
+    if (!modal) return false;
     
     // Remove inline display: none that was set on initialization
     modal.style.display = '';
     modal.classList.add('active');
-    
-    // Check state after adding class
-    setTimeout(() => {
-        console.log('📊 Modal state AFTER:', {
-            hasActiveClass: modal.classList.contains('active'),
-            display: window.getComputedStyle(modal).display,
-            opacity: window.getComputedStyle(modal).opacity,
-            pointerEvents: window.getComputedStyle(modal).pointerEvents,
-            zIndex: window.getComputedStyle(modal).zIndex,
-            classList: Array.from(modal.classList)
-        });
-    }, 100);
-    
     updateAppSettingsUI();
     return true;
 }
@@ -7515,14 +7489,10 @@ function openAppSettings() {
  */
 function closeAppSettings(event) {
     const modal = document.getElementById('appSettingsModal');
-    if (!modal) {
-        console.error('❌ App Settings Modal not found when closing');
-        return false;
-    }
+    if (!modal) return false;
     
     // Close if: no event (called programmatically), click on overlay, or click on close button
     if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('close-btn')) {
-        console.log('✅ Closing App Settings Modal');
         modal.classList.remove('active');
         // Re-apply display: none after transition
         setTimeout(() => {
