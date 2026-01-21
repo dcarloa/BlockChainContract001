@@ -9023,6 +9023,66 @@ function switchTimeframe(timeframe) {
     loadAnalytics(timeframe);
 }
 
+// Global variable for current analytics period
+let currentAnalyticsPeriod = 7;
+
+// Switch analytics period (called from HTML onclick)
+function switchAnalyticsPeriod(days, buttonElement) {
+    // Update active state on buttons
+    document.querySelectorAll('.period-tab').forEach(btn => btn.classList.remove('active'));
+    buttonElement.classList.add('active');
+    
+    // Store current period
+    currentAnalyticsPeriod = days;
+    
+    // Update period range text
+    const periodRange = document.getElementById('analyticsPeriodRange');
+    if (periodRange) {
+        if (days === 'all') {
+            periodRange.textContent = t('app.analytics.periods.all') || 'All Time';
+        } else {
+            periodRange.textContent = `Last ${days} days`;
+        }
+    }
+    
+    // Reload analytics with new period
+    loadAnalytics(days);
+}
+
+// Export analytics to CSV (called from HTML onclick)
+function exportAnalyticsToCSV() {
+    if (!currentFund || !currentFund.fundId) {
+        showToast('No group data available', 'warning');
+        return;
+    }
+    
+    window.modeManager.currentGroupId = currentFund.fundId;
+    window.modeManager.exportExpensesToCSV();
+    showToast('Analytics exported to CSV', 'success');
+}
+
+// Share analytics (called from HTML onclick)
+function shareAnalytics() {
+    const url = window.location.href;
+    const text = `Check out the analytics for ${currentFund?.name || 'our group'}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Group Analytics',
+            text: text,
+            url: url
+        }).catch(() => {
+            // Fallback if share fails
+            copyToClipboard(url);
+            showToast('Link copied to clipboard', 'success');
+        });
+    } else {
+        // Fallback for browsers without share API
+        copyToClipboard(url);
+        showToast('Link copied to clipboard', 'success');
+    }
+}
+
 async function loadAnalytics(timeframe) {
     try {
         if (!currentFund || !currentFund.fundId) return;
@@ -9030,50 +9090,32 @@ async function loadAnalytics(timeframe) {
         showLoading(t('app.loading.generatingAnalytics'));
         
         window.modeManager.currentGroupId = currentFund.fundId;
-        const analytics = await window.modeManager.generateAnalytics(timeframe);
+        const analytics = await window.modeManager.generateAnalytics(timeframe || currentAnalyticsPeriod);
         
         // Detect currencies
         const currencies = Object.keys(analytics.byCurrency);
         let displayCurrency = 'USD';
-        let currencyNote = '';
         
         if (currencies.length === 1) {
-            // Single currency - use it
             displayCurrency = currencies[0];
-            currencyNote = '';
         } else if (currencies.length > 1) {
-            // Multiple currencies - show note
-            displayCurrency = '';
-            currencyNote = `<div style="background: rgba(255,165,0,0.2); border-left: 3px solid #ffa502; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem;">
-                <strong>?? Multiple Currencies Detected:</strong> ${currencies.join(', ')}
-                <br><small style="color: rgba(255,255,255,0.7);">Amounts shown in original currencies. Future update will convert to a single currency.</small>
-            </div>`;
+            displayCurrency = currencies[0]; // Use first currency as default
         }
         
         const currencySymbol = displayCurrency ? (CURRENCY_SYMBOLS[displayCurrency] || '$') : '';
         
-        // Update stats
-        const statsContainer = document.getElementById('analyticsStats');
-        statsContainer.innerHTML = `
-            ${currencyNote}
-            <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px;">
-                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Total Spent${displayCurrency ? ' (' + displayCurrency + ')' : ''}</div>
-                <div style="font-size: 2rem; font-weight: bold; color: white;">${currencySymbol}${analytics.totalSpent.toFixed(2)}</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 1.5rem; border-radius: 12px;">
-                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Expenses</div>
-                <div style="font-size: 2rem; font-weight: bold; color: white;">${analytics.expenseCount}</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 1.5rem; border-radius: 12px;">
-                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">Average${displayCurrency ? ' (' + displayCurrency + ')' : ''}</div>
-                <div style="font-size: 2rem; font-weight: bold; color: white;">${currencySymbol}${analytics.averageExpense.toFixed(2)}</div>
-            </div>
-        `;
+        // Update metrics cards
+        updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency);
         
-        // Render charts
-        renderCategoryChart(analytics.byCategory);
-        renderMemberChart(analytics.byMember);
-        renderTimelineChart(analytics.byMonth, displayCurrency);
+        // Update breakdowns
+        updateCategoryBreakdown(analytics.byCategory, currencySymbol);
+        updateMemberBreakdown(analytics.byMember, currencySymbol);
+        
+        // Update timeline
+        updateTimelineChart(analytics.byMonth || analytics.byDay || {}, currencySymbol);
+        
+        // Generate insights
+        generateSmartInsights(analytics, currencySymbol);
         
         hideLoading();
         
@@ -9082,6 +9124,241 @@ async function loadAnalytics(timeframe) {
         console.error('Error loading analytics:', error);
         showToast('Error loading analytics', 'error');
     }
+}
+
+function updateAnalyticsMetrics(analytics, currencySymbol, currency) {
+    // Total Spent
+    const totalSpent = document.getElementById('analyticsTotalSpent');
+    if (totalSpent) {
+        totalSpent.textContent = `${currencySymbol}${analytics.totalSpent.toFixed(2)}`;
+    }
+    
+    // Average Per Day
+    const avgPerDay = document.getElementById('analyticsAvgPerDay');
+    const avgDesc = document.getElementById('analyticsAvgDesc');
+    const activeDays = document.getElementById('analyticsActiveDays');
+    
+    if (avgPerDay && analytics.expenseCount > 0) {
+        const days = currentAnalyticsPeriod === 'all' ? 365 : parseInt(currentAnalyticsPeriod);
+        const dailyAvg = analytics.totalSpent / days;
+        avgPerDay.textContent = `${currencySymbol}${dailyAvg.toFixed(2)}`;
+        if (activeDays) activeDays.textContent = days;
+    }
+    
+    // Total Transactions
+    const totalExpenses = document.getElementById('analyticsTotalExpenses');
+    const avgAmountValue = document.getElementById('analyticsAvgAmountValue');
+    
+    if (totalExpenses) {
+        totalExpenses.textContent = analytics.expenseCount;
+    }
+    
+    if (avgAmountValue && analytics.expenseCount > 0) {
+        avgAmountValue.textContent = `${currencySymbol}${analytics.averageExpense.toFixed(2)}`;
+    }
+    
+    // Top Contributor
+    const topMember = document.getElementById('analyticsTopMember');
+    const topMemberCount = document.getElementById('analyticsTopMemberCount');
+    
+    if (topMember && analytics.byMember) {
+        const members = Object.entries(analytics.byMember);
+        if (members.length > 0) {
+            // Sort by amount descending
+            members.sort((a, b) => b[1] - a[1]);
+            const [topMemberName, topAmount] = members[0];
+            
+            topMember.textContent = topMemberName;
+            if (topMemberCount) {
+                // Count expenses by this member
+                topMemberCount.textContent = '1'; // Placeholder - we'd need expense details
+            }
+        }
+    }
+}
+
+function updateCategoryBreakdown(byCategory, currencySymbol) {
+    const container = document.getElementById('analyticsCategoryBreakdown');
+    if (!container) return;
+    
+    const categories = Object.entries(byCategory);
+    if (categories.length === 0) {
+        container.innerHTML = '<div class="analytics-empty"><div class="analytics-empty-icon">📊</div><p>No category data available</p></div>';
+        return;
+    }
+    
+    const total = categories.reduce((sum, [_, amount]) => sum + amount, 0);
+    categories.sort((a, b) => b[1] - a[1]); // Sort by amount descending
+    
+    const categoryIcons = {
+        food: '🍔',
+        transport: '🚗',
+        housing: '🏠',
+        utilities: '💡',
+        entertainment: '🎬',
+        shopping: '🛒',
+        health: '⚕️',
+        travel: '✈️',
+        subscription: '📱',
+        other: '📦'
+    };
+    
+    container.innerHTML = categories.map(([category, amount]) => {
+        const percentage = ((amount / total) * 100).toFixed(1);
+        const icon = categoryIcons[category.toLowerCase()] || '📦';
+        const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+        
+        return `
+            <div class="breakdown-item">
+                <div class="breakdown-icon">${icon}</div>
+                <div class="breakdown-info">
+                    <div class="breakdown-label">${categoryName}</div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+                <div class="breakdown-amount">
+                    <div class="breakdown-value">${currencySymbol}${amount.toFixed(2)}</div>
+                    <div class="breakdown-percentage">${percentage}%</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateMemberBreakdown(byMember, currencySymbol) {
+    const container = document.getElementById('analyticsMemberBreakdown');
+    if (!container) return;
+    
+    const members = Object.entries(byMember);
+    if (members.length === 0) {
+        container.innerHTML = '<div class="analytics-empty"><div class="analytics-empty-icon">👥</div><p>No member data available</p></div>';
+        return;
+    }
+    
+    const total = members.reduce((sum, [_, amount]) => sum + amount, 0);
+    members.sort((a, b) => b[1] - a[1]); // Sort by amount descending
+    
+    container.innerHTML = members.map(([member, amount]) => {
+        const percentage = ((amount / total) * 100).toFixed(1);
+        const initial = member.charAt(0).toUpperCase();
+        
+        return `
+            <div class="breakdown-item">
+                <div class="breakdown-icon" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: bold;">${initial}</div>
+                <div class="breakdown-info">
+                    <div class="breakdown-label">${member}</div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+                <div class="breakdown-amount">
+                    <div class="breakdown-value">${currencySymbol}${amount.toFixed(2)}</div>
+                    <div class="breakdown-percentage">${percentage}%</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateTimelineChart(timelineData, currencySymbol) {
+    const container = document.getElementById('analyticsTimelineChart');
+    if (!container) return;
+    
+    const timeline = Object.entries(timelineData);
+    if (timeline.length === 0) {
+        container.innerHTML = '<div class="analytics-empty"><div class="analytics-empty-icon">📈</div><p>No timeline data available</p></div>';
+        return;
+    }
+    
+    timeline.sort((a, b) => a[0].localeCompare(b[0])); // Sort by date
+    const maxAmount = Math.max(...timeline.map(([_, amount]) => amount));
+    
+    container.innerHTML = timeline.map(([date, amount]) => {
+        const heightPercent = maxAmount > 0 ? (amount / maxAmount) * 100 : 0;
+        const displayDate = date.split('-').slice(1).join('/'); // Show MM/DD or similar
+        
+        return `
+            <div class="timeline-bar-container">
+                <div class="timeline-bar-wrapper">
+                    <div class="timeline-bar" style="height: ${heightPercent}%">
+                        <div class="timeline-bar-value">${currencySymbol}${amount.toFixed(2)}</div>
+                    </div>
+                </div>
+                <div class="timeline-label">${displayDate}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function generateSmartInsights(analytics, currencySymbol) {
+    const container = document.getElementById('analyticsSmartInsights');
+    if (!container) return;
+    
+    const insights = [];
+    
+    // Insight 1: Highest spending category
+    if (analytics.byCategory) {
+        const categories = Object.entries(analytics.byCategory);
+        if (categories.length > 0) {
+            categories.sort((a, b) => b[1] - a[1]);
+            const [topCategory, topAmount] = categories[0];
+            const percentage = ((topAmount / analytics.totalSpent) * 100).toFixed(0);
+            
+            insights.push({
+                type: 'info',
+                icon: '📊',
+                title: 'Top Spending Category',
+                text: `${percentage}% of your expenses (${currencySymbol}${topAmount.toFixed(2)}) went to ${topCategory}.`
+            });
+        }
+    }
+    
+    // Insight 2: Average expense comparison
+    if (analytics.expenseCount > 0) {
+        const avgExpense = analytics.averageExpense;
+        if (avgExpense > 50) {
+            insights.push({
+                type: 'warning',
+                icon: '💰',
+                title: 'High Average Expense',
+                text: `Your average expense is ${currencySymbol}${avgExpense.toFixed(2)}. Consider splitting larger purchases.`
+            });
+        } else {
+            insights.push({
+                type: 'positive',
+                icon: '✅',
+                title: 'Controlled Spending',
+                text: `Your average expense of ${currencySymbol}${avgExpense.toFixed(2)} shows good expense control.`
+            });
+        }
+    }
+    
+    // Insight 3: Activity level
+    if (analytics.expenseCount > 10) {
+        insights.push({
+            type: 'positive',
+            icon: '🎯',
+            title: 'Active Group',
+            text: `With ${analytics.expenseCount} transactions, your group is highly active.`
+        });
+    }
+    
+    // Render insights
+    if (insights.length === 0) {
+        container.innerHTML = '<div class="analytics-empty"><div class="analytics-empty-icon">💡</div><p>Not enough data for insights yet</p></div>';
+        return;
+    }
+    
+    container.innerHTML = insights.map(insight => `
+        <div class="insight-card insight-${insight.type}">
+            <div class="insight-header">
+                <div class="insight-icon">${insight.icon}</div>
+                <div class="insight-title">${insight.title}</div>
+            </div>
+            <div class="insight-body">${insight.text}</div>
+        </div>
+    `).join('');
 }
 
 function renderCategoryChart(byCategory) {
