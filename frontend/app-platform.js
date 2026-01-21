@@ -9316,13 +9316,16 @@ function updateCategoryBreakdown(byCategory, currencySymbol) {
     const container = document.getElementById('analyticsCategoryBreakdown');
     if (!container) return;
     
+    console.log('[Analytics Debug] byCategory received:', byCategory);
+    console.log('[Analytics Debug] typeof byCategory:', typeof byCategory);
+    
     const categories = Object.entries(byCategory);
     if (categories.length === 0) {
         container.innerHTML = '<div class="analytics-empty"><div class="analytics-empty-icon">📊</div><p>No category data available</p></div>';
         return;
     }
     
-    const total = categories.reduce((sum, [_, amount]) => sum + amount, 0);
+    const total = categories.reduce((sum, [_, amount]) => sum + (typeof amount === 'number' ? amount : 0), 0);
     categories.sort((a, b) => b[1] - a[1]); // Sort by amount descending
     
     const categoryIcons = {
@@ -9339,7 +9342,9 @@ function updateCategoryBreakdown(byCategory, currencySymbol) {
     };
     
     container.innerHTML = categories.map(([category, amount]) => {
-        const percentage = ((amount / total) * 100).toFixed(1);
+        // Ensure amount is a number
+        const numAmount = typeof amount === 'number' ? amount : parseFloat(amount) || 0;
+        const percentage = total > 0 ? ((numAmount / total) * 100).toFixed(1) : '0.0';
         const icon = categoryIcons[category.toLowerCase()] || '📦';
         const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
         
@@ -9353,7 +9358,7 @@ function updateCategoryBreakdown(byCategory, currencySymbol) {
                     </div>
                 </div>
                 <div class="breakdown-amount">
-                    <div class="breakdown-value">${currencySymbol}${amount.toFixed(2)}</div>
+                    <div class="breakdown-value">${currencySymbol}${numAmount.toFixed(2)}</div>
                     <div class="breakdown-percentage">${percentage}%</div>
                 </div>
             </div>
@@ -9371,11 +9376,13 @@ function updateMemberBreakdown(byMember, currencySymbol) {
         return;
     }
     
-    const total = members.reduce((sum, [_, amount]) => sum + amount, 0);
+    const total = members.reduce((sum, [_, amount]) => sum + (typeof amount === 'number' ? amount : 0), 0);
     members.sort((a, b) => b[1] - a[1]); // Sort by amount descending
     
     container.innerHTML = members.map(([member, amount]) => {
-        const percentage = ((amount / total) * 100).toFixed(1);
+        // Ensure amount is a number
+        const numAmount = typeof amount === 'number' ? amount : parseFloat(amount) || 0;
+        const percentage = total > 0 ? ((numAmount / total) * 100).toFixed(1) : '0.0';
         const initial = member.charAt(0).toUpperCase();
         
         return `
@@ -9388,7 +9395,7 @@ function updateMemberBreakdown(byMember, currencySymbol) {
                     </div>
                 </div>
                 <div class="breakdown-amount">
-                    <div class="breakdown-value">${currencySymbol}${amount.toFixed(2)}</div>
+                    <div class="breakdown-value">${currencySymbol}${numAmount.toFixed(2)}</div>
                     <div class="breakdown-percentage">${percentage}%</div>
                 </div>
             </div>
