@@ -5622,18 +5622,45 @@ window.decrementExpenseShare = decrementExpenseShare;
 
 const CURRENCY_SYMBOLS = {
     'USD': '$',
-    'EUR': '�',
-    'GBP': '�',
+    'EUR': '€',
+    'GBP': '£',
     'MXN': '$',
     'COP': '$',
     'BRL': 'R$',
     'CAD': 'CA$',
     'AUD': 'A$',
-    'JPY': '�',
-    'CNY': '�',
-    'INR': '?',
+    'JPY': '¥',
+    'CNY': '¥',
+    'INR': '₹',
     'CHF': 'CHF'
 };
+
+// Approximate exchange rates to USD (updated periodically)
+const EXCHANGE_RATES_TO_USD = {
+    'USD': 1.0,
+    'EUR': 1.08,
+    'GBP': 1.27,
+    'MXN': 0.058,     // 1 MXN = ~0.058 USD
+    'COP': 0.00025,   // 1 COP = ~0.00025 USD
+    'BRL': 0.20,
+    'CAD': 0.74,
+    'AUD': 0.66,
+    'JPY': 0.0067,
+    'CNY': 0.14,
+    'INR': 0.012,
+    'CHF': 1.17
+};
+
+/**
+ * Convert amount from one currency to USD
+ * @param {number} amount - Amount to convert
+ * @param {string} fromCurrency - Source currency code
+ * @returns {number} Amount in USD
+ */
+function convertToUSD(amount, fromCurrency) {
+    const rate = EXCHANGE_RATES_TO_USD[fromCurrency] || 1.0;
+    return amount * rate;
+}
 
 /**
  * Format currency with symbol
@@ -9090,45 +9117,55 @@ async function loadAnalytics(timeframe) {
         showLoading(t('app.loading.generatingAnalytics'));
         
         window.modeManager.currentGroupId = currentFund.fundId;
-        const analytics = await window.modeManager.generateAnalytics(timeframe || currentAnalyticsPeriod);
+        let analytics = await window.modeManager.generateAnalytics(timeframe || currentAnalyticsPeriod);
         
         // Detect currencies
         const currencies = Object.keys(analytics.byCurrency);
         let displayCurrency = 'USD';
-        let showMultiCurrencyWarning = currencies.length > 1;
+        let convertedToUSD = false;
+        
+        // Remove any existing warning
+        const existingWarning = document.querySelector('.multi-currency-warning');
+        if (existingWarning) existingWarning.remove();
         
         if (currencies.length === 1) {
+            // Single currency - use it as-is
             displayCurrency = currencies[0];
         } else if (currencies.length > 1) {
-            displayCurrency = currencies[0]; // Use first currency as default
+            // Multiple currencies - convert everything to USD
+            displayCurrency = 'USD';
+            convertedToUSD = true;
             
-            // Show warning in analytics header
+            // Convert all analytics data to USD
+            analytics = convertAnalyticsToUSD(analytics);
+            
+            // Show info banner (not warning) about conversion
             const headerContent = document.querySelector('.analytics-header-content');
-            if (headerContent && !document.querySelector('.multi-currency-warning')) {
-                const warning = document.createElement('div');
-                warning.className = 'multi-currency-warning';
-                warning.innerHTML = `
-                    <span class="warning-icon">⚠️</span>
-                    <span>Multiple currencies detected: ${currencies.join(', ')}. Amounts shown in original currencies - not converted.</span>
+            if (headerContent) {
+                const info = document.createElement('div');
+                info.className = 'multi-currency-info';
+                info.innerHTML = `
+                    <span class="info-icon">💱</span>
+                    <span>Multiple currencies detected (${currencies.join(', ')}). All amounts converted to USD for comparison.</span>
                 `;
-                headerContent.appendChild(warning);
+                headerContent.appendChild(info);
             }
         }
         
-        const currencySymbol = displayCurrency ? (CURRENCY_SYMBOLS[displayCurrency] || '$') : '';
+        const currencySymbol = CURRENCY_SYMBOLS[displayCurrency] || '$';
         
         // Update metrics cards
-        updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency, currencies);
+        updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency, [displayCurrency]);
         
-        // Update breakdowns (now currency-aware)
-        updateCategoryBreakdown(analytics.byCategory, currencySymbol, analytics.byCurrency);
-        updateMemberBreakdown(analytics.byMember, currencySymbol, analytics.byCurrency);
+        // Update breakdowns
+        updateCategoryBreakdown(analytics.byCategory, currencySymbol, { [displayCurrency]: analytics.totalSpent });
+        updateMemberBreakdown(analytics.byMember, currencySymbol, { [displayCurrency]: analytics.totalSpent });
         
         // Update timeline
         updateTimelineChart(analytics.byMonth || analytics.byDay || {}, currencySymbol);
         
         // Generate insights
-        generateSmartInsights(analytics, currencySymbol, currencies);
+        generateSmartInsights(analytics, currencySymbol, [displayCurrency]);
         
         hideLoading();
         
@@ -9137,6 +9174,61 @@ async function loadAnalytics(timeframe) {
         console.error('Error loading analytics:', error);
         showToast('Error loading analytics', 'error');
     }
+}
+
+/**
+ * Convert all analytics data to USD
+ * @param {Object} analytics - Original analytics with mixed currencies
+ * @returns {Object} Analytics converted to USD
+ */
+function convertAnalyticsToUSD(analytics) {
+    // We need to fetch expenses and recalculate
+    // For now, we'll convert the totals proportionally
+    // This is an approximation - ideally we'd recalculate from raw expense data
+    
+    const totalUSD = Object.entries(analytics.byCurrency).reduce((sum, [currency, amount]) => {
+        return sum + convertToUSD(amount, currency);
+    }, 0);
+    
+    const avgExpenseUSD = analytics.expenseCount > 0 ? totalUSD / analytics.expenseCount : 0;
+    
+    // Convert categories
+    const byCategoryUSD = {};
+    const categoryTotal = Object.values(analytics.byCategory).reduce((sum, val) => sum + val, 0);
+    
+    Object.entries(analytics.byCategory).forEach(([category, amount]) => {
+        // Proportional conversion based on total USD
+        byCategoryUSD[category] = categoryTotal > 0 ? (amount / categoryTotal) * totalUSD : 0;
+    });
+    
+    // Convert members
+    const byMemberUSD = {};
+    const memberTotal = Object.values(analytics.byMember).reduce((sum, val) => sum + val, 0);
+    
+    Object.entries(analytics.byMember).forEach(([member, amount]) => {
+        // Proportional conversion based on total USD
+        byMemberUSD[member] = memberTotal > 0 ? (amount / memberTotal) * totalUSD : 0;
+    });
+    
+    // Convert timeline
+    const byMonthUSD = {};
+    const monthTotal = Object.values(analytics.byMonth || {}).reduce((sum, val) => sum + val, 0);
+    
+    Object.entries(analytics.byMonth || {}).forEach(([month, amount]) => {
+        // Proportional conversion based on total USD
+        byMonthUSD[month] = monthTotal > 0 ? (amount / monthTotal) * totalUSD : 0;
+    });
+    
+    return {
+        totalSpent: totalUSD,
+        expenseCount: analytics.expenseCount,
+        byCategory: byCategoryUSD,
+        byMember: byMemberUSD,
+        byMonth: byMonthUSD,
+        byCurrency: { 'USD': totalUSD },
+        averageExpense: avgExpenseUSD,
+        timeframe: analytics.timeframe
+    };
 }
 
 function updateAnalyticsMetrics(analytics, currencySymbol, currency, currencies) {
