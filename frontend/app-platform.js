@@ -9183,16 +9183,22 @@ async function loadAnalytics(timeframe) {
  */
 async function convertAnalyticsToUSD(analytics) {
     try {
+        console.log('[USD Conversion] Starting conversion. Original analytics:', analytics);
+        
         // Fetch all expenses to recalculate properly
         const expenses = await window.FirebaseConfig.readDb(
             `groups/${currentFund.fundId}/expenses`
         );
         
+        console.log('[USD Conversion] Fetched expenses:', expenses);
+        
         if (!expenses) {
+            console.warn('[USD Conversion] No expenses found, returning original analytics');
             return analytics; // Return original if no expenses
         }
         
         const expenseList = Object.values(expenses).filter(e => e.status === 'approved');
+        console.log('[USD Conversion] Approved expenses count:', expenseList.length);
         
         // Apply same timeframe filter
         const now = Date.now();
@@ -9215,6 +9221,8 @@ async function convertAnalyticsToUSD(analytics) {
             }
         });
         
+        console.log('[USD Conversion] Filtered expenses count:', filteredExpenses.length);
+        
         // Recalculate everything in USD
         let totalSpentUSD = 0;
         const byCategoryUSD = {};
@@ -9223,6 +9231,7 @@ async function convertAnalyticsToUSD(analytics) {
         
         filteredExpenses.forEach(expense => {
             const amountUSD = convertToUSD(expense.amount, expense.currency || 'USD');
+            console.log(`[USD Conversion] Expense: ${expense.amount} ${expense.currency} -> ${amountUSD} USD`);
             totalSpentUSD += amountUSD;
             
             // By category
@@ -9241,7 +9250,7 @@ async function convertAnalyticsToUSD(analytics) {
         
         const avgExpenseUSD = filteredExpenses.length > 0 ? totalSpentUSD / filteredExpenses.length : 0;
         
-        return {
+        const result = {
             totalSpent: totalSpentUSD,
             expenseCount: filteredExpenses.length,
             byCategory: byCategoryUSD,
@@ -9252,8 +9261,11 @@ async function convertAnalyticsToUSD(analytics) {
             timeframe: timeframe
         };
         
+        console.log('[USD Conversion] Conversion complete. Result:', result);
+        return result;
+        
     } catch (error) {
-        console.error('Error converting analytics to USD:', error);
+        console.error('[USD Conversion] Error converting analytics to USD:', error);
         return analytics; // Fallback to original
     }
 }
