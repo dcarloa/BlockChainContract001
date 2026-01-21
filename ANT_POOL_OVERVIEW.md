@@ -352,24 +352,16 @@ Ant Pool eliminates complexity: everything works with email/Google, and your inf
 
 #### Settlement Recording
 - **Manual Recording**: "I paid Bob $50 cash"
-- **Blockchain Settlement** (PRO): On-chain transactions with proof
 - **Bank Transfer Notes**: Add reference numbers for tracking
 - **Settlement History**: Full audit trail of all payments
 - **Confirmation System**: Both parties confirm settlement
 - **Dispute Resolution**: Flag and discuss settlement issues
 
 **Settlement Modes:**
-1. **Simple Mode** (Firebase):
-   - Instant settlement recording
-   - No gas fees
-   - Offline support
-   - Perfect for casual groups
-
-2. **Blockchain Mode** (PRO):
-   - Smart contract escrow
-   - Immutable settlement proof
-   - Multi-signature support
-   - Ideal for high-trust scenarios
+- Instant settlement recording
+- No gas fees
+- Offline support
+- Perfect for all groups
 
 ---
 
@@ -531,13 +523,6 @@ Ant Pool eliminates complexity: everything works with email/Google, and your inf
 - **Data Export**: Download all your data in JSON format anytime
 - **Account Deletion**: Permanent deletion within 30 days
 
-#### Blockchain Security (Platform Mode)
-- **Smart Contract Audits**: Reviewed by CertiK and OpenZeppelin
-- **Non-Custodial**: You control your private keys, not us
-- **Multi-Sig Support** (BUSINESS): Require 2+ approvals for transactions
-- **Upgrade Protection**: Immutable contracts, predictable behavior
-- **Layer 2 Optimized**: Lower fees, faster transactions on Base/Optimism
-
 #### Compliance & Certifications
 - ✅ GDPR (Europe)
 - ✅ CCPA (California)
@@ -601,13 +586,6 @@ Ant Pool eliminates complexity: everything works with email/Google, and your inf
 - Alice pays in USD, Bob pays in EUR, auto-converts
 - Settlement suggestions in user's preferred currency
 - Currency arbitrage detection and warnings
-
-#### Cryptocurrency Support (PRO)
-- **Ethereum (ETH)**: Base, Optimism, Arbitrum
-- **Stablecoins**: USDC, DAI
-- **Layer 2 Optimized**: Low gas fees (<$0.10)
-- **Wallet Integration**: MetaMask, WalletConnect, Coinbase Wallet
-- **On-Chain Settlements**: Immutable proof of payment
 
 ---
 
@@ -717,7 +695,6 @@ Webhook Events:
 - Testing the platform
 
 **Limitations:**
-- No blockchain features
 - Limited expense history (90 days)
 - Basic analytics only
 - 3 currency limit
@@ -732,8 +709,7 @@ Webhook Events:
 - ✅ **20 members per group**
 - ✅ **Unlimited expense history** (never expires)
 - ✅ **100 AI receipt scans/month**
-- ✅ **Platform Mode** (blockchain settlements)
-- ✅ **All currencies** (150+ fiat + crypto)
+- ✅ **All currencies** (150+ fiat)
 - ✅ **Advanced analytics** (forecasting, trends, insights)
 - ✅ **Recurring expenses** (auto-create monthly/weekly)
 - ✅ **Budget tracking** with alerts
@@ -755,13 +731,11 @@ Webhook Events:
 **Perfect For**: 
 - Frequent travelers managing trip expenses
 - Active social groups with multiple funds
-- Blockchain enthusiasts
 - Users who need detailed history and analytics
 - Small businesses and freelancers
 
 **Conversion Triggers:**
 - "Create 3rd group" prompt
-- "Need blockchain features?"
 - "Export full history to Excel"
 - "Unlock unlimited AI scans"
 
@@ -871,12 +845,9 @@ Webhook Events:
 - [ ] **Predictive Analytics**: "You'll likely spend $X next month"
 - [ ] **Fraud Detection**: Unusual expense pattern alerts
 - [ ] **Tax Export Templates**: Pre-formatted for tax filing
-- [ ] **Optimism/Arbitrum Support**: More L2 blockchain options
 - [ ] **International Expansion**: Localized versions (10+ languages)
 - [ ] **Corporate Card Integration**: Brex, Ramp, Divvy auto-import
 - [ ] **Bank Account Linking** (Plaid): Auto-import transactions
-- [ ] **Smart Contract Marketplace**: Community-built templates
-- [ ] **DAO Governance**: User voting on feature priorities
 
 ### 🔮 **2027 Vision** - The Future
 - [ ] **AI-Powered Categorization**: 99% accuracy, no manual input
@@ -885,9 +856,6 @@ Webhook Events:
 - [ ] **Collaborative Budgeting**: AI suggests optimal splits
 - [ ] **Cross-Platform Sync**: Desktop apps (Windows, Mac, Linux)
 - [ ] **On-Premise Deployment** (Enterprise): Self-hosted option
-- [ ] **Blockchain Interoperability**: Any EVM chain support
-- [ ] **Fiat On-Ramp/Off-Ramp**: Buy crypto directly in app
-- [ ] **Decentralized Identity**: Self-sovereign authentication
 - [ ] **Global Remittance**: International payments <1% fee
 
 ---
@@ -905,7 +873,6 @@ Webhook Events:
 - **Conversion Trigger**: 
   - Need 3rd group (beyond 2 free)
   - Want unlimited expense history
-  - Blockchain settlements for trust
 - **Value Prop**: "Never argue about money again. Add expenses in seconds, settle up instantly."
 - **Colony Behavior**: Stable (regular rent/utilities), occasional Active during move-in/out
 
@@ -913,9 +880,9 @@ Webhook Events:
 - **Demographics**: Age 25-40, adventurous, internationally mobile
 - **Use Case**: Group vacations, backpacking trips, weekend getaways
 - **Pain Point**: International currency confusion, losing receipts, settling up after trip chaos
-- **Solution**: Multi-currency auto-conversion, AI receipt scanning, blockchain settlements
+- **Solution**: Multi-currency auto-conversion, AI receipt scanning
 - **Engagement**: Intense during trip (multiple daily expenses), post-trip settlement
-- **Monetization**: PRO subscription for unlimited history and crypto
+- **Monetization**: PRO subscription for unlimited history
 - **Value Prop**: "Focus on memories, not money. Scan receipts, split in any currency, settle in crypto."
 - **Colony Behavior**: Forming during planning, Active during trip, Consolidated for experienced groups
 
@@ -961,22 +928,19 @@ Webhook Events:
 |---------|------------|-----------|
 | **Gamification** | ✅ Colony system, mascot, weekly chests | ❌ None |
 | **Challenge Games** | ✅ 4 mini-games built-in | ❌ No |
-| **Blockchain** | ✅ Native L2 support (Base, Optimism) | ❌ No blockchain |
 | **Offline PWA** | ✅ Full-featured offline mode | ⚠️ Limited offline |
 | **AI Receipt Scan** | ✅ GPT-4 Vision (95% accuracy) | ❌ No AI scanning |
 | **Push Notifications** | ✅ FCM real-time (10+ event types) | ⚠️ Email only |
-| **Multi-currency** | ✅ 150+ fiat + crypto | ✅ Fiat only |
-| **Open Contracts** | ✅ Audited smart contracts | ❌ Closed source |
+| **Multi-currency** | ✅ 150+ fiat currencies | ✅ Fiat only |
 | **API Access** | ✅ RESTful API (BUSINESS) | ❌ No public API |
 | **Living Visual** | ✅ Animated colony display | ❌ Static interface |
 | **Pricing** | 🆓 $0 / 💎 $4.99 / 🚀 $14.99 | 🆓 $0 / 💎 $4.99 |
 
 **Our Competitive Edge:**
 1. **Gamification-First**: Only expense app that makes money management fun and engaging
-2. **Crypto-Native**: Built for Web3 users, not bolted on
-3. **Modern Stack**: PWA-native, real-time, offline-first architecture
-4. **AI-Powered**: GPT-4 for receipt scanning and future spending insights
-5. **Developer-Friendly**: Open API for integrations and automation
+2. **Modern Stack**: PWA-native, real-time, offline-first architecture
+3. **AI-Powered**: GPT-4 for receipt scanning and future spending insights
+4. **Developer-Friendly**: Open API for integrations and automation
 
 **When Splitwise Wins:**
 - Established brand recognition (10M+ users)
@@ -992,13 +956,12 @@ Webhook Events:
 |---------|------------|-------|----------|
 | **Group Expenses** | ✅ Core feature with analytics | ⚠️ Manual splits | ⚠️ Basic splits |
 | **Expense Tracking** | ✅ Full history, categories, analytics | ❌ Basic feed | ❌ Transaction list |
-| **Crypto Payments** | ✅ L2 optimized (<$0.10 gas) | ⚠️ High ETH fees | ✅ Bitcoin only |
 | **International** | ✅ Global, 150+ currencies | ❌ US only | ❌ US/UK only |
 | **Privacy** | ✅ Private groups, no social feed | ⚠️ Public by default | ⚠️ Public by default |
 | **KYC Required** | ✅ Optional (wallet auth) | ❌ Required | ❌ Required |
 | **Gamification** | ✅ Colony, mascot, chests | ❌ None | ❌ None |
 | **Business Use** | ✅ API, webhooks, audit logs | ❌ Personal only | ⚠️ Cash for Business |
-| **Fees** | 🆓 No fees (blockchain: gas only) | 🆓 Free (3% card) | 🆓 Free (instant fee) |
+| **Fees** | 🆓 No fees | 🆓 Free (3% card) | 🆓 Free (instant fee) |
 
 **Our Competitive Edge:**
 1. **Built for Groups**: Not individuals sending money, but teams sharing expenses
@@ -1023,7 +986,6 @@ Webhook Events:
 | **UX Simplicity** | ✅ Consumer-grade | ⚠️ Learning curve | ❌ Complex | ⚠️ Moderate |
 | **Setup Time** | ✅ <5 minutes | ⚠️ Hours | ❌ Weeks | ⚠️ Days |
 | **Real-Time Sync** | ✅ Instant (Firebase) | ⚠️ Batch processing | ⚠️ Delayed | ✅ Real-time |
-| **Blockchain Option** | ✅ Native | ❌ None | ❌ None | ❌ None |
 | **Gamification** | ✅ Colony system | ❌ None | ❌ None | ❌ None |
 | **AI Receipt Scan** | ✅ GPT-4 Vision | ✅ SmartScan | ✅ OCR | ✅ AI-powered |
 | **API Access** | ✅ Included (BUSINESS) | ⚠️ Paid add-on | ⚠️ Limited | ✅ Full API |
@@ -1032,7 +994,7 @@ Webhook Events:
 **Our Competitive Edge:**
 1. **Price**: 90% cheaper than traditional solutions
 2. **Speed**: Real-time vs. batch processing (instant balance updates)
-3. **Innovation**: Blockchain + gamification (they can't pivot easily)
+3. **Innovation**: Gamification-first approach (they can't pivot easily)
 4. **Accessibility**: Free tier vs. enterprise-only pricing
 
 **When Traditional Apps Win:**
