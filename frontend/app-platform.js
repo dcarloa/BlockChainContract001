@@ -5662,6 +5662,9 @@ function convertToUSD(amount, fromCurrency) {
     return amount * rate;
 }
 
+// Make convertToUSD available globally
+window.convertToUSD = convertToUSD;
+
 /**
  * Format currency with symbol
  * @param {number} amount - The amount to format
@@ -5732,33 +5735,6 @@ async function fetchExchangeRates() {
  * @param {string} fromCurrency - Source currency code
  * @returns {Promise<number>} Amount in USD
  */
-async function convertToUSD(amount, fromCurrency = 'USD') {
-    if (!fromCurrency || fromCurrency === 'USD') {
-        return amount;
-    }
-
-    try {
-        const rates = await fetchExchangeRates();
-        const rate = rates[fromCurrency];
-        
-        if (!rate) {
-            console.warn(`No exchange rate for ${fromCurrency}, using 1:1`);
-            return amount;
-        }
-
-        // Convert to USD: divide by the rate (since rates are from USD)
-        const converted = amount / rate;
-        return converted;
-
-    } catch (error) {
-        console.error('Error converting currency:', error);
-        return amount;
-    }
-}
-
-// Make convertToUSD available globally for mode-manager
-window.convertToUSD = convertToUSD;
-
 /**
  * Update currency symbol in the form
  */
