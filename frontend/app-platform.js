@@ -9487,23 +9487,67 @@ function updateTimelineChart(timelineData, currencySymbol) {
     }
     
     timeline.sort((a, b) => a[0].localeCompare(b[0])); // Sort by date
-    const maxAmount = Math.max(...timeline.map(([_, amount]) => amount));
     
-    container.innerHTML = timeline.map(([date, amount]) => {
-        const heightPercent = maxAmount > 0 ? (amount / maxAmount) * 100 : 0;
-        const displayDate = date.split('-').slice(1).join('/'); // Show MM/DD or similar
-        
-        return `
-            <div class="timeline-bar-container">
-                <div class="timeline-bar-wrapper">
-                    <div class="timeline-bar" style="height: ${heightPercent}%">
-                        <div class="timeline-bar-value">${currencySymbol}${amount.toFixed(2)}</div>
-                    </div>
-                </div>
-                <div class="timeline-label">${displayDate}</div>
+    // Ensure amount is a number
+    const validTimeline = timeline.map(([date, amount]) => [
+        date, 
+        typeof amount === 'number' ? amount : parseFloat(amount) || 0
+    ]);
+    
+    const maxAmount = Math.max(...validTimeline.map(([_, amount]) => amount));
+    const totalAmount = validTimeline.reduce((sum, [_, amount]) => sum + amount, 0);
+    
+    // Better date formatting
+    const formatDate = (dateStr) => {
+        const [year, month, day] = dateStr.split('-');
+        if (day) {
+            // Daily format: Jan 15
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${monthNames[parseInt(month) - 1]} ${parseInt(day)}`;
+        } else {
+            // Monthly format: Jan 2026
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${monthNames[parseInt(month) - 1]} ${year}`;
+        }
+    };
+    
+    container.innerHTML = `
+        <div class="timeline-summary">
+            <div class="timeline-stat">
+                <span class="timeline-stat-label">Total Period</span>
+                <span class="timeline-stat-value">${currencySymbol}${totalAmount.toFixed(2)}</span>
             </div>
-        `;
-    }).join('');
+            <div class="timeline-stat">
+                <span class="timeline-stat-label">Highest Day/Month</span>
+                <span class="timeline-stat-value">${currencySymbol}${maxAmount.toFixed(2)}</span>
+            </div>
+            <div class="timeline-stat">
+                <span class="timeline-stat-label">Data Points</span>
+                <span class="timeline-stat-value">${validTimeline.length}</span>
+            </div>
+        </div>
+        <div class="timeline-bars">
+            ${validTimeline.map(([date, amount]) => {
+                const heightPercent = maxAmount > 0 ? (amount / maxAmount) * 100 : 0;
+                const widthPercent = totalAmount > 0 ? (amount / totalAmount) * 100 : 0;
+                const displayDate = formatDate(date);
+                
+                return `
+                    <div class="timeline-bar-container" title="${displayDate}: ${currencySymbol}${amount.toFixed(2)} (${widthPercent.toFixed(1)}%)">
+                        <div class="timeline-bar-wrapper">
+                            <div class="timeline-bar" style="height: ${heightPercent}%">
+                                <div class="timeline-bar-tooltip">
+                                    <strong>${currencySymbol}${amount.toFixed(2)}</strong>
+                                    <span>${widthPercent.toFixed(1)}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-label">${displayDate}</div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
 }
 
 function generateSmartInsights(analytics, currencySymbol) {
