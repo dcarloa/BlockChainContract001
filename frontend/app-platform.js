@@ -9124,9 +9124,9 @@ async function loadAnalytics(timeframe) {
         let displayCurrency = 'USD';
         let convertedToUSD = false;
         
-        // Remove any existing warning
-        const existingWarning = document.querySelector('.multi-currency-warning');
-        if (existingWarning) existingWarning.remove();
+        // ALWAYS remove any existing info banner first
+        const existingInfo = document.querySelector('.multi-currency-info');
+        if (existingInfo) existingInfo.remove();
         
         if (currencies.length === 1) {
             // Single currency - use it as-is
@@ -9154,12 +9154,12 @@ async function loadAnalytics(timeframe) {
         
         const currencySymbol = CURRENCY_SYMBOLS[displayCurrency] || '$';
         
-        // Update metrics cards
-        updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency, [displayCurrency]);
+        // Update metrics cards - pass analytics directly (it's already converted if needed)
+        updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency);
         
         // Update breakdowns
-        updateCategoryBreakdown(analytics.byCategory, currencySymbol, { [displayCurrency]: analytics.totalSpent });
-        updateMemberBreakdown(analytics.byMember, currencySymbol, { [displayCurrency]: analytics.totalSpent });
+        updateCategoryBreakdown(analytics.byCategory, currencySymbol, analytics.byCurrency);
+        updateMemberBreakdown(analytics.byMember, currencySymbol, analytics.byCurrency);
         
         // Update timeline
         updateTimelineChart(analytics.byMonth || analytics.byDay || {}, currencySymbol);
@@ -9231,24 +9231,14 @@ function convertAnalyticsToUSD(analytics) {
     };
 }
 
-function updateAnalyticsMetrics(analytics, currencySymbol, currency, currencies) {
-    // If multiple currencies, show breakdown
-    if (currencies.length > 1) {
-        const totalSpent = document.getElementById('analyticsTotalSpent');
-        if (totalSpent) {
-            // Show breakdown by currency
-            const currencyBreakdown = currencies.map(curr => {
-                const symbol = CURRENCY_SYMBOLS[curr] || curr;
-                return `${symbol}${analytics.byCurrency[curr].toFixed(2)} ${curr}`;
-            }).join(' + ');
-            totalSpent.innerHTML = `<small style="font-size: 0.9rem;">${currencyBreakdown}</small>`;
-        }
-    } else {
-        // Single currency - show normally
-        const totalSpent = document.getElementById('analyticsTotalSpent');
-        if (totalSpent) {
-            totalSpent.textContent = `${currencySymbol}${analytics.totalSpent.toFixed(2)}`;
-        }
+function updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency) {
+    // Get totalSpent - it's already a number (original or converted)
+    const totalSpent = typeof analytics.totalSpent === 'number' ? analytics.totalSpent : 0;
+    
+    // Single display - show in the chosen currency
+    const totalSpentEl = document.getElementById('analyticsTotalSpent');
+    if (totalSpentEl) {
+        totalSpentEl.textContent = `${currencySymbol}${totalSpent.toFixed(2)}`;
     }
     
     // Average Per Day
@@ -9258,7 +9248,7 @@ function updateAnalyticsMetrics(analytics, currencySymbol, currency, currencies)
     
     if (avgPerDay && analytics.expenseCount > 0) {
         const days = currentAnalyticsPeriod === 'all' ? 365 : parseInt(currentAnalyticsPeriod);
-        const dailyAvg = analytics.totalSpent / days;
+        const dailyAvg = totalSpent / days;
         avgPerDay.textContent = `${currencySymbol}${dailyAvg.toFixed(2)}`;
         if (activeDays) activeDays.textContent = days;
     }
