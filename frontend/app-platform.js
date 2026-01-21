@@ -9095,27 +9095,40 @@ async function loadAnalytics(timeframe) {
         // Detect currencies
         const currencies = Object.keys(analytics.byCurrency);
         let displayCurrency = 'USD';
+        let showMultiCurrencyWarning = currencies.length > 1;
         
         if (currencies.length === 1) {
             displayCurrency = currencies[0];
         } else if (currencies.length > 1) {
             displayCurrency = currencies[0]; // Use first currency as default
+            
+            // Show warning in analytics header
+            const headerContent = document.querySelector('.analytics-header-content');
+            if (headerContent && !document.querySelector('.multi-currency-warning')) {
+                const warning = document.createElement('div');
+                warning.className = 'multi-currency-warning';
+                warning.innerHTML = `
+                    <span class="warning-icon">⚠️</span>
+                    <span>Multiple currencies detected: ${currencies.join(', ')}. Amounts shown in original currencies - not converted.</span>
+                `;
+                headerContent.appendChild(warning);
+            }
         }
         
         const currencySymbol = displayCurrency ? (CURRENCY_SYMBOLS[displayCurrency] || '$') : '';
         
         // Update metrics cards
-        updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency);
+        updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency, currencies);
         
-        // Update breakdowns
-        updateCategoryBreakdown(analytics.byCategory, currencySymbol);
-        updateMemberBreakdown(analytics.byMember, currencySymbol);
+        // Update breakdowns (now currency-aware)
+        updateCategoryBreakdown(analytics.byCategory, currencySymbol, analytics.byCurrency);
+        updateMemberBreakdown(analytics.byMember, currencySymbol, analytics.byCurrency);
         
         // Update timeline
         updateTimelineChart(analytics.byMonth || analytics.byDay || {}, currencySymbol);
         
         // Generate insights
-        generateSmartInsights(analytics, currencySymbol);
+        generateSmartInsights(analytics, currencySymbol, currencies);
         
         hideLoading();
         
@@ -9126,11 +9139,24 @@ async function loadAnalytics(timeframe) {
     }
 }
 
-function updateAnalyticsMetrics(analytics, currencySymbol, currency) {
-    // Total Spent
-    const totalSpent = document.getElementById('analyticsTotalSpent');
-    if (totalSpent) {
-        totalSpent.textContent = `${currencySymbol}${analytics.totalSpent.toFixed(2)}`;
+function updateAnalyticsMetrics(analytics, currencySymbol, currency, currencies) {
+    // If multiple currencies, show breakdown
+    if (currencies.length > 1) {
+        const totalSpent = document.getElementById('analyticsTotalSpent');
+        if (totalSpent) {
+            // Show breakdown by currency
+            const currencyBreakdown = currencies.map(curr => {
+                const symbol = CURRENCY_SYMBOLS[curr] || curr;
+                return `${symbol}${analytics.byCurrency[curr].toFixed(2)} ${curr}`;
+            }).join(' + ');
+            totalSpent.innerHTML = `<small style="font-size: 0.9rem;">${currencyBreakdown}</small>`;
+        }
+    } else {
+        // Single currency - show normally
+        const totalSpent = document.getElementById('analyticsTotalSpent');
+        if (totalSpent) {
+            totalSpent.textContent = `${currencySymbol}${analytics.totalSpent.toFixed(2)}`;
+        }
     }
     
     // Average Per Day

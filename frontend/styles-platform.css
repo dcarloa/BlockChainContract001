@@ -12355,6 +12355,22 @@ header,
     font-size: 1rem;
 }
 
+.multi-currency-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 165, 0, 0.2);
+    border-left: 3px solid #ffa502;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.multi-currency-warning .warning-icon {
+    font-size: 1.2rem;
+}
+
 .analytics-header .modal-close {
     background: rgba(255, 255, 255, 0.2);
     color: white;
