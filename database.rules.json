@@ -196,6 +196,13 @@
           ".validate": "newData.hasChildren(['token', 'createdAt', 'lastUsed'])"
         }
       }
+    },
+    
+    "system": {
+      "exchangeRates": {
+        ".read": true,
+        ".write": "auth != null"
+      }
     }
   }
 }

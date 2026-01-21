@@ -5635,8 +5635,9 @@ const CURRENCY_SYMBOLS = {
     'CHF': 'CHF'
 };
 
-// Approximate exchange rates to USD (updated periodically)
-const EXCHANGE_RATES_TO_USD = {
+// FALLBACK exchange rates to USD (used if API/Firebase fails)
+// These are approximate rates as of January 2026
+const EXCHANGE_RATES_TO_USD_FALLBACK = {
     'USD': 1.0,
     'EUR': 1.08,
     'GBP': 1.27,
@@ -5651,19 +5652,103 @@ const EXCHANGE_RATES_TO_USD = {
     'CHF': 1.17
 };
 
+// Active exchange rates (updated from API/Firebase or fallback)
+let EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
+
+/**
+ * Fetch and cache exchange rates from API
+ * Updates Firebase cache and local rates
+ * @returns {Promise<Object>} Updated rates or null if failed
+ */
+async function fetchAndCacheExchangeRates() {
+    try {
+        console.log('[ExchangeRates] Checking for updates...');
+        
+        // Check Firebase cache first
+        const cached = await window.FirebaseConfig.readDb('system/exchangeRates');
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+        
+        // If cache is fresh (< 24h), use it
+        if (cached && cached.lastUpdated && (now - cached.lastUpdated) < ONE_DAY) {
+            console.log('[ExchangeRates] Using cached rates from Firebase (age: ' + 
+                Math.round((now - cached.lastUpdated) / (60 * 60 * 1000)) + 'h)');
+            EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK, ...cached.rates };
+            return cached.rates;
+        }
+        
+        // Fetch fresh rates from API (exchangerate-api.com - free tier)
+        console.log('[ExchangeRates] Fetching fresh rates from API...');
+        const response = await fetch('https://open.exchangerate-api.com/v6/latest/USD');
+        
+        if (!response.ok) {
+            throw new Error(`API returned ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data.rates) {
+            throw new Error('Invalid API response format');
+        }
+        
+        // Convert rates to "to USD" format (API gives "from USD", so we invert)
+        const ratesToUSD = {};
+        for (const [currency, rate] of Object.entries(data.rates)) {
+            ratesToUSD[currency] = 1 / rate; // Invert: if 1 USD = 17.24 MXN, then 1 MXN = 0.058 USD
+        }
+        ratesToUSD['USD'] = 1.0; // USD to USD is always 1
+        
+        // Cache in Firebase
+        await window.FirebaseConfig.updateDb('system/exchangeRates', {
+            rates: ratesToUSD,
+            lastUpdated: now,
+            source: 'exchangerate-api.com'
+        });
+        
+        // Update local rates
+        EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK, ...ratesToUSD };
+        
+        console.log('[ExchangeRates] ✅ Rates updated successfully from API');
+        console.log(`[ExchangeRates] Sample: 1 MXN = ${ratesToUSD.MXN?.toFixed(4)} USD, 1 COP = ${ratesToUSD.COP?.toFixed(6)} USD`);
+        
+        return ratesToUSD;
+        
+    } catch (error) {
+        console.warn('[ExchangeRates] ⚠️ Failed to fetch rates, using fallback:', error.message);
+        EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
+        return null;
+    }
+}
+
 /**
  * Convert amount from one currency to USD
+ * Uses cached/updated rates, falls back to hardcoded if unavailable
  * @param {number} amount - Amount to convert
  * @param {string} fromCurrency - Source currency code
  * @returns {number} Amount in USD
  */
 function convertToUSD(amount, fromCurrency) {
-    const rate = EXCHANGE_RATES_TO_USD[fromCurrency] || 1.0;
+    const rate = EXCHANGE_RATES_TO_USD[fromCurrency] || EXCHANGE_RATES_TO_USD_FALLBACK[fromCurrency] || 1.0;
     return amount * rate;
 }
 
 // Make convertToUSD available globally
 window.convertToUSD = convertToUSD;
+
+// Initialize exchange rates when Firebase is ready
+// This runs after DOMContentLoaded when Firebase auth is initialized
+if (typeof window.initExchangeRates === 'undefined') {
+    window.initExchangeRates = async function() {
+        try {
+            await fetchAndCacheExchangeRates();
+        } catch (error) {
+            console.warn('[ExchangeRates] Init failed, using fallback rates:', error);
+        }
+    };
+    
+    // Auto-init after a short delay to ensure Firebase is ready
+    setTimeout(window.initExchangeRates, 2000);
+}
 
 /**
  * Format currency with symbol
