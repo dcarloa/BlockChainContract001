@@ -2,12 +2,12 @@
    COLONIA VIVA SYSTEM - STYLES
    ============================================ */
 
-/* Colony Mini Display (Header) */
+/* Colony Mini Display (Header) - Larger version */
 .colony-mini-display {
   display: inline-flex;
   align-items: center;
-  gap: 0.625rem;
-  padding: 0.625rem 1rem;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
   border: 1.5px solid rgba(102, 126, 234, 0.3);
   border-radius: var(--radius-lg);
@@ -25,7 +25,7 @@
 }
 
 .colony-state-label {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;

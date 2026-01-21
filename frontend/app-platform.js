@@ -9136,8 +9136,8 @@ async function loadAnalytics(timeframe) {
             displayCurrency = 'USD';
             convertedToUSD = true;
             
-            // Convert all analytics data to USD
-            analytics = convertAnalyticsToUSD(analytics);
+            // Convert all analytics data to USD (async)
+            analytics = await convertAnalyticsToUSD(analytics);
             
             // Show info banner (not warning) about conversion
             const headerContent = document.querySelector('.analytics-header-content');
@@ -9177,58 +9177,85 @@ async function loadAnalytics(timeframe) {
 }
 
 /**
- * Convert all analytics data to USD
+ * Convert all analytics data to USD by recalculating from expenses
  * @param {Object} analytics - Original analytics with mixed currencies
- * @returns {Object} Analytics converted to USD
+ * @returns {Promise<Object>} Analytics converted to USD
  */
-function convertAnalyticsToUSD(analytics) {
-    // We need to fetch expenses and recalculate
-    // For now, we'll convert the totals proportionally
-    // This is an approximation - ideally we'd recalculate from raw expense data
-    
-    const totalUSD = Object.entries(analytics.byCurrency).reduce((sum, [currency, amount]) => {
-        return sum + convertToUSD(amount, currency);
-    }, 0);
-    
-    const avgExpenseUSD = analytics.expenseCount > 0 ? totalUSD / analytics.expenseCount : 0;
-    
-    // Convert categories
-    const byCategoryUSD = {};
-    const categoryTotal = Object.values(analytics.byCategory).reduce((sum, val) => sum + val, 0);
-    
-    Object.entries(analytics.byCategory).forEach(([category, amount]) => {
-        // Proportional conversion based on total USD
-        byCategoryUSD[category] = categoryTotal > 0 ? (amount / categoryTotal) * totalUSD : 0;
-    });
-    
-    // Convert members
-    const byMemberUSD = {};
-    const memberTotal = Object.values(analytics.byMember).reduce((sum, val) => sum + val, 0);
-    
-    Object.entries(analytics.byMember).forEach(([member, amount]) => {
-        // Proportional conversion based on total USD
-        byMemberUSD[member] = memberTotal > 0 ? (amount / memberTotal) * totalUSD : 0;
-    });
-    
-    // Convert timeline
-    const byMonthUSD = {};
-    const monthTotal = Object.values(analytics.byMonth || {}).reduce((sum, val) => sum + val, 0);
-    
-    Object.entries(analytics.byMonth || {}).forEach(([month, amount]) => {
-        // Proportional conversion based on total USD
-        byMonthUSD[month] = monthTotal > 0 ? (amount / monthTotal) * totalUSD : 0;
-    });
-    
-    return {
-        totalSpent: totalUSD,
-        expenseCount: analytics.expenseCount,
-        byCategory: byCategoryUSD,
-        byMember: byMemberUSD,
-        byMonth: byMonthUSD,
-        byCurrency: { 'USD': totalUSD },
-        averageExpense: avgExpenseUSD,
-        timeframe: analytics.timeframe
-    };
+async function convertAnalyticsToUSD(analytics) {
+    try {
+        // Fetch all expenses to recalculate properly
+        const expenses = await window.FirebaseConfig.readDb(
+            `groups/${currentFund.fundId}/expenses`
+        );
+        
+        if (!expenses) {
+            return analytics; // Return original if no expenses
+        }
+        
+        const expenseList = Object.values(expenses).filter(e => e.status === 'approved');
+        
+        // Apply same timeframe filter
+        const now = Date.now();
+        const timeframe = analytics.timeframe || currentAnalyticsPeriod;
+        const filteredExpenses = expenseList.filter(expense => {
+            if (timeframe === 'all') return true;
+            
+            const expenseTime = expense.timestamp;
+            const dayMs = 24 * 60 * 60 * 1000;
+            
+            switch(timeframe) {
+                case '7':
+                    return (now - expenseTime) <= (7 * dayMs);
+                case '30':
+                    return (now - expenseTime) <= (30 * dayMs);
+                case '90':
+                    return (now - expenseTime) <= (90 * dayMs);
+                default:
+                    return true;
+            }
+        });
+        
+        // Recalculate everything in USD
+        let totalSpentUSD = 0;
+        const byCategoryUSD = {};
+        const byMemberUSD = {};
+        const byMonthUSD = {};
+        
+        filteredExpenses.forEach(expense => {
+            const amountUSD = convertToUSD(expense.amount, expense.currency || 'USD');
+            totalSpentUSD += amountUSD;
+            
+            // By category
+            const category = expense.category || 'other';
+            byCategoryUSD[category] = (byCategoryUSD[category] || 0) + amountUSD;
+            
+            // By member
+            const paidBy = expense.paidByName || expense.paidBy;
+            byMemberUSD[paidBy] = (byMemberUSD[paidBy] || 0) + amountUSD;
+            
+            // By month
+            const date = new Date(expense.timestamp);
+            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            byMonthUSD[monthKey] = (byMonthUSD[monthKey] || 0) + amountUSD;
+        });
+        
+        const avgExpenseUSD = filteredExpenses.length > 0 ? totalSpentUSD / filteredExpenses.length : 0;
+        
+        return {
+            totalSpent: totalSpentUSD,
+            expenseCount: filteredExpenses.length,
+            byCategory: byCategoryUSD,
+            byMember: byMemberUSD,
+            byMonth: byMonthUSD,
+            byCurrency: { 'USD': totalSpentUSD },
+            averageExpense: avgExpenseUSD,
+            timeframe: timeframe
+        };
+        
+    } catch (error) {
+        console.error('Error converting analytics to USD:', error);
+        return analytics; // Fallback to original
+    }
 }
 
 function updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency) {
