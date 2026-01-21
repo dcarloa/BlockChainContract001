@@ -1041,6 +1041,48 @@ const translations = {
                     notesPlaceholder: "Payment method, reference number, etc...",
                     cancelButton: "Cancel",
                     recordButton: "Record Payment"
+                },
+                analytics: {
+                    title: "📊 Group Analytics",
+                    subtitle: "Insights and trends for smarter expense management",
+                    periods: {
+                        week: "7 Days",
+                        month: "30 Days",
+                        quarter: "90 Days",
+                        all: "All Time"
+                    },
+                    metrics: {
+                        totalSpent: "Total Spent",
+                        avgPerDay: "Avg. per Day",
+                        transactions: "Transactions",
+                        topContributor: "Top Contributor",
+                        noPrevious: "No previous data",
+                        basedOn: "Based on",
+                        activeDays: "active days",
+                        avgAmount: "Avg:",
+                        expenses: "expenses"
+                    },
+                    panels: {
+                        categories: {
+                            title: "Spending by Category",
+                            subtitle: "Where your money goes"
+                        },
+                        members: {
+                            title: "Member Activity",
+                            subtitle: "Who's paying what"
+                        },
+                        timeline: {
+                            title: "Spending Timeline",
+                            subtitle: "Daily expense trends"
+                        }
+                    },
+                    insights: {
+                        title: "Smart Insights"
+                    },
+                    actions: {
+                        exportCSV: "Export to CSV",
+                        share: "Share Report"
+                    }
                 }
             },
             toast: {
@@ -2169,6 +2211,48 @@ const translations = {
                     notesPlaceholder: "Método de pago, número de referencia, etc...",
                     cancelButton: "Cancelar",
                     recordButton: "Registrar Pago"
+                },
+                analytics: {
+                    title: "📊 Analíticas del Grupo",
+                    subtitle: "Insights y tendencias para una mejor gestión de gastos",
+                    periods: {
+                        week: "7 Días",
+                        month: "30 Días",
+                        quarter: "90 Días",
+                        all: "Todo el Tiempo"
+                    },
+                    metrics: {
+                        totalSpent: "Total Gastado",
+                        avgPerDay: "Promedio por Día",
+                        transactions: "Transacciones",
+                        topContributor: "Mayor Contribuidor",
+                        noPrevious: "Sin datos previos",
+                        basedOn: "Basado en",
+                        activeDays: "días activos",
+                        avgAmount: "Promedio:",
+                        expenses: "gastos"
+                    },
+                    panels: {
+                        categories: {
+                            title: "Gastos por Categoría",
+                            subtitle: "En qué se gasta el dinero"
+                        },
+                        members: {
+                            title: "Actividad de Miembros",
+                            subtitle: "Quién paga qué"
+                        },
+                        timeline: {
+                            title: "Línea de Tiempo de Gastos",
+                            subtitle: "Tendencias diarias de gastos"
+                        }
+                    },
+                    insights: {
+                        title: "Insights Inteligentes"
+                    },
+                    actions: {
+                        exportCSV: "Exportar a CSV",
+                        share: "Compartir Reporte"
+                    }
                 }
             },
             toast: {

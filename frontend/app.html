@@ -2872,54 +2872,170 @@
 
     <!-- Analytics Modal -->
     <div id="analyticsModal" class="modal" style="display: none;">
-        <div class="modal-content modal-large">
-            <div class="modal-header">
-                <h2>📊 Expense Analytics</h2>
+        <div class="modal-content modal-xlarge analytics-modal-modern">
+            <div class="analytics-header">
+                <div class="analytics-header-content">
+                    <h2 data-i18n="app.analytics.title">📊 Group Analytics</h2>
+                    <p class="analytics-subtitle" data-i18n="app.analytics.subtitle">Insights and trends for smarter expense management</p>
+                </div>
                 <button class="modal-close" onclick="closeAnalyticsModal()">&times;</button>
             </div>
             
-            <div class="analytics-container">
-                <!-- Timeframe selector -->
-                <div class="timeframe-selector" style="margin-bottom: 2rem;">
-                    <button class="btn-timeframe active" onclick="switchTimeframe('week')">Week</button>
-                    <button class="btn-timeframe" onclick="switchTimeframe('month')">Month</button>
-                    <button class="btn-timeframe" onclick="switchTimeframe('year')">Year</button>
-                    <button class="btn-timeframe" onclick="switchTimeframe('all')">All Time</button>
-                </div>
-
-                <!-- Summary Stats -->
-                <div id="analyticsStats" class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                    <!-- Populated dynamically -->
-                </div>
-
-                <!-- Charts -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-                    <div class="chart-container">
-                        <h3 style="margin-bottom: 1rem;">By Category</h3>
-                        <canvas id="categoryChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h3 style="margin-bottom: 1rem;">By Member</h3>
-                        <canvas id="memberChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-container" style="margin-bottom: 2rem;">
-                    <h3 style="margin-bottom: 1rem;">Spending Over Time</h3>
-                    <canvas id="timelineChart"></canvas>
-                </div>
-
-                <!-- Export Options -->
-                <div class="export-section" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
-                    <h3 style="margin-bottom: 1rem;">📥 Export Data</h3>
-                    <div style="display: flex; gap: 1rem;">
-                        <button class="btn btn-secondary" onclick="exportToCSV()">
-                            📄 Export to CSV
+            <div class="analytics-body">
+                <!-- Period Selector -->
+                <div class="analytics-period-selector">
+                    <div class="period-tabs">
+                        <button class="period-tab active" data-period="7" onclick="switchAnalyticsPeriod(7, this)">
+                            <span class="period-label" data-i18n="app.analytics.periods.week">7 Days</span>
                         </button>
-                        <button class="btn btn-secondary" onclick="exportToPDF()">
-                            📑 Export to PDF
+                        <button class="period-tab" data-period="30" onclick="switchAnalyticsPeriod(30, this)">
+                            <span class="period-label" data-i18n="app.analytics.periods.month">30 Days</span>
+                        </button>
+                        <button class="period-tab" data-period="90" onclick="switchAnalyticsPeriod(90, this)">
+                            <span class="period-label" data-i18n="app.analytics.periods.quarter">90 Days</span>
+                        </button>
+                        <button class="period-tab" data-period="all" onclick="switchAnalyticsPeriod('all', this)">
+                            <span class="period-label" data-i18n="app.analytics.periods.all">All Time</span>
                         </button>
                     </div>
+                    <div class="period-info">
+                        <span class="period-icon">📅</span>
+                        <span id="analyticsPeriodRange" class="period-range">Last 7 days</span>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Dashboard -->
+                <div class="analytics-metrics-grid">
+                    <!-- Total Spent Card -->
+                    <div class="metric-card metric-primary">
+                        <div class="metric-icon-container">
+                            <div class="metric-icon">💰</div>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-label" data-i18n="app.analytics.metrics.totalSpent">Total Spent</div>
+                            <div class="metric-value" id="analyticsTotalSpent">$0.00</div>
+                            <div class="metric-trend" id="analyticsTotalTrend">
+                                <span class="trend-indicator">―</span>
+                                <span class="trend-text" data-i18n="app.analytics.metrics.noPrevious">No previous data</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Average Per Day Card -->
+                    <div class="metric-card metric-success">
+                        <div class="metric-icon-container">
+                            <div class="metric-icon">📈</div>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-label" data-i18n="app.analytics.metrics.avgPerDay">Avg. per Day</div>
+                            <div class="metric-value" id="analyticsAvgPerDay">$0.00</div>
+                            <div class="metric-description" id="analyticsAvgDesc">
+                                <span data-i18n="app.analytics.metrics.basedOn">Based on</span> <span id="analyticsActiveDays">0</span> <span data-i18n="app.analytics.metrics.activeDays">active days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Transactions Card -->
+                    <div class="metric-card metric-info">
+                        <div class="metric-icon-container">
+                            <div class="metric-icon">🧾</div>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-label" data-i18n="app.analytics.metrics.transactions">Transactions</div>
+                            <div class="metric-value" id="analyticsTotalExpenses">0</div>
+                            <div class="metric-description" id="analyticsAvgAmount">
+                                <span data-i18n="app.analytics.metrics.avgAmount">Avg:</span> <span id="analyticsAvgAmountValue">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Most Active Member Card -->
+                    <div class="metric-card metric-warning">
+                        <div class="metric-icon-container">
+                            <div class="metric-icon">🏆</div>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-label" data-i18n="app.analytics.metrics.topContributor">Top Contributor</div>
+                            <div class="metric-value metric-value-sm" id="analyticsTopMember">―</div>
+                            <div class="metric-description" id="analyticsTopMemberDesc">
+                                <span id="analyticsTopMemberCount">0</span> <span data-i18n="app.analytics.metrics.expenses">expenses</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights & Breakdowns -->
+                <div class="analytics-content-grid">
+                    <!-- Category Breakdown -->
+                    <div class="analytics-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <span class="panel-icon">📊</span>
+                                <span data-i18n="app.analytics.panels.categories.title">Spending by Category</span>
+                            </h3>
+                            <div class="panel-subtitle" data-i18n="app.analytics.panels.categories.subtitle">Where your money goes</div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="analyticsCategoryBreakdown" class="category-breakdown">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Member Activity -->
+                    <div class="analytics-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <span class="panel-icon">👥</span>
+                                <span data-i18n="app.analytics.panels.members.title">Member Activity</span>
+                            </h3>
+                            <div class="panel-subtitle" data-i18n="app.analytics.panels.members.subtitle">Who's paying what</div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="analyticsMemberBreakdown" class="member-breakdown">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spending Timeline -->
+                <div class="analytics-panel analytics-panel-full">
+                    <div class="panel-header">
+                        <h3 class="panel-title">
+                            <span class="panel-icon">📈</span>
+                            <span data-i18n="app.analytics.panels.timeline.title">Spending Timeline</span>
+                        </h3>
+                        <div class="panel-subtitle" data-i18n="app.analytics.panels.timeline.subtitle">Daily expense trends</div>
+                    </div>
+                    <div class="panel-body">
+                        <div id="analyticsTimelineChart" class="timeline-chart">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Insights -->
+                <div class="analytics-insights">
+                    <h3 class="insights-title">
+                        <span class="insights-icon">💡</span>
+                        <span data-i18n="app.analytics.insights.title">Smart Insights</span>
+                    </h3>
+                    <div id="analyticsSmartInsights" class="insights-grid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="analytics-actions">
+                    <button class="btn btn-secondary btn-analytics-export" onclick="exportAnalyticsToCSV()">
+                        <span class="btn-icon">📥</span>
+                        <span data-i18n="app.analytics.actions.exportCSV">Export to CSV</span>
+                    </button>
+                    <button class="btn btn-secondary btn-analytics-export" onclick="shareAnalytics()">
+                        <span class="btn-icon">📤</span>
+                        <span data-i18n="app.analytics.actions.share">Share Report</span>
+                    </button>
                 </div>
             </div>
         </div>
