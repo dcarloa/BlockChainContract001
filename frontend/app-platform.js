@@ -9158,8 +9158,8 @@ async function loadAnalytics(timeframe) {
         updateAnalyticsMetrics(analytics, currencySymbol, displayCurrency);
         
         // Update breakdowns
-        updateCategoryBreakdown(analytics.byCategory, currencySymbol, analytics.byCurrency);
-        updateMemberBreakdown(analytics.byMember, currencySymbol, analytics.byCurrency);
+        updateCategoryBreakdown(analytics.byCategory, currencySymbol);
+        updateMemberBreakdown(analytics.byMember, currencySymbol);
         
         // Update timeline
         updateTimelineChart(analytics.byMonth || analytics.byDay || {}, currencySymbol);
