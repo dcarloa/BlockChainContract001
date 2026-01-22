@@ -31,8 +31,6 @@
   white-space: nowrap;
   letter-spacing: 0.01em;
 }
-  max-width: 150px;
-}
 
 .colony-visual {
   flex-shrink: 0;
