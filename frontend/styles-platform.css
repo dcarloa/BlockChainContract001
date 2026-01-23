@@ -9280,6 +9280,7 @@ header,
     opacity: 0.95;
     margin-bottom: 3rem;
     line-height: 1.6;
+    white-space: pre-line;
 }
 
 .brand-features {

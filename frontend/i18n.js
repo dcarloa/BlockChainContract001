@@ -350,7 +350,7 @@ const translations = {
             },
             // Sign In Modal
             signIn: {
-                brandSubtitle: "Track expenses with your team.<br>Simple, fast, and free.",
+                brandSubtitle: "Track expenses with your team.\nSimple, fast, and free.",
                 features: {
                     splitExpenses: "Split expenses easily",
                     realTimeTracking: "Real-time tracking",
@@ -1520,7 +1520,7 @@ const translations = {
             },
             // Sign In Modal
             signIn: {
-                brandSubtitle: "Rastrea gastos con tu equipo.<br>Simple, rápido y gratis.",
+                brandSubtitle: "Rastrea gastos con tu equipo.\nSimple, rápido y gratis.",
                 features: {
                     splitExpenses: "Divide gastos fácilmente",
                     realTimeTracking: "Seguimiento en tiempo real",
