@@ -210,7 +210,7 @@
     <script src="firebase-config.js"></script>
 
     <script>
-        let currentUser = null;
+        let adminSetupUser = null;
 
         // Initialize Firebase (check if not already initialized)
         if (!firebase.apps.length) {
@@ -223,7 +223,7 @@
                 return;
             }
 
-            currentUser = user;
+            adminSetupUser = user;
             
             document.getElementById('loading').style.display = 'none';
             document.getElementById('content').style.display = 'block';
@@ -256,7 +256,7 @@
         }
 
         function copyUID() {
-            const uid = currentUser.uid;
+            const uid = adminSetupUser.uid;
             navigator.clipboard.writeText(uid).then(() => {
                 document.getElementById('copiedMsg').style.display = 'block';
                 setTimeout(() => {
@@ -271,7 +271,7 @@
             btn.textContent = '⏳ Agregando...';
 
             try {
-                await firebase.database().ref('system/admins/' + currentUser.uid).set(true);
+                await firebase.database().ref('system/admins/' + adminSetupUser.uid).set(true);
                 
                 document.getElementById('adminAddedMsg').style.display = 'block';
                 btn.textContent = '✅ Admin agregado!';
