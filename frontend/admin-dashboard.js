@@ -9,13 +9,13 @@ const ADMIN_UIDS = [
 ];
 
 // Auto-add current user as admin if no admins configured
-let currentUser = null;
+let adminDashboardUser = null;
 let database = null;
 
 // ===== AUTHENTICATION =====
 function initAuth() {
     firebase.auth().onAuthStateChanged(async (user) => {
-        currentUser = user;
+        adminDashboardUser = user;
         
         if (!user) {
             // Not logged in - redirect to main app
