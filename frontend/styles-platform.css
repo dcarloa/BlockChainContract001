@@ -1631,18 +1631,21 @@ header,
 .fund-title-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
+  justify-content: flex-start;
+  gap: 1rem;
   flex-wrap: wrap;
+}
+
+.fund-title-row #colonyDisplayContainer {
+  margin-left: auto;
 }
 
 .fund-systems-row {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 0.75rem;
+  margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
 
