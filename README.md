@@ -5,6 +5,8 @@
 **🌐 Producción:**
 - Primary: https://antpool.cloud
 - Secondary: https://blockchaincontract001.web.app
+- **🛡️ Admin Dashboard**: https://blockchaincontract001.web.app/admin-dashboard.html
+- **⚙️ Admin Setup**: https://blockchaincontract001.web.app/admin-setup.html
 
 ## 🎯 ¿Qué es SplitExpense?
 
@@ -257,6 +259,25 @@ npx hardhat run scripts/deploy.js --network sepolia
 - [CryptoZombies](https://cryptozombies.io/) - Tutorial interactivo
 - [Ethernaut](https://ethernaut.openzeppelin.com/) - Juegos de seguridad
 - [OpenZeppelin](https://www.openzeppelin.com/) - Contratos seguros y auditados
+
+## 🛡️ Panel de Administración
+
+### Acceso al Dashboard
+1. **Primera vez**: Visita https://blockchaincontract001.web.app/admin-setup.html
+2. Inicia sesión con tu cuenta
+3. Copia tu UID o haz clic en "Agregarme como Admin"
+4. Accede al dashboard: https://blockchaincontract001.web.app/admin-dashboard.html
+
+### Métricas Disponibles
+- 👥 **Usuarios**: Total, activos (7d), crecimiento mensual
+- 🏘️ **Grupos**: Total, nuevos por semana, tipos
+- 💰 **Transacciones**: Total, volumen, por moneda
+- 🐜 **Colonias**: Activas, cofres abiertos
+- 🎭 **Mascotas**: Activas, nivel promedio
+- 📊 **Gráficos**: Crecimiento de usuarios, volumen de transacciones, distribución de monedas
+
+### Documentación Completa
+Ver `frontend/ADMIN_DASHBOARD.md` para instrucciones detalladas de configuración y uso.
 
 ## ⚠️ Advertencias de Seguridad
 
