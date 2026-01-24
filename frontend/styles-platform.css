@@ -628,7 +628,9 @@ header,
     font-size: 1.1rem;
   }
   
-  .btn span:not(.btn-icon) {
+  /* Hide text in header buttons on mobile (show icons only) */
+  header .btn span:not(.btn-icon),
+  .app-header .btn span:not(.btn-icon) {
     display: none;
   }
   
