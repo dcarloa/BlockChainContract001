@@ -212,7 +212,10 @@
     <script>
         let currentUser = null;
 
-        firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase (check if not already initialized)
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
 
         firebase.auth().onAuthStateChanged((user) => {
             if (!user) {
