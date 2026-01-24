@@ -1638,6 +1638,9 @@ header,
 
 .fund-title-row #colonyDisplayContainer {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  align-self: center;
 }
 
 .fund-systems-row {
