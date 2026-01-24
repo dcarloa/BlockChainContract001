@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Ant Pool</title>
+    <link rel="stylesheet" href="styles-platform.css">
+    <style>
+        :root {
+            --admin-primary: #667eea;
+            --admin-secondary: #764ba2;
+            --admin-success: #10b981;
+            --admin-warning: #f59e0b;
+            --admin-danger: #ef4444;
+            --admin-info: #3b82f6;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 4px solid var(--admin-primary);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .metric-card.success { border-left-color: var(--admin-success); }
+        .metric-card.warning { border-left-color: var(--admin-warning); }
+        .metric-card.danger { border-left-color: var(--admin-danger); }
+        .metric-card.info { border-left-color: var(--admin-info); }
+
+        .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            color: var(--admin-success);
+            font-weight: 600;
+        }
+
+        .metric-change.negative {
+            color: var(--admin-danger);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .chart-card h3 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.25rem;
+            color: #1e293b;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .data-table {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        .data-table h3 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.25rem;
+            color: #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .access-denied {
+            text-align: center;
+            padding: 4rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .access-denied h2 {
+            color: var(--admin-danger);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div id="loadingScreen" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading Admin Dashboard...</p>
+        </div>
+
+        <div id="accessDenied" style="display: none;" class="access-denied">
+            <h2>🚫 Access Denied</h2>
+            <p>You don't have permission to access this page.</p>
+            <button class="logout-btn" onclick="logout()">Sign Out</button>
+        </div>
+
+        <div id="dashboardContent" style="display: none;">
+            <!-- Header -->
+            <div class="admin-header">
+                <h1>🛡️ Admin Dashboard</h1>
+                <p>Real-time analytics and system metrics • Last updated: <span id="lastUpdated">-</span></p>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card success">
+                    <span class="metric-icon">👥</span>
+                    <div class="metric-label">Total Users</div>
+                    <div class="metric-value" id="totalUsers">-</div>
+                    <div class="metric-change">+<span id="userGrowth">0</span> this month</div>
+                </div>
+
+                <div class="metric-card info">
+                    <span class="metric-icon">🏘️</span>
+                    <div class="metric-label">Total Groups</div>
+                    <div class="metric-value" id="totalGroups">-</div>
+                    <div class="metric-change">+<span id="groupGrowth">0</span> this week</div>
+                </div>
+
+                <div class="metric-card warning">
+                    <span class="metric-icon">💰</span>
+                    <div class="metric-label">Total Transactions</div>
+                    <div class="metric-value" id="totalTransactions">-</div>
+                    <div class="metric-change">$<span id="transactionVolume">0</span> total volume</div>
+                </div>
+
+                <div class="metric-card">
+                    <span class="metric-icon">⚡</span>
+                    <div class="metric-label">Active Users (7d)</div>
+                    <div class="metric-value" id="activeUsers">-</div>
+                    <div class="metric-change"><span id="activePercent">0</span>% of total</div>
+                </div>
+
+                <div class="metric-card success">
+                    <span class="metric-icon">🐜</span>
+                    <div class="metric-label">Active Colonies</div>
+                    <div class="metric-value" id="activeColonies">-</div>
+                    <div class="metric-change"><span id="colonyChests">0</span> chests opened</div>
+                </div>
+
+                <div class="metric-card info">
+                    <span class="metric-icon">🎭</span>
+                    <div class="metric-label">Active Mascots</div>
+                    <div class="metric-value" id="activeMascots">-</div>
+                    <div class="metric-change"><span id="mascotLevels">0</span> avg level</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>📈 User Growth (Last 30 Days)</h3>
+                    <div class="chart-container">
+                        <canvas id="userGrowthChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>💸 Transaction Volume</h3>
+                    <div class="chart-container">
+                        <canvas id="transactionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>🌍 Currency Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="currencyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>🎯 Group Types</h3>
+                    <div class="chart-container">
+                        <canvas id="groupTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Groups Table -->
+            <div class="data-table">
+                <h3>📋 Recent Groups</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Group Name</th>
+                            <th>Created By</th>
+                            <th>Members</th>
+                            <th>Expenses</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentGroupsTable">
+                        <tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="firebase-credentials.js"></script>
+    
+    <!-- Admin Dashboard Script -->
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>
