@@ -613,5 +613,4 @@ window.MascotSystem = {
     }
 };
 
-console.log('✅ Mascot System initialized');
-console.log('💡 Total wardrobe items:', Object.keys(WARDROBE_ITEMS).length);
+// Mascot System initialized

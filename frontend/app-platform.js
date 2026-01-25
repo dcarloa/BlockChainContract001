@@ -5662,23 +5662,18 @@ let EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
  */
 async function fetchAndCacheExchangeRates() {
     try {
-        console.log('[ExchangeRates] Checking for updates...');
-        
-        // Check Firebase cache first
+        // Checking for exchange rate updates
         const cached = await window.FirebaseConfig.readDb('system/exchangeRates');
         const now = Date.now();
         const ONE_DAY = 24 * 60 * 60 * 1000;
         
         // If cache is fresh (< 24h), use it
         if (cached && cached.lastUpdated && (now - cached.lastUpdated) < ONE_DAY) {
-            console.log('[ExchangeRates] Using cached rates from Firebase (age: ' + 
-                Math.round((now - cached.lastUpdated) / (60 * 60 * 1000)) + 'h)');
             EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK, ...cached.rates };
             return cached.rates;
         }
         
         // Fetch fresh rates from API (exchangerate-api.com - free tier)
-        console.log('[ExchangeRates] Fetching fresh rates from API...');
         const response = await fetch('https://open.exchangerate-api.com/v6/latest/USD');
         
         if (!response.ok) {
@@ -5707,10 +5702,6 @@ async function fetchAndCacheExchangeRates() {
         
         // Update local rates
         EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK, ...ratesToUSD };
-        
-        console.log('[ExchangeRates] ✅ Rates updated successfully from API');
-        console.log(`[ExchangeRates] Sample: 1 MXN = ${ratesToUSD.MXN?.toFixed(4)} USD, 1 COP = ${ratesToUSD.COP?.toFixed(6)} USD`);
-        
         return ratesToUSD;
         
     } catch (error) {

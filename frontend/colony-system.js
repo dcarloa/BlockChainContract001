@@ -608,9 +608,6 @@ window.ColonySystem = {
     }
 };
 
-console.log('✅ Colony System initialized');
-console.log('💡 Testing functions available:');
-console.log('   - ColonySystem.triggerWeeklyEvaluation() - Trigger manual evaluation');
-console.log('   - ColonySystem.createTestChest(groupId, state) - Create test chest');
-console.log('   - ColonySystem.deleteTestChest(groupId) - Delete current week chest');
+// Colony System initialized
+// Testing functions: triggerWeeklyEvaluation(), createTestChest(), deleteTestChest()
 

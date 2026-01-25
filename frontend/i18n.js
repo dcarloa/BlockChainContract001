@@ -2429,13 +2429,13 @@ function applyTranslations() {
 if (typeof document !== 'undefined') {
     // Apply on DOMContentLoaded
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('[i18n] DOMContentLoaded - applying translations');
+        // Applying translations on DOMContentLoaded
         applyTranslations();
     });
     
     // Also apply if DOM is already loaded
     if (document.readyState !== 'loading') {
-        console.log('[i18n] DOM already loaded - applying translations immediately');
+        // DOM already loaded, applying translations
         applyTranslations();
     }
 }
@@ -2448,5 +2448,5 @@ if (typeof module !== 'undefined' && module.exports) {
 // Export to window for browser usage
 if (typeof window !== 'undefined') {
     window.i18n = { t, setLanguage, getCurrentLanguage, translations, applyTranslations };
-    console.log('[i18n] Exported to window.i18n');
+    // Exported to window.i18n
 }
