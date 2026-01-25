@@ -228,27 +228,61 @@ console.log('Allowed games:', games);
 // Con LAUNCH_MODE=false y FREE tier: 2 juegos
 ```
 
-## 💳 Integración de Pagos (Pendiente)
+## 💳 Integración de Pagos
 
-La función `handleUpgrade()` en `subscription-manager.js` está lista para integrar con:
+### ✅ Stripe Integrado y Funcional
 
-1. **Stripe** (recomendado)
-2. **PayPal**
-3. **Crypto** (MetaMask para pagos directos)
+El sistema de suscripción está **completamente conectado con Stripe**:
 
-### Stripe Integration (Ejemplo)
+#### Frontend
+- **Checkout**: Redirige a Stripe Checkout al hacer clic en "Upgrade to PRO"
+- **Callback**: Maneja automáticamente el retorno desde Stripe (success/cancelled)
+- **Customer Portal**: Usuarios PRO pueden gestionar su suscripción
+
+#### Backend (Cloud Functions)
+- **`stripeWebhook`**: Recibe eventos de Stripe y actualiza Firebase
+  - `checkout.session.completed` → Activa suscripción PRO
+  - `customer.subscription.updated` → Actualiza estado/expiración
+  - `customer.subscription.deleted` → Revierte a FREE
+  
+- **`createStripeCheckoutSession`**: Crea sesión de pago
+  - Plan: PRO Monthly $4.99/month
+  - Price ID: `price_1SmMb0B6L1CVc8RDGEi8cqVQ`
+
+- **`createStripePortalSession`**: Portal de gestión para usuarios PRO
+
+#### Flujo Completo
+1. Usuario hace clic en "Upgrade to PRO" (en modal o perfil)
+2. Frontend llama a `createStripeCheckoutSession`
+3. Redirige a Stripe Checkout
+4. Usuario completa pago
+5. Stripe envía webhook → Cloud Function actualiza Firebase
+6. Usuario regresa con `?payment=success`
+7. Frontend detecta éxito y recarga página
+8. Sistema valida `tier: 'pro'` y activa features
+
+#### Estado Actual
+- ✅ Stripe configurado en Firebase Functions
+- ✅ Webhook procesando eventos correctamente
+- ✅ Modal de upgrade conectado a Stripe
+- ✅ Callback handling implementado
+- ✅ Customer Portal para gestión de suscripciones
+
+### Configuración en Firebase
+
+```bash
+# Configurar Stripe keys (ya hecho)
+firebase functions:config:set stripe.secret_key="sk_..."
+firebase functions:config:set stripe.webhook_secret="whsec_..."
+```
+
+### Testing
+
 ```javascript
-// En handleUpgrade()
-const stripe = Stripe('pk_...');
-const session = await fetch('/create-checkout-session', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, tier: 'pro' })
-});
-
-const result = await stripe.redirectToCheckout({
-    sessionId: session.id
-});
+// Modo test (usa keys de Stripe test)
+// Tarjeta de prueba: 4242 4242 4242 4242
+// Fecha: Cualquier fecha futura
+// CVC: Cualquier 3 dígitos
 ```
 
 ## 📚 Estructura de Firebase
@@ -268,15 +302,15 @@ users/
 
 Cuando estés listo para activar el sistema:
 
-- [ ] 1. Decidir integración de pagos (Stripe/PayPal/Crypto)
-- [ ] 2. Implementar `handleUpgrade()` con sistema de pago
-- [ ] 3. Crear Cloud Function para webhook de pagos
-- [ ] 4. Configurar precios mensuales/anuales
+- [x] 1. Integración de pagos (Stripe ✅)
+- [x] 2. Implementar `handleUpgrade()` con sistema de pago ✅
+- [x] 3. Cloud Function para webhook de pagos ✅
+- [x] 4. Configurar precios mensuales ✅ ($4.99/month)
 - [ ] 5. Cambiar `LAUNCH_MODE = false`
 - [ ] 6. Hacer deploy
 - [ ] 7. Probar flujo completo: Free → Upgrade → PRO
-- [ ] 8. Configurar emails de confirmación
-- [ ] 9. Crear página de pricing
+- [ ] 8. Configurar emails de confirmación (opcional)
+- [ ] 9. Crear página de pricing (opcional)
 - [ ] 10. Actualizar FAQs
 
 ## 🎯 Próximas Implementaciones

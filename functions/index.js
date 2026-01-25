@@ -214,10 +214,12 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
                     const userId = Object.keys(userData)[0];
 
                     await admin.database().ref(`/users/${userId}/subscription`).set({
+                        tier: 'pro', // For subscription-manager.js
                         status: 'active',
-                        plan: 'pro',
+                        plan: 'pro', // Legacy field
                         stripeCustomerId: customerId,
                         stripeSubscriptionId: subscriptionId,
+                        startedAt: Date.now(),
                         createdAt: Date.now(),
                         updatedAt: Date.now()
                     });
@@ -244,7 +246,9 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
 
                     await admin.database().ref(`/users/${userId}/subscription`).update({
                         status: subscription.status,
+                        tier: subscription.status === 'active' ? 'pro' : 'free', // Update tier based on status
                         currentPeriodEnd: subscription.current_period_end * 1000,
+                        expiresAt: subscription.current_period_end * 1000, // For subscription-manager.js
                         updatedAt: Date.now()
                     });
 
@@ -268,9 +272,11 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
                     const userId = Object.keys(userData)[0];
 
                     await admin.database().ref(`/users/${userId}/subscription`).set({
+                        tier: 'free', // Revert to free tier
                         status: 'cancelled',
                         plan: 'free',
-                        cancelledAt: Date.now()
+                        cancelledAt: Date.now(),
+                        updatedAt: Date.now()
                     });
 
                     console.log(`✅ Subscription cancelled for user ${userId}`);

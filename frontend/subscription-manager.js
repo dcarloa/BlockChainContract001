@@ -403,13 +403,49 @@ function closeUpgradeModal() {
 /**
  * Handle upgrade button click
  */
-function handleUpgrade() {
-    // TODO: Implement payment integration (Stripe, etc.)
-    console.log('[Subscription] Upgrade initiated');
-    closeUpgradeModal();
-    
-    // For now, just show a message
-    alert('Payment integration coming soon! Contact support@antpool.cloud for PRO access.');
+async function handleUpgrade() {
+    try {
+        closeUpgradeModal();
+        
+        const user = firebase?.auth().currentUser;
+        if (!user) {
+            alert('Please sign in first to upgrade to PRO');
+            return;
+        }
+
+        // Show loading
+        if (typeof showLoading === 'function') {
+            showLoading('Opening checkout...');
+        }
+
+        // Call existing Stripe integration
+        const createCheckoutSession = firebase.functions().httpsCallable('createStripeCheckoutSession');
+        const result = await createCheckoutSession({ 
+            customerEmail: user.email,
+            successUrl: `${window.location.origin}${window.location.pathname}?payment=success`,
+            cancelUrl: `${window.location.origin}${window.location.pathname}?payment=cancelled`
+        });
+
+        if (result.data && result.data.url) {
+            // Redirect to Stripe Checkout
+            window.location.href = result.data.url;
+        } else {
+            throw new Error('No checkout URL returned');
+        }
+
+    } catch (error) {
+        console.error('[Subscription] Upgrade error:', error);
+        
+        if (typeof hideLoading === 'function') {
+            hideLoading();
+        }
+        
+        if (typeof showToast === 'function') {
+            showToast(`Error: ${error.message}`, 'error');
+        } else {
+            alert(`Error upgrading to PRO: ${error.message}`);
+        }
+    }
 }
 
 /**
@@ -501,6 +537,49 @@ async function startTrial(userId, durationDays = 14) {
 
     console.log(`[Subscription] Started ${durationDays}-day trial for ${userId}`);
     return subscriptionData;
+}
+
+// ============================================================================
+// STRIPE PAYMENT HANDLING
+// ============================================================================
+
+/**
+ * Handle Stripe payment callback
+ * Called when user returns from Stripe checkout
+ */
+function handleStripeCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+
+    if (paymentStatus === 'success') {
+        // Clear URL parameter
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Show success message
+        if (typeof showToast === 'function') {
+            showToast('🎉 Welcome to PRO! Your subscription is now active.', 'success');
+        } else {
+            alert('🎉 Welcome to PRO! Your subscription is now active.');
+        }
+
+        // Reload page to reflect PRO status
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+
+    } else if (paymentStatus === 'cancelled') {
+        // Clear URL parameter
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        if (typeof showToast === 'function') {
+            showToast('Payment cancelled. You can upgrade anytime!', 'info');
+        }
+    }
+}
+
+// Auto-execute on page load
+if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', handleStripeCallback);
 }
 
 // ============================================================================
