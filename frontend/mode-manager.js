@@ -77,13 +77,20 @@ class ModeManager {
                 throw new Error("User must be authenticated to create group");
             }
             
+            // ✅ SUBSCRIPTION CHECK: Verify user can create groups
+            const user = window.FirebaseConfig.getCurrentUser();
+            const canCreate = await window.SubscriptionManager.canCreateGroup(user.uid);
+            if (!canCreate.allowed) {
+                window.SubscriptionManager.showUpgradeModal(window.SubscriptionManager.FEATURES.MULTIPLE_GROUPS);
+                throw new Error(canCreate.reason);
+            }
+            
             // ✅ RATE LIMITING: Prevenir spam de creación de grupos
             await window.checkRateLimit('createGroup');
             
             // ✅ VALIDACIÓN Y SANITIZACIÓN: Proteger contra inputs maliciosos
             const validatedInfo = window.Validators.validateGroupInfo(groupInfo);
             
-            const user = window.FirebaseConfig.getCurrentUser();
             const groupId = this.generateGroupId();
             
             const groupData = {

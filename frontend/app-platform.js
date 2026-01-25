@@ -5144,6 +5144,15 @@ async function handleGroupJoin(groupId) {
         }
 
 
+        // ✅ SUBSCRIPTION CHECK: Verify group can add members
+        const creatorId = groupData.createdBy || groupData.creator;
+        const canAdd = await window.SubscriptionManager.canAddMember(creatorId, groupId);
+        if (!canAdd.allowed) {
+            showToast(canAdd.reason, 'error');
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
+
         // Add user to group members
         await window.FirebaseConfig.updateDb(`groups/${groupId}/members/${user.uid}`, {
             email: user.email,

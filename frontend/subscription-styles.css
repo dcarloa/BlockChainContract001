@@ -1,0 +1,354 @@
+/**
+ * Subscription Manager Styles
+ * PRO badges, upgrade modals, and tier-specific UI
+ */
+
+/* ============================================================================
+   PRO BADGE
+   ============================================================================ */
+
+.pro-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+    cursor: help;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pro-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+.pro-badge-large {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+}
+
+/* ============================================================================
+   UPGRADE MODAL
+   ============================================================================ */
+
+.upgrade-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.upgrade-modal {
+    background: var(--bg-primary);
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.upgrade-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.upgrade-modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    transform: rotate(90deg);
+}
+
+.upgrade-modal-content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.upgrade-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.upgrade-modal h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.upgrade-message {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.upgrade-features {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.upgrade-features h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.upgrade-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.upgrade-features li {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+}
+
+.upgrade-features li:last-child {
+    border-bottom: none;
+}
+
+.upgrade-features li::before {
+    content: '✨';
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.btn-upgrade-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-upgrade-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-upgrade-primary:active {
+    transform: translateY(0);
+}
+
+.btn-upgrade-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 2rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.btn-upgrade-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-secondary);
+}
+
+/* ============================================================================
+   TIER STATUS DISPLAY
+   ============================================================================ */
+
+.subscription-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.subscription-status.tier-free {
+    color: var(--text-secondary);
+}
+
+.subscription-status.tier-pro {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.subscription-status .tier-icon {
+    font-size: 1.2rem;
+}
+
+/* ============================================================================
+   FEATURE LOCKED STATE
+   ============================================================================ */
+
+.feature-locked {
+    position: relative;
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.feature-locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1rem;
+    border-radius: 50%;
+}
+
+/* ============================================================================
+   WATERMARK (for free tier)
+   ============================================================================ */
+
+.antpool-watermark {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    opacity: 0.5;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+}
+
+.antpool-watermark::before {
+    content: 'Powered by ';
+}
+
+.antpool-watermark::after {
+    content: ' AntPool';
+    font-weight: 600;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .upgrade-modal {
+        max-width: 95%;
+    }
+
+    .upgrade-modal-content {
+        padding: 1.5rem;
+    }
+
+    .upgrade-modal h2 {
+        font-size: 1.5rem;
+    }
+
+    .upgrade-icon {
+        font-size: 3rem;
+    }
+
+    .upgrade-features li {
+        font-size: 0.85rem;
+    }
+}
+
+/* ============================================================================
+   DARK THEME ADJUSTMENTS
+   ============================================================================ */
+
+[data-theme="dark"] .upgrade-modal {
+    background: #1a1a2e;
+}
+
+[data-theme="dark"] .upgrade-features {
+    background: #16213e;
+}
+
+[data-theme="dark"] .btn-upgrade-secondary {
+    border-color: #2d3748;
+}
+
+[data-theme="dark"] .btn-upgrade-secondary:hover {
+    background: #2d3748;
+}
