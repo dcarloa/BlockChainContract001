@@ -216,6 +216,11 @@
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
+  pointer-events: none;
+}
+
+.mascot-collection h4 span {
+  pointer-events: none;
 }
 
 .collection-content {
