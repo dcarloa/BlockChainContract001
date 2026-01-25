@@ -21,7 +21,7 @@ const SUBSCRIPTION_TIERS = {
 const TIER_LIMITS = {
     free: {
         maxGroups: 3,
-        maxMembersPerGroup: 10,
+        maxMembersPerGroup: 7, // Reduced from 10
         maxWeeklyChests: 1, // One chest per week
         allowedMinigames: 2, // 1 attended + 1 unattended
         analytics: false,
@@ -34,7 +34,7 @@ const TIER_LIMITS = {
     pro: {
         maxGroups: 100, // Security lock
         maxMembersPerGroup: 100, // Security lock
-        maxWeeklyChests: 2, // Multiple chest types per week
+        maxWeeklyChests: 2, // Two chests per week (double rewards!)
         allowedMinigames: 7, // All minigames
         analytics: true,
         recurringExpenses: true,
@@ -64,8 +64,8 @@ const FEATURES = {
 // Minigames configuration
 const MINIGAMES_CONFIG = {
     free: {
-        attended: ['memoryMatch'], // Only memory match for free
-        unattended: ['treasureHunt'] // Only treasure hunt for free
+        attended: ['memoryMatch'], // Only 1: Memory Match
+        unattended: ['treasureHunt'] // Only 1: Treasure Hunt
     },
     pro: {
         attended: ['memoryMatch', 'wordScramble', 'mathQuiz', 'colorSwap'],

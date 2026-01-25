@@ -7824,7 +7824,22 @@ function toggleExpenseDetails(expenseId) {
 // RECURRING EXPENSES
 // ============================================
 
-function showRecurringExpenseModal() {
+async function showRecurringExpenseModal() {
+    // ✅ SUBSCRIPTION CHECK: Recurring expenses is a PRO feature
+    if (window.SubscriptionManager) {
+        const user = window.FirebaseConfig.getCurrentUser();
+        if (user) {
+            const canAccess = await window.SubscriptionManager.canAccessFeature(user.uid, 'recurringExpenses');
+            if (!canAccess.allowed) {
+                window.SubscriptionManager.showUpgradeModal(
+                    'Recurring Expenses',
+                    'Set up automatic recurring expenses for rent, subscriptions, and other regular payments'
+                );
+                return;
+            }
+        }
+    }
+    
     const modal = document.getElementById('recurringExpenseModal');
     modal.style.display = 'flex';
     populateRecurringMembers();
@@ -8229,7 +8244,22 @@ async function deleteRecurringExpense(recurringId) {
 }
 
 // Show manage recurring expenses modal
-function showManageRecurringModal() {
+async function showManageRecurringModal() {
+    // ✅ SUBSCRIPTION CHECK: Recurring expenses is a PRO feature
+    if (window.SubscriptionManager) {
+        const user = window.FirebaseConfig.getCurrentUser();
+        if (user) {
+            const canAccess = await window.SubscriptionManager.canAccessFeature(user.uid, 'recurringExpenses');
+            if (!canAccess.allowed) {
+                window.SubscriptionManager.showUpgradeModal(
+                    'Recurring Expenses',
+                    'Manage your automatic recurring expenses'
+                );
+                return;
+            }
+        }
+    }
+    
     const modal = document.getElementById('manageRecurringModal');
     modal.style.display = 'flex';
     loadAllRecurringExpenses();
@@ -8483,7 +8513,22 @@ async function confirmDeleteRecurring() {
 // BUDGET
 // ============================================
 
-function showBudgetModal() {
+async function showBudgetModal() {
+    // ✅ SUBSCRIPTION CHECK: Budget is a PRO feature
+    if (window.SubscriptionManager) {
+        const user = window.FirebaseConfig.getCurrentUser();
+        if (user) {
+            const canAccess = await window.SubscriptionManager.canAccessFeature(user.uid, 'budget');
+            if (!canAccess.allowed) {
+                window.SubscriptionManager.showUpgradeModal(
+                    'Budget Management',
+                    'Set monthly spending limits and track budget usage with visual progress indicators'
+                );
+                return;
+            }
+        }
+    }
+    
     const modal = document.getElementById('budgetModal');
     modal.style.display = 'flex';
     loadCurrentBudget();
@@ -9067,7 +9112,22 @@ function fillExpenseFormFromReceipt(data) {
             opt => opt.value === data.category.toLowerCase()
         );
         if (categoryOption) {
-            categorySelect.value = data.category.toLowerCase();
+async function showAnalyticsModal() {
+    // ✅ SUBSCRIPTION CHECK: Analytics is a PRO feature
+    if (window.SubscriptionManager) {
+        const user = window.FirebaseConfig.getCurrentUser();
+        if (user) {
+            const canAccess = await window.SubscriptionManager.canAccessFeature(user.uid, 'analytics');
+            if (!canAccess.allowed) {
+                window.SubscriptionManager.showUpgradeModal(
+                    'Analytics & Reports',
+                    'View detailed spending analysis, charts by category, member contributions, and expense trends'
+                );
+                return;
+            }
+        }
+    }
+    e = data.category.toLowerCase();
         }
     }
     
