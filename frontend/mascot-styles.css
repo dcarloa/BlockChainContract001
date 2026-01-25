@@ -427,7 +427,7 @@
   display: inline-block;
 }
 
-.mascot-guide details[open] summary::before {
+.mascot-guide[open] summary::before {
   transform: rotate(90deg);
 }
 

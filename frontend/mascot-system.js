@@ -566,8 +566,6 @@ async function loadMascotTab(groupId) {
                     </div>
                 </div>
                 
-                ${chestHTML}
-                
                 <details class="mascot-collection" open>
                     <summary>
                         <h4><span data-i18n="app.fundDetail.mascot.collection">Colección</span> (${totalItems}/12)</h4>
@@ -624,8 +622,9 @@ async function loadMascotTab(groupId) {
                     <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</span></p>
                 </div>
                 
-                <div class="mascot-guide">
-                    <details>
+                ${chestHTML}
+                
+                <details class="mascot-guide" open>
                         <summary>
                             <span data-i18n="app.fundDetail.mascot.guide.title">📖 How Does It Work?</span>
                         </summary>
