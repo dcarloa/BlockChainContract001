@@ -1185,19 +1185,22 @@ Simple, fast, and free.</p>
 
                         <!-- Quick Actions for New Features -->
                         <div id="simpleQuickActions" class="quick-actions-compact" style="display: none; margin-bottom: 1rem;">
-                            <button class="quick-action-btn-compact" onclick="showRecurringExpenseModal()" data-i18n-title="app.fundDetail.history.quickActionsRecurringTitle">
+                            <button class="quick-action-btn-compact pro-feature-btn" onclick="showRecurringExpenseModal()" data-i18n-title="app.fundDetail.history.quickActionsRecurringTitle">
                                 <span class="quick-icon">🔄</span>
                                 <span class="quick-label" data-i18n="app.fundDetail.history.quickActionsRecurring">Recurring</span>
+                                <span class="pro-badge-inline">💎</span>
                             </button>
                             
-                            <button class="quick-action-btn-compact" onclick="showBudgetModal()" data-i18n-title="app.fundDetail.history.quickActionsBudgetTitle">
+                            <button class="quick-action-btn-compact pro-feature-btn" onclick="showBudgetModal()" data-i18n-title="app.fundDetail.history.quickActionsBudgetTitle">
                                 <span class="quick-icon">💰</span>
                                 <span class="quick-label" data-i18n="app.fundDetail.history.quickActionsBudget">Budget</span>
+                                <span class="pro-badge-inline">💎</span>
                             </button>
                             
-                            <button class="quick-action-btn-compact" onclick="showAnalyticsModal()" data-i18n-title="app.fundDetail.history.quickActionsAnalyticsTitle">
+                            <button class="quick-action-btn-compact pro-feature-btn" onclick="showAnalyticsModal()" data-i18n-title="app.fundDetail.history.quickActionsAnalyticsTitle">
                                 <span class="quick-icon">📊</span>
                                 <span class="quick-label" data-i18n="app.fundDetail.history.quickActionsAnalytics">Analytics</span>
+                                <span class="pro-badge-inline">💎</span>
                             </button>
                             
                             <button class="quick-action-btn-compact" onclick="showOpenAIConfigModal()" data-i18n-title="app.fundDetail.history.quickActionsAISetupTitle">
@@ -1415,7 +1418,7 @@ Simple, fast, and free.</p>
 
                     <!-- Members Tab -->
                     <div id="membersTab" class="tab-pane">
-                        <h3 data-i18n="app.fundDetail.members.title">👥 Fund Members</h3>
+                        <h3 data-i18n="app.fundDetail.members.title">👥 Fund Members <span id="memberCounter" style="color: #888; font-size: 0.9rem; font-weight: normal;"></span></h3>
                         
                         <!-- Removal Requests Section (Only for creator) -->
                         <div id="removalRequestsSection" style="display: none; margin-bottom: 2rem;">

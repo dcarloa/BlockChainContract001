@@ -194,9 +194,59 @@ function getMemberNickname(address) {
 // PHYSICAL MODE - GAME SELECTION
 // ============================================
 
-function showGameSelection() {
+async function showGameSelection() {
+    // ✅ SUBSCRIPTION CHECK: Verify allowed games
+    if (window.SubscriptionManager && window.FirebaseConfig) {
+        const user = window.FirebaseConfig.getCurrentUser();
+        if (user) {
+            const allowed = await window.SubscriptionManager.getAllowedMinigames(user.uid);
+            
+            // Hide games not allowed for FREE tier
+            const gameCards = document.querySelectorAll('#gameSelection .game-card');
+            gameCards.forEach(card => {
+                const gameType = card.getAttribute('onclick')?.match(/selectGame\('([^']+)'\)/)?.[1];
+                if (gameType && !isGameAllowed(gameType, allowed)) {
+                    card.classList.add('game-locked');
+                    card.onclick = null;
+                    card.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.SubscriptionManager.showUpgradeModal('All Minigames', `Unlock ${gameType} and all other games with PRO!`);
+                    });
+                    
+                    // Add PRO badge
+                    if (!card.querySelector('.pro-badge-game')) {
+                        const badge = document.createElement('div');
+                        badge.className = 'pro-badge-game';
+                        badge.textContent = '💎 PRO';
+                        badge.style.cssText = 'position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold;';
+                        card.style.position = 'relative';
+                        card.appendChild(badge);
+                    }
+                }
+            });
+        }
+    }
+    
     document.getElementById('challengeModeSelection').style.display = 'none';
     document.getElementById('gameSelection').style.display = 'block';
+}
+
+function isGameAllowed(gameType, allowed) {
+    // Map game types to minigame IDs
+    const gameMapping = {
+        'memoryCards': 'memoryMatch',
+        'colorMatch': 'memoryMatch', // Both count as memory-based
+        'shakeIt': 'treasureHunt', // Physical games
+        'quickTap': 'treasureHunt',
+        'numberGuess': 'treasureHunt',
+        'mathChallenge': 'mathQuiz',
+        'wordScramble': 'wordScramble',
+        'colorSwap': 'colorSwap',
+        'aiTrivia': 'memoryMatch' // Advanced game
+    };
+    
+    const minigameId = gameMapping[gameType] || gameType;
+    return [...allowed.attended, ...allowed.unattended].includes(minigameId);
 }
 
 function selectGame(gameType) {

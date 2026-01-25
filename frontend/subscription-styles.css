@@ -352,3 +352,40 @@
 [data-theme="dark"] .btn-upgrade-secondary:hover {
     background: #2d3748;
 }
+
+/* ============================================================================
+   PRO BADGE INLINE (for buttons)
+   ============================================================================ */
+
+.pro-badge-inline {
+    font-size: 0.7rem;
+    margin-left: 0.25rem;
+    opacity: 0.8;
+}
+
+.pro-feature-btn {
+    position: relative;
+}
+
+.pro-feature-btn:hover .pro-badge-inline {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Game card locked state */
+.game-card.game-locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.game-card.game-locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    opacity: 0.3;
+}
+

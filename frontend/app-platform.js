@@ -4007,6 +4007,40 @@ function resetDateFilter() {
 }
 
 /**
+ * Update member counter display with subscription limits
+ */
+async function updateMemberCounter(currentCount, creatorId) {
+    const counter = document.getElementById('memberCounter');
+    if (!counter) return;
+    
+    if (!creatorId || !window.SubscriptionManager) {
+        counter.textContent = `(${currentCount})`;
+        return;
+    }
+    
+    try {
+        const limits = await window.SubscriptionManager.getTierLimits(creatorId);
+        const maxMembers = limits.maxMembersPerGroup;
+        
+        let displayText = `(${currentCount}/${maxMembers})`;
+        let color = '#888';
+        
+        if (currentCount >= maxMembers) {
+            displayText += ' - Full';
+            color = '#f39c12'; // Orange for full
+        } else if (currentCount >= maxMembers * 0.8) {
+            color = '#e67e22'; // Warning orange
+        }
+        
+        counter.textContent = displayText;
+        counter.style.color = color;
+    } catch (error) {
+        console.error('Error updating member counter:', error);
+        counter.textContent = `(${currentCount})`;
+    }
+}
+
+/**
  * Load Simple Mode members list
  */
 function loadSimpleModeMembers() {
@@ -4016,6 +4050,7 @@ function loadSimpleModeMembers() {
     if (!currentFund || !currentFund.members) {
         if (membersList) membersList.innerHTML = '';
         if (noMembers) noMembers.style.display = 'flex';
+        updateMemberCounter(0, null);
         return;
     }
 
@@ -4024,6 +4059,7 @@ function loadSimpleModeMembers() {
     if (members.length === 0) {
         if (membersList) membersList.innerHTML = '';
         if (noMembers) noMembers.style.display = 'flex';
+        updateMemberCounter(0, null);
         return;
     }
 
@@ -4031,6 +4067,9 @@ function loadSimpleModeMembers() {
 
     const currentUserId = firebase.auth().currentUser?.uid;
     const isAdmin = currentFund.creator === currentUserId;
+    
+    // Update member counter with subscription limits
+    updateMemberCounter(members.length, currentFund.creator);
 
     membersList.innerHTML = members.map(([uid, member]) => {
         const joinDate = member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'N/A';

@@ -349,8 +349,8 @@ function showUpgradeModal(feature = null) {
 
     // Create modal HTML
     const modalHTML = `
-        <div class="upgrade-modal-overlay" id="upgradeModal">
-            <div class="upgrade-modal">
+        <div class="upgrade-modal-overlay" id="upgradeModal" onclick="window.SubscriptionManager.closeUpgradeModal()">
+            <div class="upgrade-modal" onclick="event.stopPropagation()">
                 <button class="upgrade-modal-close" onclick="window.SubscriptionManager.closeUpgradeModal()">×</button>
                 <div class="upgrade-modal-content">
                     <div class="upgrade-icon">💎</div>
