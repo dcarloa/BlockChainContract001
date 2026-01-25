@@ -8,7 +8,7 @@
 // ============================================================================
 // LAUNCH MODE - Set to false when ready to enforce restrictions
 // ============================================================================
-const LAUNCH_MODE = true; // All users are PRO during launch period
+const LAUNCH_MODE = false; // ⚠️ TEST MODE: Restrictions ACTIVE
 
 // ============================================================================
 // SUBSCRIPTION TIERS & LIMITS
