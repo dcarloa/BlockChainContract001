@@ -420,10 +420,15 @@
   font-size: 0.75rem;
   transition: transform 0.2s ease;
   display: inline-block;
+  margin-right: 0.5rem;
 }
 
 .mascot-guide[open] summary::before {
   transform: rotate(90deg);
+}
+
+.mascot-guide summary span {
+  pointer-events: none;
 }
 
 .mascot-guide .guide-content {
