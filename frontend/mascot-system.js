@@ -663,12 +663,21 @@ async function loadMascotTab(groupId) {
             </div>
         `;
         
-        console.log('[Mascot] HTML injected, checking details element...');
+        console.log('[Mascot] HTML injected, checking DOM...');
+        console.log('[Mascot] Container HTML length:', container.innerHTML.length);
+        console.log('[Mascot] Looking for .mascot-guide...');
         const detailsElement = container.querySelector('.mascot-guide');
         console.log('[Mascot] Details element found:', detailsElement);
-        console.log('[Mascot] Details element tagName:', detailsElement?.tagName);
-        console.log('[Mascot] Details element innerHTML length:', detailsElement?.innerHTML?.length);
-        console.log('[Mascot] Details open attribute:', detailsElement?.hasAttribute('open'));
+        
+        if (!detailsElement) {
+            console.error('[Mascot] .mascot-guide NOT FOUND! Checking what was actually inserted...');
+            console.log('[Mascot] All elements with class containing "guide":', container.querySelectorAll('[class*="guide"]'));
+            console.log('[Mascot] All details elements:', container.querySelectorAll('details'));
+            console.log('[Mascot] Container children count:', container.children.length);
+        } else {
+            console.log('[Mascot] Details element tagName:', detailsElement.tagName);
+            console.log('[Mascot] Details open attribute:', detailsElement.hasAttribute('open'));
+        }
         
         // Apply translations to the newly added content
         if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
