@@ -170,15 +170,56 @@
 }
 
 /* Collection */
+/* Mascot Collection - Collapsible */
 .mascot-collection {
+  margin-top: 2rem;
   margin-bottom: 2rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0;
+  background: var(--card-bg);
+}
+
+.mascot-collection summary {
+  padding: 1rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.mascot-collection summary:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.mascot-collection summary::-webkit-details-marker {
+  display: none;
+}
+
+.mascot-collection summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.mascot-collection[open] summary::before {
+  transform: rotate(90deg);
 }
 
 .mascot-collection h4 {
+  display: inline;
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 1.5rem 0;
+  margin: 0;
+}
+
+.collection-content {
+  padding: 1rem;
 }
 
 .collection-category {

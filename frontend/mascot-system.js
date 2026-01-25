@@ -383,15 +383,37 @@ async function renderWeeklyChestStatus(groupId) {
         const weekId = ColonySystem.getCurrentWeekId();
         const chestData = await ColonySystem.getWeeklyChest(groupId, weekId);
         
+        // If no chest exists yet, show countdown to next week
         if (!chestData) {
+            const now = Date.now();
+            const currentWeekStart = new Date(now);
+            currentWeekStart.setHours(0, 0, 0, 0);
+            currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Start of week (Sunday)
+            
+            const nextWeekStart = new Date(currentWeekStart);
+            nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+            
+            const timeUntilNextWeek = nextWeekStart.getTime() - now;
+            const daysLeft = Math.floor(timeUntilNextWeek / (24 * 60 * 60 * 1000));
+            const hoursLeft = Math.floor((timeUntilNextWeek % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            
             return `
-                <div class="weekly-chest-section">
-                    <div class="chest-icon-container locked">
-                        <div class="chest-icon">📦</div>
-                        <div class="chest-lock">🔒</div>
+                <div class="weekly-chest-section chest-pending">
+                    <div class="chest-pulse-container">
+                        <div class="chest-icon-container locked animate-pulse">
+                            <div class="chest-icon">📦</div>
+                            <div class="chest-lock">⏳</div>
+                        </div>
+                        <div class="pulse-ring"></div>
+                        <div class="pulse-ring delay-1"></div>
+                        <div class="pulse-ring delay-2"></div>
                     </div>
-                    <h4>No Chest Available This Week</h4>
-                    <p>Complete group activities to earn a weekly chest!</p>
+                    <h4>🔒 Next Weekly Chest</h4>
+                    <p class="chest-timer">Available in: <strong>${daysLeft}d ${hoursLeft}h</strong></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${((7 - daysLeft) / 7) * 100}%"></div>
+                    </div>
+                    <p class="chest-hint">💡 Weekly chests unlock automatically every week!</p>
                 </div>
             `;
         }
@@ -546,8 +568,11 @@ async function loadMascotTab(groupId) {
                 
                 ${chestHTML}
                 
-                <div class="mascot-collection">
-                    <h4><span data-i18n="app.fundDetail.mascot.collection">Colección</span> (${totalItems}/12)</h4>
+                <details class="mascot-collection" open>
+                    <summary>
+                        <h4><span data-i18n="app.fundDetail.mascot.collection">Colección</span> (${totalItems}/12)</h4>
+                    </summary>
+                    <div class="collection-content">
                     
                     <div class="collection-category">
                         <h5>🎩 <span data-i18n="app.fundDetail.mascot.head">Cabeza</span></h5>
@@ -592,7 +617,9 @@ async function loadMascotTab(groupId) {
                             }).join('')}
                         </div>
                     </div>
-                </div>
+                    
+                    </div>
+                </details>
                 
                 <div class="mascot-info">
                     <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</span></p>
