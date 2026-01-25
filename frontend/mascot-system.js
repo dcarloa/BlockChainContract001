@@ -383,19 +383,35 @@ async function renderWeeklyChestStatus(groupId) {
         const weekId = ColonySystem.getCurrentWeekId();
         const chestData = await ColonySystem.getWeeklyChest(groupId, weekId);
         
-        // If no chest exists yet, show countdown to next week
+        // If no chest exists yet, show countdown to next Monday
         if (!chestData) {
             const now = Date.now();
-            const currentWeekStart = new Date(now);
-            currentWeekStart.setHours(0, 0, 0, 0);
-            currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Start of week (Sunday)
+            const currentDate = new Date(now);
             
-            const nextWeekStart = new Date(currentWeekStart);
-            nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+            // Calculate next Monday at 00:00 UTC
+            const nextMonday = new Date(currentDate);
+            nextMonday.setUTCHours(0, 0, 0, 0);
             
-            const timeUntilNextWeek = nextWeekStart.getTime() - now;
-            const daysLeft = Math.floor(timeUntilNextWeek / (24 * 60 * 60 * 1000));
-            const hoursLeft = Math.floor((timeUntilNextWeek % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            // Get current day of week (0=Sunday, 1=Monday, ..., 6=Saturday)
+            const currentDay = nextMonday.getUTCDay();
+            
+            // Calculate days until next Monday
+            let daysUntilMonday;
+            if (currentDay === 0) { // Sunday
+                daysUntilMonday = 1;
+            } else if (currentDay === 1) { // Monday
+                // If it's Monday but chest doesn't exist, wait until next Monday
+                daysUntilMonday = 7;
+            } else { // Tuesday-Saturday
+                daysUntilMonday = (8 - currentDay) % 7;
+            }
+            
+            nextMonday.setUTCDate(nextMonday.getUTCDate() + daysUntilMonday);
+            
+            const timeUntilNextMonday = nextMonday.getTime() - now;
+            const daysLeft = Math.floor(timeUntilNextMonday / (24 * 60 * 60 * 1000));
+            const hoursLeft = Math.floor((timeUntilNextMonday % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            const minutesLeft = Math.floor((timeUntilNextMonday % (60 * 60 * 1000)) / (60 * 1000));
             
             return `
                 <div class="weekly-chest-section chest-pending">
@@ -409,9 +425,10 @@ async function renderWeeklyChestStatus(groupId) {
                         <div class="pulse-ring delay-2"></div>
                     </div>
                     <h4>🔒 Next Weekly Chest</h4>
-                    <p class="chest-timer">Available in: <strong>${daysLeft}d ${hoursLeft}h</strong></p>
+                    <p class="chest-timer">Available ${daysLeft > 0 ? `in <strong>${daysLeft}d ${hoursLeft}h</strong>` : `<strong>today at ${nextMonday.getUTCHours()}:${String(nextMonday.getUTCMinutes()).padStart(2, '0')} UTC</strong>`}</p>
+                    <p class="chest-hint" style="font-size: 0.85rem; color: #888;">📅 Every Monday at 00:00 UTC</p>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${((7 - daysLeft) / 7) * 100}%"></div>
+                        <div class="progress-fill" style="width: ${Math.max(0, Math.min(100, ((7 - daysLeft) / 7) * 100))}%"></div>
                     </div>
                     <p class="chest-hint">💡 Weekly chests unlock automatically every week!</p>
                 </div>
