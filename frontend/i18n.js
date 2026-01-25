@@ -50,7 +50,7 @@ const translations = {
                 ctaExplore: "See how it works",
                 stats: {
                     free: "FREE",
-                    forever: "Forever",
+                    forever: "Now",
                     currencies: "12",
                     currenciesLabel: "Currencies",
                     smart: "SMART",
@@ -225,8 +225,8 @@ const translations = {
                     desc: "12 currencies supported. Track expenses in USD, COP, EUR, MXN, and more. Like ants gathering from different sources, your colony works worldwide."
                 },
                 freeForever: {
-                    title: "100% Free Forever",
-                    desc: "No subscriptions. No premium tiers. No ads. Like ants sharing food freely in their colony, Ant Pool is completely free for everyone."
+                    title: "Free to Start",
+                    desc: "No subscriptions required to get started. Track expenses, manage groups, and settle balances with our free tier."
                 },
                 smartDebt: {
                     title: "Smart Debt Optimization",
@@ -241,7 +241,7 @@ const translations = {
                 comparisonSE: "Ant Pool",
                 comparisonTraditional: "Splitwise/Tricount",
                 price: "Price",
-                priceFree: "FREE Forever",
+                priceFree: "FREE Tier",
                 pricePremium: "$3-5/month Premium",
                 currencies: "Currencies",
                 currencies12: "12 Currencies",
@@ -264,7 +264,7 @@ const translations = {
                 subtitle: "Everything you need to know",
                 q1: {
                     question: "Why is Ant Pool better than Splitwise or Tricount?",
-                    answer: "Ant Pool is 100% free forever with no premium tiers or ads. We support 12 currencies (vs their limited free options), have smart settlement optimization to minimize transactions, and timeline filters for better expense tracking. Plus, our ant colony philosophy makes collaboration fun!"
+                    answer: "Ant Pool has a generous free tier to get started. We support 12 currencies, have smart settlement optimization to minimize transactions, and timeline filters for better expense tracking. Plus, our ant colony philosophy makes collaboration fun!"
                 },
                 q2: {
                     question: "How do I sign up for Ant Pool?",
@@ -300,7 +300,7 @@ const translations = {
                 },
                 q10: {
                     question: "Is there a limit to how many groups I can create?",
-                    answer: "No limits! Create unlimited groups for trips, roommates, family savings, events - whatever your colony needs. Completely free forever."
+                    answer: "Create groups for trips, roommates, family savings, events - whatever your colony needs. Check our pricing for details on group limits."
                 }
             },
             cta: {
@@ -1221,7 +1221,7 @@ const translations = {
                 ctaExplore: "Ver cómo funciona",
                 stats: {
                     free: "GRATIS",
-                    forever: "Para Siempre",
+                    forever: "Ahora",
                     currencies: "12",
                     currenciesLabel: "Monedas",
                     smart: "INTELIGENTE",
@@ -1395,8 +1395,8 @@ const translations = {
                     desc: "12 monedas soportadas. Rastrea gastos en USD, COP, EUR, MXN, y más. Como hormigas recolectando de diferentes fuentes, tu colonia funciona en todo el mundo."
                 },
                 freeForever: {
-                    title: "100% Gratis Para Siempre",
-                    desc: "Sin suscripciones. Sin niveles premium. Sin anuncios. Como hormigas compartiendo comida libremente en su colonia, Ant Pool es completamente gratis para todos."
+                    title: "Gratis Para Empezar",
+                    desc: "No se requieren suscripciones para comenzar. Rastrea gastos, administra grupos y liquida balances con nuestro nivel gratuito."
                 },
                 smartDebt: {
                     title: "Optimización Inteligente de Deudas",
@@ -1411,7 +1411,7 @@ const translations = {
                 comparisonSE: "Ant Pool",
                 comparisonTraditional: "Splitwise/Tricount",
                 price: "Precio",
-                priceFree: "GRATIS Para Siempre",
+                priceFree: "Nivel GRATIS",
                 pricePremium: "$3-5/mes Premium",
                 currencies: "Monedas",
                 currencies12: "12 Monedas",
@@ -1434,7 +1434,7 @@ const translations = {
                 subtitle: "Todo lo que necesitas saber",
                 q1: {
                     question: "¿Por qué Ant Pool es mejor que Splitwise o Tricount?",
-                    answer: "Ant Pool es 100% gratis para siempre sin niveles premium ni anuncios. Soportamos 12 monedas (vs sus opciones gratuitas limitadas), tenemos optimización inteligente de liquidación para minimizar transacciones, y filtros de línea de tiempo para mejor seguimiento de gastos. ¡Además, nuestra filosofía de colonia de hormigas hace que la colaboración sea divertida!"
+                    answer: "Ant Pool tiene un generoso nivel gratuito para comenzar. Soportamos 12 monedas, tenemos optimización inteligente de liquidación para minimizar transacciones, y filtros de línea de tiempo para mejor seguimiento de gastos. ¡Además, nuestra filosofía de colonia de hormigas hace que la colaboración sea divertida!"
                 },
                 q2: {
                     question: "¿Cómo me registro en Ant Pool?",
@@ -1470,7 +1470,7 @@ const translations = {
                 },
                 q10: {
                     question: "¿Hay un límite de cuántos grupos puedo crear?",
-                    answer: "¡Sin límites! Crea grupos ilimitados para viajes, roommates, ahorros familiares, eventos - lo que tu colonia necesite. Completamente gratis para siempre."
+                    answer: "Crea grupos para viajes, roommates, ahorros familiares, eventos - lo que tu colonia necesite. Consulta nuestros precios para detalles sobre límites de grupos."
                 }
             },
             cta: {
