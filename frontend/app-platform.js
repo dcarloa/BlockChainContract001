@@ -9112,6 +9112,21 @@ function fillExpenseFormFromReceipt(data) {
             opt => opt.value === data.category.toLowerCase()
         );
         if (categoryOption) {
+            categorySelect.value = data.category.toLowerCase();
+        }
+    }
+    
+    // Scroll to form to show filled data
+    document.getElementById('expenseDescription').focus();
+}
+
+// ============================================
+// ANALYTICS
+// ============================================
+
+let currentTimeframe = 'month';
+let analyticsCharts = {};
+
 async function showAnalyticsModal() {
     // ✅ SUBSCRIPTION CHECK: Analytics is a PRO feature
     if (window.SubscriptionManager) {
@@ -9127,22 +9142,7 @@ async function showAnalyticsModal() {
             }
         }
     }
-    e = data.category.toLowerCase();
-        }
-    }
     
-    // Scroll to form to show filled data
-    document.getElementById('expenseDescription').focus();
-}
-
-// ============================================
-// ANALYTICS
-// ============================================
-
-let currentTimeframe = 'month';
-let analyticsCharts = {};
-
-function showAnalyticsModal() {
     const modal = document.getElementById('analyticsModal');
     modal.style.display = 'flex';
     loadAnalytics(currentTimeframe);
