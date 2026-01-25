@@ -427,6 +427,7 @@ async function updateColonyDisplay(groupId) {
 
 /**
  * Check and show weekly chest on group load
+ * Also triggers automatic chest creation if needed
  */
 async function checkWeeklyChest(groupId) {
     if (!COLONY_FEATURE_ENABLED) {
@@ -448,8 +449,28 @@ async function checkWeeklyChest(groupId) {
     const weekId = getCurrentWeekId();
     console.log('[Colony] Checking for weekly chest:', { groupId, weekId });
     
-    const chest = await getWeeklyChest(groupId, weekId);
+    let chest = await getWeeklyChest(groupId, weekId);
     console.log('[Colony] Chest data:', chest);
+    
+    // If no chest exists for current week, try to create one automatically
+    if (!chest) {
+        console.log('[Colony] No chest found, attempting auto-creation...');
+        try {
+            // Call the manual evaluation function (works on free plan)
+            const evaluateFunction = firebase.functions().httpsCallable('evaluateWeeklyChestsManual');
+            const result = await evaluateFunction({ weekId });
+            
+            if (result.data.success && result.data.chestsCreated > 0) {
+                console.log('[Colony] ✅ Auto-created weekly chest');
+                // Reload chest data
+                chest = await getWeeklyChest(groupId, weekId);
+            } else {
+                console.log('[Colony] No chest created (group may not meet activity criteria)');
+            }
+        } catch (error) {
+            console.error('[Colony] Error auto-creating chest:', error);
+        }
+    }
     
     // Check if chest exists and is not opened
     if (chest && !chest.isOpened) {

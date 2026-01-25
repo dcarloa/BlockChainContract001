@@ -411,6 +411,9 @@ exports.createStripePortalSession = functions.https.onCall(async (data, context)
  * Cloud Function: Evaluate Weekly Chests for all active groups
  * Runs every Monday at 00:00 UTC
  * Creates weekly chests for groups that showed activity
+ * 
+ * ⚠️ IMPORTANT: This requires Firebase Blaze plan (paid) to run automatically
+ * For Spark plan (free): Use evaluateWeeklyChestsManual instead
  */
 exports.evaluateWeeklyChests = functions.pubsub
     .schedule('0 0 * * 1') // Every Monday at midnight UTC
