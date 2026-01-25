@@ -617,10 +617,10 @@ async function loadMascotTab(groupId) {
                             }).join('')}
                         </div>
                     </div>
-                </div>
-            </details>
-            
-            <div class="mascot-info">
+                    </div>
+                </details>
+                
+                <div class="mascot-info">
                     <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</span></p>
                 </div>
                 
