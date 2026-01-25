@@ -624,59 +624,72 @@ async function loadMascotTab(groupId) {
                 
                 ${chestHTML}
                 
-                <details class="mascot-guide" open>
-                        <summary>
-                            <span data-i18n="app.fundDetail.mascot.guide.title">📖 How Does It Work?</span>
-                        </summary>
-                        <div class="guide-content">
-                            <h4 data-i18n="app.fundDetail.mascot.guide.weeklyChests">🎁 Weekly Chests</h4>
-                            <p data-i18n="app.fundDetail.mascot.guide.weeklyChestsDesc">Each week, your group can open a chest that contains random items for your mascot. The better your colony status, the better rewards you'll get.</p>
-                            
-                            <h4 data-i18n="app.fundDetail.mascot.guide.colonyStates">🐜 Colony States & Rewards</h4>
-                            <ul>
-                                <li><strong data-i18n="app.fundDetail.mascot.guide.forming">🌱 Forming:</strong> <span data-i18n="app.fundDetail.mascot.guide.formingDesc">Only common items (backpack, pickaxe, tablet)</span></li>
-                                <li><strong data-i18n="app.fundDetail.mascot.guide.active">🚀 Active:</strong> <span data-i18n="app.fundDetail.mascot.guide.activeDesc">70% common items, 30% rare items</span></li>
-                                <li><strong data-i18n="app.fundDetail.mascot.guide.stable">⚡ Stable:</strong> <span data-i18n="app.fundDetail.mascot.guide.stableDesc">40% common items, 60% rare items</span></li>
-                                <li><strong data-i18n="app.fundDetail.mascot.guide.consolidated">💎 Consolidated:</strong> <span data-i18n="app.fundDetail.mascot.guide.consolidatedDesc">All items available (best rewards!)</span></li>
-                            </ul>
-                            
-                            <h4 data-i18n="app.fundDetail.mascot.guide.itemLevels">⭐ Item Levels</h4>
-                            <ul>
-                                <li><strong data-i18n="app.fundDetail.mascot.guide.basic">⭐ Basic:</strong> <span data-i18n="app.fundDetail.mascot.guide.basicDesc">1 copy obtained</span></li>
-                                <li><strong data-i18n="app.fundDetail.mascot.guide.silver">⭐⭐ Silver:</strong> <span data-i18n="app.fundDetail.mascot.guide.silverDesc">3 copies obtained (upgraded!)</span></li>
-                                <li><strong data-i18n="app.fundDetail.mascot.guide.gold">⭐⭐⭐ Gold:</strong> <span data-i18n="app.fundDetail.mascot.guide.goldDesc">6 copies obtained (max level!)</span></li>
-                            </ul>
-                            
-                            <h4 data-i18n="app.fundDetail.mascot.guide.collection">🎒 Complete Collection</h4>
-                            <p data-i18n="app.fundDetail.mascot.guide.collectionDesc">There are 12 unique items to collect: 6 for the head slot and 6 for the accessory slot. You can equip one item in each slot to customize your group's ant mascot.</p>
-                            
-                            <h4 data-i18n="app.fundDetail.mascot.guide.tips">💡 Tips</h4>
-                            <ul>
-                                <li data-i18n="app.fundDetail.mascot.guide.tip1">Keep your expenses clear and organized to improve your colony status</li>
-                                <li data-i18n="app.fundDetail.mascot.guide.tip2">Higher colony status = better items in weekly chests</li>
-                                <li data-i18n="app.fundDetail.mascot.guide.tip3">Collect duplicate items to upgrade them to Silver and Gold levels</li>
-                                <li data-i18n="app.fundDetail.mascot.guide.tip4">Click on any unlocked item to equip it to your mascot</li>
-                            </ul>
-                        </div>
-                    </details>
+                <div class="mascot-guide-wrapper">
+                    <div class="mascot-guide-header">
+                        <span data-i18n="app.fundDetail.mascot.guide.title">📖 How Does It Work?</span>
+                    </div>
+                    <div class="guide-content">
+                        <h4 data-i18n="app.fundDetail.mascot.guide.weeklyChests">🎁 Weekly Chests</h4>
+                        <p data-i18n="app.fundDetail.mascot.guide.weeklyChestsDesc">Each week, your group can open a chest that contains random items for your mascot. The better your colony status, the better rewards you'll get.</p>
+                        
+                        <h4 data-i18n="app.fundDetail.mascot.guide.colonyStates">🐜 Colony States & Rewards</h4>
+                        <ul>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.forming">🌱 Forming:</strong> <span data-i18n="app.fundDetail.mascot.guide.formingDesc">Only common items (backpack, pickaxe, tablet)</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.active">🚀 Active:</strong> <span data-i18n="app.fundDetail.mascot.guide.activeDesc">70% common items, 30% rare items</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.stable">⚡ Stable:</strong> <span data-i18n="app.fundDetail.mascot.guide.stableDesc">40% common items, 60% rare items</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.consolidated">💎 Consolidated:</strong> <span data-i18n="app.fundDetail.mascot.guide.consolidatedDesc">All items available (best rewards!)</span></li>
+                        </ul>
+                        
+                        <h4 data-i18n="app.fundDetail.mascot.guide.itemLevels">⭐ Item Levels</h4>
+                        <ul>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.basic">⭐ Basic:</strong> <span data-i18n="app.fundDetail.mascot.guide.basicDesc">1 copy obtained</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.silver">⭐⭐ Silver:</strong> <span data-i18n="app.fundDetail.mascot.guide.silverDesc">3 copies obtained (upgraded!)</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.gold">⭐⭐⭐ Gold:</strong> <span data-i18n="app.fundDetail.mascot.guide.goldDesc">6 copies obtained (max level!)</span></li>
+                        </ul>
+                        
+                        <h4 data-i18n="app.fundDetail.mascot.guide.collection">🎒 Complete Collection</h4>
+                        <p data-i18n="app.fundDetail.mascot.guide.collectionDesc">There are 12 unique items to collect: 6 for the head slot and 6 for the accessory slot. You can equip one item in each slot to customize your group's ant mascot.</p>
+                        
+                        <h4 data-i18n="app.fundDetail.mascot.guide.tips">💡 Tips</h4>
+                        <ul>
+                            <li data-i18n="app.fundDetail.mascot.guide.tip1">Keep your expenses clear and organized to improve your colony status</li>
+                            <li data-i18n="app.fundDetail.mascot.guide.tip2">Higher colony status = better items in weekly chests</li>
+                            <li data-i18n="app.fundDetail.mascot.guide.tip3">Collect duplicate items to upgrade them to Silver and Gold levels</li>
+                            <li data-i18n="app.fundDetail.mascot.guide.tip4">Click on any unlocked item to equip it to your mascot</li>
+                        </ul>
+                    </div>
+                </div>
                 </div>
             </div>
         `;
         
-        console.log('[Mascot] HTML injected, checking DOM...');
-        console.log('[Mascot] Container HTML length:', container.innerHTML.length);
-        console.log('[Mascot] Looking for .mascot-guide...');
-        const detailsElement = container.querySelector('.mascot-guide');
-        console.log('[Mascot] Details element found:', detailsElement);
+        console.log('[Mascot] HTML injected, converting guide to collapsible details...');
         
-        if (!detailsElement) {
-            console.error('[Mascot] .mascot-guide NOT FOUND! Checking what was actually inserted...');
-            console.log('[Mascot] All elements with class containing "guide":', container.querySelectorAll('[class*="guide"]'));
-            console.log('[Mascot] All details elements:', container.querySelectorAll('details'));
-            console.log('[Mascot] Container children count:', container.children.length);
+        // Convert mascot-guide-wrapper to details element (security-wrapper blocks <details> in innerHTML)
+        const guideWrapper = container.querySelector('.mascot-guide-wrapper');
+        if (guideWrapper) {
+            const details = document.createElement('details');
+            details.className = 'mascot-guide';
+            details.setAttribute('open', '');
+            
+            const summary = document.createElement('summary');
+            const header = guideWrapper.querySelector('.mascot-guide-header');
+            if (header) {
+                summary.innerHTML = header.innerHTML;
+                header.remove();
+            }
+            
+            const content = guideWrapper.querySelector('.guide-content');
+            
+            details.appendChild(summary);
+            if (content) {
+                details.appendChild(content);
+            }
+            
+            guideWrapper.replaceWith(details);
+            console.log('[Mascot] Guide converted to details element successfully');
         } else {
-            console.log('[Mascot] Details element tagName:', detailsElement.tagName);
-            console.log('[Mascot] Details open attribute:', detailsElement.hasAttribute('open'));
+            console.error('[Mascot] .mascot-guide-wrapper not found!');
         }
         
         // Apply translations to the newly added content
