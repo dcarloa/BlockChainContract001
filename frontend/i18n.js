@@ -645,6 +645,7 @@ const translations = {
                 },
                 info: {
                     balance: "Balance",
+                    total: "Total",
                     members: "Members",
                     proposals: "Proposals",
                     expenses: "Expenses",
@@ -1815,6 +1816,7 @@ const translations = {
                 },
                 info: {
                     balance: "Balance",
+                    total: "Total",
                     members: "Miembros",
                     proposals: "Propuestas",
                     expenses: "Gastos",
