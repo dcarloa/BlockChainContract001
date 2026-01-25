@@ -80,7 +80,7 @@ async function getWeeklyChest(groupId, weekId) {
     
     try {
         const db = firebase.database();
-        const snapshot = await db.ref(`groups/${groupId}/weeklyChests/${weekId}`).once('value');
+        const snapshot = await db.ref(`weeklyChests/${groupId}/${weekId}`).once('value');
         return snapshot.val();
     } catch (error) {
         console.error('Error getting weekly chest:', error);
@@ -128,7 +128,7 @@ async function openWeeklyChest(groupId, weekId) {
         }
         
         // Mark chest as opened
-        await db.ref(`groups/${groupId}/weeklyChests/${weekId}`).update({
+        await db.ref(`weeklyChests/${groupId}/${weekId}`).update({
             isOpened: true,
             openedBy: user.uid,
             openedAt: Date.now()
