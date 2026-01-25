@@ -217,6 +217,36 @@ async function equipItem(groupId, itemId) {
 }
 
 /**
+ * Unequip item from slot
+ */
+async function unequipItem(groupId, category) {
+    if (!MASCOT_FEATURE_ENABLED) return false;
+    
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) return false;
+        
+        const db = firebase.database();
+        
+        // Check if user is member
+        const memberSnapshot = await db.ref(`groups/${groupId}/members/${user.uid}`).once('value');
+        if (!memberSnapshot.exists()) {
+            console.error('[Mascot] User not a member');
+            return false;
+        }
+        
+        // Remove item from slot
+        await db.ref(`groups/${groupId}/mascot/equipped/${category}`).remove();
+        
+        console.log(`[Mascot] Unequipped ${category} slot`);
+        return true;
+    } catch (error) {
+        console.error('[Mascot] Error unequipping item:', error);
+        return false;
+    }
+}
+
+/**
  * Add item to wardrobe (from chest reward)
  */
 async function addItemToWardrobe(groupId, itemId) {
@@ -346,6 +376,109 @@ async function createWelcomeChest(groupId) {
 }
 
 /**
+ * Render weekly chest status section
+ */
+async function renderWeeklyChestStatus(groupId) {
+    try {
+        const weekId = ColonySystem.getCurrentWeekId();
+        const chestData = await ColonySystem.getWeeklyChest(groupId, weekId);
+        
+        if (!chestData) {
+            return `
+                <div class="weekly-chest-section">
+                    <div class="chest-icon-container locked">
+                        <div class="chest-icon">📦</div>
+                        <div class="chest-lock">🔒</div>
+                    </div>
+                    <h4>No Chest Available This Week</h4>
+                    <p>Complete group activities to earn a weekly chest!</p>
+                </div>
+            `;
+        }
+        
+        const now = Date.now();
+        const isPending = chestData.state === 'pending';
+        const isAvailable = chestData.state === 'available';
+        const isClaimed = chestData.state === 'claimed';
+        
+        if (isPending) {
+            const hoursLeft = Math.ceil((chestData.unlockTime - now) / (60 * 60 * 1000));
+            const daysLeft = Math.floor(hoursLeft / 24);
+            const remainingHours = hoursLeft % 24;
+            
+            return `
+                <div class="weekly-chest-section chest-pending">
+                    <div class="chest-pulse-container">
+                        <div class="chest-icon-container locked animate-pulse">
+                            <div class="chest-icon">🎁</div>
+                            <div class="chest-lock">⏳</div>
+                        </div>
+                        <div class="pulse-ring"></div>
+                        <div class="pulse-ring delay-1"></div>
+                        <div class="pulse-ring delay-2"></div>
+                    </div>
+                    <h4>🔒 Chest Locked</h4>
+                    <p class="chest-timer">Unlocks in: <strong>${daysLeft > 0 ? `${daysLeft}d ` : ''}${remainingHours}h</strong></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${Math.min(100, ((now - chestData.createdAt) / (chestData.unlockTime - chestData.createdAt)) * 100)}%"></div>
+                    </div>
+                    <p class="chest-hint">💡 Keep your group active for better rewards!</p>
+                </div>
+            `;
+        }
+        
+        if (isAvailable) {
+            return `
+                <div class="weekly-chest-section chest-available">
+                    <div class="chest-glow-container">
+                        <div class="chest-icon-container available animate-bounce">
+                            <div class="chest-icon">✨🎁✨</div>
+                        </div>
+                        <div class="glow-effect"></div>
+                        <div class="sparkles">
+                            <span>✨</span>
+                            <span>⭐</span>
+                            <span>💫</span>
+                            <span>✨</span>
+                        </div>
+                    </div>
+                    <h4 class="chest-ready">🎉 Chest Ready to Open!</h4>
+                    <p>Your weekly reward is waiting</p>
+                    <div class="chest-preview">
+                        <span>Contains:</span>
+                        <div class="reward-preview">
+                            ${chestData.content?.item ? `<span>${WARDROBE_ITEMS[chestData.content.item]?.emoji || '🎁'}</span>` : '🎁'}
+                            <span class="rarity-${chestData.content?.rarity || 'common'}">${chestData.content?.rarity?.toUpperCase() || 'MYSTERY'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (isClaimed) {
+            const claimedItem = chestData.content?.item;
+            const itemData = WARDROBE_ITEMS[claimedItem];
+            
+            return `
+                <div class="weekly-chest-section chest-claimed">
+                    <div class="chest-icon-container claimed">
+                        <div class="chest-icon">📭</div>
+                        <div class="checkmark">✅</div>
+                    </div>
+                    <h4>Chest Already Claimed</h4>
+                    <p>You received: ${itemData ? `${itemData.emoji} <strong>${itemData.name}</strong>` : 'Unknown item'}</p>
+                    <p class="chest-hint">🗓️ Next chest available next week!</p>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('[Mascot] Error rendering chest status:', error);
+        return '<div class="weekly-chest-section"><p>Error loading chest status</p></div>';
+    }
+}
+
+/**
  * Load mascot tab content
  */
 async function loadMascotTab(groupId) {
@@ -372,6 +505,9 @@ async function loadMascotTab(groupId) {
         
         const headItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'head');
         const accessoryItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'accessory');
+        
+        // Render weekly chest status
+        const chestHTML = await renderWeeklyChestStatus(groupId);
         
         container.innerHTML = `
             <div class="mascot-tab-content">
@@ -408,6 +544,8 @@ async function loadMascotTab(groupId) {
                     </div>
                 </div>
                 
+                ${chestHTML}
+                
                 <div class="mascot-collection">
                     <h4><span data-i18n="app.fundDetail.mascot.collection">Colección</span> (${totalItems}/12)</h4>
                     
@@ -420,13 +558,13 @@ async function loadMascotTab(groupId) {
                                 return `
                                     <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''}" 
                                          data-item="${item.id}"
-                                         onclick="${owned ? `MascotSystem.equipItem('${groupId}', '${item.id}')` : ''}">
+                                         onclick="${owned ? (isEquipped ? `MascotSystem.unequipItem('${groupId}', 'head')` : `MascotSystem.equipItem('${groupId}', '${item.id}')`) : ''}">
                                         <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
                                             <div class="item-copies">${owned.copies}/6</div>
                                         ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
-                                        ${isEquipped ? '<div class="equipped-badge">✓</div>' : ''}
+                                        ${isEquipped ? '<div class="equipped-badge" title="Click to unequip">✓</div>' : ''}
                                     </div>
                                 `;
                             }).join('')}
@@ -442,13 +580,13 @@ async function loadMascotTab(groupId) {
                                 return `
                                     <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''}"
                                          data-item="${item.id}"
-                                         onclick="${owned ? `MascotSystem.equipItem('${groupId}', '${item.id}')` : ''}">
+                                         onclick="${owned ? (isEquipped ? `MascotSystem.unequipItem('${groupId}', 'accessory')` : `MascotSystem.equipItem('${groupId}', '${item.id}')`) : ''}">
                                         <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
                                             <div class="item-copies">${owned.copies}/6</div>
                                         ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
-                                        ${isEquipped ? '<div class="equipped-badge">✓</div>' : ''}
+                                        ${isEquipped ? '<div class="equipped-badge" title="Click to unequip">✓</div>' : ''}
                                     </div>
                                 `;
                             }).join('')}
@@ -550,6 +688,14 @@ window.MascotSystem = {
     getMascotData,
     equipItem: async (groupId, itemId) => {
         const success = await equipItem(groupId, itemId);
+        if (success) {
+            await loadMascotTab(groupId);
+            await updateMascotHeader(groupId);
+        }
+        return success;
+    },
+    unequipItem: async (groupId, category) => {
+        const success = await unequipItem(groupId, category);
         if (success) {
             await loadMascotTab(groupId);
             await updateMascotHeader(groupId);
