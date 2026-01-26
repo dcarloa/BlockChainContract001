@@ -955,6 +955,29 @@ const translations = {
                         tip4: "Click on any unlocked item to equip it to your mascot"
                     }
                 },
+                wardrobeItems: {
+                    // HEAD items
+                    hat_explorer: "Explorer Hat",
+                    crown_gold: "Golden Crown",
+                    cap_casual: "Casual Cap",
+                    cap_graduate: "Graduation Cap",
+                    helmet_adventure: "Adventure Helmet",
+                    crown_flower: "Flower Crown",
+                    // ACCESSORY items
+                    backpack: "Travel Backpack",
+                    wings: "Shiny Wings",
+                    pickaxe: "Mining Pickaxe",
+                    guitar: "Guitar",
+                    tablet: "Tablet",
+                    star_magic: "Magic Star",
+                    // OUTFIT items
+                    cape_hero: "Hero Cape",
+                    scarf_cozy: "Cozy Scarf",
+                    vest_safety: "Safety Vest",
+                    coat_lab: "Lab Coat",
+                    shirt_tie: "Shirt & Tie",
+                    kimono_traditional: "Traditional Kimono"
+                },
                 colony: {
                     chestTitle: "🎁 Colony Chest",
                     welcomeChestTitle: "🎁 Welcome Chest",
@@ -2138,6 +2161,29 @@ const translations = {
                         tip3: "Colecciona prendas duplicadas para mejorarlas a niveles Plata y Oro",
                         tip4: "Haz clic en cualquier prenda desbloqueada para equiparla a tu mascota"
                     }
+                },
+                wardrobeItems: {
+                    // HEAD items - Cabeza
+                    hat_explorer: "Sombrero Explorador",
+                    crown_gold: "Corona Dorada",
+                    cap_casual: "Gorra Casual",
+                    cap_graduate: "Gorro de Graduado",
+                    helmet_adventure: "Casco Aventurero",
+                    crown_flower: "Corona Floral",
+                    // ACCESSORY items - Accesorios
+                    backpack: "Mochila Viajera",
+                    wings: "Alas Brillantes",
+                    pickaxe: "Pico Minero",
+                    guitar: "Guitarra",
+                    tablet: "Tablet",
+                    star_magic: "Estrella Mágica",
+                    // OUTFIT items - Vestimenta
+                    cape_hero: "Capa de Héroe",
+                    scarf_cozy: "Bufanda Acogedora",
+                    vest_safety: "Chaleco de Seguridad",
+                    coat_lab: "Bata de Laboratorio",
+                    shirt_tie: "Camisa con Corbata",
+                    kimono_traditional: "Kimono Tradicional"
                 },
                 colony: {
                     chestTitle: "🎁 Cofre de la Colonia",

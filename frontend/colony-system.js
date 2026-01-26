@@ -327,9 +327,9 @@ async function openChestModal(groupId, weekId) {
                         <div class="reward-item">
                             <div class="reward-emoji">${rewardItem.item?.emoji || '🎁'}</div>
                             <div class="reward-info">
-                                <p class="reward-name">${rewardItem.item?.name || 'Item'}</p>
+                                <p class="reward-name">${window.i18n?.t('app.fundDetail.mascot.wardrobeItems.' + (rewardItem.item?.id || 'unknown')) || rewardItem.item?.name || 'Item'}</p>
                                 ${rewardItem.isNew ? '<span class="reward-badge new-badge" data-i18n="app.fundDetail.colony.newBadge">¡NUEVO!</span>' : ''}
-                                ${rewardItem.upgraded ? `<span class="reward-badge upgrade-badge"><span data-i18n="app.fundDetail.colony.upgradeBadge">¡Subió a</span> ${window.MascotSystem?.ITEM_LEVELS?.[rewardItem.newLevel]?.name || 'nuevo nivel'}!</span>` : `<span class="reward-copies">${rewardItem.copies || 1}/6 <span data-i18n="app.fundDetail.colony.copies">copias</span></span>`}
+                                ${rewardItem.upgraded ? `<span class="reward-badge upgrade-badge"><span data-i18n="app.fundDetail.colony.upgradeBadge">¡Subió a</span> ${window.MascotSystem?.ITEM_LEVELS?.[rewardItem.newLevel]?.name || 'nuevo nivel'}!</span>` : `<span class="reward-copies">${rewardItem.copies || 1}/10 <span data-i18n="app.fundDetail.colony.copies">copias</span></span>`}
                             </div>
                         </div>
                         <p class="reward-hint" data-i18n="app.fundDetail.colony.visitMascot">Visita la pestaña "Mascota" para equipar tus prendas</p>
