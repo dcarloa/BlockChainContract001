@@ -207,7 +207,7 @@ async function getMascotData(groupId) {
  * Get item level based on copies
  */
 function getItemLevel(copies) {
-    if (copies >= 15) return 'gold';
+    if (copies >= 10) return 'gold';
     if (copies >= 5) return 'silver';
     return 'basic';
 }
@@ -752,7 +752,7 @@ async function loadMascotTab(groupId) {
                                         <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
-                                            <div class="item-copies">${owned.copies}/15</div>
+                                            <div class="item-copies">${owned.copies}/10</div>
                                         ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
                                         ${isEquipped ? '<div class="equipped-badge" title="Click to unequip">✓</div>' : ''}
                                     </div>
@@ -775,7 +775,7 @@ async function loadMascotTab(groupId) {
                                         <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
-                                            <div class="item-copies">${owned.copies}/15</div>
+                                            <div class="item-copies">${owned.copies}/10</div>
                                         ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
                                         ${isEquipped ? '<div class="equipped-badge" title="Click to unequip">✓</div>' : ''}
                                     </div>
@@ -798,7 +798,7 @@ async function loadMascotTab(groupId) {
                                         <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
-                                            <div class="item-copies">${owned.copies}/15</div>
+                                            <div class="item-copies">${owned.copies}/10</div>
                                         ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
                                         ${isEquipped ? '<div class="equipped-badge" title="Click to unequip">✓</div>' : ''}
                                     </div>
@@ -810,7 +810,7 @@ async function loadMascotTab(groupId) {
                 </details>
                 
                 <div class="mascot-info">
-                    <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 5 copias, mejora a Plata ✨. Con 15 copias, alcanza Oro ✨✨.</span></p>
+                    <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 5 copias, mejora a Plata ✨. Con 10 copias, alcanza Oro ✨✨.</span></p>
                 </div>
                 
                 ${chestHTML || ''}
@@ -835,7 +835,7 @@ async function loadMascotTab(groupId) {
                         <ul>
                             <li><strong data-i18n="app.fundDetail.mascot.guide.basic">⭐ Basic:</strong> <span data-i18n="app.fundDetail.mascot.guide.basicDesc">1 copy obtained</span></li>
                             <li><strong data-i18n="app.fundDetail.mascot.guide.silver">⭐⭐✨ Silver:</strong> <span data-i18n="app.fundDetail.mascot.guide.silverDesc">5 copies obtained (silver shine!)</span></li>
-                            <li><strong data-i18n="app.fundDetail.mascot.guide.gold">⭐⭐⭐✨✨ Gold:</strong> <span data-i18n="app.fundDetail.mascot.guide.goldDesc">15 copies obtained (golden glow!)</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.gold">⭐⭐⭐✨✨ Gold:</strong> <span data-i18n="app.fundDetail.mascot.guide.goldDesc">10 copies obtained (golden glow!)</span></li>
                         </ul>
                         
                         <h4 data-i18n="app.fundDetail.mascot.guide.collection">🎒 Complete Collection</h4>
