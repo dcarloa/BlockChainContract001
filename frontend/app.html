@@ -50,7 +50,7 @@
     <link rel="stylesheet" href="new-features-styles.css">
     <link rel="stylesheet" href="colony-styles.css?v=1.2">
     <link rel="stylesheet" href="mascot-styles.css?v=1.1">
-    <link rel="stylesheet" href="subscription-styles.css?v=1.0">
+    <link rel="stylesheet" href="subscription-styles.css?v=1.1">
     
     <!-- Chart.js for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -228,6 +228,88 @@ Simple, fast, and free.</p>
         </div>
     </div>
 
+    <!-- BETA Launch Banner Modal -->
+    <div id="betaLaunchModal" class="modal-overlay" style="display: none;">
+        <div class="beta-modal-content">
+            <div class="beta-modal-header">
+                <div class="beta-rocket">🚀</div>
+                <h2>Welcome to Ant Pool <span class="beta-badge">BETA</span></h2>
+                <p class="beta-subtitle">Launch Special Edition</p>
+            </div>
+            
+            <div class="beta-modal-body">
+                <div class="beta-announcement">
+                    <div class="beta-icon">🎉</div>
+                    <div class="beta-text">
+                        <strong>All PRO features are FREE during launch!</strong>
+                        <p>We're celebrating our launch by giving everyone full access to premium features. Enjoy them while they last!</p>
+                    </div>
+                </div>
+                
+                <div class="beta-features-preview">
+                    <h3>🐜 Features included FREE during BETA:</h3>
+                    <div class="beta-features-grid">
+                        <div class="beta-feature">
+                            <span class="feature-icon">📊</span>
+                            <span class="feature-name">Advanced Analytics</span>
+                            <span class="pro-tag">PRO</span>
+                        </div>
+                        <div class="beta-feature">
+                            <span class="feature-icon">🔄</span>
+                            <span class="feature-name">Recurring Expenses</span>
+                            <span class="pro-tag">PRO</span>
+                        </div>
+                        <div class="beta-feature">
+                            <span class="feature-icon">💰</span>
+                            <span class="feature-name">Budget Tracking</span>
+                            <span class="pro-tag">PRO</span>
+                        </div>
+                        <div class="beta-feature">
+                            <span class="feature-icon">📤</span>
+                            <span class="feature-name">Export Data (CSV)</span>
+                            <span class="pro-tag">PRO</span>
+                        </div>
+                        <div class="beta-feature">
+                            <span class="feature-icon">🎮</span>
+                            <span class="feature-name">All 7 Minigames</span>
+                            <span class="pro-tag">PRO</span>
+                        </div>
+                        <div class="beta-feature">
+                            <span class="feature-icon">👥</span>
+                            <span class="feature-name">Unlimited Members</span>
+                            <span class="pro-tag">PRO</span>
+                        </div>
+                        <div class="beta-feature">
+                            <span class="feature-icon">📁</span>
+                            <span class="feature-name">Unlimited Groups</span>
+                            <span class="pro-tag">PRO</span>
+                        </div>
+                        <div class="beta-feature">
+                            <span class="feature-icon">🎁</span>
+                            <span class="feature-name">Double Weekly Chests</span>
+                            <span class="pro-tag">PRO</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="beta-notice">
+                    <span>⏰</span>
+                    <span>After the BETA period, some features will require a PRO subscription ($2.99/month). Early adopters may receive special discounts!</span>
+                </div>
+            </div>
+            
+            <div class="beta-modal-footer">
+                <label class="beta-dont-show">
+                    <input type="checkbox" id="betaDontShowAgain">
+                    <span>Don't show this again</span>
+                </label>
+                <button class="beta-continue-btn" onclick="closeBetaModal()">
+                    🐜 Start Using Ant Pool
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="app-header">
         <div class="container">
@@ -238,17 +320,18 @@ Simple, fast, and free.</p>
                         <img src="/assets/LOGOAP_001.png" alt="Ant Pool" style="height: 36px; vertical-align: middle; margin-right: 10px;">
                         Ant Pool
                     </h1>
-                    <span class="version-badge">🐜 Simple Mode or Blockchain - You Choose</span>
+                    <span class="version-badge beta-version">🚀 BETA - All PRO features FREE!</span>
                 </div>
                 
                 <!-- Header Actions Section -->
                 <div class="header-actions">
                     <!-- Action Buttons Group -->
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <!-- Upgrade PRO Button - DISABLED (coming soon) -->
-                        <button id="upgradeProBtn" class="upgrade-pro-btn" onclick="alert('Premium features coming soon! 🐜 Ant Pool is currently free for all users.');" title="Premium features coming soon" style="opacity: 0.6; cursor: not-allowed;">
+                        <!-- BETA PRO Button - Shows all features are free -->
+                        <button id="upgradeProBtn" class="upgrade-pro-btn beta-pro-btn" onclick="showBetaModal()" title="You have PRO access during BETA!">
                             <span>💎</span>
-                            <span class="upgrade-text">PRO (Soon)</span>
+                            <span class="upgrade-text">PRO Active</span>
+                            <span class="beta-mini-badge">BETA</span>
                         </button>
                         
                         <!-- Notifications -->
@@ -501,12 +584,20 @@ Simple, fast, and free.</p>
                         <div class="subscription-header">
                             <h4 data-i18n="app.profile.subscription.title">🐜 Subscription Plans</h4>
                             <p data-i18n="app.profile.subscription.subtitle">Unlock premium features and support Ant Pool development</p>
+                            
+                            <!-- BETA Banner -->
+                            <div class="subscription-beta-banner">
+                                <span class="beta-icon">🚀</span>
+                                <div class="beta-banner-text">
+                                    <strong>BETA Launch Special!</strong>
+                                    <span>All PRO features are currently FREE for everyone. Enjoy them while they last!</span>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="subscription-plans">
                             <!-- FREE Plan -->
                             <div id="freePlanCard" class="subscription-card free-plan">
-                                <div class="plan-badge current" data-i18n="app.profile.subscription.currentPlan">CURRENT PLAN</div>
                                 <div class="plan-icon">🆓</div>
                                 <h3 data-i18n="app.profile.subscription.free">Free</h3>
                                 <div class="plan-price">
@@ -514,11 +605,28 @@ Simple, fast, and free.</p>
                                     <span class="period" data-i18n="app.profile.subscription.perMonth">/month</span>
                                 </div>
                                 <p class="plan-description" data-i18n="app.profile.subscription.freeDesc">Perfect for getting started</p>
+                                
+                                <ul class="plan-features-list">
+                                    <li class="feature-included"><span>✓</span> Up to 3 groups</li>
+                                    <li class="feature-included"><span>✓</span> Up to 7 members per group</li>
+                                    <li class="feature-included"><span>✓</span> Basic expense tracking</li>
+                                    <li class="feature-included"><span>✓</span> Smart settlements</li>
+                                    <li class="feature-included"><span>✓</span> 1 weekly chest</li>
+                                    <li class="feature-included"><span>✓</span> 2 minigames</li>
+                                    <li class="feature-excluded"><span>✗</span> Analytics & charts</li>
+                                    <li class="feature-excluded"><span>✗</span> Recurring expenses</li>
+                                    <li class="feature-excluded"><span>✗</span> Budget tracking</li>
+                                    <li class="feature-excluded"><span>✗</span> Export data</li>
+                                </ul>
+                                
+                                <div class="plan-footer">
+                                    <span class="post-beta-label">After BETA</span>
+                                </div>
                             </div>
                             
                             <!-- PRO Plan -->
                             <div id="proPlanCard" class="subscription-card pro-plan">
-                                <div id="proPlanBadge" class="plan-badge recommended" data-i18n="app.profile.subscription.recommended">RECOMMENDED</div>
+                                <div id="proPlanBadge" class="plan-badge current beta-active">🚀 ACTIVE (BETA FREE)</div>
                                 <div class="plan-icon">💎</div>
                                 <h3 data-i18n="app.profile.subscription.pro">PRO</h3>
                                 <div class="plan-price">
@@ -530,38 +638,28 @@ Simple, fast, and free.</p>
                                 </div>
                                 <p class="plan-description" data-i18n="app.profile.subscription.proDesc">Support development and get premium features</p>
                                 
-                                <!-- Premium features coming soon message -->
-                                <div id="premiumComingSoon" class="stripe-button-container" style="background: rgba(255, 193, 7, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3);">
-                                    <p style="text-align: center; color: var(--text-primary); margin: 0.5rem 0;">
-                                        <strong>🚧 Coming Soon</strong>
-                                    </p>
-                                    <p style="text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin: 0.5rem 0;">
-                                        Premium features are not yet active. Ant Pool is currently free for all users.
-                                    </p>
-                                    <button class="btn btn-secondary btn-block" disabled style="opacity: 0.6; cursor: not-allowed;" title="Not available yet">
-                                        💎 Subscribe to PRO - Coming Soon
-                                    </button>
-                                </div>
+                                <ul class="plan-features-list">
+                                    <li class="feature-included highlight"><span>✓</span> Unlimited groups</li>
+                                    <li class="feature-included highlight"><span>✓</span> Unlimited members</li>
+                                    <li class="feature-included"><span>✓</span> Everything in Free</li>
+                                    <li class="feature-included highlight"><span>✓</span> 📊 Advanced analytics</li>
+                                    <li class="feature-included highlight"><span>✓</span> 🔄 Recurring expenses</li>
+                                    <li class="feature-included highlight"><span>✓</span> 💰 Budget tracking</li>
+                                    <li class="feature-included highlight"><span>✓</span> 📤 Export to CSV</li>
+                                    <li class="feature-included highlight"><span>✓</span> 🎁 2 weekly chests</li>
+                                    <li class="feature-included highlight"><span>✓</span> 🎮 All 7 minigames</li>
+                                    <li class="feature-included"><span>✓</span> No watermarks</li>
+                                </ul>
                                 
-                                <!-- Stripe Checkout Button (DISABLED - not active yet) -->
-                                <div id="stripeButtonContainer" class="stripe-button-container" style="display: none;">
-                                    <button class="btn btn-primary btn-block" onclick="alert('Premium features coming soon!')" data-i18n="app.profile.subscription.subscribePro">
-                                        💎 Subscribe to PRO - $2.99/month
-                                    </button>
-                                </div>
-                                
-                                <!-- Manage Subscription Button (shown when subscribed) -->
-                                <div id="manageSubscriptionContainer" class="stripe-button-container" style="display: none;">
-                                    <button class="btn btn-primary btn-block" onclick="openCustomerPortal()" data-i18n="app.profile.subscription.manageSubscription">
-                                        ⚙️ Manage Subscription
-                                    </button>
-                                    <p id="subscriptionStatus" style="margin-top: 1rem; text-align: center; color: #43e97b; font-weight: 600;"></p>
+                                <div class="plan-footer beta-footer">
+                                    <span class="beta-free-now">✨ FREE during BETA!</span>
+                                    <span class="post-beta-price">$2.99/mo after launch</span>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="subscription-footer">
-                            <p data-i18n="app.profile.subscription.earlyAdopter">💡 Early adopters get lifetime discounts!</p>
+                            <p data-i18n="app.profile.subscription.earlyAdopter">💡 Early adopters may receive lifetime discounts when PRO launches!</p>
                         </div>
                     </div>
                 </div>
@@ -2043,12 +2141,52 @@ Simple, fast, and free.</p>
                 window.FirebaseConfig.initialize().then(success => {
                     if (success) {
                         console.log('✅ Firebase ready for Simple Mode');
+                        // Show BETA modal after Firebase is ready
+                        checkAndShowBetaModal();
                     } else {
                         console.warn('⚠️ Firebase initialization failed - Simple Mode unavailable');
                     }
                 });
             }
         });
+        
+        // ============================================================================
+        // BETA LAUNCH MODAL FUNCTIONS
+        // ============================================================================
+        
+        function checkAndShowBetaModal() {
+            const dontShowAgain = localStorage.getItem('antpool_beta_modal_dismissed');
+            if (!dontShowAgain) {
+                // Small delay to let the page fully load
+                setTimeout(() => {
+                    showBetaModal();
+                }, 1000);
+            }
+        }
+        
+        function showBetaModal() {
+            const modal = document.getElementById('betaLaunchModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeBetaModal() {
+            const modal = document.getElementById('betaLaunchModal');
+            const dontShowCheckbox = document.getElementById('betaDontShowAgain');
+            
+            if (dontShowCheckbox && dontShowCheckbox.checked) {
+                localStorage.setItem('antpool_beta_modal_dismissed', 'true');
+            }
+            
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // ============================================================================
         
         // Settings Modal Functions are now in app-platform.js
         // Removed duplicate definitions to avoid conflicts
