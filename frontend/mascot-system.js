@@ -529,15 +529,47 @@ async function renderWeeklyChestStatus(groupId) {
             const claimedItem = chestData.content?.item;
             const itemData = claimedItem ? WARDROBE_ITEMS[claimedItem] : null;
             
+            // Calculate time until next Monday
+            const nowTime = Date.now();
+            const currentDate = new Date(nowTime);
+            const nextMonday = new Date(currentDate);
+            nextMonday.setUTCHours(0, 0, 0, 0);
+            
+            const currentDay = nextMonday.getUTCDay();
+            let daysUntilMonday;
+            if (currentDay === 0) { // Sunday
+                daysUntilMonday = 1;
+            } else if (currentDay === 1) { // Monday
+                daysUntilMonday = 7; // Next Monday
+            } else { // Tuesday-Saturday
+                daysUntilMonday = (8 - currentDay) % 7;
+            }
+            
+            nextMonday.setUTCDate(nextMonday.getUTCDate() + daysUntilMonday);
+            
+            const timeUntilNextMonday = nextMonday.getTime() - nowTime;
+            const daysLeft = Math.floor(timeUntilNextMonday / (24 * 60 * 60 * 1000));
+            const hoursLeft = Math.floor((timeUntilNextMonday % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            
+            // Calculate progress (how much of the week has passed since last Monday)
+            const weekProgress = Math.max(0, Math.min(100, ((7 - daysLeft) / 7) * 100));
+            
             return `
                 <div class="weekly-chest-section chest-claimed">
-                    <div class="chest-icon-container claimed">
-                        <div class="chest-icon">📭</div>
-                        <div class="checkmark">✅</div>
+                    <div class="chest-pulse-container">
+                        <div class="chest-icon-container claimed animate-pulse">
+                            <div class="chest-icon">✅</div>
+                        </div>
+                        <div class="pulse-ring"></div>
+                        <div class="pulse-ring delay-1"></div>
                     </div>
-                    <h4 data-i18n="app.fundDetail.mascot.chestClaimed">Chest Already Claimed</h4>
-                    <p>${itemData ? `You received: ${itemData.emoji} <strong>${itemData.name}</strong>` : 'Item claimed!'}</p>
-                    <p class="chest-hint" data-i18n="app.fundDetail.mascot.nextChestHint">🗓️ Next chest available next week!</p>
+                    <h4>🎉 Chest Claimed This Week!</h4>
+                    ${itemData ? `<p>You received: ${itemData.emoji} <strong>${itemData.name}</strong></p>` : ''}
+                    <p class="chest-timer">Next chest in: <strong>${daysLeft}d ${hoursLeft}h</strong></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${weekProgress}%"></div>
+                    </div>
+                    <p class="chest-hint" style="font-size: 0.85rem; color: #888;">📅 Every Monday at 00:00 UTC</p>
                 </div>
             `;
         }
