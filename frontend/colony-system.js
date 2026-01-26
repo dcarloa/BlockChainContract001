@@ -247,12 +247,18 @@ async function openChestModal(groupId, weekId) {
         return;
     }
     
-    const colonyState = chest.state || 'active';
+    // Validate colonyState - must be one of the valid states
+    const validStates = ['forming', 'active', 'stable', 'consolidated'];
+    let colonyState = chest.state || 'active';
+    if (!validStates.includes(colonyState)) {
+        console.warn('[Colony] Invalid state:', colonyState, '- defaulting to active');
+        colonyState = 'active';
+    }
     const config = COLONY_STATES[colonyState];
     console.log('[Colony] Chest state:', colonyState);
     
     // Check if this is a welcome chest
-    const isWelcomeChest = chest.isWelcomeChest || chest.weekId === 'welcome';
+    const isWelcomeChest = chest.isWelcomeChest || weekId === 'welcome';
     
     // Get random item from mascot system (if available)
     let rewardItem = null;
@@ -269,9 +275,12 @@ async function openChestModal(groupId, weekId) {
         if (e.target === modal) closeChestModal();
     };
     
-    // Get translated state name and description
-    const stateName = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colonyState}.name`) : colonyState;
-    const stateDesc = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colonyState}.description`) : '';
+    // Get translated state name and description with fallbacks
+    const stateName = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colonyState}.name`) : (config?.name || colonyState);
+    const stateDesc = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colonyState}.description`) : (config?.description || '');
+    
+    // Get chest description with proper fallback (avoid showing "undefined")
+    const chestDescription = (chest.description && chest.description !== 'undefined') ? chest.description : stateDesc;
     
     modal.innerHTML = `
         <div class="weekly-chest-modal" onclick="event.stopPropagation()">
@@ -291,7 +300,7 @@ async function openChestModal(groupId, weekId) {
                     
                     <div class="chest-state-info">
                         <h3>${stateName}</h3>
-                        <p>${chest.description || stateDesc}</p>
+                        <p>${chestDescription}</p>
                     </div>
                 `}
                 
@@ -299,20 +308,14 @@ async function openChestModal(groupId, weekId) {
                     <div class="chest-reward-section">
                         <h4 data-i18n="app.fundDetail.colony.rewardTitle">✨ ¡Recompensa Obtenida!</h4>
                         <div class="reward-item">
-                            <div class="reward-emoji">${rewardItem.item.emoji}</div>
+                            <div class="reward-emoji">${rewardItem.item?.emoji || '🎁'}</div>
                             <div class="reward-info">
-                                <p class="reward-name">${rewardItem.item.name}</p>
+                                <p class="reward-name">${rewardItem.item?.name || 'Item'}</p>
                                 ${rewardItem.isNew ? '<span class="reward-badge new-badge" data-i18n="app.fundDetail.colony.newBadge">¡NUEVO!</span>' : ''}
-                                ${rewardItem.upgraded ? `<span class="reward-badge upgrade-badge"><span data-i18n="app.fundDetail.colony.upgradeBadge">¡Subió a</span> ${window.MascotSystem.ITEM_LEVELS[rewardItem.newLevel].name}!</span>` : `<span class="reward-copies">${rewardItem.copies}/6 <span data-i18n="app.fundDetail.colony.copies">copias</span></span>`}
+                                ${rewardItem.upgraded ? `<span class="reward-badge upgrade-badge"><span data-i18n="app.fundDetail.colony.upgradeBadge">¡Subió a</span> ${window.MascotSystem?.ITEM_LEVELS?.[rewardItem.newLevel]?.name || 'nuevo nivel'}!</span>` : `<span class="reward-copies">${rewardItem.copies || 1}/6 <span data-i18n="app.fundDetail.colony.copies">copias</span></span>`}
                             </div>
                         </div>
                         <p class="reward-hint" data-i18n="app.fundDetail.colony.visitMascot">Visita la pestaña "Mascota" para equipar tus prendas</p>
-                    </div>
-                ` : ''}
-                
-                ${!isWelcomeChest && chest.description ? `
-                    <div class="chest-description">
-                        <p>${chest.description}</p>
                     </div>
                 ` : ''}
                 
