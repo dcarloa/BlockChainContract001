@@ -380,6 +380,20 @@ async function createWelcomeChest(groupId) {
  */
 async function renderWeeklyChestStatus(groupId) {
     try {
+        // Check if ColonySystem is available
+        if (typeof ColonySystem === 'undefined' || !ColonySystem.getWeeklyChest) {
+            console.warn('[Mascot] ColonySystem not available');
+            return `
+                <div class="weekly-chest-section">
+                    <div class="chest-icon-container">
+                        <div class="chest-icon">📦</div>
+                    </div>
+                    <h4>🎁 Weekly Chests</h4>
+                    <p class="chest-hint">Chest system loading...</p>
+                </div>
+            `;
+        }
+        
         // First check for welcome chest (priority)
         const welcomeChest = await ColonySystem.getWeeklyChest(groupId, 'welcome');
         
@@ -393,7 +407,7 @@ async function renderWeeklyChestStatus(groupId) {
             currentWeekId = 'welcome';
         } else {
             // Otherwise check current week's chest
-            currentWeekId = ColonySystem.getCurrentWeekId();
+            currentWeekId = ColonySystem.getCurrentWeekId() || 'unknown';
             chestData = await ColonySystem.getWeeklyChest(groupId, currentWeekId);
         }
         
@@ -425,7 +439,6 @@ async function renderWeeklyChestStatus(groupId) {
             const timeUntilNextMonday = nextMonday.getTime() - now;
             const daysLeft = Math.floor(timeUntilNextMonday / (24 * 60 * 60 * 1000));
             const hoursLeft = Math.floor((timeUntilNextMonday % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-            const minutesLeft = Math.floor((timeUntilNextMonday % (60 * 60 * 1000)) / (60 * 1000));
             
             return `
                 <div class="weekly-chest-section chest-pending">
@@ -451,8 +464,9 @@ async function renderWeeklyChestStatus(groupId) {
         
         const now = Date.now();
         const isPending = chestData.state === 'pending';
-        const isOpened = chestData.isOpened === true;
-        const isAvailable = !isOpened && !isPending; // Available if not opened and not pending
+        // Check for various truthy values of isOpened
+        const isOpened = chestData.isOpened === true || chestData.isOpened === 'true' || (typeof chestData.isOpened === 'number' && chestData.isOpened > 0);
+        const isAvailable = !isOpened && !isPending;
         const isWelcomeChest = currentWeekId === 'welcome' || chestData.isWelcomeChest;
         
         if (isPending) {
@@ -667,7 +681,7 @@ async function loadMascotTab(groupId) {
                     <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</span></p>
                 </div>
                 
-                ${chestHTML}
+                ${chestHTML || ''}
                 
                 <div class="mascot-guide-wrapper">
                     <div class="mascot-guide-header">
