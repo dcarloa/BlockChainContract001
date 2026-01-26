@@ -211,18 +211,24 @@ function showWeeklyChestBanner(groupId, chest) {
         existingBanner.remove();
     }
     
+    const isWelcomeChest = chest.weekId === 'welcome' || chest.isWelcomeChest;
+    
     const banner = document.createElement('div');
     banner.id = 'weeklyChestBanner';
     banner.className = 'weekly-chest-banner';
     banner.innerHTML = `
         <div class="chest-banner-content">
-            <span class="chest-icon">📦</span>
+            <span class="chest-icon">${isWelcomeChest ? '🎁' : '📦'}</span>
             <div class="chest-text">
-                <strong>¡Cofre Semanal Disponible!</strong>
-                <small>Tu colonia ha completado otra semana</small>
+                <strong data-i18n="${isWelcomeChest ? 'app.fundDetail.colony.welcomeBannerTitle' : 'app.fundDetail.colony.bannerTitle'}">
+                    ${isWelcomeChest ? '🎉 Welcome Chest Available!' : '🎉 Weekly Chest Available!'}
+                </strong>
+                <small data-i18n="${isWelcomeChest ? 'app.fundDetail.colony.welcomeBannerSubtitle' : 'app.fundDetail.colony.bannerSubtitle'}">
+                    ${isWelcomeChest ? 'Your welcome gift is ready!' : 'Your colony completed another week'}
+                </small>
             </div>
-            <button class="chest-banner-btn" onclick="ColonySystem.openChestModal('${groupId}', '${chest.weekId}')">
-                Abrir Cofre
+            <button class="chest-banner-btn" onclick="ColonySystem.openChestModal('${groupId}', '${chest.weekId}')" data-i18n="app.fundDetail.colony.openChestBtn">
+                Open Chest
             </button>
         </div>
     `;
@@ -233,6 +239,11 @@ function showWeeklyChestBanner(groupId, chest) {
         console.log('[Colony] Inserting banner into container');
         container.innerHTML = '';
         container.appendChild(banner);
+        
+        // Apply translations
+        if (window.i18n) {
+            window.i18n.applyTranslations();
+        }
     } else {
         console.error('[Colony] Banner container not found!');
     }

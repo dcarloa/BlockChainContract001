@@ -966,6 +966,11 @@ const translations = {
                     visitMascot: "Visit the 'Mascot' tab to equip your items",
                     closeButton: "Continue using Ant Pool",
                     defaultDescription: "Thanks for keeping everything clear this week.",
+                    bannerTitle: "🎉 Weekly Chest Available!",
+                    bannerSubtitle: "Your colony completed another week",
+                    welcomeBannerTitle: "🎉 Welcome Chest Available!",
+                    welcomeBannerSubtitle: "Your welcome gift is ready!",
+                    openChestBtn: "Open Chest",
                     states: {
                         forming: {
                             name: "Forming paths",
@@ -2145,6 +2150,11 @@ const translations = {
                     visitMascot: "Visita la pestaña 'Mascota' para equipar tus prendas",
                     closeButton: "Seguir usando Ant Pool",
                     defaultDescription: "Gracias por mantener todo claro esta semana.",
+                    bannerTitle: "🎉 ¡Cofre Semanal Disponible!",
+                    bannerSubtitle: "Tu colonia ha completado otra semana",
+                    welcomeBannerTitle: "🎉 ¡Cofre de Bienvenida Disponible!",
+                    welcomeBannerSubtitle: "¡Tu regalo de bienvenida está listo!",
+                    openChestBtn: "Abrir Cofre",
                     states: {
                         forming: {
                             name: "Formando caminos",
