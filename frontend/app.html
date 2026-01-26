@@ -44,7 +44,7 @@
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
     <link rel="stylesheet" href="styles-platform.css">
     <link rel="stylesheet" href="wallet-connector.css">
-    <link rel="stylesheet" href="create-group-styles.css">
+    <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css">
     <link rel="stylesheet" href="form-wizard-styles.css">
     <link rel="stylesheet" href="new-features-styles.css">
@@ -1803,211 +1803,128 @@ Simple, fast, and free.</p>
 
             <!-- Create Fund Modal -->
             <div id="createFundModal" class="modal" style="display: none;">
-                <div class="modal-content modal-large create-group-modal">
-                    <div class="modal-header">
-                        <h2 data-i18n="app.createFund.title">✨ Create New Group</h2>
-                        <button class="modal-close" onclick="closeCreateFundModal()">&times;</button>
+                <div class="modal-content create-group-modal-v2">
+                    <button class="modal-close-btn" onclick="closeCreateFundModal()">&times;</button>
+                    
+                    <div class="create-group-header">
+                        <div class="create-group-icon">🐜</div>
+                        <h2 data-i18n="app.createFund.title">Create New Group</h2>
+                        <p data-i18n="app.createFund.step1.subtitle">Give it a name everyone will easily recognize</p>
                     </div>
                     
-                    <form id="createFundForm" class="create-group-form" onsubmit="createFund(event)">
-                        <!-- Step Indicator -->
-                        <div class="step-indicator">
-                            <div class="step active" data-step="1">
-                                <div class="step-number">1</div>
-                                <div class="step-label" data-i18n="app.createFund.steps.basicInfo">Basic Info</div>
-                                <div class="step-connector"></div>
-                            </div>
-                            <div class="step" data-step="2">
-                                <div class="step-number">2</div>
-                                <div class="step-label" data-i18n="app.createFund.steps.mode">Mode</div>
-                            </div>
+                    <form id="createFundForm" class="create-group-form-v2" onsubmit="createFund(event)">
+                        <!-- Group Name -->
+                        <div class="form-field">
+                            <label for="fundName">
+                                <span data-i18n="app.createFund.fields.name">Group Name</span>
+                                <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="fundName" 
+                                data-i18n-placeholder="app.createFund.fields.namePlaceholder"
+                                placeholder="E.g: Cancun Trip, Roommates 2025" 
+                                required 
+                                autocomplete="off"
+                            />
                         </div>
 
-                        <!-- Step 1: Basic Info -->
-                        <div class="form-step" data-step="1" style="display: block;">
-                            <h3 data-i18n="app.createFund.step1.title">📝 What's your group name?</h3>
-                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;" data-i18n="app.createFund.step1.subtitle">Give it a name everyone will easily recognize</p>
-                            
-                            <div class="form-group">
-                                <label for="fundName">
-                                    <span class="label-text" data-i18n="app.createFund.fields.name">Group Name</span>
-                                    <span class="label-required">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="fundName" 
-                                    data-i18n-placeholder="app.createFund.fields.namePlaceholder"
-                                    placeholder="E.g: Dog Expenses, Cancun Trip, Roommates 2025" 
-                                    required 
-                                    class="input-modern input-large"
-                                />
-                                <small class="form-hint" data-i18n="app.createFund.fields.nameHint">💡 Use a clear and descriptive name</small>
-                            </div>
-
-                            <!-- Icon Selection -->
-                            <div class="form-group">
-                                <label>
-                                    <span class="label-text" data-i18n="app.createFund.step1.groupIcon">Group Icon</span>
-                                    <span class="label-badge" data-i18n="app.createFund.fields.budgetBadge">Optional</span>
-                                </label>
-                                <div class="icon-selection-grid">
-                                    <input type="radio" name="groupIcon" value="🐕" id="icon-dog" checked />
-                                    <label for="icon-dog" class="icon-option">🐕</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="✈️" id="icon-plane" />
-                                    <label for="icon-plane" class="icon-option">✈️</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="🏠" id="icon-home" />
-                                    <label for="icon-home" class="icon-option">🏠</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="🎉" id="icon-party" />
-                                    <label for="icon-party" class="icon-option">🎉</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="💼" id="icon-briefcase" />
-                                    <label for="icon-briefcase" class="icon-option">💼</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="🍕" id="icon-pizza" />
-                                    <label for="icon-pizza" class="icon-option">🍕</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="⚽" id="icon-soccer" />
-                                    <label for="icon-soccer" class="icon-option">⚽</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="🎓" id="icon-graduation" />
-                                    <label for="icon-graduation" class="icon-option">🎓</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="🏖️" id="icon-beach" />
-                                    <label for="icon-beach" class="icon-option">🏖️</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="🚗" id="icon-car" />
-                                    <label for="icon-car" class="icon-option">🚗</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="🎸" id="icon-guitar" />
-                                    <label for="icon-guitar" class="icon-option">🎸</label>
-                                    
-                                    <input type="radio" name="groupIcon" value="💎" id="icon-diamond" />
-                                    <label for="icon-diamond" class="icon-option">💎</label>
-                                </div>
-                                <small class="form-hint" data-i18n="app.createFund.step1.iconHint">Choose an icon that represents your group</small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="fundDescription">
-                                    <span class="label-text" data-i18n="app.createFund.fields.description">Description</span>
-                                    <span class="label-badge" data-i18n="app.createFund.fields.budgetBadge">Optional</span>
-                                </label>
-                                <textarea 
-                                    id="fundDescription" 
-                                    rows="3" 
-                                    data-i18n-placeholder="app.createFund.fields.descriptionPlaceholder"
-                                    placeholder="E.g: Shared expenses for food, walks, and pet care"
-                                    class="input-modern"
-                                ></textarea>
-                            </div>
-                            
-                            <!-- Preferred Currency Selection -->
-                            <div class="form-group">
-                                <label for="preferredCurrency">
-                                    <span class="label-text" data-i18n="app.createFund.fields.preferredCurrency">Preferred Currency</span>
-                                    <span class="label-badge" data-i18n="app.createFund.fields.budgetBadge">Optional</span>
-                                </label>
-                                <select id="preferredCurrency" class="input-modern">
-                                    <option value="NONE" data-i18n="app.createFund.fields.currencyNone">None (select per expense)</option>
-                                    <option value="USD">🇺🇸 USD - US Dollar</option>
-                                    <option value="EUR">🇪🇺 EUR - Euro</option>
-                                    <option value="GBP">🇬🇧 GBP - British Pound</option>
-                                    <option value="MXN">🇲🇽 MXN - Mexican Peso</option>
-                                    <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
-                                    <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
-                                    <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
-                                    <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
-                                    <option value="INR">🇮🇳 INR - Indian Rupee</option>
-                                    <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
-                                    <option value="ARS">🇦🇷 ARS - Argentine Peso</option>
-                                    <option value="COP">🇨🇴 COP - Colombian Peso</option>
-                                    <option value="CLP">🇨🇱 CLP - Chilean Peso</option>
-                                </select>
-                                <small class="form-hint" data-i18n="app.createFund.fields.currencyHint">💡 This will be the default currency for new expenses (you can change it later)</small>
-                            </div>
-                            
-                            <!-- Hidden fields with default values -->
-                            <input type="hidden" id="isPrivate" value="true" />
-                            <input type="hidden" id="fundType" value="0" />
-                            
-                            <div class="form-step-buttons">
-                                <button type="button" class="btn-step btn-step-back" onclick="closeCreateFundModal()" data-i18n="app.createFund.buttons.cancel">
-                                    Cancel
-                                </button>
-                                <button type="button" class="btn-step btn-step-next" onclick="nextStep(2)" data-i18n="app.createFund.buttons.next">
-                                    Next →
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 2: Mode Selection -->
-                        <div class="form-step" data-step="2" style="display: none;">
-                            <h3 data-i18n="app.createFund.step2.title">⚡ How do you want to manage expenses?</h3>
-                            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; text-align: center;" data-i18n="app.createFund.step2.subtitle">Choose the mode that best fits your group</p>
-                            
-                            <div class="mode-selection-grid">
-                                <label class="mode-card">
-                                    <input type="radio" name="groupMode" value="simple" checked />
-                                    <span class="mode-recommended" data-i18n="app.createFund.modes.simple.recommended">✨ Recommended</span>
-                                    <div class="mode-title">
-                                        <span>📝</span>
-                                        <span data-i18n="app.createFund.modes.simple.title">Simple Mode</span>
-                                    </div>
-                                    <div class="mode-description" data-i18n="app.createFund.modes.simple.description">
-                                        Perfect to get started. No wallet needed. Easily track expenses and split bills.
-                                    </div>
-                                    <ul class="mode-features">
-                                        <li data-i18n="app.createFund.modes.simple.features.login">Login with Google or Email</li>
-                                        <li data-i18n="app.createFund.modes.simple.features.track">Track debts</li>
-                                        <li data-i18n="app.createFund.modes.simple.features.approval">Collaborative approval</li>
-                                        <li data-i18n="app.createFund.modes.simple.features.settle">Settle outside the app</li>
-                                    </ul>
-                                </label>
+                        <!-- Icon Selection -->
+                        <div class="form-field">
+                            <label data-i18n="app.createFund.step1.groupIcon">Group Icon</label>
+                            <div class="icon-grid">
+                                <input type="radio" name="groupIcon" value="🐕" id="icon-dog" checked />
+                                <label for="icon-dog">🐕</label>
                                 
-                                <label class="mode-card mode-disabled" id="blockchainModeCard" style="opacity: 0.5; cursor: not-allowed; position: relative;">
-                                    <input type="radio" name="groupMode" value="blockchain" disabled />
-                                    <span class="mode-recommended" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);" data-i18n="app.createFund.modes.blockchain.comingSoon">🚀 Coming Soon</span>
-                                    <div class="mode-title">
-                                        <span>⛓️</span>
-                                        <span data-i18n="app.createFund.modes.blockchain.title">Blockchain Mode</span>
-                                    </div>
-                                    <div class="mode-description" data-i18n="app.createFund.modes.blockchain.description">
-                                        Automatic smart contracts. On-chain voting and total transparency.
-                                    </div>
-                                    <ul class="mode-features">
-                                        <li data-i18n="app.createFund.modes.blockchain.features.wallet">Requires crypto wallet</li>
-                                        <li data-i18n="app.createFund.modes.blockchain.features.automatic">Automatic payments</li>
-                                        <li data-i18n="app.createFund.modes.blockchain.features.voting">Blockchain voting</li>
-                                        <li data-i18n="app.createFund.modes.blockchain.features.trustless">Trustless execution</li>
-                                    </ul>
-                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: #f59e0b; white-space: nowrap;" data-i18n="app.createFund.modes.blockchain.inDevelopment">IN DEVELOPMENT</div>
-                                </label>
+                                <input type="radio" name="groupIcon" value="✈️" id="icon-plane" />
+                                <label for="icon-plane">✈️</label>
+                                
+                                <input type="radio" name="groupIcon" value="🏠" id="icon-home" />
+                                <label for="icon-home">🏠</label>
+                                
+                                <input type="radio" name="groupIcon" value="🎉" id="icon-party" />
+                                <label for="icon-party">🎉</label>
+                                
+                                <input type="radio" name="groupIcon" value="💼" id="icon-briefcase" />
+                                <label for="icon-briefcase">💼</label>
+                                
+                                <input type="radio" name="groupIcon" value="🍕" id="icon-pizza" />
+                                <label for="icon-pizza">🍕</label>
+                                
+                                <input type="radio" name="groupIcon" value="⚽" id="icon-soccer" />
+                                <label for="icon-soccer">⚽</label>
+                                
+                                <input type="radio" name="groupIcon" value="🎓" id="icon-graduation" />
+                                <label for="icon-graduation">🎓</label>
+                                
+                                <input type="radio" name="groupIcon" value="🏖️" id="icon-beach" />
+                                <label for="icon-beach">🏖️</label>
+                                
+                                <input type="radio" name="groupIcon" value="🚗" id="icon-car" />
+                                <label for="icon-car">🚗</label>
+                                
+                                <input type="radio" name="groupIcon" value="🎸" id="icon-guitar" />
+                                <label for="icon-guitar">🎸</label>
+                                
+                                <input type="radio" name="groupIcon" value="💎" id="icon-diamond" />
+                                <label for="icon-diamond">💎</label>
                             </div>
+                        </div>
 
-                            <!-- Wallet Warning (shown when wallet not connected) -->
-                            <div id="walletWarning" class="wallet-warning" style="display: none;">
-                                <div class="warning-icon">⚠️</div>
-                                <div class="warning-content">
-                                    <strong>Wallet Not Connected</strong>
-                                    <p>To create a Blockchain mode group, you need to connect your crypto wallet first. Please connect your wallet from the main menu.</p>
-                                </div>
-                            </div>
-
-                            <!-- Hidden governance fields with defaults -->
-                            <input type="hidden" id="approvalPercentage" value="60" />
-                            <input type="hidden" id="minimumVotes" value="2" />
-                            
-                            <div class="form-step-buttons">
-                                <button type="button" class="btn-step btn-step-back" onclick="previousStep(1)">
-                                    ← Back
-                                </button>
-                                <button type="submit" class="btn-step btn-step-submit">
-                                    🚀 Create Group
-                                </button>
-                            </div>
+                        <!-- Description -->
+                        <div class="form-field">
+                            <label for="fundDescription">
+                                <span data-i18n="app.createFund.fields.description">Description</span>
+                                <span class="optional" data-i18n="app.createFund.fields.budgetBadge">Optional</span>
+                            </label>
+                            <textarea 
+                                id="fundDescription" 
+                                rows="2" 
+                                data-i18n-placeholder="app.createFund.fields.descriptionPlaceholder"
+                                placeholder="E.g: Shared expenses for our trip"
+                            ></textarea>
+                        </div>
+                        
+                        <!-- Preferred Currency -->
+                        <div class="form-field">
+                            <label for="preferredCurrency">
+                                <span data-i18n="app.createFund.fields.preferredCurrency">Default Currency</span>
+                                <span class="optional" data-i18n="app.createFund.fields.budgetBadge">Optional</span>
+                            </label>
+                            <select id="preferredCurrency">
+                                <option value="NONE" data-i18n="app.createFund.fields.currencyNone">None (select per expense)</option>
+                                <option value="USD">🇺🇸 USD - US Dollar</option>
+                                <option value="EUR">🇪🇺 EUR - Euro</option>
+                                <option value="GBP">🇬🇧 GBP - British Pound</option>
+                                <option value="MXN">🇲🇽 MXN - Mexican Peso</option>
+                                <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+                                <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+                                <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
+                                <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
+                                <option value="INR">🇮🇳 INR - Indian Rupee</option>
+                                <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
+                                <option value="ARS">🇦🇷 ARS - Argentine Peso</option>
+                                <option value="COP">🇨🇴 COP - Colombian Peso</option>
+                                <option value="CLP">🇨🇱 CLP - Chilean Peso</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Hidden fields with default values -->
+                        <input type="hidden" id="isPrivate" value="true" />
+                        <input type="hidden" id="fundType" value="0" />
+                        <input type="hidden" name="groupMode" value="simple" />
+                        <input type="hidden" id="approvalPercentage" value="60" />
+                        <input type="hidden" id="minimumVotes" value="2" />
+                        
+                        <!-- Buttons -->
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" onclick="closeCreateFundModal()" data-i18n="app.createFund.buttons.cancel">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn-create">
+                                <span>🚀</span>
+                                <span data-i18n="app.createFund.buttons.create">Create Group</span>
+                            </button>
                         </div>
                     </form>
                 </div>
