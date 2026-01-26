@@ -1085,6 +1085,152 @@ class ModeManager {
     getCurrentMode() {
         return this.currentMode;
     }
+    
+    /**
+     * Export expenses to CSV file
+     */
+    async exportExpensesToCSV() {
+        try {
+            if (!this.currentGroupId) {
+                throw new Error("No group selected");
+            }
+            
+            // Get group info
+            const groupData = await window.FirebaseConfig.readDb(`groups/${this.currentGroupId}`);
+            const groupName = groupData?.name || 'Group';
+            
+            // Get expenses
+            const expenses = await window.FirebaseConfig.readDb(
+                `groups/${this.currentGroupId}/expenses`
+            );
+            
+            if (!expenses || Object.keys(expenses).length === 0) {
+                throw new Error("No expenses to export");
+            }
+            
+            const expenseList = Object.entries(expenses).map(([id, expense]) => ({
+                id,
+                ...expense
+            }));
+            
+            // Sort by date (newest first)
+            expenseList.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            
+            // CSV Headers
+            const headers = [
+                'Date',
+                'Description',
+                'Amount',
+                'Currency',
+                'Category',
+                'Paid By',
+                'Split Between',
+                'Status',
+                'Notes'
+            ];
+            
+            // Format category names
+            const categoryLabels = {
+                food: '🍔 Food & Drinks',
+                transport: '🚗 Transport',
+                housing: '🏠 Housing',
+                utilities: '💡 Utilities',
+                entertainment: '🎬 Entertainment',
+                shopping: '🛒 Shopping',
+                health: '⚕️ Health',
+                travel: '✈️ Travel',
+                subscription: '📱 Subscription',
+                other: '📦 Other'
+            };
+            
+            // Build CSV rows
+            const rows = expenseList.map(expense => {
+                const date = expense.timestamp 
+                    ? new Date(expense.timestamp).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    })
+                    : 'N/A';
+                
+                const description = (expense.description || '').replace(/"/g, '""');
+                const amount = expense.amount || 0;
+                const currency = expense.currency || 'USD';
+                const category = categoryLabels[expense.category] || expense.category || 'Other';
+                const paidBy = expense.paidByName || expense.paidBy || 'Unknown';
+                
+                // Split between members
+                let splitBetween = 'All members';
+                if (expense.splitBetween && Array.isArray(expense.splitBetween)) {
+                    splitBetween = expense.splitBetween.map(m => m.name || m).join(', ');
+                }
+                
+                const status = expense.status || 'pending';
+                const notes = (expense.notes || '').replace(/"/g, '""');
+                
+                return [
+                    date,
+                    `"${description}"`,
+                    amount.toFixed(2),
+                    currency,
+                    `"${category}"`,
+                    `"${paidBy}"`,
+                    `"${splitBetween}"`,
+                    status,
+                    `"${notes}"`
+                ].join(',');
+            });
+            
+            // Add summary section
+            const totalByStatus = {
+                approved: 0,
+                pending: 0,
+                rejected: 0
+            };
+            
+            expenseList.forEach(exp => {
+                const status = exp.status || 'pending';
+                totalByStatus[status] = (totalByStatus[status] || 0) + (exp.amount || 0);
+            });
+            
+            // Build final CSV
+            const csvContent = [
+                `# ${groupName} - Expense Report`,
+                `# Generated: ${new Date().toLocaleString()}`,
+                `# Total Expenses: ${expenseList.length}`,
+                '',
+                headers.join(','),
+                ...rows,
+                '',
+                '# Summary',
+                `Total Approved,${totalByStatus.approved.toFixed(2)}`,
+                `Total Pending,${totalByStatus.pending.toFixed(2)}`,
+                `Total Rejected,${totalByStatus.rejected.toFixed(2)}`
+            ].join('\n');
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            
+            const fileName = `${groupName.replace(/[^a-z0-9]/gi, '_')}_expenses_${new Date().toISOString().split('T')[0]}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            console.log(`✅ Exported ${expenseList.length} expenses to ${fileName}`);
+            return true;
+            
+        } catch (error) {
+            console.error("❌ Failed to export expenses:", error);
+            throw error;
+        }
+    }
 }
 
 // ============================================
