@@ -147,7 +147,6 @@ async function openWeeklyChest(groupId, weekId) {
  */
 function renderColonyVisual(state = 'forming', size = 80) {
     const config = COLONY_STATES[state];
-    if (!config) return '';
     
     const colors = {
         forming: { primary: '#94a3b8', secondary: '#cbd5e1', glow: '#e2e8f0' },
@@ -156,36 +155,37 @@ function renderColonyVisual(state = 'forming', size = 80) {
         consolidated: { primary: '#f59e0b', secondary: '#d97706', glow: '#fbbf24' }
     };
     
-    const c = colors[state];
+    // Use active colors as fallback if state not found
+    const c = colors[state] || colors.active;
     
     return `
-        <svg width="${size}" height="${size}" viewBox="0 0 100 100" class="colony-visual">
+        <svg width="${size}" height="${size}" viewBox="0 0 100 100" class="colony-visual" style="display: block; margin: 0 auto;">
             <!-- Ambient glow -->
             <defs>
-                <radialGradient id="glow-${state}">
-                    <stop offset="0%" style="stop-color:${c.glow};stop-opacity:0.3" />
+                <radialGradient id="glow-${state}-${size}">
+                    <stop offset="0%" style="stop-color:${c.glow};stop-opacity:0.5" />
                     <stop offset="100%" style="stop-color:${c.glow};stop-opacity:0" />
                 </radialGradient>
             </defs>
-            <circle cx="50" cy="50" r="45" fill="url(#glow-${state})" />
+            <circle cx="50" cy="50" r="45" fill="url(#glow-${state}-${size})" />
             
             <!-- Base structure -->
-            <circle cx="50" cy="50" r="30" fill="none" stroke="${c.primary}" stroke-width="2" opacity="0.3" />
-            <circle cx="50" cy="50" r="20" fill="none" stroke="${c.primary}" stroke-width="2" opacity="0.5" />
+            <circle cx="50" cy="50" r="30" fill="none" stroke="${c.primary}" stroke-width="2" opacity="0.5" />
+            <circle cx="50" cy="50" r="20" fill="none" stroke="${c.primary}" stroke-width="2" opacity="0.7" />
             
             <!-- Paths (connecting lines) -->
             ${state !== 'forming' ? `
-                <line x1="30" y1="30" x2="50" y2="50" stroke="${c.secondary}" stroke-width="1.5" opacity="0.6" />
-                <line x1="70" y1="30" x2="50" y2="50" stroke="${c.secondary}" stroke-width="1.5" opacity="0.6" />
-                <line x1="30" y1="70" x2="50" y2="50" stroke="${c.secondary}" stroke-width="1.5" opacity="0.6" />
-                <line x1="70" y1="70" x2="50" y2="50" stroke="${c.secondary}" stroke-width="1.5" opacity="0.6" />
+                <line x1="30" y1="30" x2="50" y2="50" stroke="${c.secondary}" stroke-width="2" opacity="0.8" />
+                <line x1="70" y1="30" x2="50" y2="50" stroke="${c.secondary}" stroke-width="2" opacity="0.8" />
+                <line x1="30" y1="70" x2="50" y2="50" stroke="${c.secondary}" stroke-width="2" opacity="0.8" />
+                <line x1="70" y1="70" x2="50" y2="50" stroke="${c.secondary}" stroke-width="2" opacity="0.8" />
             ` : ''}
             
             <!-- Ant symbol (center) -->
-            <circle cx="50" cy="50" r="8" fill="${c.primary}" />
-            <circle cx="45" cy="45" r="3" fill="${c.secondary}" />
-            <circle cx="55" cy="45" r="3" fill="${c.secondary}" />
-            <ellipse cx="50" cy="55" rx="6" ry="4" fill="${c.primary}" opacity="0.7" />
+            <circle cx="50" cy="50" r="12" fill="${c.primary}" />
+            <circle cx="44" cy="44" r="4" fill="${c.secondary}" />
+            <circle cx="56" cy="44" r="4" fill="${c.secondary}" />
+            <ellipse cx="50" cy="56" rx="8" ry="5" fill="${c.primary}" opacity="0.8" />
         </svg>
     `;
 }
@@ -319,7 +319,7 @@ async function openChestModal(groupId, weekId) {
                     </div>
                 ` : ''}
                 
-                <button class="btn btn-primary btn-block chest-close-btn" id="closeChestBtn" data-i18n="app.fundDetail.colony.closeButton">
+                <button class="btn btn-primary btn-block chest-close-btn" id="closeChestBtn" onclick="event.stopPropagation(); ColonySystem.closeChestModal();" data-i18n="app.fundDetail.colony.closeButton">
                     Seguir usando Ant Pool
                 </button>
             </div>
@@ -334,14 +334,13 @@ async function openChestModal(groupId, weekId) {
         window.i18n.applyTranslations();
     }
     
-    // Attach event listeners to both close buttons
-    const closeBtn = document.getElementById('closeChestBtn');
+    // Attach event listener to X close button only (main button uses onclick)
     const closeBtnX = document.getElementById('closeChestBtnX');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeChestModal);
-    }
     if (closeBtnX) {
-        closeBtnX.addEventListener('click', closeChestModal);
+        closeBtnX.onclick = (e) => {
+            e.stopPropagation();
+            closeChestModal();
+        };
     }
     
     // Mark as opened
