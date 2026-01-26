@@ -2168,6 +2168,7 @@ Simple, fast, and free.</p>
             const modal = document.getElementById('betaLaunchModal');
             if (modal) {
                 modal.style.display = 'flex';
+                modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
         }
@@ -2181,6 +2182,7 @@ Simple, fast, and free.</p>
             }
             
             if (modal) {
+                modal.classList.remove('active');
                 modal.style.display = 'none';
                 document.body.style.overflow = '';
             }
