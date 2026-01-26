@@ -220,6 +220,7 @@ function renderMascotPreview(mascotData, size = 'normal') {
     const wardrobe = mascotData?.wardrobe || {};
     
     const headItem = equipped.head ? WARDROBE_ITEMS[equipped.head] : null;
+    const outfitItem = equipped.outfit ? WARDROBE_ITEMS[equipped.outfit] : null;
     const accessoryItem = equipped.accessory ? WARDROBE_ITEMS[equipped.accessory] : null;
     
     const sizeClass = size === 'small' ? 'mascot-preview-small' : 'mascot-preview';
@@ -228,6 +229,7 @@ function renderMascotPreview(mascotData, size = 'normal') {
         <div class="${sizeClass}">
             ${headItem ? `<div class="mascot-item-head">${headItem.emoji}</div>` : ''}
             <div class="mascot-body">🐜</div>
+            ${outfitItem ? `<div class="mascot-item-outfit">${outfitItem.emoji}</div>` : ''}
             ${accessoryItem ? `<div class="mascot-item-accessory">${accessoryItem.emoji}</div>` : ''}
         </div>
     `;
@@ -906,18 +908,19 @@ async function updateMascotHeader(groupId) {
         const mascotData = await getMascotData(groupId);
         const equipped = mascotData?.equipped || {};
         
-        if (!equipped.head && !equipped.accessory) {
+        if (!equipped.head && !equipped.outfit && !equipped.accessory) {
             container.style.display = 'none';
             return;
         }
         
         const headEmoji = equipped.head ? WARDROBE_ITEMS[equipped.head].emoji : '';
+        const outfitEmoji = equipped.outfit ? WARDROBE_ITEMS[equipped.outfit].emoji : '';
         const accessoryEmoji = equipped.accessory ? WARDROBE_ITEMS[equipped.accessory].emoji : '';
         
         container.style.display = 'inline-flex';
         container.innerHTML = `
             <div class="mascot-header-mini" title="Ver Mascota" onclick="switchFundTab('mascot')">
-                ${headEmoji}🐜${accessoryEmoji}
+                ${headEmoji}🐜${outfitEmoji}${accessoryEmoji}
             </div>
         `;
     } catch (error) {
