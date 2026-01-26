@@ -1229,6 +1229,12 @@ body {
 }
 
 @media (max-width: 768px) {
+    /* Fix text overflow on mobile */
+    .container {
+        padding: 0 1rem;
+        overflow-x: hidden;
+    }
+    
     .nav-links {
         position: fixed;
         top: 70px;
@@ -1273,11 +1279,48 @@ body {
     }
     
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
     
     .hero-subtitle {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        padding: 0 0.5rem;
+        word-wrap: break-word;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0 0.5rem;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        font-size: 0.95rem;
+        padding: 0.875rem 1rem;
+        white-space: nowrap;
+    }
+    
+    .hero-stats {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .stat {
+        min-width: 80px;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
     }
     
     .phone-mockup {
@@ -1297,16 +1340,33 @@ body {
         font-size: 1rem;
     }
     
+    /* Section titles mobile fix */
+    .section-title {
+        font-size: 1.75rem;
+        padding: 0 0.5rem;
+        word-wrap: break-word;
+    }
+    
+    .section-subtitle {
+        font-size: 0.95rem;
+        padding: 0 1rem;
+        word-wrap: break-word;
+    }
+    
     .modes-grid {
         grid-template-columns: 1fr;
     }
     
     .mode-card {
-        padding: 2rem;
+        padding: 1.5rem;
     }
     
     .mode-title {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
+    }
+    
+    .mode-description {
+        font-size: 0.9rem;
     }
     
     .workflow-mode-title {
@@ -1316,6 +1376,43 @@ body {
     .features-grid,
     .use-cases-grid {
         grid-template-columns: 1fr;
+    }
+    
+    /* Feature cards mobile fix */
+    .feature-title {
+        font-size: 1.1rem;
+    }
+    
+    .feature-description {
+        font-size: 0.85rem;
+    }
+    
+    /* Comparison table mobile fix */
+    .comparison-table {
+        font-size: 0.8rem;
+        overflow-x: auto;
+        display: block;
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.75rem;
+        word-wrap: break-word;
+    }
+    
+    /* Why section mobile fix */
+    .why-title {
+        font-size: 1.75rem;
+        padding: 0 0.5rem;
+    }
+    
+    .why-item h4 {
+        font-size: 1rem;
+    }
+    
+    .why-item p {
+        font-size: 0.85rem;
     }
     
     .step {
@@ -1925,6 +2022,67 @@ body {
 
     .setting-option {
         padding: 0.875rem 1rem;
+    }
+    
+    /* Extra small screen text fixes */
+    .hero-title {
+        font-size: 1.75rem;
+        line-height: 1.3;
+    }
+    
+    .gradient-text {
+        display: block;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+    
+    .section-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    /* Comparison table extra small fix */
+    .comparison-table th,
+    .comparison-table td {
+        padding: 0.4rem 0.2rem;
+        font-size: 0.7rem;
+    }
+    
+    /* Why section extra small */
+    .why-title {
+        font-size: 1.5rem;
+    }
+    
+    .why-item {
+        padding: 1rem;
+    }
+    
+    .why-item h4 {
+        font-size: 0.95rem;
+    }
+    
+    .why-item p {
+        font-size: 0.8rem;
+    }
+    
+    /* Stats extra small */
+    .hero-stats {
+        gap: 0.75rem;
+    }
+    
+    .stat-number {
+        font-size: 1.1rem;
+    }
+    
+    .stat-label {
+        font-size: 0.65rem;
     }
 }
 

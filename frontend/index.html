@@ -1,6 +1,24 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Redirect to app if user has visited before or is returning user -->
+    <script>
+        (function() {
+            // Check if user should go directly to app
+            // Skip redirect if explicitly visiting landing (?landing=true) or if it's a search engine
+            const urlParams = new URLSearchParams(window.location.search);
+            const isLandingForced = urlParams.get('landing') === 'true';
+            const isBot = /bot|crawler|spider|crawling/i.test(navigator.userAgent);
+            
+            // Check if user has used the app before (has firebase auth token or visited app)
+            const hasUsedApp = localStorage.getItem('antpool_has_used_app') === 'true';
+            
+            if (hasUsedApp && !isLandingForced && !isBot) {
+                window.location.replace('app.html');
+            }
+        })();
+    </script>
+    
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8G443F7LPT"></script>
     <script>
@@ -17,7 +35,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Ant Pool - Split expenses with friends like ants work together. Track shared bills, manage group expenses in 12 currencies, and settle debts with smart optimization. Free expense sharing app.">
+    <meta name="description" content="Ant Pool - Split expenses with friends without the awkward money talks. Track shared bills, manage group expenses in 12 currencies. Keep friendships, not spreadsheets.">
     <meta name="keywords" content="shared expenses, split bills, expense tracker, group expenses, ant pool, settle debts, expense sharing app, multi-currency, debt optimization">
     <meta name="author" content="Ant Pool">
     <meta name="robots" content="index, follow">
@@ -767,7 +785,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Ant Pool",
-        "description": "Split expenses with friends like ants work together. Track shared bills in 12 currencies, manage group expenses, and settle debts with smart optimization. Free tier available.",
+        "description": "Split group expenses without awkward money talks. Keep friendships, not spreadsheets. Track shared bills in 12 currencies with smart debt optimization.",
         "url": "https://antpool.cloud/",
         "applicationCategory": "FinanceApplication",
         "operatingSystem": "Web, Android, iOS",

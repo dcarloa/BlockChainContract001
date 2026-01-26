@@ -46,14 +46,14 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "The fun and clear way",
-                title2: "to split group expenses.",
-                subtitle: "Avoid fights, confusion and \"who owes who?\" when splitting bills with friends, trips or roommates.",
+                title: "Split expenses.",
+                title2: "Keep friendships.",
+                subtitle: "No more awkward money talks, confusion or fights. Ant Pool keeps group expenses clear so you can focus on enjoying the moment.",
                 cta: "Create a group — it's free",
                 ctaExplore: "See how it works",
                 stats: {
                     free: "FREE",
-                    forever: "Now",
+                    forever: "Tier",
                     currencies: "12",
                     currenciesLabel: "Currencies",
                     smart: "SMART",
@@ -61,19 +61,19 @@ const translations = {
                 }
             },
             modesSection: {
-                title: "Money should not break friendships.",
-                subtitle: "Ant Pool helps groups keep expenses clear, fair and stress-free. Everyone sees the same numbers. No awkward conversations.",
+                title: "Money shouldn't ruin good times.",
+                subtitle: "Ant Pool brings clarity and peace of mind to shared expenses. Everyone sees the same numbers. No awkward conversations, no resentment.",
                 clearBalances: {
-                    title: "🧠 Clear balances",
-                    desc: "Always know who owes who, in real time."
+                    title: "🧠 Crystal clear",
+                    desc: "Always know who owes what. No guessing, no spreadsheets."
                 },
                 madeForGroups: {
-                    title: "👥 Made for groups",
-                    desc: "Friends, trips, roommates, events — one place for everyone."
+                    title: "👥 Built for real life",
+                    desc: "Trips, roommates, dinners, events — wherever money is shared."
                 },
                 funByDesign: {
-                    title: "🎮 Fun by design",
-                    desc: "Progress together, unlock rewards and keep the group alive."
+                    title: "🎮 Actually enjoyable",
+                    desc: "Track expenses together, unlock rewards, keep the group engaged."
                 },
                 mobileFirst: {
                     title: "Mobile First",
@@ -89,8 +89,8 @@ const translations = {
                 }
             },
             philosophy: {
-                title: "Expense tracking doesn't have to be boring.",
-                subtitle: "Ant Pool turns shared expenses into a collaborative experience. Groups grow, unlock rewards and stay active.",
+                title: "Focus on the fun. We handle the math.",
+                subtitle: "Ant Pool exists to protect friendships from money stress. Simple, transparent, and even a little fun.",
                 workTogether: "Work Together",
                 likeNature: "Like Nature Intended",
                 multiCurrency: {
@@ -1257,14 +1257,14 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "La forma divertida y clara",
-                title2: "de dividir gastos en grupo.",
-                subtitle: "Evita peleas, confusiones y \"¿quién debe a quién?\" cuando haces cuentas con amigos, viajes o roomies.",
+                title: "Divide gastos.",
+                title2: "Conserva amistades.",
+                subtitle: "Sin charlas incómodas de dinero, sin confusiones, sin peleas. Ant Pool mantiene las cuentas claras para que disfrutes el momento.",
                 cta: "Crear un grupo — es gratis",
                 ctaExplore: "Ver cómo funciona",
                 stats: {
                     free: "GRATIS",
-                    forever: "Ahora",
+                    forever: "Nivel",
                     currencies: "12",
                     currenciesLabel: "Monedas",
                     smart: "INTELIGENTE",
@@ -1272,19 +1272,19 @@ const translations = {
                 }
             },
             modesSection: {
-                title: "El dinero no debe romper amistades.",
-                subtitle: "Ant Pool ayuda a los grupos a mantener los gastos claros, justos y sin estrés. Todos ven los mismos números. Sin conversaciones incómodas.",
+                title: "El dinero no debe arruinar buenos momentos.",
+                subtitle: "Ant Pool trae claridad y tranquilidad a los gastos compartidos. Todos ven los mismos números. Sin conversaciones incómodas, sin resentimientos.",
                 clearBalances: {
-                    title: "🧠 Balances claros",
-                    desc: "Siempre sabes quién debe a quién, en tiempo real."
+                    title: "🧠 Todo claro",
+                    desc: "Siempre sabes quién debe qué. Sin adivinar, sin hojas de cálculo."
                 },
                 madeForGroups: {
-                    title: "👥 Hecho para grupos",
-                    desc: "Amigos, viajes, roommates, eventos — un lugar para todos."
+                    title: "👥 Para la vida real",
+                    desc: "Viajes, roommates, cenas, eventos — donde sea que se comparta dinero."
                 },
                 funByDesign: {
-                    title: "🎮 Diversión por diseño",
-                    desc: "Progresan juntos, desbloquean recompensas y mantienen el grupo activo."
+                    title: "🎮 Hasta divertido",
+                    desc: "Rastreen gastos juntos, desbloqueen recompensas, mantengan el grupo activo."
                 },
                 mobileFirst: {
                     title: "Móvil Primero",
@@ -1300,8 +1300,8 @@ const translations = {
                 }
             },
             philosophy: {
-                title: "Rastrear gastos no tiene que ser aburrido.",
-                subtitle: "Ant Pool convierte los gastos compartidos en una experiencia colaborativa. Los grupos crecen, desbloquean recompensas y se mantienen activos.",
+                title: "Disfruta el momento. Nosotros hacemos las cuentas.",
+                subtitle: "Ant Pool existe para proteger las amistades del estrés del dinero. Simple, transparente, y hasta divertido.",
                 workTogether: "Trabajar Juntos",
                 likeNature: "Como La Naturaleza Lo Intentó",
                 multiCurrency: {

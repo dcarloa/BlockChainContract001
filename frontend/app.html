@@ -2127,6 +2127,9 @@ Simple, fast, and free.</p>
     <script src="app-platform.js?v=2.1"></script>
     
     <script>
+        // Mark that user has used the app (for redirect from landing page)
+        localStorage.setItem('antpool_has_used_app', 'true');
+        
         // Mode Selector Interaction
         document.addEventListener('DOMContentLoaded', () => {
             const modeRadios = document.querySelectorAll('input[name="groupMode"]');
