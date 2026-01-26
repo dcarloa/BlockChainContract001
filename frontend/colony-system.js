@@ -377,13 +377,19 @@ async function openChestModal(groupId, weekId) {
  * Close chest modal
  */
 function closeChestModal() {
-    console.log('[Colony] Closing chest modal');
     const modal = document.getElementById('weeklyChestModal');
-    if (modal) {
-        // Remove modal immediately
-        modal.remove();
-        console.log('[Colony] Modal removed');
+    
+    // Prevent double execution
+    if (!modal) {
+        console.log('[Colony] Modal already closed');
+        return;
     }
+    
+    console.log('[Colony] Closing chest modal');
+    
+    // Remove modal immediately
+    modal.remove();
+    console.log('[Colony] Modal removed');
     
     // Reload mascot tab if active and we have the groupId
     if (currentChestGroupId && window.MascotSystem) {
