@@ -310,9 +310,9 @@ async function openChestModal(groupId, weekId) {
                     </div>
                 ` : ''}
                 
-                ${!isWelcomeChest ? `
+                ${!isWelcomeChest && chest.description ? `
                     <div class="chest-description">
-                        <p>${config.description}</p>
+                        <p>${chest.description}</p>
                     </div>
                 ` : ''}
                 
