@@ -411,53 +411,74 @@ async function renderWeeklyChestStatus(groupId) {
             chestData = await ColonySystem.getWeeklyChest(groupId, currentWeekId);
         }
         
-        // If no chest exists yet, show countdown to next Monday
+        // If no chest exists yet, check for last claimed chest to calculate countdown
         if (!chestData) {
             const now = Date.now();
-            const currentDate = new Date(now);
             
-            // Calculate next Monday at 00:00 UTC
-            const nextMonday = new Date(currentDate);
-            nextMonday.setUTCHours(0, 0, 0, 0);
-            
-            // Get current day of week (0=Sunday, 1=Monday, ..., 6=Saturday)
-            const currentDay = nextMonday.getUTCDay();
-            
-            // Calculate days until next Monday
-            let daysUntilMonday;
-            if (currentDay === 0) { // Sunday
-                daysUntilMonday = 1;
-            } else if (currentDay === 1) { // Monday
-                // If it's Monday but chest doesn't exist, wait until next Monday
-                daysUntilMonday = 7;
-            } else { // Tuesday-Saturday
-                daysUntilMonday = (8 - currentDay) % 7;
+            // Try to find the last opened chest to calculate when next one is available
+            let lastOpenedAt = null;
+            try {
+                // Check if there's a lastChestClaimed timestamp in colony data or check previous chests
+                const colonyData = await ColonySystem.getColonyData(groupId);
+                lastOpenedAt = colonyData?.lastChestClaimed || null;
+            } catch (e) {
+                console.log('[Mascot] Could not get last chest claim time');
             }
             
-            nextMonday.setUTCDate(nextMonday.getUTCDate() + daysUntilMonday);
+            // If we have a last claim time, calculate from there; otherwise show "available now"
+            if (lastOpenedAt) {
+                const nextChestTime = lastOpenedAt + (7 * 24 * 60 * 60 * 1000); // 7 days after last claim
+                const timeUntilNextChest = Math.max(0, nextChestTime - now);
+                
+                if (timeUntilNextChest > 0) {
+                    const daysLeft = Math.floor(timeUntilNextChest / (24 * 60 * 60 * 1000));
+                    const hoursLeft = Math.floor((timeUntilNextChest % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                    
+                    const elapsedTime = now - lastOpenedAt;
+                    const totalWaitTime = 7 * 24 * 60 * 60 * 1000;
+                    const progress = Math.max(0, Math.min(100, (elapsedTime / totalWaitTime) * 100));
+                    
+                    const nextChestDate = new Date(nextChestTime);
+                    const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+                    const nextDateStr = nextChestDate.toLocaleDateString('en-US', dateOptions);
+                    
+                    return `
+                        <div class="weekly-chest-section chest-pending">
+                            <div class="chest-pulse-container">
+                                <div class="chest-icon-container locked animate-pulse">
+                                    <div class="chest-icon">📦</div>
+                                    <div class="chest-lock">⏳</div>
+                                </div>
+                                <div class="pulse-ring"></div>
+                                <div class="pulse-ring delay-1"></div>
+                                <div class="pulse-ring delay-2"></div>
+                            </div>
+                            <h4>🔒 Next Chest</h4>
+                            <p class="chest-timer">Available in: <strong>${daysLeft}d ${hoursLeft}h</strong></p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                            <p class="chest-hint" style="font-size: 0.85rem; color: #888;">📅 Available on ${nextDateStr}</p>
+                            <p class="chest-hint">💡 Chests unlock 7 days after your last claim!</p>
+                        </div>
+                    `;
+                }
+            }
             
-            const timeUntilNextMonday = nextMonday.getTime() - now;
-            const daysLeft = Math.floor(timeUntilNextMonday / (24 * 60 * 60 * 1000));
-            const hoursLeft = Math.floor((timeUntilNextMonday % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-            
+            // No last claim or cooldown has passed - chest should be available soon
             return `
                 <div class="weekly-chest-section chest-pending">
                     <div class="chest-pulse-container">
                         <div class="chest-icon-container locked animate-pulse">
                             <div class="chest-icon">📦</div>
-                            <div class="chest-lock">⏳</div>
+                            <div class="chest-lock">✨</div>
                         </div>
                         <div class="pulse-ring"></div>
                         <div class="pulse-ring delay-1"></div>
-                        <div class="pulse-ring delay-2"></div>
                     </div>
-                    <h4>🔒 Next Weekly Chest</h4>
-                    <p class="chest-timer">Available ${daysLeft > 0 ? `in <strong>${daysLeft}d ${hoursLeft}h</strong>` : `<strong>today at ${nextMonday.getUTCHours()}:${String(nextMonday.getUTCMinutes()).padStart(2, '0')} UTC</strong>`}</p>
-                    <p class="chest-hint" style="font-size: 0.85rem; color: #888;">📅 Every Monday at 00:00 UTC</p>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${Math.max(0, Math.min(100, ((7 - daysLeft) / 7) * 100))}%"></div>
-                    </div>
-                    <p class="chest-hint">💡 Weekly chests unlock automatically every week!</p>
+                    <h4>📦 Chest Available Soon</h4>
+                    <p class="chest-timer">Keep your group active to unlock rewards!</p>
+                    <p class="chest-hint">💡 Add expenses or activities to generate your chest</p>
                 </div>
             `;
         }
@@ -529,30 +550,24 @@ async function renderWeeklyChestStatus(groupId) {
             const claimedItem = chestData.content?.item;
             const itemData = claimedItem ? WARDROBE_ITEMS[claimedItem] : null;
             
-            // Calculate time until next Monday
+            // Calculate time until next chest (7 days from openedAt)
             const nowTime = Date.now();
-            const currentDate = new Date(nowTime);
-            const nextMonday = new Date(currentDate);
-            nextMonday.setUTCHours(0, 0, 0, 0);
+            const openedAt = chestData.openedAt || nowTime;
+            const nextChestTime = openedAt + (7 * 24 * 60 * 60 * 1000); // 7 days after claim
             
-            const currentDay = nextMonday.getUTCDay();
-            let daysUntilMonday;
-            if (currentDay === 0) { // Sunday
-                daysUntilMonday = 1;
-            } else if (currentDay === 1) { // Monday
-                daysUntilMonday = 7; // Next Monday
-            } else { // Tuesday-Saturday
-                daysUntilMonday = (8 - currentDay) % 7;
-            }
+            const timeUntilNextChest = Math.max(0, nextChestTime - nowTime);
+            const daysLeft = Math.floor(timeUntilNextChest / (24 * 60 * 60 * 1000));
+            const hoursLeft = Math.floor((timeUntilNextChest % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
             
-            nextMonday.setUTCDate(nextMonday.getUTCDate() + daysUntilMonday);
+            // Calculate progress (how much time has passed since claim)
+            const totalWaitTime = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+            const elapsedTime = nowTime - openedAt;
+            const weekProgress = Math.max(0, Math.min(100, (elapsedTime / totalWaitTime) * 100));
             
-            const timeUntilNextMonday = nextMonday.getTime() - nowTime;
-            const daysLeft = Math.floor(timeUntilNextMonday / (24 * 60 * 60 * 1000));
-            const hoursLeft = Math.floor((timeUntilNextMonday % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-            
-            // Calculate progress (how much of the week has passed since last Monday)
-            const weekProgress = Math.max(0, Math.min(100, ((7 - daysLeft) / 7) * 100));
+            // Format the next available date
+            const nextChestDate = new Date(nextChestTime);
+            const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+            const nextDateStr = nextChestDate.toLocaleDateString('en-US', dateOptions);
             
             return `
                 <div class="weekly-chest-section chest-claimed">
@@ -563,13 +578,13 @@ async function renderWeeklyChestStatus(groupId) {
                         <div class="pulse-ring"></div>
                         <div class="pulse-ring delay-1"></div>
                     </div>
-                    <h4>🎉 Chest Claimed This Week!</h4>
+                    <h4>🎉 Chest Claimed!</h4>
                     ${itemData ? `<p>You received: ${itemData.emoji} <strong>${itemData.name}</strong></p>` : ''}
                     <p class="chest-timer">Next chest in: <strong>${daysLeft}d ${hoursLeft}h</strong></p>
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${weekProgress}%"></div>
                     </div>
-                    <p class="chest-hint" style="font-size: 0.85rem; color: #888;">📅 Every Monday at 00:00 UTC</p>
+                    <p class="chest-hint" style="font-size: 0.85rem; color: #888;">📅 Available on ${nextDateStr}</p>
                 </div>
             `;
         }

@@ -128,13 +128,19 @@ async function openWeeklyChest(groupId, weekId) {
         }
         
         // Mark chest as opened
+        const openedAt = Date.now();
         await db.ref(`weeklyChests/${groupId}/${weekId}`).update({
             isOpened: true,
             openedBy: user.uid,
-            openedAt: Date.now()
+            openedAt: openedAt
         });
         
-        console.log('[Colony] Chest marked as opened in Firebase');
+        // Also save lastChestClaimed in colony data for cooldown calculation
+        await db.ref(`groups/${groupId}/colony`).update({
+            lastChestClaimed: openedAt
+        });
+        
+        console.log('[Colony] Chest marked as opened in Firebase, lastChestClaimed updated');
         return true;
     } catch (error) {
         console.error('Error opening weekly chest:', error);
@@ -431,7 +437,7 @@ async function updateColonyDisplay(groupId) {
 
 /**
  * Check and show weekly chest on group load
- * Also triggers automatic chest creation if needed
+ * Chests are available 7 days after the last claim (not tied to Mondays)
  */
 async function checkWeeklyChest(groupId) {
     if (!COLONY_FEATURE_ENABLED) {
@@ -449,7 +455,26 @@ async function checkWeeklyChest(groupId) {
         return; // Show welcome chest first, don't check for weekly chest yet
     }
     
-    // Then check for current week chest
+    // Check if 7 days have passed since last claim
+    const colonyData = await getColonyData(groupId);
+    const lastChestClaimed = colonyData?.lastChestClaimed || 0;
+    const now = Date.now();
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+    const cooldownPassed = (now - lastChestClaimed) >= sevenDaysMs;
+    
+    console.log('[Colony] Chest cooldown check:', { 
+        lastChestClaimed: lastChestClaimed ? new Date(lastChestClaimed).toISOString() : 'never',
+        cooldownPassed,
+        timeRemaining: cooldownPassed ? 0 : Math.ceil((sevenDaysMs - (now - lastChestClaimed)) / (1000 * 60 * 60)) + 'h'
+    });
+    
+    if (!cooldownPassed) {
+        console.log('[Colony] Chest cooldown not passed, waiting for 7 days since last claim');
+        return;
+    }
+    
+    // Use a unique chest ID based on when the cooldown period started
+    // This ensures each chest is unique and can only be claimed once per cooldown period
     const weekId = getCurrentWeekId();
     console.log('[Colony] Checking for weekly chest:', { groupId, weekId });
     
@@ -483,7 +508,7 @@ async function checkWeeklyChest(groupId) {
     } else if (chest && chest.isOpened) {
         console.log('[Colony] Chest already opened');
     } else {
-        console.log('[Colony] No chest available for this week');
+        console.log('[Colony] No chest available for this period');
     }
 }
 
