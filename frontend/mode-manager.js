@@ -164,6 +164,11 @@ class ModeManager {
             // ✅ REGISTRAR ACCIÓN: Para rate limiting
             await window.recordRateLimitAction('createGroup');
             
+            // 💫 Haptic feedback for group creation success
+            if (window.HapticFeedback) {
+                HapticFeedback.success();
+            }
+            
             return groupId;
             
         } catch (error) {
@@ -313,6 +318,11 @@ class ModeManager {
             
             // ✅ REGISTRAR ACCIÓN: Para rate limiting
             await window.recordRateLimitAction('addExpense');
+            
+            // 💫 Haptic feedback for expense added
+            if (window.HapticFeedback) {
+                HapticFeedback.expenseAdded();
+            }
             
             return expenseId;
             

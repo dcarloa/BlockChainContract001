@@ -1974,6 +1974,11 @@ async function hideFund(fundAddress, fundName) {
 // ============================================
 
 function showCreateFundModal() {
+    // Light haptic feedback when opening modal
+    if (window.HapticFeedback) {
+        HapticFeedback.tap();
+    }
+    
     document.getElementById('createFundModal').style.display = 'flex';
     
     // Check if wallet is connected
@@ -2258,6 +2263,17 @@ function showToast(message, type = 'info') {
     if (!container) {
         console.error('Toast container not found');
         return;
+    }
+    
+    // Haptic feedback based on toast type
+    if (window.HapticFeedback) {
+        if (type === 'success') {
+            HapticFeedback.success();
+        } else if (type === 'error') {
+            HapticFeedback.error();
+        } else if (type === 'warning') {
+            HapticFeedback.vibrate('medium');
+        }
     }
     
     const toast = document.createElement('div');
@@ -2550,6 +2566,11 @@ async function refreshCurrentView() {
 
 async function loadFundDetailView() {
     try {
+        // Subtle feedback when loading group details
+        if (window.HapticFeedback) {
+            HapticFeedback.tap();
+        }
+        
         const currentLang = getCurrentLanguage();
         const t = translations[currentLang];
         
@@ -7708,6 +7729,8 @@ function updateAppSettingsUI() {
         }
     });
     
+    // Update feedback settings UI
+    updateFeedbackSettingsUI();
 }
 
 /**
@@ -7729,6 +7752,63 @@ function changeTheme(theme) {
         // closeAppSettings();
     } else {
         console.error('setTheme function not found');
+    }
+}
+
+/**
+ * Toggle haptic feedback
+ */
+function toggleHapticFeedback() {
+    if (window.HapticFeedback) {
+        const newState = !HapticFeedback.enabled;
+        HapticFeedback.toggleHaptic(newState);
+        updateFeedbackSettingsUI();
+        
+        // Give feedback if enabling
+        if (newState) {
+            HapticFeedback.tap();
+        }
+    }
+}
+
+/**
+ * Toggle sound feedback
+ */
+function toggleSoundFeedback() {
+    if (window.HapticFeedback) {
+        const newState = !HapticFeedback.soundEnabled;
+        HapticFeedback.toggleSound(newState);
+        updateFeedbackSettingsUI();
+        
+        // Give feedback if enabling
+        if (newState) {
+            HapticFeedback.playSound('tap');
+        }
+    }
+}
+
+/**
+ * Update feedback settings UI state
+ */
+function updateFeedbackSettingsUI() {
+    const hapticCheck = document.getElementById('hapticCheck');
+    const soundCheck = document.getElementById('soundCheck');
+    const hapticToggle = document.getElementById('hapticToggle');
+    const soundToggle = document.getElementById('soundToggle');
+    
+    if (window.HapticFeedback) {
+        if (hapticCheck) {
+            hapticCheck.style.opacity = HapticFeedback.enabled ? '1' : '0.3';
+        }
+        if (soundCheck) {
+            soundCheck.style.opacity = HapticFeedback.soundEnabled ? '1' : '0.3';
+        }
+        if (hapticToggle) {
+            hapticToggle.classList.toggle('active', HapticFeedback.enabled);
+        }
+        if (soundToggle) {
+            soundToggle.classList.toggle('active', HapticFeedback.soundEnabled);
+        }
     }
 }
 

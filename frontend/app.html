@@ -762,6 +762,23 @@ Simple, fast, and free.</p>
                         </button>
                     </div>
                 </div>
+
+                <!-- Haptic Feedback -->
+                <div class="setting-group">
+                    <label>📳 Feedback</label>
+                    <div class="setting-options">
+                        <button class="setting-option" id="hapticToggle" onclick="toggleHapticFeedback()">
+                            <span class="option-icon">📳</span>
+                            <span data-i18n="app.settings.vibration">Vibración</span>
+                            <span class="option-check toggle-check" id="hapticCheck">✓</span>
+                        </button>
+                        <button class="setting-option" id="soundToggle" onclick="toggleSoundFeedback()">
+                            <span class="option-icon">🔊</span>
+                            <span data-i18n="app.settings.sound">Sonidos</span>
+                            <span class="option-check toggle-check" id="soundCheck">✓</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -2101,6 +2118,7 @@ Simple, fast, and free.</p>
     <script src="sanitizer.js"></script>
     
     <!-- Application Scripts -->
+    <script src="haptic-feedback.js?v=1.0"></script>
     <script src="mode-manager.js"></script>
     <script src="wallet-connector.js"></script>
     <script src="form-wizard.js"></script>

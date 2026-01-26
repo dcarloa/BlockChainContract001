@@ -17,7 +17,10 @@ const translations = {
             language: "Language",
             theme: "Theme",
             lightMode: "Light Mode",
-            darkMode: "Dark Mode"
+            darkMode: "Dark Mode",
+            vibration: "Vibration",
+            sound: "Sounds",
+            feedback: "Feedback"
         },
         // Phone Preview
         phone: {
@@ -1225,7 +1228,10 @@ const translations = {
             language: "Idioma",
             theme: "Tema",
             lightMode: "Modo Claro",
-            darkMode: "Modo Oscuro"
+            darkMode: "Modo Oscuro",
+            vibration: "Vibración",
+            sound: "Sonidos",
+            feedback: "Retroalimentación"
         },
         // Phone Preview
         phone: {

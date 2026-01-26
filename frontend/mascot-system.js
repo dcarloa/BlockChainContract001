@@ -937,6 +937,10 @@ window.MascotSystem = {
     equipItem: async (groupId, itemId) => {
         const success = await equipItem(groupId, itemId);
         if (success) {
+            // Haptic feedback for equipping item
+            if (window.HapticFeedback) {
+                HapticFeedback.itemEquipped();
+            }
             await loadMascotTab(groupId);
             await updateMascotHeader(groupId);
         }
@@ -945,6 +949,10 @@ window.MascotSystem = {
     unequipItem: async (groupId, category) => {
         const success = await unequipItem(groupId, category);
         if (success) {
+            // Light feedback for unequip
+            if (window.HapticFeedback) {
+                HapticFeedback.tap();
+            }
             await loadMascotTab(groupId);
             await updateMascotHeader(groupId);
         }

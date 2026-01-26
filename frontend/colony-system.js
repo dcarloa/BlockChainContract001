@@ -255,6 +255,11 @@ function showWeeklyChestBanner(groupId, chest) {
 async function openChestModal(groupId, weekId) {
     console.log('[Colony] Opening chest modal:', { groupId, weekId });
     
+    // Haptic feedback for chest opening
+    if (window.HapticFeedback) {
+        HapticFeedback.chestOpen();
+    }
+    
     // Store groupId for later use in closeChestModal
     currentChestGroupId = groupId;
     
@@ -283,6 +288,11 @@ async function openChestModal(groupId, weekId) {
         const randomItem = window.MascotSystem.getRandomItemByColonyState(colonyState);
         rewardItem = await window.MascotSystem.addItemToWardrobe(groupId, randomItem.id);
         console.log('[Colony] Reward item:', rewardItem);
+        
+        // Play reward feedback when item is received
+        if (rewardItem && window.HapticFeedback) {
+            setTimeout(() => HapticFeedback.reward(), 300);
+        }
     }
     
     const modal = document.createElement('div');
