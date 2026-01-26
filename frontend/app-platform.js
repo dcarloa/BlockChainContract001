@@ -185,9 +185,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     // CRITICAL: Force hide ALL modals after initialization
     // This prevents any modal (especially Smart Settlements) from appearing on startup
+    // EXCEPTION: Do NOT hide the BETA launch modal
     const forceHideAllModals = () => {
         const allModals = document.querySelectorAll('.modal-overlay');
         allModals.forEach(modal => {
+            // Skip the BETA launch modal - let it show during launch period
+            if (modal.id === 'betaLaunchModal') return;
+            
             modal.classList.remove('active');
             modal.style.display = 'none';
         });
