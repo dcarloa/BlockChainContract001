@@ -110,14 +110,64 @@ const WARDROBE_ITEMS = {
         category: 'accessory',
         rarity: 'rare',
         description: 'Brillo especial'
+    },
+    
+    // VESTIMENTA / OUTFIT (6 items)
+    cape_hero: {
+        id: 'cape_hero',
+        name: 'Capa de Héroe',
+        emoji: '🦸',
+        category: 'outfit',
+        rarity: 'rare',
+        description: 'Para los héroes del grupo'
+    },
+    scarf_cozy: {
+        id: 'scarf_cozy',
+        name: 'Bufanda Acogedora',
+        emoji: '🧣',
+        category: 'outfit',
+        rarity: 'common',
+        description: 'Calidez compartida'
+    },
+    vest_safety: {
+        id: 'vest_safety',
+        name: 'Chaleco de Seguridad',
+        emoji: '🦺',
+        category: 'outfit',
+        rarity: 'common',
+        description: 'Siempre visible'
+    },
+    coat_lab: {
+        id: 'coat_lab',
+        name: 'Bata de Laboratorio',
+        emoji: '🥼',
+        category: 'outfit',
+        rarity: 'rare',
+        description: 'Científico del ahorro'
+    },
+    shirt_tie: {
+        id: 'shirt_tie',
+        name: 'Camisa con Corbata',
+        emoji: '👔',
+        category: 'outfit',
+        rarity: 'common',
+        description: 'Profesional y elegante'
+    },
+    kimono_traditional: {
+        id: 'kimono_traditional',
+        name: 'Kimono Tradicional',
+        emoji: '👘',
+        category: 'outfit',
+        rarity: 'rare',
+        description: 'Elegancia oriental'
     }
 };
 
-// Item levels
+// Item levels - 5 copies for Silver, 15 for Gold
 const ITEM_LEVELS = {
-    basic: { name: 'Básico', stars: '⭐', copies: 1, color: '#9ca3af' },
-    silver: { name: 'Plata', stars: '⭐⭐', copies: 3, color: '#c0c0c0' },
-    gold: { name: 'Oro', stars: '⭐⭐⭐', copies: 6, color: '#ffd700' }
+    basic: { name: 'Básico', stars: '⭐', copies: 1, color: '#9ca3af', effect: '' },
+    silver: { name: 'Plata', stars: '⭐⭐✨', copies: 5, color: '#c0c0c0', effect: 'silver-shine' },
+    gold: { name: 'Oro', stars: '⭐⭐⭐✨✨', copies: 15, color: '#ffd700', effect: 'gold-shine' }
 };
 
 // ============================================
@@ -157,8 +207,8 @@ async function getMascotData(groupId) {
  * Get item level based on copies
  */
 function getItemLevel(copies) {
-    if (copies >= 6) return 'gold';
-    if (copies >= 3) return 'silver';
+    if (copies >= 15) return 'gold';
+    if (copies >= 5) return 'silver';
     return 'basic';
 }
 
@@ -632,6 +682,7 @@ async function loadMascotTab(groupId) {
         console.log('[Mascot] Wardrobe contents:', wardrobe);
         
         const headItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'head');
+        const outfitItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'outfit');
         const accessoryItems = Object.values(WARDROBE_ITEMS).filter(i => i.category === 'accessory');
         
         // Render weekly chest status
@@ -655,8 +706,17 @@ async function loadMascotTab(groupId) {
                             <div class="slot-label" data-i18n="app.fundDetail.mascot.head">Cabeza</div>
                             <div class="slot-item">
                                 ${equipped.head 
-                                    ? `<span class="item-emoji">${WARDROBE_ITEMS[equipped.head].emoji}</span>
+                                    ? `<span class="item-emoji ${ITEM_LEVELS[wardrobe[equipped.head]?.level || 'basic'].effect}">${WARDROBE_ITEMS[equipped.head].emoji}</span>
                                        <span class="item-level">${ITEM_LEVELS[wardrobe[equipped.head]?.level || 'basic'].stars}</span>`
+                                    : '<span class="slot-empty" data-i18n="app.fundDetail.mascot.empty">Vacío</span>'}
+                            </div>
+                        </div>
+                        <div class="equipped-slot" data-slot="outfit">
+                            <div class="slot-label" data-i18n="app.fundDetail.mascot.outfit">Vestimenta</div>
+                            <div class="slot-item">
+                                ${equipped.outfit 
+                                    ? `<span class="item-emoji ${ITEM_LEVELS[wardrobe[equipped.outfit]?.level || 'basic'].effect}">${WARDROBE_ITEMS[equipped.outfit].emoji}</span>
+                                       <span class="item-level">${ITEM_LEVELS[wardrobe[equipped.outfit]?.level || 'basic'].stars}</span>`
                                     : '<span class="slot-empty" data-i18n="app.fundDetail.mascot.empty">Vacío</span>'}
                             </div>
                         </div>
@@ -664,7 +724,7 @@ async function loadMascotTab(groupId) {
                             <div class="slot-label" data-i18n="app.fundDetail.mascot.accessory">Accesorio</div>
                             <div class="slot-item">
                                 ${equipped.accessory 
-                                    ? `<span class="item-emoji">${WARDROBE_ITEMS[equipped.accessory].emoji}</span>
+                                    ? `<span class="item-emoji ${ITEM_LEVELS[wardrobe[equipped.accessory]?.level || 'basic'].effect}">${WARDROBE_ITEMS[equipped.accessory].emoji}</span>
                                        <span class="item-level">${ITEM_LEVELS[wardrobe[equipped.accessory]?.level || 'basic'].stars}</span>`
                                     : '<span class="slot-empty" data-i18n="app.fundDetail.mascot.empty">Vacío</span>'}
                             </div>
@@ -674,7 +734,7 @@ async function loadMascotTab(groupId) {
                 
                 <details class="mascot-collection" open>
                     <summary>
-                        <h4><span data-i18n="app.fundDetail.mascot.collection">Colección</span> (${totalItems}/12)</h4>
+                        <h4><span data-i18n="app.fundDetail.mascot.collection">Colección</span> (${totalItems}/18)</h4>
                     </summary>
                     <div class="collection-content">
                     
@@ -684,14 +744,38 @@ async function loadMascotTab(groupId) {
                             ${headItems.map(item => {
                                 const owned = wardrobe[item.id];
                                 const isEquipped = equipped.head === item.id;
+                                const levelEffect = owned ? ITEM_LEVELS[owned.level].effect : '';
                                 return `
-                                    <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''}" 
+                                    <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''} ${levelEffect}" 
                                          data-item="${item.id}"
                                          onclick="${owned ? (isEquipped ? `MascotSystem.unequipItem('${groupId}', 'head')` : `MascotSystem.equipItem('${groupId}', '${item.id}')`) : ''}">
                                         <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
-                                            <div class="item-copies">${owned.copies}/6</div>
+                                            <div class="item-copies">${owned.copies}/15</div>
+                                        ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
+                                        ${isEquipped ? '<div class="equipped-badge" title="Click to unequip">✓</div>' : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="collection-category">
+                        <h5>👔 <span data-i18n="app.fundDetail.mascot.outfit">Vestimenta</span></h5>
+                        <div class="collection-items">
+                            ${outfitItems.map(item => {
+                                const owned = wardrobe[item.id];
+                                const isEquipped = equipped.outfit === item.id;
+                                const levelEffect = owned ? ITEM_LEVELS[owned.level].effect : '';
+                                return `
+                                    <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''} ${levelEffect}"
+                                         data-item="${item.id}"
+                                         onclick="${owned ? (isEquipped ? `MascotSystem.unequipItem('${groupId}', 'outfit')` : `MascotSystem.equipItem('${groupId}', '${item.id}')`) : ''}">
+                                        <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
+                                        ${owned ? `
+                                            <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
+                                            <div class="item-copies">${owned.copies}/15</div>
                                         ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
                                         ${isEquipped ? '<div class="equipped-badge" title="Click to unequip">✓</div>' : ''}
                                     </div>
@@ -706,14 +790,15 @@ async function loadMascotTab(groupId) {
                             ${accessoryItems.map(item => {
                                 const owned = wardrobe[item.id];
                                 const isEquipped = equipped.accessory === item.id;
+                                const levelEffect = owned ? ITEM_LEVELS[owned.level].effect : '';
                                 return `
-                                    <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''}"
+                                    <div class="collection-item ${owned ? 'owned' : 'locked'} ${isEquipped ? 'equipped' : ''} ${levelEffect}"
                                          data-item="${item.id}"
                                          onclick="${owned ? (isEquipped ? `MascotSystem.unequipItem('${groupId}', 'accessory')` : `MascotSystem.equipItem('${groupId}', '${item.id}')`) : ''}">
                                         <div class="item-emoji">${owned ? item.emoji : '❓'}</div>
                                         ${owned ? `
                                             <div class="item-level">${ITEM_LEVELS[owned.level].stars}</div>
-                                            <div class="item-copies">${owned.copies}/6</div>
+                                            <div class="item-copies">${owned.copies}/15</div>
                                         ` : '<div class="item-locked" data-i18n="app.fundDetail.mascot.locked">Bloqueado</div>'}
                                         ${isEquipped ? '<div class="equipped-badge" title="Click to unequip">✓</div>' : ''}
                                     </div>
@@ -725,7 +810,7 @@ async function loadMascotTab(groupId) {
                 </details>
                 
                 <div class="mascot-info">
-                    <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 3 copias, mejora a Plata. Con 6 copias, alcanza Oro.</span></p>
+                    <p><span style="font-size: 1.2em;">💡</span> <span data-i18n="app.fundDetail.mascot.info">Abre cofres semanales para obtener prendas. Al obtener 5 copias, mejora a Plata ✨. Con 15 copias, alcanza Oro ✨✨.</span></p>
                 </div>
                 
                 ${chestHTML || ''}
@@ -740,7 +825,7 @@ async function loadMascotTab(groupId) {
                         
                         <h4 data-i18n="app.fundDetail.mascot.guide.colonyStates">🐜 Colony States & Rewards</h4>
                         <ul>
-                            <li><strong data-i18n="app.fundDetail.mascot.guide.forming">🌱 Forming:</strong> <span data-i18n="app.fundDetail.mascot.guide.formingDesc">Only common items (backpack, pickaxe, tablet)</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.forming">🌱 Forming:</strong> <span data-i18n="app.fundDetail.mascot.guide.formingDesc">Only common items (backpack, scarf, tablet, etc.)</span></li>
                             <li><strong data-i18n="app.fundDetail.mascot.guide.active">🚀 Active:</strong> <span data-i18n="app.fundDetail.mascot.guide.activeDesc">70% common items, 30% rare items</span></li>
                             <li><strong data-i18n="app.fundDetail.mascot.guide.stable">⚡ Stable:</strong> <span data-i18n="app.fundDetail.mascot.guide.stableDesc">40% common items, 60% rare items</span></li>
                             <li><strong data-i18n="app.fundDetail.mascot.guide.consolidated">💎 Consolidated:</strong> <span data-i18n="app.fundDetail.mascot.guide.consolidatedDesc">All items available (best rewards!)</span></li>
@@ -749,12 +834,12 @@ async function loadMascotTab(groupId) {
                         <h4 data-i18n="app.fundDetail.mascot.guide.itemLevels">⭐ Item Levels</h4>
                         <ul>
                             <li><strong data-i18n="app.fundDetail.mascot.guide.basic">⭐ Basic:</strong> <span data-i18n="app.fundDetail.mascot.guide.basicDesc">1 copy obtained</span></li>
-                            <li><strong data-i18n="app.fundDetail.mascot.guide.silver">⭐⭐ Silver:</strong> <span data-i18n="app.fundDetail.mascot.guide.silverDesc">3 copies obtained (upgraded!)</span></li>
-                            <li><strong data-i18n="app.fundDetail.mascot.guide.gold">⭐⭐⭐ Gold:</strong> <span data-i18n="app.fundDetail.mascot.guide.goldDesc">6 copies obtained (max level!)</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.silver">⭐⭐✨ Silver:</strong> <span data-i18n="app.fundDetail.mascot.guide.silverDesc">5 copies obtained (silver shine!)</span></li>
+                            <li><strong data-i18n="app.fundDetail.mascot.guide.gold">⭐⭐⭐✨✨ Gold:</strong> <span data-i18n="app.fundDetail.mascot.guide.goldDesc">15 copies obtained (golden glow!)</span></li>
                         </ul>
                         
                         <h4 data-i18n="app.fundDetail.mascot.guide.collection">🎒 Complete Collection</h4>
-                        <p data-i18n="app.fundDetail.mascot.guide.collectionDesc">There are 12 unique items to collect: 6 for the head slot and 6 for the accessory slot. You can equip one item in each slot to customize your group's ant mascot.</p>
+                        <p data-i18n="app.fundDetail.mascot.guide.collectionDesc">There are 18 unique items to collect: 6 for head, 6 for outfit, and 6 for accessory. You can equip one item in each slot to customize your group's ant mascot.</p>
                         
                         <h4 data-i18n="app.fundDetail.mascot.guide.tips">💡 Tips</h4>
                         <ul>

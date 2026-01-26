@@ -275,6 +275,84 @@
   cursor: not-allowed;
 }
 
+/* Silver Shine Effect - single sparkle animation */
+.collection-item.silver-shine {
+  border-color: #c0c0c0;
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.1) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(192, 192, 192, 0.1) 100%);
+  box-shadow: 0 0 8px rgba(192, 192, 192, 0.4), inset 0 0 8px rgba(255, 255, 255, 0.1);
+  animation: silverShimmer 3s ease-in-out infinite;
+}
+
+.collection-item.silver-shine::before {
+  content: '✨';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 1.2rem;
+  animation: sparkleFloat 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(192, 192, 192, 0.8));
+}
+
+/* Gold Shine Effect - double sparkle animation */
+.collection-item.gold-shine {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 215, 0, 0.15) 100%);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.15);
+  animation: goldShimmer 2.5s ease-in-out infinite;
+}
+
+.collection-item.gold-shine::before {
+  content: '✨';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 1.2rem;
+  animation: sparkleFloat 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
+}
+
+.collection-item.gold-shine::after {
+  content: '✨';
+  position: absolute;
+  top: -4px;
+  left: -8px;
+  font-size: 1rem;
+  animation: sparkleFloat 2s ease-in-out infinite 0.75s;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
+}
+
+/* Shine animations */
+@keyframes silverShimmer {
+  0%, 100% { box-shadow: 0 0 8px rgba(192, 192, 192, 0.4), inset 0 0 8px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 15px rgba(192, 192, 192, 0.6), inset 0 0 12px rgba(255, 255, 255, 0.2); }
+}
+
+@keyframes goldShimmer {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.15); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7), inset 0 0 15px rgba(255, 255, 255, 0.25); }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+  50% { transform: translateY(-4px) scale(1.2); opacity: 0.8; }
+}
+
+/* Silver/Gold effect for emoji in equipped slots */
+.item-emoji.silver-shine {
+  filter: drop-shadow(0 0 4px rgba(192, 192, 192, 0.8));
+  animation: emojiShine 3s ease-in-out infinite;
+}
+
+.item-emoji.gold-shine {
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
+  animation: emojiShine 2s ease-in-out infinite;
+}
+
+@keyframes emojiShine {
+  0%, 100% { filter: drop-shadow(0 0 4px currentColor); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 8px currentColor); transform: scale(1.05); }
+}
+
 .collection-item .item-emoji {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
