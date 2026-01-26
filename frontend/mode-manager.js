@@ -1182,16 +1182,18 @@ class ModeManager {
             });
             
             // Add summary section
-            const totalByStatus = {
-                approved: 0,
-                pending: 0,
-                rejected: 0
-            };
+            const totalByCurrency = {};
             
             expenseList.forEach(exp => {
-                const status = exp.status || 'pending';
-                totalByStatus[status] = (totalByStatus[status] || 0) + (exp.amount || 0);
+                const currency = exp.currency || 'USD';
+                const amount = exp.amount || 0;
+                totalByCurrency[currency] = (totalByCurrency[currency] || 0) + amount;
             });
+            
+            // Build currency summary lines
+            const currencySummary = Object.entries(totalByCurrency)
+                .map(([currency, total]) => `Total (${currency}),${total.toFixed(2)} ${currency}`)
+                .join('\n');
             
             // Build final CSV
             const csvContent = [
@@ -1203,9 +1205,7 @@ class ModeManager {
                 ...rows,
                 '',
                 '# Summary',
-                `Total Approved,${totalByStatus.approved.toFixed(2)}`,
-                `Total Pending,${totalByStatus.pending.toFixed(2)}`,
-                `Total Rejected,${totalByStatus.rejected.toFixed(2)}`
+                currencySummary
             ].join('\n');
             
             // Create and download file
