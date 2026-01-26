@@ -8,7 +8,9 @@ Esta guía describe todas las funciones de testing disponibles para probar el si
 
 ```javascript
 // Crear cofre con estado "active" (default)
+// Ver el groupId: console.log('Current Fund:', currentFund)
 ColonySystem.createTestChest('groupId')
+//await MascotSystem.loadMascotTab(currentFund.fundAddress)
 
 // Crear cofre con estado específico
 ColonySystem.createTestChest('groupId', 'forming')    // 🌱
