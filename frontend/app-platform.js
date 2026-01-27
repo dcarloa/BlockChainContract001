@@ -1979,6 +1979,13 @@ function showCreateFundModal() {
         HapticFeedback.tap();
     }
     
+    // Check if user is authenticated first
+    if (!window.FirebaseConfig || !window.FirebaseConfig.isAuthenticated()) {
+        // Show friendly login invitation
+        showLoginInvitation('createGroup');
+        return;
+    }
+    
     document.getElementById('createFundModal').style.display = 'flex';
     
     // Check if wallet is connected
@@ -2299,6 +2306,147 @@ function showToast(message, type = 'info') {
             }
         }, 300);
     }, 3000);
+}
+
+// ============================================
+// LOGIN INVITATION (Friendly prompt for unauthenticated users)
+// ============================================
+
+/**
+ * Show a friendly login invitation when user tries to perform an action that requires authentication
+ * @param {string} action - The action user was trying to perform ('createGroup', 'addExpense', etc.)
+ */
+function showLoginInvitation(action = 'continue') {
+    // Haptic feedback
+    if (window.HapticFeedback) {
+        HapticFeedback.notification('warning');
+    }
+    
+    // Action-specific messages
+    const messages = {
+        createGroup: {
+            en: {
+                title: '🐜 Join the Colony First!',
+                subtitle: 'Sign in to create your expense group',
+                benefits: [
+                    '✨ Create unlimited groups',
+                    '👥 Invite friends & family',
+                    '💰 Track expenses together',
+                    '🔒 Your data stays private'
+                ]
+            },
+            es: {
+                title: '🐜 ¡Únete a la Colonia Primero!',
+                subtitle: 'Inicia sesión para crear tu grupo de gastos',
+                benefits: [
+                    '✨ Crea grupos ilimitados',
+                    '👥 Invita amigos y familia',
+                    '💰 Registra gastos juntos',
+                    '🔒 Tus datos permanecen privados'
+                ]
+            }
+        },
+        addExpense: {
+            en: {
+                title: '🐜 Sign In to Add Expenses',
+                subtitle: 'Track your shared expenses with the colony',
+                benefits: [
+                    '💵 Record who paid',
+                    '➗ Split fairly among members',
+                    '📊 See who owes what',
+                    '✅ Settle up easily'
+                ]
+            },
+            es: {
+                title: '🐜 Inicia Sesión para Agregar Gastos',
+                subtitle: 'Registra los gastos compartidos con tu colonia',
+                benefits: [
+                    '💵 Registra quién pagó',
+                    '➗ Divide equitativamente',
+                    '📊 Ve quién debe qué',
+                    '✅ Liquida fácilmente'
+                ]
+            }
+        },
+        default: {
+            en: {
+                title: '🐜 Sign In to Continue',
+                subtitle: 'Join the colony to access all features',
+                benefits: [
+                    '🆓 100% Free to use',
+                    '⚡ Quick sign in with Google',
+                    '📧 Or use email',
+                    '🔐 Secure & private'
+                ]
+            },
+            es: {
+                title: '🐜 Inicia Sesión para Continuar',
+                subtitle: 'Únete a la colonia para acceder a todas las funciones',
+                benefits: [
+                    '🆓 100% Gratis',
+                    '⚡ Inicia rápido con Google',
+                    '📧 O usa tu correo',
+                    '🔐 Seguro y privado'
+                ]
+            }
+        }
+    };
+    
+    const lang = window.currentLanguage || 'en';
+    const msg = messages[action] || messages.default;
+    const content = msg[lang] || msg.en;
+    
+    // Create invitation modal
+    const existingModal = document.getElementById('loginInvitationModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    const modal = document.createElement('div');
+    modal.id = 'loginInvitationModal';
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div class="modal-content login-invitation-modal">
+            <button class="modal-close" onclick="closeLoginInvitation()">&times;</button>
+            
+            <div class="login-invitation-header">
+                <div class="login-invitation-icon">🐜</div>
+                <h2>${content.title}</h2>
+                <p>${content.subtitle}</p>
+            </div>
+            
+            <ul class="login-invitation-benefits">
+                ${content.benefits.map(b => `<li>${b}</li>`).join('')}
+            </ul>
+            
+            <div class="login-invitation-actions">
+                <button class="btn btn-primary btn-lg" onclick="closeLoginInvitation(); showSignInModal();">
+                    <span>🚀</span> ${lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+                </button>
+                <button class="btn btn-ghost" onclick="closeLoginInvitation()">
+                    ${lang === 'es' ? 'Quizás después' : 'Maybe later'}
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeLoginInvitation();
+        }
+    });
+}
+
+function closeLoginInvitation() {
+    const modal = document.getElementById('loginInvitationModal');
+    if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => modal.remove(), 200);
+    }
 }
 
 // ============================================

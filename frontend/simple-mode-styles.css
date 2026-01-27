@@ -1028,10 +1028,67 @@
 
   .btn-large {
     width: 100%;
-    padding: 0.875rem 1.25rem !important;
-    font-size: 0.9375rem !important;
+    padding: 1rem 1.25rem !important;
+    font-size: 1rem !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    box-shadow: 
+      0 4px 16px rgba(var(--primary-rgb), 0.35),
+      0 2px 4px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
   }
-
+  
+  .btn-large:active {
+    transform: scale(0.98) !important;
+    box-shadow: 
+      0 2px 8px rgba(var(--primary-rgb), 0.4),
+      inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .btn-large .btn-icon {
+    font-size: 1.35rem !important;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(4px) !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    box-shadow: 
+      0 2px 6px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  .btn-large .btn-text {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    gap: 0.125rem !important;
+  }
+  
+  .btn-large .btn-text strong {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    color: white !important;
+  }
+  
+  .btn-large .btn-text small {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-transform: none !important;
+  }
 }
 
 /* Extra small devices (phones in portrait mode) */
@@ -1308,6 +1365,31 @@
 [data-theme="light"] #expensePaidBy .checkbox-option {
   background: #f9fafb;
   border-color: #d1d5db;
+}
+
+/* ===================================
+   PWA/STANDALONE MODE OPTIMIZATIONS
+   =================================== */
+
+@media (display-mode: standalone) {
+  /* More native-feeling buttons in PWA */
+  .action-card {
+    border-radius: 16px;
+    border-width: 1px;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.12) 0%, rgba(var(--primary-rgb), 0.04) 100%);
+  }
+  
+  .btn-large,
+  .btn-add-expense {
+    border-radius: 14px !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Smooth touch feedback */
+  .btn-large:active,
+  .btn-add-expense:active {
+    transform: scale(0.97) !important;
+  }
 }
 
 [data-theme="light"] #expensePaidBy .checkbox-option:hover {
