@@ -220,6 +220,30 @@ const translations = {
                     }
                 }
             },
+            funFeatures: {
+                title: "🎮 More Than Just Numbers",
+                subtitle: "Because splitting expenses should be fun, not boring",
+                mascot: {
+                    title: "Group Mascot",
+                    badge: "Collectibles!",
+                    desc: "Each group has its own ant mascot that you can customize! Open weekly chests to unlock hats, outfits, and accessories. Collect all 18 items and upgrade them to Silver and Gold levels."
+                },
+                games: {
+                    title: "Who Pays? Games!",
+                    badge: "No more arguments!",
+                    desc: "Can't decide who pays for dinner? Let fate decide! Choose from fun mini-games: Spin the Wheel, Rock Paper Scissors, Random Number, and more. Fair, fast, and fun."
+                },
+                colony: {
+                    title: "Colony Progress",
+                    badge: "Level up!",
+                    desc: "Your group's activity level determines your colony status. Keep expenses clear and organized to progress from \"Forming\" to \"Consolidated\" and unlock better rewards in weekly chests!"
+                },
+                experience: {
+                    title: "Delightful Experience",
+                    badge: "Feel it!",
+                    desc: "Subtle haptic feedback on mobile devices, smooth animations, and satisfying micro-interactions. Every tap feels intentional and rewarding."
+                }
+            },
             benefits: {
                 title: "🐜 Why Colonies Choose Ant Pool",
                 subtitle: "The tools your group needs to stay peaceful",
@@ -1425,6 +1449,30 @@ const translations = {
                         title: "Eventos y Celebraciones",
                         desc: "Organiza despedidas, cumpleaños o celebraciones. Gestión justa del presupuesto."
                     }
+                }
+            },
+            funFeatures: {
+                title: "🎮 Más Que Solo Números",
+                subtitle: "Porque dividir gastos debe ser divertido, no aburrido",
+                mascot: {
+                    title: "Mascota del Grupo",
+                    badge: "¡Coleccionables!",
+                    desc: "¡Cada grupo tiene su propia hormiga mascota que puedes personalizar! Abre cofres semanales para desbloquear sombreros, atuendos y accesorios. Colecciona los 18 items y mejóralos a nivel Plata y Oro."
+                },
+                games: {
+                    title: "¿Quién Paga? ¡Juegos!",
+                    badge: "¡Sin más discusiones!",
+                    desc: "¿No pueden decidir quién paga la cena? ¡Deja que el destino decida! Elige entre mini-juegos divertidos: Ruleta, Piedra Papel Tijera, Número Aleatorio, y más. Justo, rápido y divertido."
+                },
+                colony: {
+                    title: "Progreso de Colonia",
+                    badge: "¡Sube de nivel!",
+                    desc: "El nivel de actividad de tu grupo determina el estado de tu colonia. ¡Mantén los gastos claros y organizados para progresar de \"Formando\" a \"Consolidado\" y desbloquear mejores recompensas en los cofres semanales!"
+                },
+                experience: {
+                    title: "Experiencia Encantadora",
+                    badge: "¡Siéntelo!",
+                    desc: "Retroalimentación háptica sutil en dispositivos móviles, animaciones fluidas y micro-interacciones satisfactorias. Cada toque se siente intencional y gratificante."
                 }
             },
             benefits: {
