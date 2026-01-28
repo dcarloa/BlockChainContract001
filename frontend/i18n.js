@@ -1232,6 +1232,27 @@ const translations = {
             theme: "Theme",
             lightMode: "Light Mode",
             darkMode: "Dark Mode"
+        },
+        // Beta Launch Modal
+        betaModal: {
+            welcome: "Welcome to Ant Pool",
+            subtitle: "Launch Special Edition",
+            allFree: "All PRO features are FREE during launch!",
+            celebrating: "We're celebrating our launch by giving everyone full access to premium features. Enjoy them while they last!",
+            featuresTitle: "🐜 Features included FREE during BETA:",
+            features: {
+                analytics: "Advanced Analytics",
+                recurring: "Recurring Expenses",
+                budget: "Budget Tracking",
+                export: "Export Data (CSV)",
+                minigames: "All 7 Minigames",
+                members: "Unlimited Members",
+                groups: "Unlimited Groups",
+                chests: "Double Weekly Chests"
+            },
+            notice: "After the BETA period, some features will require a PRO subscription ($2.99/month). Early adopters may receive special discounts!",
+            dontShow: "Don't show this again",
+            startBtn: "🐜 Start Using Ant Pool"
         }
     },
     es: {
@@ -2463,6 +2484,27 @@ const translations = {
             theme: "Tema",
             lightMode: "Modo Claro",
             darkMode: "Modo Oscuro"
+        },
+        // Beta Launch Modal
+        betaModal: {
+            welcome: "Bienvenido a Ant Pool",
+            subtitle: "Edición Especial de Lanzamiento",
+            allFree: "¡Todas las funciones PRO son GRATIS durante el lanzamiento!",
+            celebrating: "Estamos celebrando nuestro lanzamiento dándole a todos acceso completo a las funciones premium. ¡Disfrútalas mientras duren!",
+            featuresTitle: "🐜 Funciones incluidas GRATIS durante BETA:",
+            features: {
+                analytics: "Analíticas Avanzadas",
+                recurring: "Gastos Recurrentes",
+                budget: "Control de Presupuesto",
+                export: "Exportar Datos (CSV)",
+                minigames: "Los 7 Minijuegos",
+                members: "Miembros Ilimitados",
+                groups: "Grupos Ilimitados",
+                chests: "Cofres Semanales Dobles"
+            },
+            notice: "Después del período BETA, algunas funciones requerirán suscripción PRO ($2.99/mes). ¡Los primeros usuarios podrían recibir descuentos especiales!",
+            dontShow: "No mostrar esto de nuevo",
+            startBtn: "🐜 Comenzar a Usar Ant Pool"
         }
     }
 };
