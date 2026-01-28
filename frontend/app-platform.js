@@ -5733,6 +5733,18 @@ function populateExpenseMembers() {
                 <span class="member-name">${member.name || member.email || uid}</span>
             </label>
         `;
+        
+        // Add click handler on the entire div for better mobile touch support
+        paidByDiv.addEventListener('click', (e) => {
+            // Don't trigger if clicking directly on the checkbox (it will handle itself)
+            if (e.target.tagName === 'INPUT') return;
+            const checkbox = paidByDiv.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        
         paidByContainer.appendChild(paidByDiv);
 
         // Add to "Split between" with share counter
