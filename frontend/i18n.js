@@ -246,7 +246,7 @@ const translations = {
             },
             benefits: {
                 title: "🐜 Why Colonies Choose Ant Pool",
-                subtitle: "The tools your group needs to stay peaceful",
+                subtitle: "Built different. Built better. Built for your colony.",
                 globalColony: {
                     title: "Global colony",
                     desc: "12 currencies. Your colony works whether you're in Mexico, Europe, or anywhere."
@@ -1477,7 +1477,7 @@ const translations = {
             },
             benefits: {
                 title: "🐜 Por Qué las Colonias Eligen Ant Pool",
-                subtitle: "Las herramientas que tu grupo necesita para mantenerse en paz",
+                subtitle: "Diseñado diferente. Diseñado mejor. Diseñado para tu colonia.",
                 globalColony: {
                     title: "Colonia global",
                     desc: "12 monedas. Tu colonia funciona ya sea en México, Europa o donde sea."

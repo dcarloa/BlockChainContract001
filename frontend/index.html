@@ -571,43 +571,155 @@
     </style>
 
     <!-- Benefits Section -->
-    <section id="benefits" class="benefits">
+    <section id="benefits" class="benefits-redesign">
         <div class="container">
-            <div class="benefits-content">
-                <div class="benefits-text">
-                    <h2 class="section-title" data-i18n="landing.benefits.title">🐜 Why Ant Pool Wins</h2>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">🌍</div>
-                        <div class="benefit-text">
-                            <h4 data-i18n="landing.benefits.globalColony.title">Global Ant Colony</h4>
-                            <p data-i18n="landing.benefits.globalColony.desc">12 currencies supported. Track expenses in USD, COP, EUR, MXN, and more. Like ants gathering from different sources, your colony works worldwide.</p>
-                        </div>
-                    </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">💰</div>
-                        <div class="benefit-text">
-                            <h4 data-i18n="landing.benefits.freeForever.title">Free to Start</h4>
-                            <p data-i18n="landing.benefits.freeForever.desc">No subscriptions required to get started. Track expenses, manage groups, and settle balances with our free tier.</p>
-                        </div>
-                    </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">🔀</div>
-                        <div class="benefit-text">
-                            <h4 data-i18n="landing.benefits.smartDebt.title">Smart Debt Optimization</h4>
-                            <p data-i18n="landing.benefits.smartDebt.desc">Like ants finding the shortest path, our settlement algorithm minimizes transactions. If A owes B and B owes C, A pays C directly.</p>
-                        </div>
-                    </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">⏰</div>
-                        <div class="benefit-text">
-                            <h4 data-i18n="landing.benefits.neverSleep.title">Ants Never Sleep</h4>
-                            <p data-i18n="landing.benefits.neverSleep.desc">Access your colony 24/7 from any device. Mobile-optimized design. Timeline filters. Real-time updates. Work happens when it needs to.</p>
-                        </div>
-                    </div>
+            <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
+                <h2 class="section-title" data-i18n="landing.benefits.title">🐜 Why Ant Pool Wins</h2>
+                <p class="section-subtitle" data-i18n="landing.benefits.subtitle">Built different. Built better. Built for your colony.</p>
+            </div>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-card-icon">🌍</div>
+                    <h4 data-i18n="landing.benefits.globalColony.title">Global Ant Colony</h4>
+                    <p data-i18n="landing.benefits.globalColony.desc">12 currencies supported. Track expenses in USD, COP, EUR, MXN, and more. Like ants gathering from different sources, your colony works worldwide.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-card-icon">💰</div>
+                    <h4 data-i18n="landing.benefits.freeForever.title">Free to Start</h4>
+                    <p data-i18n="landing.benefits.freeForever.desc">No subscriptions required to get started. Track expenses, manage groups, and settle balances with our free tier.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-card-icon">🔀</div>
+                    <h4 data-i18n="landing.benefits.smartDebt.title">Smart Debt Optimization</h4>
+                    <p data-i18n="landing.benefits.smartDebt.desc">Like ants finding the shortest path, our settlement algorithm minimizes transactions. If A owes B and B owes C, A pays C directly.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-card-icon">⏰</div>
+                    <h4 data-i18n="landing.benefits.neverSleep.title">Ants Never Sleep</h4>
+                    <p data-i18n="landing.benefits.neverSleep.desc">Access your colony 24/7 from any device. Mobile-optimized design. Timeline filters. Real-time updates. Work happens when it needs to.</p>
                 </div>
             </div>
         </div>
     </section>
+    
+    <style>
+        /* Benefits Section Redesign */
+        .benefits-redesign {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .benefit-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .benefit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary, #a855f7));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+        
+        .benefit-card:hover::before {
+            opacity: 1;
+        }
+        
+        .benefit-card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        
+        .benefit-card h4 {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .benefit-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .benefits-redesign {
+                padding: 4rem 0;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 0 1rem;
+            }
+            
+            .benefit-card {
+                padding: 2rem;
+            }
+            
+            .benefit-card-icon {
+                font-size: 2.5rem;
+            }
+            
+            .benefit-card h4 {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* Light theme specific */
+        [data-theme="light"] .benefits-redesign {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+        
+        [data-theme="light"] .benefit-card {
+            background: #ffffff;
+            border-color: #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-theme="light"] .benefit-card:hover {
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.12);
+        }
+        
+        [data-theme="light"] .benefit-card h4 {
+            color: #0f172a;
+        }
+        
+        [data-theme="light"] .benefit-card p {
+            color: #475569;
+        }
+    </style>
 
     <!-- Use Cases Section -->
     <section class="use-cases">
