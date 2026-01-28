@@ -1462,3 +1462,138 @@
 [data-theme="light"] .info-box span {
   color: #374151;
 }
+/* ===================================
+   LARGE TEXT / ACCESSIBILITY SUPPORT
+   For users with larger system font sizes
+   =================================== */
+
+/* Support for larger text accessibility settings */
+@media (max-width: 768px) {
+  /* Use relative units that scale with user font size */
+  html {
+    font-size: clamp(14px, 3.5vw, 18px);
+  }
+  
+  /* Allow containers to grow with content */
+  #addExpenseModal .modal-content {
+    max-height: 95vh !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Flexible height for member lists */
+  #expensePaidBy .checkbox-group,
+  .split-members-list {
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+  
+  /* When inside scrollable modal, limit height */
+  #addExpenseModal #expensePaidBy .checkbox-group,
+  #addExpenseModal .split-members-list {
+    max-height: 35vh !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Ensure text doesn't overflow */
+  .member-name,
+  .member-share-name {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    min-width: 0 !important;
+  }
+  
+  /* Form fields adapt to content */
+  .form-field {
+    min-height: auto !important;
+  }
+  
+  .form-label {
+    white-space: normal !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* Buttons remain touchable */
+  .btn,
+  button {
+    min-height: 44px !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+}
+
+/* Extra small screens or large font scaling */
+@media (max-width: 400px) {
+  /* Reduce padding to give more space for content */
+  .form-grid {
+    padding: 0.75rem 0.5rem !important;
+  }
+  
+  .form-header-clean {
+    padding: 0.875rem 0.75rem !important;
+  }
+  
+  #addExpenseModal .modal-footer {
+    padding: 0.75rem !important;
+  }
+  
+  /* Stack elements that might overflow */
+  .expense-card-header,
+  .expense-card-meta {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Smaller avatars on very small screens */
+  .member-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 0.7rem !important;
+  }
+  
+  /* Reduce checkbox indicator size slightly */
+  #expensePaidBy .checkbox-option::before {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+  }
+  
+  /* More compact member items */
+  #expensePaidBy .checkbox-option,
+  .member-share-item {
+    padding: 0.625rem 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* Support for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Ensure content is readable when system font is very large */
+@supports (font-size: clamp(1rem, 1vw, 2rem)) {
+  @media (max-width: 768px) {
+    .form-label {
+      font-size: clamp(0.7rem, 3vw, 0.875rem) !important;
+    }
+    
+    .form-input,
+    .amount-input {
+      font-size: clamp(0.875rem, 4vw, 1.125rem) !important;
+    }
+    
+    .member-name,
+    .member-share-name {
+      font-size: clamp(0.8rem, 3.5vw, 1rem) !important;
+    }
+    
+    #addExpenseModal .modal-footer .btn {
+      font-size: clamp(0.9rem, 4vw, 1.0625rem) !important;
+    }
+  }
+}
