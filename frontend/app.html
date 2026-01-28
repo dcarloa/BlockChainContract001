@@ -437,8 +437,8 @@ Simple, fast, and free.</p>
     <div id="notificationBanner" class="notification-banner hidden">
         <div class="notification-banner-content">
             <span class="notification-banner-icon">🔔</span>
-            <span id="notificationBannerText">You have unread notifications</span>
-            <button class="notification-banner-btn" onclick="event.stopPropagation(); toggleNotificationsPanel();">View</button>
+            <span id="notificationBannerText" data-i18n="app.notifications.unreadBanner">You have unread notifications</span>
+            <button class="notification-banner-btn" onclick="event.stopPropagation(); toggleNotificationsPanel();" data-i18n="app.notifications.view">View</button>
             <button class="notification-banner-close" onclick="event.stopPropagation(); closeNotificationBanner();">&times;</button>
         </div>
     </div>

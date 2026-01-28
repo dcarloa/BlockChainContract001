@@ -483,7 +483,11 @@ const translations = {
                 markAllRead: "Mark all as read",
                 deleteAll: "🗑️",
                 empty: "🔕",
-                noNotifications: "No notifications yet"
+                noNotifications: "No notifications yet",
+                view: "View",
+                unreadBanner: "You have unread notifications",
+                unreadOne: "You have 1 unread notification",
+                unreadMany: "You have {count} unread notifications"
             },
             header: {
                 subtitle: "Shared Expense Manager",
@@ -1735,7 +1739,11 @@ const translations = {
                 markAllRead: "Marcar todo como leído",
                 deleteAll: "🗑️",
                 empty: "🔕",
-                noNotifications: "Sin notificaciones aún"
+                noNotifications: "Sin notificaciones aún",
+                view: "Ver",
+                unreadBanner: "Tienes notificaciones sin leer",
+                unreadOne: "Tienes 1 notificación sin leer",
+                unreadMany: "Tienes {count} notificaciones sin leer"
             },
             header: {
                 subtitle: "Gestor de Gastos Compartidos",

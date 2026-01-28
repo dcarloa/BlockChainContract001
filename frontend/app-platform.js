@@ -10518,7 +10518,16 @@ function updateNotificationBanner() {
     if (!banner || !bannerText) return;
     
     if (unreadCount > 0) {
-        bannerText.textContent = `You have ${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}`;
+        // Get translations
+        const lang = typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en';
+        const t = typeof translations !== 'undefined' ? translations[lang]?.app?.notifications : null;
+        
+        if (unreadCount === 1) {
+            bannerText.textContent = t?.unreadOne || `You have 1 unread notification`;
+        } else {
+            const template = t?.unreadMany || `You have {count} unread notifications`;
+            bannerText.textContent = template.replace('{count}', unreadCount);
+        }
         banner.classList.remove('hidden');
     } else {
         banner.classList.add('hidden');
