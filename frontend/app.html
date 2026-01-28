@@ -2530,7 +2530,14 @@ Simple, fast, and free.</p>
             const qrWarningTitle = document.querySelector('#qrWarningTitle');
             if (qrWarningTitle) qrWarningTitle.textContent = `⚠️ ${t.app.fundDetail.qrScanner.warning}`;
             
-            // qrScanner.warningPoints now handled by data-i18n attributes in HTML
+            // Translate qrWarningList
+            const qrWarningList = document.querySelector('#qrWarningList');
+            if (qrWarningList) {
+                qrWarningList.innerHTML = t.app.fundDetail.qrScanner.warningPoints.map(point => {
+                    // Add bold to important parts
+                    return `<li>${point}</li>`;
+                }).join('');
+            }
             
             const qrDetectedLabel = document.querySelector('#qrDetectedLabel');
             if (qrDetectedLabel) qrDetectedLabel.textContent = `✅ ${t.app.fundDetail.qrScanner.detected}`;

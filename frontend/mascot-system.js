@@ -431,6 +431,12 @@ async function createWelcomeChest(groupId) {
  * Render weekly chest status section
  */
 async function renderWeeklyChestStatus(groupId) {
+    // Get current translations
+    const t = typeof translations !== 'undefined' && typeof getCurrentLanguage === 'function' 
+        ? translations[getCurrentLanguage()]?.app?.fundDetail?.mascot 
+        : null;
+    const lang = typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en';
+    
     try {
         // Check if ColonySystem is available
         if (typeof ColonySystem === 'undefined' || !ColonySystem.getWeeklyChest) {
@@ -440,8 +446,8 @@ async function renderWeeklyChestStatus(groupId) {
                     <div class="chest-icon-container">
                         <div class="chest-icon">📦</div>
                     </div>
-                    <h4>🎁 Weekly Chests</h4>
-                    <p class="chest-hint">Chest system loading...</p>
+                    <h4>🎁 ${t?.guide?.weeklyChests || 'Weekly Chests'}</h4>
+                    <p class="chest-hint">${t?.loading || 'Chest system loading...'}</p>
                 </div>
             `;
         }
@@ -492,7 +498,7 @@ async function renderWeeklyChestStatus(groupId) {
                     
                     const nextChestDate = new Date(nextChestTime);
                     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
-                    const nextDateStr = nextChestDate.toLocaleDateString('en-US', dateOptions);
+                    const nextDateStr = nextChestDate.toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', dateOptions);
                     
                     return `
                         <div class="weekly-chest-section chest-pending">
@@ -505,13 +511,13 @@ async function renderWeeklyChestStatus(groupId) {
                                 <div class="pulse-ring delay-1"></div>
                                 <div class="pulse-ring delay-2"></div>
                             </div>
-                            <h4>🔒 Next Chest</h4>
-                            <p class="chest-timer">Available in: <strong>${daysLeft}d ${hoursLeft}h</strong></p>
+                            <h4>${t?.nextChest || '🔒 Next Chest'}</h4>
+                            <p class="chest-timer">${t?.availableIn || 'Available in:'} <strong>${daysLeft}d ${hoursLeft}h</strong></p>
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${progress}%"></div>
                             </div>
-                            <p class="chest-hint" style="font-size: 0.85rem; color: #888;">📅 Available on ${nextDateStr}</p>
-                            <p class="chest-hint">💡 Chests unlock 7 days after your last claim!</p>
+                            <p class="chest-hint" style="font-size: 0.85rem; color: #888;">${t?.availableOn || '📅 Available on'} ${nextDateStr}</p>
+                            <p class="chest-hint">${t?.chestsUnlockHint || '💡 Chests unlock 7 days after your last claim!'}</p>
                         </div>
                     `;
                 }
@@ -528,9 +534,9 @@ async function renderWeeklyChestStatus(groupId) {
                         <div class="pulse-ring"></div>
                         <div class="pulse-ring delay-1"></div>
                     </div>
-                    <h4>📦 Chest Available Soon</h4>
-                    <p class="chest-timer">Keep your group active to unlock rewards!</p>
-                    <p class="chest-hint">💡 Add expenses or activities to generate your chest</p>
+                    <h4>${t?.chestAvailableSoon || '📦 Chest Available Soon'}</h4>
+                    <p class="chest-timer">${t?.keepActiveHint || 'Keep your group active to unlock rewards!'}</p>
+                    <p class="chest-hint">${t?.addActivitiesHint || '💡 Add expenses or activities to generate your chest'}</p>
                 </div>
             `;
         }
@@ -559,19 +565,19 @@ async function renderWeeklyChestStatus(groupId) {
                         <div class="pulse-ring delay-1"></div>
                         <div class="pulse-ring delay-2"></div>
                     </div>
-                    <h4>🔒 Chest Locked</h4>
-                    <p class="chest-timer">Unlocks in: <strong>${daysLeft > 0 ? `${daysLeft}d ` : ''}${remainingHours}h</strong></p>
+                    <h4>${t?.chestLocked || '🔒 Chest Locked'}</h4>
+                    <p class="chest-timer">${t?.unlocksIn || 'Unlocks in:'} <strong>${daysLeft > 0 ? `${daysLeft}d ` : ''}${remainingHours}h</strong></p>
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${Math.min(100, ((now - (chestData.createdAt || now)) / ((unlockTime) - (chestData.createdAt || now))) * 100)}%"></div>
                     </div>
-                    <p class="chest-hint">💡 Keep your group active for better rewards!</p>
+                    <p class="chest-hint">${t?.keepActiveForBetter || '💡 Keep your group active for better rewards!'}</p>
                 </div>
             `;
         }
         
         if (isAvailable) {
-            const chestTitle = isWelcomeChest ? '🎁 Welcome Chest Ready!' : '🎉 Chest Ready to Open!';
-            const chestSubtitle = isWelcomeChest ? 'Your welcome gift is waiting!' : 'Your weekly reward is waiting';
+            const chestTitle = isWelcomeChest ? (t?.welcomeChestReady || '🎁 Welcome Chest Ready!') : (t?.chestReady || '🎉 Chest Ready to Open!');
+            const chestSubtitle = isWelcomeChest ? (t?.welcomeGiftWaiting || 'Your welcome gift is waiting!') : (t?.chestWaiting || 'Your weekly reward is waiting');
             const colonyState = chestData.state || 'active';
             
             return `
@@ -591,9 +597,9 @@ async function renderWeeklyChestStatus(groupId) {
                     <h4 class="chest-ready">${chestTitle}</h4>
                     <p>${chestSubtitle}</p>
                     <button class="btn btn-primary btn-open-chest" onclick="ColonySystem.openChestModal('${groupId}', '${currentWeekId}')">
-                        Open Chest
+                        ${t?.openChestButton || 'Open Chest'}
                     </button>
-                    ${!isWelcomeChest ? `<p class="chest-hint" style="font-size: 0.85rem; margin-top: 0.5rem;">🐜 Colony state: <strong>${colonyState}</strong></p>` : ''}
+                    ${!isWelcomeChest ? `<p class="chest-hint" style="font-size: 0.85rem; margin-top: 0.5rem;">${t?.chestHintState || '🐜 Colony state:'} <strong>${colonyState}</strong></p>` : ''}
                 </div>
             `;
         }
@@ -619,7 +625,10 @@ async function renderWeeklyChestStatus(groupId) {
             // Format the next available date
             const nextChestDate = new Date(nextChestTime);
             const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
-            const nextDateStr = nextChestDate.toLocaleDateString('en-US', dateOptions);
+            const nextDateStr = nextChestDate.toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', dateOptions);
+            
+            // Get item name translated if available
+            const itemName = itemData ? (t?.wardrobeItems?.[claimedItem] || itemData.name) : null;
             
             return `
                 <div class="weekly-chest-section chest-claimed">
@@ -630,13 +639,13 @@ async function renderWeeklyChestStatus(groupId) {
                         <div class="pulse-ring"></div>
                         <div class="pulse-ring delay-1"></div>
                     </div>
-                    <h4>🎉 Chest Claimed!</h4>
-                    ${itemData ? `<p>You received: ${itemData.emoji} <strong>${itemData.name}</strong></p>` : ''}
-                    <p class="chest-timer">Next chest in: <strong>${daysLeft}d ${hoursLeft}h</strong></p>
+                    <h4>${t?.chestClaimed || '🎉 Chest Claimed!'}</h4>
+                    ${itemData ? `<p>${t?.chestReceived || 'You received:'} ${itemData.emoji} <strong>${itemName}</strong></p>` : ''}
+                    <p class="chest-timer">${t?.nextChestIn || 'Next chest in:'} <strong>${daysLeft}d ${hoursLeft}h</strong></p>
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${weekProgress}%"></div>
                     </div>
-                    <p class="chest-hint" style="font-size: 0.85rem; color: #888;">📅 Available on ${nextDateStr}</p>
+                    <p class="chest-hint" style="font-size: 0.85rem; color: #888;">${t?.availableOn || '📅 Available on'} ${nextDateStr}</p>
                 </div>
             `;
         }
@@ -647,14 +656,14 @@ async function renderWeeklyChestStatus(groupId) {
                 <div class="chest-icon-container">
                     <div class="chest-icon">📦</div>
                 </div>
-                <h4>Weekly Chest</h4>
-                <p class="chest-hint">Loading chest status...</p>
+                <h4>${t?.guide?.weeklyChests || 'Weekly Chest'}</h4>
+                <p class="chest-hint">${t?.loading || 'Loading chest status...'}</p>
             </div>
         `;
         
     } catch (error) {
         console.error('[Mascot] Error rendering chest status:', error);
-        return '<div class="weekly-chest-section"><p>Error loading chest status</p></div>';
+        return `<div class="weekly-chest-section"><p>${lang === 'es' ? 'Error cargando estado del cofre' : 'Error loading chest status'}</p></div>`;
     }
 }
 
