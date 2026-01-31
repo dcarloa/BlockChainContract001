@@ -2030,12 +2030,17 @@ async function createFund(event) {
     
     try {
         const fundName = document.getElementById('fundName').value.trim();
-        const description = document.getElementById('fundDescription').value.trim() || "Sin descripci�n";
+        const description = document.getElementById('fundDescription').value.trim() || "Sin descripción";
         const isPrivate = document.getElementById('isPrivate').value === 'true'; // Hidden field with default true
         const approvalPercentage = document.getElementById('approvalPercentage').value;
         const minimumVotes = document.getElementById('minimumVotes').value;
         const fundType = document.getElementById('fundType').value; // Hidden field with default 0
-        const groupMode = document.querySelector('input[name="groupMode"]:checked').value;
+        
+        // Support both radio buttons and hidden input for groupMode
+        const groupModeRadio = document.querySelector('input[name="groupMode"]:checked');
+        const groupModeHidden = document.querySelector('input[name="groupMode"][type="hidden"]');
+        const groupMode = groupModeRadio?.value || groupModeHidden?.value || 'simple';
+        
         const groupIcon = document.querySelector('input[name="groupIcon"]:checked')?.value || '🐶'; // Default to dog icon
         const preferredCurrency = document.getElementById('preferredCurrency')?.value || 'NONE';
         
