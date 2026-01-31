@@ -2318,8 +2318,8 @@ function showToast(message, type = 'info') {
  */
 function showLoginInvitation(action = 'continue') {
     // Haptic feedback
-    if (window.HapticFeedback) {
-        HapticFeedback.notification('warning');
+    if (window.HapticFeedback && window.HapticFeedback.vibrate) {
+        HapticFeedback.vibrate('medium');
     }
     
     // Action-specific messages
@@ -2456,15 +2456,24 @@ function closeLoginInvitation() {
 function showSignInModal() {
     return new Promise((resolve) => {
         const modal = document.getElementById('signInModal');
+        if (!modal) {
+            console.warn('signInModal not found');
+            resolve();
+            return;
+        }
         modal.style.display = 'block';
         
         // Store resolve function to call when user signs in
         window._signInResolve = resolve;
         
         // Reset forms
-        document.getElementById('emailSignInForm').style.display = 'none';
-        document.getElementById('createAccountForm').style.display = 'none';
-        document.querySelector('.sign-in-buttons').style.display = 'flex';
+        const emailForm = document.getElementById('emailSignInForm');
+        const createForm = document.getElementById('createAccountForm');
+        const mainOptions = document.getElementById('mainSignInOptions');
+        
+        if (emailForm) emailForm.style.display = 'none';
+        if (createForm) createForm.style.display = 'none';
+        if (mainOptions) mainOptions.style.display = 'flex';
     });
 }
 
@@ -2522,15 +2531,23 @@ async function signInWithGoogleOnly() {
 }
 
 function showEmailSignIn() {
-    document.querySelector('.sign-in-buttons').style.display = 'none';
-    document.getElementById('createAccountForm').style.display = 'none';
-    document.getElementById('emailSignInForm').style.display = 'block';
+    const mainOptions = document.getElementById('mainSignInOptions');
+    const createForm = document.getElementById('createAccountForm');
+    const emailForm = document.getElementById('emailSignInForm');
+    
+    if (mainOptions) mainOptions.style.display = 'none';
+    if (createForm) createForm.style.display = 'none';
+    if (emailForm) emailForm.style.display = 'block';
 }
 
 function closeEmailSignIn() {
-    document.querySelector('.sign-in-buttons').style.display = 'flex';
-    document.getElementById('emailSignInForm').style.display = 'none';
-    document.getElementById('createAccountForm').style.display = 'none';
+    const mainOptions = document.getElementById('mainSignInOptions');
+    const emailForm = document.getElementById('emailSignInForm');
+    const createForm = document.getElementById('createAccountForm');
+    
+    if (mainOptions) mainOptions.style.display = 'flex';
+    if (emailForm) emailForm.style.display = 'none';
+    if (createForm) createForm.style.display = 'none';
 }
 
 function showCreateAccount() {
