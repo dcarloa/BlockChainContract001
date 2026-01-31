@@ -1,7 +1,7 @@
 {
   "rules": {
     "groups": {
-      ".read": "auth != null && root.child('system/admins').child(auth.uid).val() === true",
+      ".read": "auth != null && (root.child('system/admins').child(auth.uid).val() === true || query.orderByChild == 'createdBy' && query.equalTo == auth.uid)",
       ".indexOn": ["createdBy"],
       "$groupId": {
         ".read": "auth != null",
