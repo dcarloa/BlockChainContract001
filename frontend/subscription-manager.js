@@ -115,7 +115,7 @@ async function getSubscriptionData(userId) {
  */
 async function isPro(userId) {
     if (LAUNCH_MODE) {
-        console.log('[Subscription] LAUNCH_MODE: All users are PRO');
+        // LAUNCH_MODE active - all users have PRO access
         return true;
     }
 
@@ -189,7 +189,7 @@ async function canCreateGroup(userId) {
         }
     });
     
-    console.log(`[Subscription] User ${userId} has created ${groupCount} groups (limit: ${limits.maxGroups})`);
+    // Debug: console.log(`[Subscription] User ${userId} has ${groupCount}/${limits.maxGroups} groups`);
     
     if (groupCount >= limits.maxGroups) {
         return {
@@ -360,7 +360,7 @@ function showUpgradeModal(feature = null) {
     const modalHTML = `
         <div class="upgrade-modal-overlay" id="upgradeModal" onclick="window.SubscriptionManager.closeUpgradeModal()">
             <div class="upgrade-modal" onclick="event.stopPropagation()">
-                <button class="upgrade-modal-close" onclick="window.SubscriptionManager.closeUpgradeModal()">×</button>
+                <button class="upgrade-modal-close" onclick="event.stopPropagation(); window.SubscriptionManager.closeUpgradeModal()">×</button>
                 <div class="upgrade-modal-content">
                     <div class="upgrade-icon">💎</div>
                     <h2>Upgrade to PRO</h2>
@@ -627,4 +627,4 @@ window.SubscriptionManager = {
     startTrial
 };
 
-console.log('✅ Subscription Manager loaded (LAUNCH_MODE:', LAUNCH_MODE, ')');
+// Subscription Manager loaded

@@ -7077,6 +7077,16 @@ async function executeProposal(proposalId) {
 
 async function loadHistory() {
     try {
+        // Check if we have a blockchain contract (only for blockchain mode)
+        if (!currentFundContract || !currentFundContract.proposalCount) {
+            // For simple mode, load history differently or show empty
+            const historyList = document.getElementById('historyList');
+            const noHistory = document.getElementById('noHistory');
+            if (historyList) historyList.innerHTML = '';
+            if (noHistory) noHistory.style.display = 'flex';
+            return;
+        }
+        
         const proposalCount = await currentFundContract.proposalCount();
         
         const historyList = document.getElementById('historyList');
@@ -8518,11 +8528,18 @@ async function toggleRecurringExpense(recurringId) {
             `groups/${currentFund.fundId}/recurringExpenses/${recurringId}`
         );
         
+        if (!recurring) {
+            showToast('Recurring expense not found', 'error');
+            await loadRecurringExpenses();
+            return;
+        }
+        
+        const newStatus = !recurring.isActive;
         await window.modeManager.updateRecurringExpense(recurringId, {
-            isActive: !recurring.isActive
+            isActive: newStatus
         });
         
-        showToast(recurring.isActive ? 'Recurring expense paused' : 'Recurring expense resumed', 'success');
+        showToast(newStatus ? 'Recurring expense resumed' : 'Recurring expense paused', 'success');
         await loadRecurringExpenses();
         
     } catch (error) {
@@ -8945,6 +8962,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 hideLoading();
                 showToast('Group info updated successfully!', 'success');
                 closeEditGroupModal();
+                
+                // Update currentFund with new values immediately
+                if (currentFund) {
+                    currentFund.icon = icon;
+                    currentFund.name = name;
+                    currentFund.description = description;
+                    
+                    // Update UI elements immediately
+                    const headerIcon = document.getElementById('fundHeaderIcon');
+                    const detailName = document.getElementById('fundDetailName');
+                    const detailDesc = document.getElementById('fundDetailDescription');
+                    
+                    if (headerIcon) headerIcon.textContent = icon;
+                    if (detailName) detailName.textContent = name;
+                    if (detailDesc) detailDesc.textContent = description || '-';
+                }
                 
                 // Refresh the view to show updated info
                 await refreshCurrentView();

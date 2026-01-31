@@ -13367,7 +13367,16 @@ header,
   /* Fund header adjustments */
   .fund-header-content {
     flex-direction: column !important;
-    align-items: flex-start !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  
+  .fund-header-icon {
+    margin: 0 auto !important;
+  }
+  
+  .fund-systems-row {
+    justify-content: center !important;
   }
   
   .fund-header-title {

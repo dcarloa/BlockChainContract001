@@ -89,10 +89,10 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     font-size: 2rem;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     cursor: pointer;
     width: 40px;
     height: 40px;
@@ -101,6 +101,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    z-index: 10001;
 }
 
 .upgrade-modal-close:hover {
