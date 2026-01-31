@@ -173,14 +173,23 @@ async function canCreateGroup(userId) {
 
     const limits = await getTierLimits(userId);
     
-    // Count user's existing groups
+    // Count user's existing groups (only groups they CREATED, not member of)
     const snapshot = await firebase.database()
         .ref('groups')
         .orderByChild('createdBy')
         .equalTo(userId)
         .once('value');
     
-    const groupCount = snapshot.numChildren();
+    let groupCount = 0;
+    snapshot.forEach((childSnapshot) => {
+        const group = childSnapshot.val();
+        // Only count groups where user is actually the creator
+        if (group && group.createdBy === userId) {
+            groupCount++;
+        }
+    });
+    
+    console.log(`[Subscription] User ${userId} has created ${groupCount} groups (limit: ${limits.maxGroups})`);
     
     if (groupCount >= limits.maxGroups) {
         return {

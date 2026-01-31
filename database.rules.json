@@ -2,6 +2,7 @@
   "rules": {
     "groups": {
       ".read": "auth != null && root.child('system/admins').child(auth.uid).val() === true",
+      ".indexOn": ["createdBy"],
       "$groupId": {
         ".read": "auth != null",
         ".write": "auth != null && (!data.exists() || data.child('createdBy').val() === auth.uid || data.child('members').child(auth.uid).exists())",
