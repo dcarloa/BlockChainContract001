@@ -140,7 +140,7 @@ async function openWeeklyChest(groupId, weekId) {
             lastChestClaimed: openedAt
         });
         
-        console.log('[Colony] Chest marked as opened in Firebase, lastChestClaimed updated');
+        // console.log('[Colony] Chest marked as opened in Firebase, lastChestClaimed updated');
         return true;
     } catch (error) {
         console.error('Error opening weekly chest:', error);
@@ -201,7 +201,7 @@ function renderColonyVisual(state = 'forming', size = 80) {
  */
 function showWeeklyChestBanner(groupId, chest) {
     if (!COLONY_FEATURE_ENABLED || !chest) {
-        console.log('[Colony] Banner not shown:', { enabled: COLONY_FEATURE_ENABLED, chest });
+        // console.log('[Colony] Banner not shown:', { enabled: COLONY_FEATURE_ENABLED, chest });
         return;
     }
     
@@ -236,7 +236,7 @@ function showWeeklyChestBanner(groupId, chest) {
     // Insert banner in the dedicated container
     const container = document.getElementById('weeklyChestBannerContainer');
     if (container) {
-        console.log('[Colony] Inserting banner into container');
+        // console.log('[Colony] Inserting banner into container');
         container.innerHTML = '';
         container.appendChild(banner);
         
@@ -253,7 +253,7 @@ function showWeeklyChestBanner(groupId, chest) {
  * Open chest modal
  */
 async function openChestModal(groupId, weekId) {
-    console.log('[Colony] Opening chest modal:', { groupId, weekId });
+    // console.log('[Colony] Opening chest modal:', { groupId, weekId });
     
     // Haptic feedback for chest opening
     if (window.HapticFeedback) {
@@ -277,7 +277,7 @@ async function openChestModal(groupId, weekId) {
         colonyState = 'active';
     }
     const config = COLONY_STATES[colonyState];
-    console.log('[Colony] Chest state:', colonyState);
+    // console.log('[Colony] Chest state:', colonyState);
     
     // Check if this is a welcome chest
     const isWelcomeChest = chest.isWelcomeChest || weekId === 'welcome';
@@ -287,7 +287,7 @@ async function openChestModal(groupId, weekId) {
     if (window.MascotSystem) {
         const randomItem = window.MascotSystem.getRandomItemByColonyState(colonyState);
         rewardItem = await window.MascotSystem.addItemToWardrobe(groupId, randomItem.id);
-        console.log('[Colony] Reward item:', rewardItem);
+        // console.log('[Colony] Reward item:', rewardItem);
         
         // Play reward feedback when item is received
         if (rewardItem && window.HapticFeedback) {
@@ -354,7 +354,7 @@ async function openChestModal(groupId, weekId) {
     `;
     
     document.body.appendChild(modal);
-    console.log('[Colony] Modal appended to body');
+    // console.log('[Colony] Modal appended to body');
     
     // Apply translations to modal content
     if (window.i18n) {
@@ -372,7 +372,7 @@ async function openChestModal(groupId, weekId) {
     
     // Mark as opened
     await openWeeklyChest(groupId, weekId);
-    console.log('[Colony] Chest marked as opened');
+    // console.log('[Colony] Chest marked as opened');
     
     // Update mascot header and tab if available
     if (window.MascotSystem) {
@@ -382,7 +382,7 @@ async function openChestModal(groupId, weekId) {
         const mascotTab = document.getElementById('mascotTab');
         if (mascotTab && mascotTab.classList.contains('active')) {
             await window.MascotSystem.loadMascotTab(groupId);
-            console.log('[Colony] Mascot tab reloaded with new item');
+            // console.log('[Colony] Mascot tab reloaded with new item');
         }
     }
     
@@ -390,7 +390,7 @@ async function openChestModal(groupId, weekId) {
     const banner = document.getElementById('weeklyChestBanner');
     if (banner) {
         banner.remove();
-        console.log('[Colony] Banner removed');
+        // console.log('[Colony] Banner removed');
     }
 }
 
@@ -402,21 +402,21 @@ function closeChestModal() {
     
     // Prevent double execution
     if (!modal) {
-        console.log('[Colony] Modal already closed');
+        // console.log('[Colony] Modal already closed');
         return;
     }
     
-    console.log('[Colony] Closing chest modal');
+    // console.log('[Colony] Closing chest modal');
     
     // Remove modal immediately
     modal.remove();
-    console.log('[Colony] Modal removed');
+    // console.log('[Colony] Modal removed');
     
     // Reload mascot tab if active and we have the groupId
     if (currentChestGroupId && window.MascotSystem) {
         const mascotTab = document.getElementById('mascotTab');
         if (mascotTab && mascotTab.classList.contains('active')) {
-            console.log('[Colony] Reloading mascot tab after closing chest');
+            // console.log('[Colony] Reloading mascot tab after closing chest');
             window.MascotSystem.loadMascotTab(currentChestGroupId);
         }
     }
@@ -430,15 +430,15 @@ function closeChestModal() {
  */
 async function updateColonyDisplay(groupId) {
     if (!COLONY_FEATURE_ENABLED) {
-        console.log('[Colony] Feature disabled for display');
+        // console.log('[Colony] Feature disabled for display');
         return;
     }
     
     const colony = await getColonyData(groupId);
-    console.log('[Colony] Colony data for display:', colony);
+    // console.log('[Colony] Colony data for display:', colony);
     
     if (!colony) {
-        console.log('[Colony] No colony data available');
+        // console.log('[Colony] No colony data available');
         return;
     }
     
@@ -456,7 +456,7 @@ async function updateColonyDisplay(groupId) {
                 <span class="colony-state-label">${stateName}</span>
             </div>
         `;
-        console.log('[Colony] Display updated with state:', colony.state);
+        // console.log('[Colony] Display updated with state:', colony.state);
     } else {
         console.error('[Colony] Display container not found!');
     }
@@ -468,16 +468,16 @@ async function updateColonyDisplay(groupId) {
  */
 async function checkWeeklyChest(groupId) {
     if (!COLONY_FEATURE_ENABLED) {
-        console.log('[Colony] Feature disabled');
+        // console.log('[Colony] Feature disabled');
         return;
     }
     
     // First check for welcome chest
-    console.log('[Colony] Checking for welcome chest:', groupId);
+    // console.log('[Colony] Checking for welcome chest:', groupId);
     const welcomeChest = await getWeeklyChest(groupId, 'welcome');
     
     if (welcomeChest && !welcomeChest.isOpened) {
-        console.log('[Colony] Showing welcome chest banner');
+        // console.log('[Colony] Showing welcome chest banner');
         showWeeklyChestBanner(groupId, { ...welcomeChest, weekId: 'welcome' });
         return; // Show welcome chest first, don't check for weekly chest yet
     }
@@ -489,39 +489,39 @@ async function checkWeeklyChest(groupId) {
     const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
     const cooldownPassed = (now - lastChestClaimed) >= sevenDaysMs;
     
-    console.log('[Colony] Chest cooldown check:', { 
+    // console.log('[Colony] Chest cooldown check:', { 
         lastChestClaimed: lastChestClaimed ? new Date(lastChestClaimed).toISOString() : 'never',
         cooldownPassed,
         timeRemaining: cooldownPassed ? 0 : Math.ceil((sevenDaysMs - (now - lastChestClaimed)) / (1000 * 60 * 60)) + 'h'
     });
     
     if (!cooldownPassed) {
-        console.log('[Colony] Chest cooldown not passed, waiting for 7 days since last claim');
+        // console.log('[Colony] Chest cooldown not passed, waiting for 7 days since last claim');
         return;
     }
     
     // Use a unique chest ID based on when the cooldown period started
     // This ensures each chest is unique and can only be claimed once per cooldown period
     const weekId = getCurrentWeekId();
-    console.log('[Colony] Checking for weekly chest:', { groupId, weekId });
+    // console.log('[Colony] Checking for weekly chest:', { groupId, weekId });
     
     let chest = await getWeeklyChest(groupId, weekId);
-    console.log('[Colony] Chest data:', chest);
+    // console.log('[Colony] Chest data:', chest);
     
     // If no chest exists for current week, try to create one automatically
     if (!chest) {
-        console.log('[Colony] No chest found, attempting auto-creation...');
+        // console.log('[Colony] No chest found, attempting auto-creation...');
         try {
             // Call the manual evaluation function (works on free plan)
             const evaluateFunction = firebase.functions().httpsCallable('evaluateWeeklyChestsManual');
             const result = await evaluateFunction({ weekId });
             
             if (result.data.success && result.data.chestsCreated > 0) {
-                console.log('[Colony] ✅ Auto-created weekly chest');
+                // console.log('[Colony] ✅ Auto-created weekly chest');
                 // Reload chest data
                 chest = await getWeeklyChest(groupId, weekId);
             } else {
-                console.log('[Colony] No chest created (group may not meet activity criteria)');
+                // console.log('[Colony] No chest created (group may not meet activity criteria)');
             }
         } catch (error) {
             console.error('[Colony] Error auto-creating chest:', error);
@@ -530,12 +530,12 @@ async function checkWeeklyChest(groupId) {
     
     // Check if chest exists and is not opened
     if (chest && !chest.isOpened) {
-        console.log('[Colony] Showing weekly chest banner');
+        // console.log('[Colony] Showing weekly chest banner');
         showWeeklyChestBanner(groupId, { ...chest, weekId });
     } else if (chest && chest.isOpened) {
-        console.log('[Colony] Chest already opened');
+        // console.log('[Colony] Chest already opened');
     } else {
-        console.log('[Colony] No chest available for this period');
+        // console.log('[Colony] No chest available for this period');
     }
 }
 

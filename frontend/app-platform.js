@@ -8440,7 +8440,7 @@ function startRecurringExpensesTimer() {
         checkAndProcessRecurring();
     }, 5 * 60 * 1000); // 5 minutes
     
-    console.log('Recurring expenses timer started (checks every 5 minutes)');
+    // Recurring expenses timer started - checks every 5 minutes
 }
 
 /**
@@ -8977,7 +8977,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (headerIcon) headerIcon.textContent = icon;
                     if (detailName) detailName.textContent = name;
                     if (detailDesc) detailDesc.textContent = description || '-';
+                    
+                    // Also update the group in the funds list cache
+                    if (window.userFundsCache) {
+                        const fundInCache = window.userFundsCache.find(f => f.fundId === currentFund.fundId);
+                        if (fundInCache) {
+                            fundInCache.icon = icon;
+                            fundInCache.name = name;
+                            fundInCache.description = description;
+                        }
+                    }
                 }
+                
+                // Refresh the funds list to update sidebar/dashboard
+                await loadUserFunds();
                 
                 // Refresh the view to show updated info
                 await refreshCurrentView();
