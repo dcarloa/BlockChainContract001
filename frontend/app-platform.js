@@ -1931,7 +1931,8 @@ async function hideFund(fundAddress, fundName) {
             // Delete the entire group from Firebase
             await window.FirebaseConfig.deleteDb(`groups/${fundAddress}`);
             
-            showToast("Grupo eliminado correctamente", "success");
+            const t = translations[currentLanguage] || translations.en;
+            showToast(t.app?.fundDetail?.manage?.groupDeleted || "Group deleted successfully", "success");
             
         } else {
             // Blockchain mode - just hide locally

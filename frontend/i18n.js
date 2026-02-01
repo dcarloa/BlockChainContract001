@@ -927,7 +927,8 @@ const translations = {
                     pause: "Pause Fund",
                     pausing: "Pausing...",
                     pauseSuccess: "Fund paused. Now in read-only mode.",
-                    pauseConfirm: "Pause fund? This will block all transactions (deposits, proposals, votes). The fund will remain visible in read-only mode."
+                    pauseConfirm: "Pause fund? This will block all transactions (deposits, proposals, votes). The fund will remain visible in read-only mode.",
+                    groupDeleted: "Group deleted successfully"
                 },
                 mascot: {
                     title: "Group Ant",
@@ -2191,7 +2192,8 @@ const translations = {
                     pause: "Pausar Fondo",
                     pausing: "Pausando...",
                     pauseSuccess: "Fondo pausado. Ahora está en modo solo lectura.",
-                    pauseConfirm: "¿Pausar el fondo? Esto bloqueará todas las transacciones (depósitos, propuestas, votos). El fondo seguirá visible en modo solo lectura."
+                    pauseConfirm: "¿Pausar el fondo? Esto bloqueará todas las transacciones (depósitos, propuestas, votos). El fondo seguirá visible en modo solo lectura.",
+                    groupDeleted: "Grupo eliminado correctamente"
                 },
                 mascot: {
                     title: "Hormiga del Grupo",
