@@ -1111,12 +1111,15 @@ const translations = {
                     saveButton: "Save Expense"
                 },
                 recordPayment: {
-                    title: "💰 Record Payment",
-                    amountLabel: "Amount Paid",
+                    title: "Record Payment",
+                    subtitle: "Register a payment you've made to settle a debt",
+                    payingTo: "Paying to",
+                    amountLabel: "Amount",
                     amountPlaceholder: "0.00",
                     paidToLabel: "Paid To",
                     dateLabel: "Payment Date",
-                    notesLabel: "Notes (Optional)",
+                    notesLabel: "Notes",
+                    optional: "Optional",
                     notesPlaceholder: "Payment method, reference number, etc...",
                     cancelButton: "Cancel",
                     recordButton: "Record Payment"
@@ -2383,12 +2386,15 @@ const translations = {
                     saveButton: "Guardar Gasto"
                 },
                 recordPayment: {
-                    title: "💰 Registrar Pago",
-                    amountLabel: "Monto Pagado",
+                    title: "Registrar Pago",
+                    subtitle: "Registra un pago que hayas hecho para saldar una deuda",
+                    payingTo: "Pagando a",
+                    amountLabel: "Monto",
                     amountPlaceholder: "0.00",
                     paidToLabel: "Pagado A",
                     dateLabel: "Fecha de Pago",
-                    notesLabel: "Notas (Opcional)",
+                    notesLabel: "Notas",
+                    optional: "Opcional",
                     notesPlaceholder: "Método de pago, número de referencia, etc...",
                     cancelButton: "Cancelar",
                     recordButton: "Registrar Pago"
