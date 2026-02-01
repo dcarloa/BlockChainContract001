@@ -926,11 +926,11 @@ Simple, fast, and free.</p>
                 <!-- Action Bar -->
                 <div class="action-bar">
                     <h2 data-i18n="app.dashboard.title">My Groups</h2>
-                    <button id="createFundBtn" class="btn btn-primary btn-create-group" title="Create a new expense group">
-                        <span class="btn-icon">➕</span>
-                        <span class="btn-text">
-                            <strong data-i18n="app.dashboard.createButton">Create New Group</strong>
-                            <small data-i18n="app.dashboard.createTapHere">Tap here to create group</small>
+                    <button id="createFundBtn" class="btn btn-create-group" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important; color: white !important;" title="Create a new expense group">
+                        <span class="btn-icon" style="background: rgba(255,255,255,0.2); padding: 0.5rem; border-radius: 8px;">➕</span>
+                        <span class="btn-text" style="display: flex; flex-direction: column; align-items: flex-start;">
+                            <strong style="color: white !important; font-weight: 700;" data-i18n="app.dashboard.createButton">Create New Group</strong>
+                            <small style="color: rgba(255,255,255,0.9) !important; font-size: 0.75rem;" data-i18n="app.dashboard.createTapHere">Tap here to create group</small>
                         </span>
                     </button>
                 </div>
@@ -2156,24 +2156,6 @@ Simple, fast, and free.</p>
                 window.FirebaseConfig.initialize().then(success => {
                     if (success) {
                         console.log('✅ Firebase ready for Simple Mode');
-                        
-                        // Debug: Log button styles
-                        setTimeout(() => {
-                            const btn = document.getElementById('addExpenseCardBtn');
-                            if (btn) {
-                                const styles = window.getComputedStyle(btn);
-                                console.log('🔍 Add Expense Button Debug:');
-                                console.log('  - background:', styles.background);
-                                console.log('  - backgroundColor:', styles.backgroundColor);
-                                console.log('  - padding:', styles.padding);
-                                console.log('  - borderRadius:', styles.borderRadius);
-                                console.log('  - boxShadow:', styles.boxShadow);
-                                console.log('  - display:', styles.display);
-                            } else {
-                                console.log('⚠️ Button #addExpenseCardBtn not found');
-                            }
-                        }, 1000);
-                        
                         // Show BETA modal after Firebase is ready
                         checkAndShowBetaModal();
                     } else {
