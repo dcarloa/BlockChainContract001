@@ -916,9 +916,23 @@
 
 /* Light mode for action card button */
 [data-theme="light"] .action-card .btn-add-expense {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: white !important;
   box-shadow: 
     0 4px 15px rgba(99, 102, 241, 0.35),
     0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .action-card .btn-add-expense strong {
+  color: white !important;
+}
+
+[data-theme="light"] .action-card .btn-add-expense small {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="light"] .action-card .btn-add-expense .btn-icon {
+  background: rgba(255, 255, 255, 0.25) !important;
 }
 
 [data-theme="light"] .action-card .btn-add-expense:hover {

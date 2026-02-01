@@ -352,6 +352,11 @@ const translations = {
             loadingOverlay: {
                 loading: "Loading..."
             },
+            // Settings (haptic feedback section)
+            settings: {
+                vibration: "Vibration",
+                sound: "Sounds"
+            },
             // PWA Install Prompt
             pwa: {
                 installTitle: "Install Ant Pool",
@@ -1244,7 +1249,9 @@ const translations = {
             language: "Language",
             theme: "Theme",
             lightMode: "Light Mode",
-            darkMode: "Dark Mode"
+            darkMode: "Dark Mode",
+            vibration: "Vibration",
+            sound: "Sounds"
         },
         // Beta Launch Modal
         betaModal: {
@@ -1616,6 +1623,11 @@ const translations = {
             // Loading Overlay
             loadingOverlay: {
                 loading: "Cargando..."
+            },
+            // Settings (haptic feedback section)
+            settings: {
+                vibration: "Vibración",
+                sound: "Sonidos"
             },
             // PWA Install Prompt
             pwa: {
@@ -2509,7 +2521,9 @@ const translations = {
             language: "Idioma",
             theme: "Tema",
             lightMode: "Modo Claro",
-            darkMode: "Modo Oscuro"
+            darkMode: "Modo Oscuro",
+            vibration: "Vibración",
+            sound: "Sonidos"
         },
         // Beta Launch Modal
         betaModal: {

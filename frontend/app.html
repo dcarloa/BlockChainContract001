@@ -42,10 +42,10 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css">
+    <link rel="stylesheet" href="styles-platform.css?v=3.0">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
-    <link rel="stylesheet" href="simple-mode-styles.css">
+    <link rel="stylesheet" href="simple-mode-styles.css?v=2.1">
     <link rel="stylesheet" href="form-wizard-styles.css">
     <link rel="stylesheet" href="new-features-styles.css">
     <link rel="stylesheet" href="colony-styles.css?v=1.2">
@@ -2087,7 +2087,7 @@ Simple, fast, and free.</p>
     </div>
 
     <!-- Scripts -->
-    <script src="i18n.js?v=1.7.3"></script>
+    <script src="i18n.js?v=1.9.0"></script>
     <script src="theme.js"></script>
     <script src="ethers.umd.min.js"></script>
     
@@ -2156,6 +2156,24 @@ Simple, fast, and free.</p>
                 window.FirebaseConfig.initialize().then(success => {
                     if (success) {
                         console.log('✅ Firebase ready for Simple Mode');
+                        
+                        // Debug: Log button styles
+                        setTimeout(() => {
+                            const btn = document.getElementById('addExpenseCardBtn');
+                            if (btn) {
+                                const styles = window.getComputedStyle(btn);
+                                console.log('🔍 Add Expense Button Debug:');
+                                console.log('  - background:', styles.background);
+                                console.log('  - backgroundColor:', styles.backgroundColor);
+                                console.log('  - padding:', styles.padding);
+                                console.log('  - borderRadius:', styles.borderRadius);
+                                console.log('  - boxShadow:', styles.boxShadow);
+                                console.log('  - display:', styles.display);
+                            } else {
+                                console.log('⚠️ Button #addExpenseCardBtn not found');
+                            }
+                        }, 1000);
+                        
                         // Show BETA modal after Firebase is ready
                         checkAndShowBetaModal();
                     } else {
