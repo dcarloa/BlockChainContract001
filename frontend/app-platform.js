@@ -1891,6 +1891,9 @@ async function reactivateFund(fundAddress, fundName) {
 
 async function hideFund(fundAddress, fundName) {
     try {
+        // Get translations
+        const t = translations[currentLanguage] || translations.en;
+        
         // Find the fund to check its mode
         const fund = allUserGroups.find(f => f.fundAddress === fundAddress);
         
@@ -1909,7 +1912,7 @@ async function hideFund(fundAddress, fundName) {
             
             if (!confirmed) return;
             
-            showLoading(t('app.loading.deletingGroup'));
+            showLoading(t.app?.loading?.deletingGroup || "Deleting group...");
             
             // Notify all group members BEFORE deleting
             await notifyGroupMembers(
@@ -1931,7 +1934,6 @@ async function hideFund(fundAddress, fundName) {
             // Delete the entire group from Firebase
             await window.FirebaseConfig.deleteDb(`groups/${fundAddress}`);
             
-            const t = translations[currentLanguage] || translations.en;
             showToast(t.app?.fundDetail?.manage?.groupDeleted || "Group deleted successfully", "success");
             
         } else {
@@ -1949,7 +1951,7 @@ async function hideFund(fundAddress, fundName) {
             
             if (!confirmed) return;
             
-            showLoading(t('app.loading.hidingFund'));
+            showLoading(t.app?.loading?.hidingFund || "Hiding fund...");
             
             // Get hidden funds from localStorage
             let hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
