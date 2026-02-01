@@ -13,7 +13,7 @@
 // Firebase security is handled by Database Rules and Auth configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA_EJRI7BIyHxSgMg5V8sQqndp_-v-t_C0",
-  authDomain: "blockchaincontract001.firebaseapp.com",
+  authDomain: "antpool.cloud",
   databaseURL: "https://blockchaincontract001-default-rtdb.firebaseio.com",
   projectId: "blockchaincontract001",
   storageBucket: "blockchaincontract001.firebasestorage.app",

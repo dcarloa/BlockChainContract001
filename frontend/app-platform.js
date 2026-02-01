@@ -10991,6 +10991,7 @@ function toggleDarkModeSetting(checkbox) {
  */
 async function togglePushNotifications(checkbox) {
     const isEnabled = checkbox.checked;
+    const t = translations[currentLanguage] || translations.en;
     
     if (isEnabled) {
         try {
@@ -10999,23 +11000,36 @@ async function togglePushNotifications(checkbox) {
             
             if (token) {
                 localStorage.setItem('pushNotificationsEnabled', 'true');
-                showToast('Push notifications enabled', 'success');
+                showToast(t.app?.profile?.settings?.pushEnabled || 'Push notifications enabled', 'success');
             } else {
-                // Permission denied, uncheck
+                // Permission dismissed
                 checkbox.checked = false;
                 localStorage.setItem('pushNotificationsEnabled', 'false');
-                showToast('Notification permission denied', 'error');
+                showToast(t.app?.profile?.settings?.pushDismissed || 'Permission request was dismissed', 'warning');
             }
         } catch (error) {
             console.error('Error enabling push notifications:', error);
             checkbox.checked = false;
-            showToast('Failed to enable push notifications', 'error');
+            localStorage.setItem('pushNotificationsEnabled', 'false');
+            
+            // Show specific error messages
+            if (error.message === 'NOTIFICATIONS_NOT_SUPPORTED') {
+                showToast(t.app?.profile?.settings?.pushNotSupported || 'Your browser does not support notifications', 'error');
+            } else if (error.message === 'SERVICE_WORKERS_NOT_SUPPORTED') {
+                showToast(t.app?.profile?.settings?.pushNoSW || 'Your browser does not support service workers', 'error');
+            } else if (error.message === 'PERMISSION_BLOCKED') {
+                showToast(t.app?.profile?.settings?.pushBlocked || 'Notifications are blocked. Please enable them in your browser settings.', 'error');
+            } else if (error.message === 'PERMISSION_DENIED') {
+                showToast(t.app?.profile?.settings?.pushDenied || 'Notification permission denied', 'error');
+            } else {
+                showToast(t.app?.profile?.settings?.pushFailed || 'Failed to enable push notifications', 'error');
+            }
         }
     } else {
         // Disable push notifications
         await removeFCMToken();
         localStorage.setItem('pushNotificationsEnabled', 'false');
-        showToast('Push notifications disabled', 'success');
+        showToast(t.app?.profile?.settings?.pushDisabled || 'Push notifications disabled', 'success');
     }
 }
 

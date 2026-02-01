@@ -65,6 +65,24 @@ async function initializeMessaging() {
  */
 async function requestNotificationPermission() {
     try {
+        // Check if notifications are supported
+        if (!('Notification' in window)) {
+            console.log('⚠️ This browser does not support notifications');
+            throw new Error('NOTIFICATIONS_NOT_SUPPORTED');
+        }
+        
+        // Check if service workers are supported
+        if (!('serviceWorker' in navigator)) {
+            console.log('⚠️ This browser does not support service workers');
+            throw new Error('SERVICE_WORKERS_NOT_SUPPORTED');
+        }
+        
+        // Check if already blocked
+        if (Notification.permission === 'denied') {
+            console.log('⚠️ Notification permission was previously denied');
+            throw new Error('PERMISSION_BLOCKED');
+        }
+        
         // Check if already granted
         if (Notification.permission === 'granted') {
             return await getFCMToken();
@@ -76,14 +94,17 @@ async function requestNotificationPermission() {
         if (permission === 'granted') {
             console.log('✅ Notification permission granted');
             return await getFCMToken();
+        } else if (permission === 'denied') {
+            console.log('⚠️ Notification permission denied by user');
+            throw new Error('PERMISSION_DENIED');
         } else {
-            console.log('⚠️ Notification permission denied');
+            console.log('⚠️ Notification permission dismissed');
             return null;
         }
 
     } catch (error) {
         console.error('❌ Error requesting notification permission:', error);
-        return null;
+        throw error; // Re-throw to handle in UI
     }
 }
 
