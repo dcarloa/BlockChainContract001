@@ -856,6 +856,77 @@
   transform: translateY(0);
 }
 
+/* Add Expense Button in Action Card - Make it look like a real button */
+.action-card .btn-add-expense {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 
+    0 4px 15px rgba(var(--primary-rgb), 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.action-card .btn-add-expense:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 20px rgba(var(--primary-rgb), 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-card .btn-add-expense:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
+}
+
+.action-card .btn-add-expense .btn-icon {
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  border-radius: 8px;
+  line-height: 1;
+}
+
+.action-card .btn-add-expense .btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+}
+
+.action-card .btn-add-expense strong {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.action-card .btn-add-expense small {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+/* Light mode for action card button */
+[data-theme="light"] .action-card .btn-add-expense {
+  box-shadow: 
+    0 4px 15px rgba(99, 102, 241, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .action-card .btn-add-expense:hover {
+  box-shadow: 
+    0 6px 20px rgba(99, 102, 241, 0.45),
+    0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 /* Button Styling in Modal */
 #addExpenseModal .modal-footer {
   padding: 1.25rem 2rem;
