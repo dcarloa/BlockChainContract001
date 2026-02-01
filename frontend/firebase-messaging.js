@@ -121,9 +121,13 @@ async function getFCMToken() {
             return null;
         }
 
-        // Get token with VAPID key
+        // Get the active service worker registration
+        const swRegistration = await navigator.serviceWorker.ready;
+
+        // Get token with VAPID key and service worker registration
         const token = await messagingInstance.getToken({
-            vapidKey: 'BFn59UsYljZZxXP7BOaI8p5YIVaBPJU5nuzvzELHsO7PHUextLqSqeIil70geTDf_lapKKRAEIYH76WW9dxitLY'
+            vapidKey: 'BFn59UsYljZZxXP7BOaI8p5YIVaBPJU5nuzvzELHsO7PHUextLqSqeIil70geTDf_lapKKRAEIYH76WW9dxitLY',
+            serviceWorkerRegistration: swRegistration
         });
 
         if (token) {
