@@ -1494,14 +1494,19 @@ function updateStats() {
     document.getElementById('totalGroupsJoined').textContent = participatingCount;
     
     // Update filter counts
-    const simpleCount = allUserGroups.filter(f => f.mode === 'simple').length;
-    const blockchainCount = allUserGroups.filter(f => f.mode === 'blockchain').length;
-    
     document.getElementById('countAll').textContent = allUserGroups.length;
     document.getElementById('countCreated').textContent = createdCount;
     document.getElementById('countParticipating').textContent = participatingCount;
-    document.getElementById('countSimple').textContent = simpleCount;
-    document.getElementById('countBlockchain').textContent = blockchainCount;
+    
+    // Optional: Update simple/blockchain counts if elements exist (for backwards compatibility)
+    const countSimpleEl = document.getElementById('countSimple');
+    const countBlockchainEl = document.getElementById('countBlockchain');
+    if (countSimpleEl) {
+        countSimpleEl.textContent = allUserGroups.filter(f => f.mode === 'simple').length;
+    }
+    if (countBlockchainEl) {
+        countBlockchainEl.textContent = allUserGroups.filter(f => f.mode === 'blockchain').length;
+    }
 }
 
 function displayFunds() {
