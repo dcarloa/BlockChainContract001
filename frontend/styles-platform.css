@@ -772,67 +772,35 @@ header,
   .btn-create-group,
   .btn-add-expense {
     width: 100%;
-    padding: 1rem 1rem;
-    gap: 0.5rem;
+    padding: 0.875rem 1.25rem;
+    gap: 0.75rem;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    border-radius: 16px;
+    border-radius: 12px;
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     box-shadow: 
-      0 4px 16px rgba(var(--primary-rgb), 0.35),
-      0 2px 4px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      0 4px 12px rgba(var(--primary-rgb), 0.3),
+      0 2px 4px rgba(0, 0, 0, 0.1);
     border: none;
     position: relative;
     overflow: hidden;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  /* Subtle shimmer effect */
-  .btn-create-group::before,
-  .btn-add-expense::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent
-    );
-    transition: left 0.5s ease;
-  }
-  
-  .btn-create-group:hover::before,
-  .btn-add-expense:hover::before,
-  .btn-create-group:focus::before,
-  .btn-add-expense:focus::before {
-    left: 100%;
+    transition: all 0.2s ease;
   }
   
   .btn-create-group:active,
   .btn-add-expense:active {
     transform: scale(0.98);
-    box-shadow: 
-      0 2px 8px rgba(var(--primary-rgb), 0.4),
-      inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(var(--primary-rgb), 0.3);
   }
   
   .btn-create-group .btn-icon,
   .btn-add-expense .btn-icon {
     font-size: 1.25rem;
-    width: 2.25rem;
-    height: 2.25rem;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(4px);
-    border-radius: 50%;
-    box-shadow: 
-      0 2px 8px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    width: auto;
+    height: auto;
+    background: none;
+    box-shadow: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -842,39 +810,23 @@ header,
   .btn-create-group .btn-text,
   .btn-add-expense .btn-text {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    gap: 0.125rem;
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    gap: 0;
   }
   
   .btn-create-group strong,
   .btn-add-expense strong {
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-size: 1rem;
+    font-weight: 600;
     color: white;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
   }
   
+  /* Hide secondary text on mobile */
   .btn-create-group small,
   .btn-add-expense small {
-    font-size: 0.7rem;
-    opacity: 0.9;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-    letter-spacing: 0;
-    text-transform: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+    display: none;
   }
 }
 
