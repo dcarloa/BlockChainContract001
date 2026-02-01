@@ -490,10 +490,10 @@ async function checkWeeklyChest(groupId) {
     const cooldownPassed = (now - lastChestClaimed) >= sevenDaysMs;
     
     // console.log('[Colony] Chest cooldown check:', { 
-        lastChestClaimed: lastChestClaimed ? new Date(lastChestClaimed).toISOString() : 'never',
-        cooldownPassed,
-        timeRemaining: cooldownPassed ? 0 : Math.ceil((sevenDaysMs - (now - lastChestClaimed)) / (1000 * 60 * 60)) + 'h'
-    });
+    //     lastChestClaimed: lastChestClaimed ? new Date(lastChestClaimed).toISOString() : 'never',
+    //     cooldownPassed,
+    //     timeRemaining: cooldownPassed ? 0 : Math.ceil((sevenDaysMs - (now - lastChestClaimed)) / (1000 * 60 * 60)) + 'h'
+    // });
     
     if (!cooldownPassed) {
         // console.log('[Colony] Chest cooldown not passed, waiting for 7 days since last claim');

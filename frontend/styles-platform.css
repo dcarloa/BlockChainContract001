@@ -701,6 +701,85 @@ header,
   transform: none !important;
 }
 
+/* ============================================
+   ADD EXPENSE CARD BUTTON - Prominent CTA
+   ============================================ */
+#addExpenseCardBtn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  padding: 1rem 1.5rem !important;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: white !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 
+    0 4px 15px rgba(var(--primary-rgb), 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+  min-width: auto !important;
+  flex-direction: row !important;
+}
+
+#addExpenseCardBtn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 6px 20px rgba(var(--primary-rgb), 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+#addExpenseCardBtn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3) !important;
+}
+
+#addExpenseCardBtn .btn-icon {
+  font-size: 1.5rem !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  padding: 0.5rem !important;
+  border-radius: 8px !important;
+  line-height: 1 !important;
+  width: auto !important;
+  height: auto !important;
+  box-shadow: none !important;
+}
+
+#addExpenseCardBtn .btn-text {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0.125rem !important;
+}
+
+#addExpenseCardBtn strong {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  color: white !important;
+}
+
+#addExpenseCardBtn small {
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500 !important;
+  display: block !important;
+}
+
+/* Light mode */
+[data-theme="light"] #addExpenseCardBtn {
+  box-shadow: 
+    0 4px 15px rgba(99, 102, 241, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] #addExpenseCardBtn:hover {
+  box-shadow: 
+    0 6px 20px rgba(99, 102, 241, 0.45),
+    0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
 /* Descriptive multi-line buttons */
 .btn-create-group,
 .btn-add-expense {
