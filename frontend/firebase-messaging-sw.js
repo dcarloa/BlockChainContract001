@@ -11,7 +11,7 @@ importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-comp
 // Initialize Firebase
 firebase.initializeApp({
     apiKey: "AIzaSyA_EJRI7BIyHxSgMg5V8sQqndp_-v-t_C0",
-    authDomain: "antpool.cloud",
+    authDomain: "blockchaincontract001.firebaseapp.com",
     projectId: "blockchaincontract001",
     messagingSenderId: "949285642052",
     appId: "1:949285642052:web:7b0f7c0106ffd59f39c111"

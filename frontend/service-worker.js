@@ -270,7 +270,7 @@ self.addEventListener('controllerchange', () => {
 // Initialize Firebase in Service Worker
 firebase.initializeApp({
     apiKey: "AIzaSyA_EJRI7BIyHxSgMg5V8sQqndp_-v-t_C0",
-    authDomain: "antpool.cloud",
+    authDomain: "blockchaincontract001.firebaseapp.com",
     databaseURL: "https://blockchaincontract001-default-rtdb.firebaseio.com",
     projectId: "blockchaincontract001",
     storageBucket: "blockchaincontract001.firebasestorage.app",
