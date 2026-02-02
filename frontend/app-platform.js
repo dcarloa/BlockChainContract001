@@ -1892,7 +1892,7 @@ async function reactivateFund(fundAddress, fundName) {
 async function hideFund(fundAddress, fundName) {
     try {
         // Get translations
-        const t = translations[currentLanguage] || translations.en;
+        const t = translations[getCurrentLanguage()] || translations.en;
         
         // Find the fund to check its mode
         const fund = allUserGroups.find(f => f.fundAddress === fundAddress);
