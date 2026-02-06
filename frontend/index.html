@@ -489,6 +489,130 @@
         </div>
     </section>
 
+    <!-- Video Tutorials Section -->
+    <section id="tutorials" class="tutorials-section" style="background: var(--bg-primary); padding: 5rem 0;">
+        <div class="container">
+            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                <h2 class="section-title" data-i18n="landing.tutorials.title">📱 See It In Action</h2>
+                <p class="section-subtitle" data-i18n="landing.tutorials.subtitle">Watch how easy it is to manage group expenses</p>
+            </div>
+            
+            <!-- Tutorial Tabs -->
+            <div class="tutorial-tabs" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+                <button class="tutorial-tab active" data-tutorial="create-group" onclick="switchTutorial('create-group')" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 50px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                    <span style="font-size: 1.25rem;">🐜</span>
+                    <span data-i18n="landing.tutorials.tab1">Create a Group</span>
+                </button>
+                <button class="tutorial-tab" data-tutorial="add-expense" onclick="switchTutorial('add-expense')" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50px; color: var(--text-primary); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    <span style="font-size: 1.25rem;">💸</span>
+                    <span data-i18n="landing.tutorials.tab2">Add an Expense</span>
+                </button>
+            </div>
+            
+            <!-- Tutorial Content -->
+            <div class="tutorial-content" style="max-width: 900px; margin: 0 auto;">
+                <!-- Create Group Tutorial -->
+                <div id="tutorial-create-group" class="tutorial-panel" style="display: block;">
+                    <div class="tutorial-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <div class="tutorial-header" style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 1rem;">
+                            <div style="font-size: 2.5rem;">🐜</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.35rem; color: var(--text-primary);" data-i18n="landing.tutorials.createGroup.title">Creating Your First Colony</h3>
+                                <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.9rem;" data-i18n="landing.tutorials.createGroup.duration">⏱️ Takes less than 30 seconds</p>
+                            </div>
+                        </div>
+                        <div class="tutorial-gif" style="padding: 1rem; background: var(--bg-secondary);">
+                            <img src="assets/AntPool_CreateGroup.gif" alt="Tutorial: Creating a group in Ant Pool" style="width: 100%; height: auto; border-radius: 12px; display: block;">
+                        </div>
+                        <div class="tutorial-steps" style="padding: 1.5rem 2rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">1</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step1">Click "Create New Group" button</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">2</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step2">Name your group and choose a type</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">3</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step3">Invite members by email—done!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Expense Tutorial -->
+                <div id="tutorial-add-expense" class="tutorial-panel" style="display: none;">
+                    <div class="tutorial-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <div class="tutorial-header" style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 1rem;">
+                            <div style="font-size: 2.5rem;">💸</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.35rem; color: var(--text-primary);" data-i18n="landing.tutorials.addExpense.title">Adding a Shared Expense</h3>
+                                <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.9rem;" data-i18n="landing.tutorials.addExpense.duration">⏱️ Just a few taps</p>
+                            </div>
+                        </div>
+                        <div class="tutorial-gif" style="padding: 1rem; background: var(--bg-secondary);">
+                            <img src="assets/AntPool_CreateExpense.gif" alt="Tutorial: Adding an expense in Ant Pool" style="width: 100%; height: auto; border-radius: 12px; display: block;">
+                        </div>
+                        <div class="tutorial-steps" style="padding: 1.5rem 2rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">1</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step1">Tap "Add Expense" in your group</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">2</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step2">Enter amount, currency, and who paid</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">3</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step3">Select who participated—balances update instantly!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA after tutorials -->
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <a href="app.html" class="btn-primary-hero" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                    <span data-i18n="landing.tutorials.cta">Try It Now—It's Free!</span>
+                    <span>🚀</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        function switchTutorial(tutorial) {
+            // Update tabs
+            document.querySelectorAll('.tutorial-tab').forEach(tab => {
+                if (tab.dataset.tutorial === tutorial) {
+                    tab.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    tab.style.color = 'white';
+                    tab.style.border = 'none';
+                    tab.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+                    tab.classList.add('active');
+                } else {
+                    tab.style.background = 'var(--glass-bg)';
+                    tab.style.color = 'var(--text-primary)';
+                    tab.style.border = '1px solid var(--glass-border)';
+                    tab.style.boxShadow = 'none';
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Update panels
+            document.querySelectorAll('.tutorial-panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            document.getElementById('tutorial-' + tutorial).style.display = 'block';
+        }
+    </script>
+
     <!-- Fun Features Section - Gamification -->
     <section id="fun-features" class="fun-features" style="background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%); padding: 5rem 0;">
         <div class="container">

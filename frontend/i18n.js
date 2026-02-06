@@ -140,6 +140,27 @@ const translations = {
                     desc: "See exactly who owes who. Clear numbers, peaceful group."
                 }
             },
+            tutorials: {
+                title: "📱 See It In Action",
+                subtitle: "Watch how easy it is to manage group expenses",
+                tab1: "Create a Group",
+                tab2: "Add an Expense",
+                createGroup: {
+                    title: "Creating Your First Colony",
+                    duration: "⏱️ Takes less than 30 seconds",
+                    step1: "Click \"Create New Group\" button",
+                    step2: "Name your group and choose a type",
+                    step3: "Invite members by email—done!"
+                },
+                addExpense: {
+                    title: "Adding a Shared Expense",
+                    duration: "⏱️ Just a few taps",
+                    step1: "Tap \"Add Expense\" in your group",
+                    step2: "Enter amount, currency, and who paid",
+                    step3: "Select who participated—balances update instantly!"
+                },
+                cta: "Try It Now—It's Free!"
+            },
             whereAnts: {
                 title: "🐜 Every Colony Has a Purpose",
                 subtitle: "Whatever brings your group together, we keep the money part simple.",
@@ -1421,6 +1442,27 @@ const translations = {
                     title: "3️⃣ Liquida sin drama",
                     desc: "Ve exactamente quién debe a quién. Números claros, grupo en paz."
                 }
+            },
+            tutorials: {
+                title: "📱 Míralo en Acción",
+                subtitle: "Mira qué fácil es manejar gastos de grupo",
+                tab1: "Crear un Grupo",
+                tab2: "Agregar un Gasto",
+                createGroup: {
+                    title: "Creando Tu Primera Colonia",
+                    duration: "⏱️ Toma menos de 30 segundos",
+                    step1: "Haz clic en \"Crear Nuevo Grupo\"",
+                    step2: "Ponle nombre y elige un tipo",
+                    step3: "Invita miembros por email—¡listo!"
+                },
+                addExpense: {
+                    title: "Agregando un Gasto Compartido",
+                    duration: "⏱️ Solo unos toques",
+                    step1: "Toca \"Agregar Gasto\" en tu grupo",
+                    step2: "Ingresa monto, moneda y quién pagó",
+                    step3: "Selecciona quién participó—¡los balances se actualizan al instante!"
+                },
+                cta: "¡Pruébalo Ahora—Es Gratis!"
             },
             whereAnts: {
                 title: "🐜 Cada Colonia Tiene un Propósito",

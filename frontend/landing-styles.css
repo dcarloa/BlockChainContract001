@@ -2098,6 +2098,94 @@ body {
     }
 }
 
+/* ============================================
+   TUTORIALS SECTION
+   ============================================ */
+.tutorials-section {
+    background: var(--bg-primary);
+}
+
+.tutorial-tab {
+    font-family: inherit;
+}
+
+.tutorial-tab:hover {
+    transform: translateY(-2px);
+}
+
+.tutorial-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tutorial-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Light mode adjustments for tutorials */
+[data-theme="light"] .tutorials-section {
+    background: #ffffff;
+}
+
+[data-theme="light"] .tutorial-card {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .tutorial-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .tutorial-gif {
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .tutorial-header {
+    border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .tutorial-tab:not(.active) {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #334155 !important;
+}
+
+[data-theme="light"] .tutorial-tab:not(.active):hover {
+    background: #e2e8f0 !important;
+}
+
+/* Responsive tutorials */
+@media (max-width: 768px) {
+    .tutorials-section .container {
+        padding: 0 1rem;
+    }
+    
+    .tutorial-tabs {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.75rem !important;
+    }
+    
+    .tutorial-tab {
+        justify-content: center !important;
+    }
+    
+    .tutorial-header {
+        padding: 1rem 1.25rem !important;
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+    
+    .tutorial-steps {
+        padding: 1rem 1.25rem !important;
+    }
+    
+    .tutorial-gif {
+        padding: 0.5rem !important;
+    }
+}
+
 /* Features Redesigned Section - Theme Support */
 .features-redesigned {
     padding: 5rem 0;
