@@ -46,23 +46,32 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "Split expenses.",
-                title2: "Keep friendships.",
-                subtitle: "Ants don't argue about who carried what. Neither should you. Clear expenses, peaceful groups.",
-                cta: "Start your colony — free",
-                ctaExplore: "See how it works",
+                title: "Split group expenses",
+                title2: "without the drama.",
+                subtitle: "Trips, roommates, dinners, events. Everyone pays, Ant Pool does the math. No spreadsheets. No arguments.",
+                cta: "Try Ant Pool Free",
+                ctaSecondary: "See how it works (30s)",
+                betaBadge: "Beta · Free · No card required",
                 stats: {
                     free: "FREE",
-                    forever: "Tier",
+                    forever: "Beta",
                     currencies: "12",
                     currenciesLabel: "Currencies",
                     smart: "SMART",
                     settlements: "Settlements"
                 }
             },
+            problem: {
+                title: "🤦 Sound familiar?",
+                bullet1: "Someone always pays more",
+                bullet2: "The numbers never add up",
+                bullet3: "Awkward money conversations",
+                bullet4: "\"We'll figure it out later\" (never happens)",
+                solution: "🐜 Ant Pool fixes this."
+            },
             modesSection: {
-                title: "Ants work together without drama.",
-                subtitle: "Your group can too. Clear expenses, no awkward conversations, no resentment.",
+                title: "Ant Pool makes it simple.",
+                subtitle: "Everyone sees the same numbers. No awkward conversations.",
                 clearBalances: {
                     title: "🐜 Everyone sees the trail",
                     desc: "No guessing, no spreadsheets. Every expense tracked like ants tracking their path."
@@ -200,25 +209,40 @@ const translations = {
                 }
             },
             useCases: {
-                title: "Perfect For...",
+                title: "Perfect for...",
+                subtitle: "Everyone pays, Ant Pool does the math.",
                 items: {
                     travel: {
-                        title: "Trips with Friends",
-                        desc: "Manage hotel, flights and shared activities expenses. Everyone deposits and votes on expenses."
-                    },
-                    family: {
-                        title: "Family Savings",
-                        desc: "Save together for house, car or vacation. Full transparency for all members."
+                        title: "🧳 Trips with friends",
+                        desc: "Focus on the adventure, not \"who owes me for dinner.\""
                     },
                     roommates: {
-                        title: "Roommates",
-                        desc: "Shared rent, services and supplies. No more hassles collecting money."
+                        title: "🏠 Roommates",
+                        desc: "Rent, utilities, groceries. Clear splits, zero drama."
                     },
-                    events: {
-                        title: "Events & Celebrations",
-                        desc: "Organize bachelor parties, birthdays or celebrations. Fair budget management."
+                    food: {
+                        title: "🍕 Dinners & outings",
+                        desc: "Split the bill fairly, every time."
+                    },
+                    family: {
+                        title: "👨‍👩‍👧 Family expenses",
+                        desc: "Keep track of shared costs without the awkwardness."
                     }
                 }
+            },
+            socialProof: {
+                title: "Building together",
+                badge1: "🚀 Public Beta",
+                badge2: "🇲🇽 Made in Mexico",
+                badge3: "🔨 Active development",
+                badge4: "👥 Real groups testing",
+                message: "We're building Ant Pool with our first users. Your feedback shapes the product."
+            },
+            finalCta: {
+                title: "Ready to stop the money drama?",
+                subtitle: "Create your first group in 30 seconds.",
+                button: "Try Ant Pool Now",
+                note: "Free · No card · Beta"
             },
             funFeatures: {
                 title: "🎮 More Than Just Numbers",
@@ -1322,23 +1346,32 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "Divide gastos.",
-                title2: "Conserva amistades.",
-                subtitle: "Las hormigas no discuten quién cargó qué. Tú tampoco deberías. Gastos claros, grupos en paz.",
-                cta: "Inicia tu colonia — gratis",
-                ctaExplore: "Ver cómo funciona",
+                title: "Divide gastos en grupo",
+                title2: "sin discusiones.",
+                subtitle: "Viajes, roommates, comidas, eventos. Todos pagan, Ant Pool hace las cuentas. Sin hojas de cálculo. Sin peleas.",
+                cta: "Probar Ant Pool Gratis",
+                ctaSecondary: "Ver cómo funciona (30s)",
+                betaBadge: "Beta · Gratis · Sin tarjeta",
                 stats: {
                     free: "GRATIS",
-                    forever: "Nivel",
+                    forever: "Beta",
                     currencies: "12",
                     currenciesLabel: "Monedas",
                     smart: "INTELIGENTE",
                     settlements: "Liquidaciones"
                 }
             },
+            problem: {
+                title: "¿Te suena familiar?",
+                bullet1: "Alguien siempre paga de más",
+                bullet2: "Las cuentas nunca cuadran",
+                bullet3: "Conversaciones incómodas de dinero",
+                bullet4: "\"Luego lo vemos\" (y nunca pasa)",
+                solution: "🐜 Ant Pool lo soluciona."
+            },
             modesSection: {
-                title: "Las hormigas trabajan juntas sin drama.",
-                subtitle: "Tu grupo también puede. Gastos claros, sin conversaciones incómodas, sin resentimientos.",
+                title: "Ant Pool lo hace simple.",
+                subtitle: "Todos ven los mismos números. Sin conversaciones incómodas.",
                 clearBalances: {
                     title: "🐜 Todos ven el camino",
                     desc: "Sin adivinar, sin hojas de cálculo. Cada gasto rastreado como hormigas siguiendo su ruta."
@@ -1476,24 +1509,39 @@ const translations = {
             },
             useCases: {
                 title: "Perfecto Para...",
+                subtitle: "Todos pagan, Ant Pool hace las cuentas.",
                 items: {
                     travel: {
-                        title: "Viajes con Amigos",
-                        desc: "Administra gastos de hotel, vuelos y actividades compartidas. Todos depositan y votan los gastos."
+                        title: "🧳 Viajes con amigos",
+                        desc: "Enfócate en la aventura, no en \"quién me debe la cena.\""
                     },
                     family: {
-                        title: "Ahorros Familiares",
-                        desc: "Ahorren juntos para casa, auto o vacaciones. Transparencia total para todos los miembros."
+                        title: "👨‍👩‍👧 Gastos familiares",
+                        desc: "Mantén registro de gastos compartidos sin la incomodidad."
                     },
                     roommates: {
-                        title: "Roommates",
-                        desc: "Renta, servicios y provisiones compartidas. Sin más líos cobrando dinero."
+                        title: "🏠 Roommates",
+                        desc: "Renta, servicios, despensa. Divisiones claras, cero drama."
                     },
                     events: {
-                        title: "Eventos y Celebraciones",
-                        desc: "Organiza despedidas, cumpleaños o celebraciones. Gestión justa del presupuesto."
+                        title: "🍕 Comidas y salidas",
+                        desc: "Divide la cuenta justamente, siempre."
                     }
                 }
+            },
+            socialProof: {
+                title: "Construyendo juntos",
+                badge1: "🚀 Beta Pública",
+                badge2: "🇲🇽 Hecho en México",
+                badge3: "🔨 Desarrollo activo",
+                badge4: "👥 Grupos reales probando",
+                message: "Estamos construyendo Ant Pool con nuestros primeros usuarios. Tu feedback da forma al producto."
+            },
+            finalCta: {
+                title: "¿Listo para acabar con el drama del dinero?",
+                subtitle: "Crea tu primer grupo en 30 segundos.",
+                button: "Probar Ant Pool Ahora",
+                note: "Gratis · Sin tarjeta · Beta"
             },
             funFeatures: {
                 title: "🎮 Más Que Solo Números",

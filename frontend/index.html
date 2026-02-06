@@ -150,35 +150,23 @@
             <div class="hero-content">
                 <div class="hero-text">
                     <h1 class="hero-title">
-                        <span data-i18n="landing.hero.title">Work Together Like Ants</span>
-                        <span class="gradient-text" data-i18n="landing.hero.title2">Build Wealth, Your Way</span>
+                        <span data-i18n="landing.hero.title">Split group expenses</span>
+                        <span class="gradient-text" data-i18n="landing.hero.title2">without the drama.</span>
                     </h1>
                     <p class="hero-subtitle" data-i18n="landing.hero.subtitle">
-                        Just like ants work together, Ant Pool helps you track and split expenses effortlessly. 
-                        Every ant contributes. Every ant benefits. Support 12 currencies worldwide with smart debt optimization.
+                        Trips, roommates, dinners, events. Everyone pays, Ant Pool does the math. No spreadsheets. No arguments.
                     </p>
                     <div class="hero-buttons">
                         <a href="app.html" class="btn btn-large btn-primary">
-                            <span data-i18n="landing.hero.cta">🐜 Start Free Now</span>
+                            <span data-i18n="landing.hero.cta">🐜 Try Ant Pool Free</span>
                         </a>
-                        <a href="#features" class="btn btn-large btn-secondary">
-                            <span data-i18n="landing.hero.ctaExplore">🔍 Explore Features</span>
+                        <a href="#how-it-works" class="btn btn-large btn-secondary">
+                            <span data-i18n="landing.hero.ctaSecondary">👀 See how it works (30s)</span>
                         </a>
                     </div>
-                    <div class="hero-stats">
-                        <div class="stat">
-                            <div class="stat-value" data-i18n="landing.hero.stats.free">FREE</div>
-                            <div class="stat-label" data-i18n="landing.hero.stats.forever">Forever</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">12</div>
-                            <div class="stat-label" data-i18n="landing.hero.stats.currenciesLabel">Currencies</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value" data-i18n="landing.hero.stats.smart">SMART</div>
-                            <div class="stat-label" data-i18n="landing.hero.stats.settlements">Settlements</div>
-                        </div>
-                    </div>
+                    <p class="hero-beta-badge" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;" data-i18n="landing.hero.betaBadge">Beta · Free · No card required</span>
+                    </p>
                 </div>
                 <div class="hero-visual">
                     <div class="phone-mockup">
@@ -264,29 +252,78 @@
         </div>
     </section>
 
+    <!-- Problem Section - Sound Familiar? -->
+    <section id="problem" class="problem-section" style="padding: 4rem 0; background: var(--bg-secondary);">
+        <div class="container" style="max-width: 800px; text-align: center;">
+            <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 2rem;" data-i18n="landing.problem.title">🤦 Sound familiar?</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-size: 2rem;">💸</span>
+                    <span style="color: var(--text-primary); font-size: 1.1rem;" data-i18n="landing.problem.bullet1">Someone always pays more</span>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-size: 2rem;">🧮</span>
+                    <span style="color: var(--text-primary); font-size: 1.1rem;" data-i18n="landing.problem.bullet2">The numbers never add up</span>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-size: 2rem;">😬</span>
+                    <span style="color: var(--text-primary); font-size: 1.1rem;" data-i18n="landing.problem.bullet3">Awkward money conversations</span>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-size: 2rem;">🕐</span>
+                    <span style="color: var(--text-primary); font-size: 1.1rem;" data-i18n="landing.problem.bullet4">"We'll figure it out later" (never happens)</span>
+                </div>
+            </div>
+            <p style="font-size: 1.5rem; color: var(--primary); font-weight: 700; margin-top: 2rem;" data-i18n="landing.problem.solution">🐜 Ant Pool fixes this.</p>
+        </div>
+    </section>
+    
+    <style>
+        /* Problem section responsive */
+        @media (max-width: 600px) {
+            #problem .container > div:nth-child(2) {
+                grid-template-columns: 1fr !important;
+            }
+            #problem h2 {
+                font-size: 2rem !important;
+            }
+        }
+        /* Modes section responsive */
+        @media (max-width: 900px) {
+            #modes .features-highlight-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+
     <!-- Key Features Highlight Section -->
     <section id="modes" class="modes-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 4rem 0;">
         <div class="container">
-            <div class="section-header" style="color: white;">
-                <h2 class="section-title" style="color: white;" data-i18n="landing.modesSection.title">Money should not break friendships.</h2>
-                <p class="section-subtitle" style="color: rgba(255,255,255,0.9);" data-i18n="landing.modesSection.subtitle">Ant Pool helps groups keep expenses clear, fair and stress-free. Everyone sees the same numbers. No awkward conversations.</p>
+            <div class="section-header" style="color: white; text-align: center;">
+                <h2 class="section-title" style="color: white; font-size: 2.2rem;" data-i18n="landing.modesSection.title">Ant Pool makes it simple.</h2>
+                <p class="section-subtitle" style="color: rgba(255,255,255,0.9); font-size: 1.2rem;" data-i18n="landing.modesSection.subtitle">Everyone sees the same numbers. No awkward conversations.</p>
             </div>
-            <div class="features-highlight-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem;">
-                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2);">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
-                    <h3 style="color: white; font-size: 1.3rem; margin-bottom: 0.5rem;" data-i18n="landing.modesSection.clearBalances.title">Clear balances</h3>
-                    <p style="color: rgba(255,255,255,0.8); line-height: 1.6;" data-i18n="landing.modesSection.clearBalances.desc">Always know who owes who, in real time.</p>
+            <div class="features-highlight-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem; max-width: 1000px; margin-left: auto; margin-right: auto;">
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">1️⃣</div>
+                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorks.step1.title">Create a group</h3>
+                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;">Invite your people. 30 seconds.</p>
                 </div>
-                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2);">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
-                    <h3 style="color: white; font-size: 1.3rem; margin-bottom: 0.5rem;" data-i18n="landing.modesSection.madeForGroups.title">Made for groups</h3>
-                    <p style="color: rgba(255,255,255,0.8); line-height: 1.6;" data-i18n="landing.modesSection.madeForGroups.desc">Friends, trips, roommates, events — one place for everyone.</p>
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">2️⃣</div>
+                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorks.step2.title">Log expenses</h3>
+                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;">Who paid, how much. Done.</p>
                 </div>
-                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2);">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎮</div>
-                    <h3 style="color: white; font-size: 1.3rem; margin-bottom: 0.5rem;" data-i18n="landing.modesSection.funByDesign.title">Fun by design</h3>
-                    <p style="color: rgba(255,255,255,0.8); line-height: 1.6;" data-i18n="landing.modesSection.funByDesign.desc">Progress together, unlock rewards and keep the group alive.</p>
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">3️⃣</div>
+                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorks.step3.title">See who owes who</h3>
+                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;">Clear numbers. Peace restored.</p>
                 </div>
+            </div>
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <a href="app.html" class="btn btn-large" style="background: white; color: #667eea; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <span data-i18n="landing.hero.cta">🐜 Try Ant Pool Free</span>
+                </a>
             </div>
         </div>
     </section>
@@ -722,34 +759,71 @@
     </style>
 
     <!-- Use Cases Section -->
-    <section class="use-cases">
+    <section class="use-cases" style="padding: 5rem 0; background: var(--bg-primary);">
         <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" data-i18n="landing.whereAnts.title">🐜 Every Colony Has a Purpose</h2>
-                <p class="section-subtitle" data-i18n="landing.whereAnts.subtitle">Whatever brings your group together, we keep the money part simple.</p>
+            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                <h2 class="section-title" data-i18n="landing.useCases.title">Perfect for...</h2>
+                <p class="section-subtitle" data-i18n="landing.useCases.subtitle">Everyone pays, Ant Pool does the math.</p>
             </div>
-            <div class="use-cases-grid">
-                <div class="use-case-card">
-                    <div class="use-case-icon">🐜✈️</div>
-                    <h3 data-i18n="landing.whereAnts.travel.title">Travel Colony</h3>
-                    <p data-i18n="landing.whereAnts.travel.desc">Focus on the adventure, not 'who owes me for dinner.'</p>
+            <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; max-width: 1100px; margin: 0 auto;">
+                <div class="use-case-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center; transition: transform 0.3s ease;">
+                    <div class="use-case-icon" style="font-size: 3rem; margin-bottom: 1rem;">🧳</div>
+                    <h3 style="font-size: 1.2rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.useCases.items.travel.title">Trips with friends</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;" data-i18n="landing.useCases.items.travel.desc">Focus on the adventure, not "who owes me for dinner."</p>
                 </div>
-                <div class="use-case-card">
-                    <div class="use-case-icon">🐜🏠</div>
-                    <h3 data-i18n="landing.whereAnts.living.title">Living Colonies</h3>
-                    <p data-i18n="landing.whereAnts.living.desc">Build your nest together. Share rent, utilities, groceries - just like ants share their home.</p>
+                <div class="use-case-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center; transition: transform 0.3s ease;">
+                    <div class="use-case-icon" style="font-size: 3rem; margin-bottom: 1rem;">🏠</div>
+                    <h3 style="font-size: 1.2rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.useCases.items.roommates.title">Roommates</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;" data-i18n="landing.useCases.items.roommates.desc">Rent, utilities, groceries. Clear splits, zero drama.</p>
                 </div>
-                <div class="use-case-card">
-                    <div class="use-case-icon">🐜🎉</div>
-                    <h3 data-i18n="landing.whereAnts.celebration.title">Celebration Colonies</h3>
-                    <p data-i18n="landing.whereAnts.celebration.desc">Organize epic gatherings. From weddings to festivals - collective resources for collective joy.</p>
+                <div class="use-case-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center; transition: transform 0.3s ease;">
+                    <div class="use-case-icon" style="font-size: 3rem; margin-bottom: 1rem;">🍕</div>
+                    <h3 style="font-size: 1.2rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.useCases.items.food.title">Dinners & outings</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;" data-i18n="landing.useCases.items.food.desc">Split the bill fairly, every time.</p>
                 </div>
-                <div class="use-case-card">
-                    <div class="use-case-icon">🐜💼</div>
-                    <h3 data-i18n="landing.whereAnts.business.title">Business Colonies</h3>
-                    <p data-i18n="landing.whereAnts.business.desc">Build enterprises like anthills. Startup resources, investments, projects - transparent cooperation wins.</p>
+                <div class="use-case-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center; transition: transform 0.3s ease;">
+                    <div class="use-case-icon" style="font-size: 3rem; margin-bottom: 1rem;">👨‍👩‍👧</div>
+                    <h3 style="font-size: 1.2rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.useCases.items.family.title">Family expenses</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;" data-i18n="landing.useCases.items.family.desc">Keep track of shared costs without the awkwardness.</p>
                 </div>
             </div>
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <a href="app.html" class="btn btn-large btn-primary">
+                    <span data-i18n="landing.hero.cta">🐜 Try Ant Pool Free</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <style>
+        .use-case-card:hover {
+            transform: translateY(-5px);
+        }
+        @media (max-width: 900px) {
+            .use-cases-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        @media (max-width: 600px) {
+            .use-cases-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+
+    <!-- Social Proof Section -->
+    <section class="social-proof" style="padding: 4rem 0; background: var(--bg-secondary);">
+        <div class="container" style="max-width: 800px; text-align: center;">
+            <h2 class="section-title" style="margin-bottom: 2rem;" data-i18n="landing.socialProof.title">🔨 Building together</h2>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+                <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.5rem 1.25rem; border-radius: 25px; font-size: 0.95rem; font-weight: 600;" data-i18n="landing.socialProof.badge1">🚀 Public Beta</span>
+                <span style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 0.5rem 1.25rem; border-radius: 25px; font-size: 0.95rem; font-weight: 500;" data-i18n="landing.socialProof.badge2">🇲🇽 Made in Mexico</span>
+                <span style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 0.5rem 1.25rem; border-radius: 25px; font-size: 0.95rem; font-weight: 500;" data-i18n="landing.socialProof.badge3">🔨 Active development</span>
+                <span style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 0.5rem 1.25rem; border-radius: 25px; font-size: 0.95rem; font-weight: 500;" data-i18n="landing.socialProof.badge4">👥 Real groups testing</span>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; max-width: 600px; margin: 0 auto;" data-i18n="landing.socialProof.message">
+                We're building Ant Pool with our first users. Your feedback shapes the product.
+            </p>
         </div>
     </section>
 
@@ -824,15 +898,15 @@
     <section class="cta">
         <div class="container">
             <div class="cta-content">
-                <h2 class="cta-title" data-i18n="landing.cta.title">🐜 Ready to Stop Arguing About Money?</h2>
-                <p class="cta-subtitle" data-i18n="landing.cta.subtitle">
-                    Join thousands of colonies tracking expenses the peaceful way. Clear numbers, happy groups.
+                <h2 class="cta-title" data-i18n="landing.finalCta.title">🐜 Ready to stop the money drama?</h2>
+                <p class="cta-subtitle" data-i18n="landing.finalCta.subtitle">
+                    Create your first group in 30 seconds.
                 </p>
                 <a href="app.html" class="btn btn-large btn-primary btn-glow">
-                    <span data-i18n="landing.cta.button">Start your colony — Free</span>
+                    <span data-i18n="landing.finalCta.button">Try Ant Pool Now</span>
                 </a>
-                <p class="cta-note" data-i18n="landing.cta.noRegistration">
-                    No apps to download • Works everywhere • Free to start
+                <p class="cta-note" data-i18n="landing.finalCta.note">
+                    Free · No card · Beta
                 </p>
             </div>
         </div>
