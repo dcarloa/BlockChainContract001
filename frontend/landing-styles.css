@@ -33,9 +33,9 @@
     --bg-dark: #f8fafc;
     --bg-card: #ffffff;
     --bg-primary: #ffffff;
-    --bg-secondary: #f1f5f9;
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(0, 0, 0, 0.08);
+    --bg-secondary: #e2e8f0;
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(0, 0, 0, 0.1);
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --dark: #0f172a;
