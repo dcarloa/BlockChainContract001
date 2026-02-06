@@ -159,7 +159,8 @@ const translations = {
                     step2: "Enter amount, currency, and who paid",
                     step3: "Select who participated—balances update instantly!"
                 },
-                cta: "Try It Now—It's Free!"
+                cta: "Try It Now—It's Free!",
+                clickToReplay: "Click to replay"
             },
             whereAnts: {
                 title: "🐜 Every Colony Has a Purpose",
@@ -1462,7 +1463,8 @@ const translations = {
                     step2: "Ingresa monto, moneda y quién pagó",
                     step3: "Selecciona quién participó—¡los balances se actualizan al instante!"
                 },
-                cta: "¡Pruébalo Ahora—Es Gratis!"
+                cta: "¡Pruébalo Ahora—Es Gratis!",
+                clickToReplay: "Clic para repetir"
             },
             whereAnts: {
                 title: "🐜 Cada Colonia Tiene un Propósito",
