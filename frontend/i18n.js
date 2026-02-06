@@ -190,24 +190,6 @@ const translations = {
                     }
                 }
             },
-            howItWorks: {
-                title: "How Does It Work?",
-                subtitle: "Create your group in 3 simple steps",
-                steps: {
-                    create: {
-                        title: "Create Group",
-                        desc: "Choose a name, select a currency and invite your friends with email."
-                    },
-                    deposit: {
-                        title: "Track Expenses",
-                        desc: "Each member adds their expenses. Everything recorded transparently in the timeline."
-                    },
-                    vote: {
-                        title: "Smart Settlements",
-                        desc: "See who owes whom with optimized payments. Settle debts outside the app."
-                    }
-                }
-            },
             useCases: {
                 title: "Perfect for...",
                 subtitle: "Everyone pays, Ant Pool does the math.",
@@ -1488,23 +1470,6 @@ const translations = {
                         title: "Totalmente Flexible",
                         desc: "Desde viajes con amigos hasta ahorros familiares. Adapta Ant Pool a cualquier situación."
                     }
-                }
-            },
-            howItWorks: {
-                title: "Cómo Cooperan las Hormigas",
-                subtitle: "Sigue el rastro de hormigas hacia el éxito colectivo",
-                threeSteps: "Tres Pasos Para el Éxito de la Colonia",
-                step1: {
-                    title: "Crea Tu Colonia",
-                    desc: "Nombra tu grupo, selecciona tu moneda (12 soportadas) e invita miembros vía email. Privado o público—tú eliges."
-                },
-                step2: {
-                    title: "Agrega Gastos Según Ocurran",
-                    desc: "Cada hormiga agrega sus gastos a la línea de tiempo. Los filtros de fecha te permiten rastrear períodos semanales, mensuales o personalizados."
-                },
-                step3: {
-                    title: "Liquidaciones Inteligentes",
-                    desc: "Ant Pool calcula quién le debe a quién con rutas de deuda optimizadas. Liquida fuera de la app—solo te mostramos la ruta más corta."
                 }
             },
             useCases: {
