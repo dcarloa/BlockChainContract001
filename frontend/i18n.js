@@ -2568,8 +2568,17 @@ const translations = {
     }
 };
 
-// Get current language from localStorage or default to English
+// Get current language from URL, localStorage, or default to English
 function getCurrentLanguage() {
+    // Check URL parameters first (e.g., ?lang=es)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    if (urlLang && ['en', 'es'].includes(urlLang)) {
+        // Save to localStorage so it persists
+        localStorage.setItem('language', urlLang);
+        return urlLang;
+    }
+    
     const saved = localStorage.getItem('language');
     if (saved) return saved;
     

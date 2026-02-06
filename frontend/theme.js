@@ -55,10 +55,24 @@ function watchSystemTheme() {
     });
 }
 
+// Check for theme in URL parameters (e.g., ?theme=dark)
+function checkUrlTheme() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlTheme = urlParams.get('theme');
+    if (urlTheme === 'dark' || urlTheme === 'light') {
+        setTheme(urlTheme);
+        return true;
+    }
+    return false;
+}
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    autoDetectTheme();
+    // URL parameters take priority
+    if (!checkUrlTheme()) {
+        initTheme();
+        autoDetectTheme();
+    }
     watchSystemTheme();
 });
 
