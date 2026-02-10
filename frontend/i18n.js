@@ -46,12 +46,12 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "Split group expenses",
-                title2: "without the drama.",
-                subtitle: "Trips, roommates, dinners, events. Everyone pays, Ant Pool does the math. No spreadsheets. No arguments.",
+                title: "Split expenses with friends.",
+                title2: "No drama.",
+                subtitle: "Create a group. Log expenses. See who owes who. Done.",
                 cta: "Try Ant Pool Free",
-                ctaSecondary: "See how it works (30s)",
-                betaBadge: "Beta · Free · No card required",
+                ctaSecondary: "See how it works",
+                betaBadge: "Free · No card · Beta",
                 stats: {
                     free: "FREE",
                     forever: "Beta",
@@ -63,10 +63,10 @@ const translations = {
             },
             problem: {
                 title: "🤦 Sound familiar?",
-                bullet1: "Someone always pays more",
-                bullet2: "The numbers never add up",
-                bullet3: "Awkward money conversations",
-                bullet4: "\"We'll figure it out later\" (never happens)",
+                bullet1: "You always end up paying more",
+                bullet2: "Spreadsheets, WhatsApp threads, confusion",
+                bullet3: "Having to ask: 'hey, you owe me...'",
+                bullet4: "2 months later: nobody remembers anything",
                 solution: "🐜 Ant Pool fixes this."
             },
             modesSection: {
@@ -1350,12 +1350,12 @@ const translations = {
         // Landing Page
         landing: {
             hero: {
-                title: "Divide gastos en grupo",
-                title2: "sin discusiones.",
-                subtitle: "Viajes, roommates, comidas, eventos. Todos pagan, Ant Pool hace las cuentas. Sin hojas de cálculo. Sin peleas.",
+                title: "Divide gastos con amigos.",
+                title2: "Sin peleas.",
+                subtitle: "Crea un grupo. Registra gastos. Mira quién debe qué. Listo.",
                 cta: "Probar Ant Pool Gratis",
-                ctaSecondary: "Ver cómo funciona (30s)",
-                betaBadge: "Beta · Gratis · Sin tarjeta",
+                ctaSecondary: "Ver cómo funciona",
+                betaBadge: "Gratis · Sin tarjeta · Beta",
                 stats: {
                     free: "GRATIS",
                     forever: "Beta",
@@ -1366,11 +1366,11 @@ const translations = {
                 }
             },
             problem: {
-                title: "¿Te suena familiar?",
-                bullet1: "Alguien siempre paga de más",
-                bullet2: "Las cuentas nunca cuadran",
-                bullet3: "Conversaciones incómodas de dinero",
-                bullet4: "\"Luego lo vemos\" (y nunca pasa)",
+                title: "🤦 ¿Te suena familiar?",
+                bullet1: "Siempre terminas pagando de más",
+                bullet2: "Excel, WhatsApp, confusión total",
+                bullet3: "Tener que decir: 'oye, me debes...'",
+                bullet4: "2 meses después: nadie se acuerda de nada",
                 solution: "🐜 Ant Pool lo soluciona."
             },
             modesSection: {
