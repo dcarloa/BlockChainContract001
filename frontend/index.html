@@ -171,7 +171,7 @@
                         <div class="phone-screen">
                             <!-- Video Demo -->
                             <div class="app-preview demo-video active">
-                                <img src="assets/demo-video.gif" alt="Ant Pool Demo" class="demo-gif">
+                                <video src="assets/CreateGroup.mp4" autoplay loop muted playsinline class="demo-gif" style="width: 100%; height: 100%; object-fit: cover;"></video>
                             </div>
                             
                             <!-- Static UI Preview -->
@@ -519,11 +519,7 @@
                             </div>
                         </div>
                         <div class="tutorial-gif" style="padding: 1rem; background: var(--bg-secondary); position: relative;">
-                            <img src="assets/AntPool_CreateGroup.gif" alt="Tutorial: Creating a group in Ant Pool" style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: pointer;">
-                            <div class="replay-hint" style="position: absolute; bottom: 1.5rem; right: 1.5rem; background: rgba(0,0,0,0.7); color: white; padding: 0.4rem 0.75rem; border-radius: 20px; font-size: 0.75rem; display: flex; align-items: center; gap: 0.35rem; opacity: 0.8; pointer-events: none;">
-                                <span>🔁</span>
-                                <span data-i18n="landing.tutorials.clickToReplay">Click to replay</span>
-                            </div>
+                            <video src="assets/CreateGroup.mp4" autoplay loop muted playsinline style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: pointer;" alt="Tutorial: Creating a group in Ant Pool"></video>
                         </div>
                         <div class="tutorial-steps" style="padding: 1.5rem 2rem;">
                             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
@@ -555,11 +551,7 @@
                             </div>
                         </div>
                         <div class="tutorial-gif" style="padding: 1rem; background: var(--bg-secondary); position: relative;">
-                            <img src="assets/AntPool_CreateExpense.gif" alt="Tutorial: Adding an expense in Ant Pool" style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: pointer;">
-                            <div class="replay-hint" style="position: absolute; bottom: 1.5rem; right: 1.5rem; background: rgba(0,0,0,0.7); color: white; padding: 0.4rem 0.75rem; border-radius: 20px; font-size: 0.75rem; display: flex; align-items: center; gap: 0.35rem; opacity: 0.8; pointer-events: none;">
-                                <span>🔁</span>
-                                <span data-i18n="landing.tutorials.clickToReplay">Click to replay</span>
-                            </div>
+                            <video src="assets/CreateExpense.mp4" autoplay loop muted playsinline style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: pointer;" alt="Tutorial: Adding an expense in Ant Pool"></video>
                         </div>
                         <div class="tutorial-steps" style="padding: 1.5rem 2rem;">
                             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
@@ -592,13 +584,6 @@
     </section>
     
     <script>
-        // Restart GIF by reloading the src
-        function restartGif(img) {
-            const src = img.src;
-            img.src = '';
-            img.src = src;
-        }
-        
         function switchTutorial(tutorial) {
             // Update tabs
             document.querySelectorAll('.tutorial-tab').forEach(tab => {
@@ -624,21 +609,10 @@
             const activePanel = document.getElementById('tutorial-' + tutorial);
             activePanel.style.display = 'block';
             
-            // Restart GIF in the active panel
-            const gif = activePanel.querySelector('.tutorial-gif img');
-            if (gif) restartGif(gif);
+            // Restart video in the active panel
+            const video = activePanel.querySelector('.tutorial-gif video');
+            if (video) { video.currentTime = 0; video.play(); }
         }
-        
-        // Add click-to-restart on GIFs
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.tutorial-gif img').forEach(gif => {
-                gif.style.cursor = 'pointer';
-                gif.title = 'Click to replay';
-                gif.addEventListener('click', function() {
-                    restartGif(this);
-                });
-            });
-        });
     </script>
 
     <!-- Benefits Section -->
