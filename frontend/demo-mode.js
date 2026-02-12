@@ -16,6 +16,7 @@ const DEMO_GROUP_DATA = {
     // These fields match the fundData structure in app-platform.js line ~1337
     fundAddress: 'demo-roommates-2026', // groupId used as identifier
     fundName: 'Apartment Expenses',
+    name: 'Apartment Expenses', // Alias for consistency
     description: 'Monthly shared expenses with roommates',
     icon: '🏠',
     fundType: 3, // 3 = Other (Simple Mode always uses this)
@@ -315,12 +316,28 @@ function showDemoActionModal(actionType) {
         modal = document.createElement('div');
         modal.id = 'demoActionModal';
         modal.className = 'modal-overlay';
+        // Add inline styles to ensure visibility
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        `;
         document.body.appendChild(modal);
     }
     
     modal.innerHTML = `
-        <div class="modal demo-action-modal">
-            <button class="modal-close" onclick="closeDemoActionModal()">&times;</button>
+        <div class="modal demo-action-modal" style="position: relative; background: var(--glass-bg); border-radius: 16px; padding: 2rem; max-width: 400px; margin: auto;">
+            <button class="modal-close" onclick="window.closeDemoActionModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary);">&times;</button>
             <div class="demo-modal-content">
                 <div class="demo-modal-icon">🐜</div>
                 <h2 class="demo-modal-title">${t.title}</h2>
@@ -337,7 +354,7 @@ function showDemoActionModal(actionType) {
                     <button class="btn btn-primary btn-large" onclick="promptDemoSignup('action_modal')">
                         ${t.button}
                     </button>
-                    <button class="btn btn-ghost" onclick="closeDemoActionModal()">
+                    <button class="btn btn-ghost" onclick="window.closeDemoActionModal()">
                         ${t.later}
                     </button>
                 </div>
@@ -345,6 +362,9 @@ function showDemoActionModal(actionType) {
         </div>
     `;
     
+    // Show the modal
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
     modal.classList.add('active');
 }
 
@@ -354,6 +374,8 @@ function showDemoActionModal(actionType) {
 function closeDemoActionModal() {
     const modal = document.getElementById('demoActionModal');
     if (modal) {
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
         modal.classList.remove('active');
     }
 }
@@ -426,14 +448,14 @@ function displayDemoGroups() {
     
     // Render demo group card using the SAME format as createFundCard()
     groupsGrid.innerHTML = `
-        <div class="fund-card demo-fund-card" onclick="openDemoGroup()">
+        <div class="fund-card demo-fund-card" onclick="window.openDemoGroup()">
             <div class="fund-card-content">
                 <div class="demo-badge-corner">DEMO</div>
                 
                 <div class="fund-card-header">
                     <div class="fund-icon">${DEMO_GROUP_DATA.icon}</div>
                     <div class="fund-card-title">
-                        <h3>${DEMO_GROUP_DATA.name}</h3>
+                        <h3>${DEMO_GROUP_DATA.fundName}</h3>
                         <div class="fund-badges">
                             <span class="badge badge-mode mode-simple">🐜 Simple</span>
                         </div>
@@ -511,7 +533,7 @@ function populateDemoGroupDetail() {
     const fundDetailDescription = document.getElementById('fundDetailDescription');
     const fundHeaderIcon = document.getElementById('fundHeaderIcon');
     
-    if (fundDetailName) fundDetailName.textContent = group.name;
+    if (fundDetailName) fundDetailName.textContent = group.fundName;
     if (fundDetailDescription) fundDetailDescription.textContent = group.description;
     if (fundHeaderIcon) fundHeaderIcon.textContent = group.icon;
     
