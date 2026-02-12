@@ -13,12 +13,12 @@ let isDemoMode = false;
 // ============================================
 const DEMO_GROUP_DATA = {
     id: 'demo-cancun-trip-2026',
-    name: 'Cancun Trip 2026 🌴',
+    name: 'Cancun Trip 2026',
     description: 'Spring break vacation with friends',
     icon: '🌴',
-    type: 'trip',
+    fundType: 0, // 0 = travel
+    mode: 'simple', // Important: This is a Simple Mode group
     currency: 'USD',
-    targetAmount: 2000,
     isActive: true,
     createdAt: Date.now() - (7 * 24 * 60 * 60 * 1000), // 7 days ago
     createdBy: 'demo-user-carlos',
@@ -411,6 +411,7 @@ function loadDemoData() {
 
 /**
  * Display demo groups in the dashboard
+ * Uses the same card format as createFundCard() in app-platform.js
  */
 function displayDemoGroups() {
     const groupsGrid = document.getElementById('groupsGrid');
@@ -428,46 +429,45 @@ function displayDemoGroups() {
         .reduce((sum, e) => sum + e.amount, 0);
     
     const memberCount = Object.keys(DEMO_GROUP_DATA.members).length;
-    const progress = (totalExpenses / DEMO_GROUP_DATA.targetAmount) * 100;
+    const expenseCount = Object.keys(DEMO_GROUP_DATA.expenses).length;
     
-    // Render demo group card
+    // Get translations
+    const currentLang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
+    const membersText = currentLang === 'es' ? 'miembros' : 'members';
+    const balanceText = currentLang === 'es' ? 'Total gastado' : 'Total spent';
+    const tapText = currentLang === 'es' ? 'Toca para explorar →' : 'Tap to explore →';
+    
+    // Render demo group card using the SAME format as createFundCard()
     groupsGrid.innerHTML = `
-        <div class="group-card demo-group-card" onclick="openDemoGroup()">
-            <div class="demo-badge-corner">DEMO</div>
-            <div class="group-card-header">
-                <div class="group-icon">${DEMO_GROUP_DATA.icon}</div>
-                <div class="group-info">
-                    <h3 class="group-name">${DEMO_GROUP_DATA.name}</h3>
-                    <p class="group-meta">${memberCount} members • $${totalExpenses.toFixed(0)} ${DEMO_GROUP_DATA.currency}</p>
-                </div>
-                <div class="group-status active">Active</div>
-            </div>
-            
-            <div class="group-card-body">
-                <div class="group-progress">
-                    <div class="progress-header">
-                        <span>Progress</span>
-                        <span>${Math.min(progress, 100).toFixed(0)}%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${Math.min(progress, 100)}%"></div>
+        <div class="fund-card demo-fund-card" onclick="openDemoGroup()">
+            <div class="fund-card-content">
+                <div class="demo-badge-corner">DEMO</div>
+                
+                <div class="fund-card-header">
+                    <div class="fund-icon">${DEMO_GROUP_DATA.icon}</div>
+                    <div class="fund-card-title">
+                        <h3>${DEMO_GROUP_DATA.name}</h3>
+                        <div class="fund-badges">
+                            <span class="badge badge-mode mode-simple">🐜 Simple</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="group-stats-mini">
-                    <div class="stat-mini">
-                        <span class="stat-value">${Object.keys(DEMO_GROUP_DATA.expenses).length}</span>
-                        <span class="stat-label">Expenses</span>
-                    </div>
-                    <div class="stat-mini">
-                        <span class="stat-value">${memberCount}</span>
-                        <span class="stat-label">Members</span>
+                <div class="fund-stats">
+                    <div class="fund-stat">
+                        <span class="fund-stat-label">${balanceText}</span>
+                        <span class="fund-stat-value">$${totalExpenses.toFixed(2)} ${DEMO_GROUP_DATA.currency}</span>
                     </div>
                 </div>
-            </div>
-            
-            <div class="group-card-footer">
-                <span class="tap-hint" data-i18n="app.demo.tapToExplore">Tap to explore →</span>
+                
+                <div class="fund-meta">
+                    <span>👥 ${memberCount} ${membersText}</span>
+                    <span>💰 ${expenseCount} expenses</span>
+                </div>
+                
+                <div class="demo-tap-hint">
+                    <span>${tapText}</span>
+                </div>
             </div>
         </div>
     `;
@@ -778,16 +778,20 @@ function injectDemoStyles() {
             opacity: 1;
         }
         
-        /* Demo Group Card */
-        .demo-group-card {
+        /* Demo Fund Card - matches fund-card styles */
+        .demo-fund-card {
             position: relative;
             border: 2px dashed var(--primary, #667eea) !important;
         }
         
+        .demo-fund-card .fund-card-content {
+            position: relative;
+        }
+        
         .demo-badge-corner {
             position: absolute;
-            top: 0;
-            right: 0;
+            top: -2px;
+            right: -2px;
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
             font-size: 0.65rem;
@@ -795,12 +799,20 @@ function injectDemoStyles() {
             padding: 0.25rem 0.75rem;
             border-radius: 0 12px 0 8px;
             letter-spacing: 0.5px;
+            z-index: 10;
         }
         
-        .tap-hint {
+        .demo-tap-hint {
+            text-align: center;
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+            border-top: 1px solid var(--border-color, rgba(0,0,0,0.1));
+        }
+        
+        .demo-tap-hint span {
             color: var(--primary, #667eea);
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
         }
         
         /* Demo Action Modal */
