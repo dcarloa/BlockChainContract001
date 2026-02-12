@@ -694,6 +694,7 @@ function renderDemoBalances() {
 
 /**
  * Render the demo timeline with expenses
+ * Uses the same format as renderExpenseItem() in app-platform.js
  */
 function renderDemoTimeline() {
     // Use historyList which is the correct container in app.html historyTab
@@ -711,20 +712,44 @@ function renderDemoTimeline() {
     
     for (const expense of expenses) {
         const paidByName = DEMO_GROUP_DATA.members[expense.paidBy[0]]?.name || 'Unknown';
-        const timeAgo = getTimeAgo(expense.createdAt);
+        const dateStr = new Date(expense.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+        const currency = expense.currency || 'USD';
+        const currencySymbol = currency === 'USD' ? '$' : currency;
+        const participantCount = expense.participants.length;
         
+        // Use the exact same format as renderExpenseItem()
         html += `
-            <div class="timeline-item expense-item demo-item" onclick="showDemoActionModal('view_expense')">
-                <div class="timeline-icon">💵</div>
-                <div class="timeline-content">
-                    <div class="timeline-header">
-                        <span class="timeline-title">${expense.description}</span>
-                        <span class="timeline-amount">$${expense.amount.toFixed(2)}</span>
+            <div class="expense-card-compact demo-item" data-expense-id="${expense.id}" onclick="window.showDemoActionModal('view_expense')">
+                <div class="expense-header">
+                    <div class="expense-header-left">
+                        <h4 class="expense-title-compact">${expense.description}</h4>
+                        <span class="expense-date-compact">📅 ${dateStr}</span>
                     </div>
-                    <div class="timeline-meta">
-                        <span>${paidByName} paid</span>
-                        <span>•</span>
-                        <span>${timeAgo}</span>
+                    <div class="expense-header-right">
+                        <div class="expense-amount-large">
+                            ${currencySymbol}${expense.amount.toFixed(2)}
+                            <span class="currency-label">${currency}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="expense-details" style="display: block;">
+                    <div class="expense-meta">
+                        <span class="meta-item">👤 ${paidByName}</span>
+                        <span class="meta-item">👥 ${participantCount} ${participantCount === 1 ? 'person' : 'people'}</span>
+                    </div>
+                    
+                    <div class="expense-interactions">
+                        <button class="interaction-btn" onclick="event.stopPropagation(); window.showDemoActionModal('like_expense')" title="Like">
+                            🤍
+                        </button>
+                        <button class="interaction-btn" onclick="event.stopPropagation(); window.showDemoActionModal('comment_expense')" title="Comments">
+                            💬
+                        </button>
                     </div>
                 </div>
             </div>
@@ -797,13 +822,38 @@ function showDemoGroupUI() {
         settleUpBtn.onclick = () => showDemoActionModal('settle_up');
     }
     
-    // Override tab button clicks to intercept certain actions
-    const inviteTab = document.querySelector('.fund-tab-btn[data-tab="invite"]');
+    // For Invite tab: show demo message inside the tab content instead of blocking click
+    const inviteTab = document.getElementById('inviteTab');
     if (inviteTab) {
-        inviteTab.onclick = (e) => {
-            e.preventDefault();
-            showDemoActionModal('invite_member');
-        };
+        inviteTab.innerHTML = `
+            <div class="demo-invite-placeholder" style="padding: 2rem; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🎫</div>
+                <h3 style="margin-bottom: 0.5rem;">Invite Members</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    In a real group, you can invite friends via email or share an invite link.
+                </p>
+                <button class="btn btn-primary" onclick="window.showDemoActionModal('invite_member')">
+                    🔓 Sign In to Invite
+                </button>
+            </div>
+        `;
+    }
+    
+    // For Mascot tab: show demo message
+    const mascotTab = document.getElementById('mascotTab');
+    if (mascotTab) {
+        mascotTab.innerHTML = `
+            <div class="demo-mascot-placeholder" style="padding: 2rem; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🐜</div>
+                <h3 style="margin-bottom: 0.5rem;">Colony Mascot</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Your group gets a unique ant mascot that grows as you add expenses!
+                </p>
+                <button class="btn btn-primary" onclick="window.showDemoActionModal('view_mascot')">
+                    🔓 Sign In to Meet Your Ant
+                </button>
+            </div>
+        `;
     }
 }
 
@@ -1102,3 +1152,10 @@ window.DemoMode = {
     getDemoGroup: () => DEMO_GROUP_DATA,
     getDemoUser: () => DEMO_CURRENT_USER
 };
+
+// Expose functions globally for onclick handlers in HTML
+window.openDemoGroup = openDemoGroup;
+window.showDemoActionModal = showDemoActionModal;
+window.closeDemoActionModal = closeDemoActionModal;
+window.promptDemoSignup = promptDemoSignup;
+window.minimizeDemoSignupCTA = minimizeDemoSignupCTA;
