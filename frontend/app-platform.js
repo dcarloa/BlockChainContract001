@@ -1235,9 +1235,17 @@ async function loadUserFunds() {
         const groupsGrid = document.getElementById('groupsGrid');
         const emptyState = document.getElementById('emptyState');
         
-        // If no authentication at all, show empty state with sign-in prompt
+        // If no authentication at all, enter Demo Mode
         if (!hasFirebaseAuth && !hasWallet) {
             if (loadingGroups) loadingGroups.style.display = 'none';
+            
+            // Enter Demo Mode instead of showing sign-in prompt
+            if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
+                window.DemoMode.enter();
+                return;
+            }
+            
+            // Fallback if Demo Mode not available
             if (groupsGrid) groupsGrid.style.display = 'none';
             if (emptyState) {
                 emptyState.style.display = 'flex';
@@ -1253,6 +1261,11 @@ async function loadUserFunds() {
                 `;
             }
             return;
+        }
+        
+        // Exit demo mode if user is now authenticated
+        if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+            window.DemoMode.exit();
         }
         
         if (loadingGroups) loadingGroups.style.display = 'flex';

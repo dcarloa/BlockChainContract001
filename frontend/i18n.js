@@ -394,6 +394,22 @@ const translations = {
                 installButton: "Install",
                 dismissButton: "×"
             },
+            // Demo Mode
+            demo: {
+                bannerText: "Demo Mode - Exploring how Ant Pool works",
+                ctaTitle: "Like what you see?",
+                ctaSubtitle: "Create your real group in 30 seconds",
+                ctaButton: "Create My Group →",
+                tapToExplore: "Tap to explore →",
+                modalTitle: "🐜 Ready to take action?",
+                modalSubtitle: "Sign in to create your own group and start tracking real expenses with your friends.",
+                benefit1: "✓ Create unlimited groups",
+                benefit2: "✓ Invite friends by email",
+                benefit3: "✓ Track expenses in real-time",
+                benefit4: "✓ Get smart settlement suggestions",
+                signInButton: "Sign In to Continue",
+                keepExploring: "Keep Exploring Demo"
+            },
             // Sign In Modal
             signIn: {
                 brandSubtitle: "Track expenses with your team.\nSimple, fast, and free.",
@@ -1699,6 +1715,22 @@ const translations = {
                 installDesc: "Obtén la experiencia completa con acceso sin conexión",
                 installButton: "Instalar",
                 dismissButton: "×"
+            },
+            // Demo Mode
+            demo: {
+                bannerText: "Modo Demo - Explorando cómo funciona Ant Pool",
+                ctaTitle: "¿Te gusta lo que ves?",
+                ctaSubtitle: "Crea tu grupo real en 30 segundos",
+                ctaButton: "Crear Mi Grupo →",
+                tapToExplore: "Toca para explorar →",
+                modalTitle: "🐜 ¿Listo para actuar?",
+                modalSubtitle: "Inicia sesión para crear tu propio grupo y empezar a rastrear gastos reales con tus amigos.",
+                benefit1: "✓ Crea grupos ilimitados",
+                benefit2: "✓ Invita amigos por email",
+                benefit3: "✓ Rastrea gastos en tiempo real",
+                benefit4: "✓ Obtén sugerencias inteligentes de liquidación",
+                signInButton: "Inicia Sesión para Continuar",
+                keepExploring: "Seguir Explorando Demo"
             },
             // Sign In Modal
             signIn: {
