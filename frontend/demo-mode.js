@@ -9,115 +9,102 @@
 let isDemoMode = false;
 
 // ============================================
-// DEMO DATA - Sample group with realistic data
+// DEMO DATA - Sample Simple Mode group (NOT blockchain)
+// Structure matches exactly what loadUserFunds() creates for Simple Mode
 // ============================================
 const DEMO_GROUP_DATA = {
-    id: 'demo-cancun-trip-2026',
-    name: 'Cancun Trip 2026',
-    description: 'Spring break vacation with friends',
-    icon: '🌴',
-    fundType: 0, // 0 = travel
-    mode: 'simple', // Important: This is a Simple Mode group
+    // These fields match the fundData structure in app-platform.js line ~1337
+    fundAddress: 'demo-roommates-2026', // groupId used as identifier
+    fundName: 'Apartment Expenses',
+    description: 'Monthly shared expenses with roommates',
+    icon: '🏠',
+    fundType: 3, // 3 = Other (Simple Mode always uses this)
+    mode: 'simple', // CRITICAL: This is a Simple Mode group
     currency: 'USD',
+    primaryCurrency: 'USD',
     isActive: true,
-    createdAt: Date.now() - (7 * 24 * 60 * 60 * 1000), // 7 days ago
+    isCreator: true,
+    isParticipant: true,
+    createdAt: Date.now() - (14 * 24 * 60 * 60 * 1000), // 2 weeks ago
     createdBy: 'demo-user-carlos',
     createdByEmail: 'carlos@example.com',
+    memberCount: 3,
     
-    // Demo members
+    // Demo members (3 roommates)
     members: {
         'demo-user-carlos': {
             name: 'Carlos',
             email: 'carlos@example.com',
-            joinedAt: Date.now() - (7 * 24 * 60 * 60 * 1000),
+            joinedAt: Date.now() - (14 * 24 * 60 * 60 * 1000),
             role: 'creator'
         },
         'demo-user-maria': {
             name: 'María',
             email: 'maria@example.com',
-            joinedAt: Date.now() - (6 * 24 * 60 * 60 * 1000),
+            joinedAt: Date.now() - (14 * 24 * 60 * 60 * 1000),
             role: 'member'
         },
         'demo-user-juan': {
             name: 'Juan',
             email: 'juan@example.com',
-            joinedAt: Date.now() - (6 * 24 * 60 * 60 * 1000),
-            role: 'member'
-        },
-        'demo-user-ana': {
-            name: 'Ana',
-            email: 'ana@example.com',
-            joinedAt: Date.now() - (5 * 24 * 60 * 60 * 1000),
+            joinedAt: Date.now() - (14 * 24 * 60 * 60 * 1000),
             role: 'member'
         }
     },
     
-    // Demo expenses
+    // Demo expenses (typical roommate expenses)
     expenses: {
         'demo-expense-1': {
             id: 'demo-expense-1',
-            description: 'Hotel - 3 nights',
-            amount: 450,
+            description: 'Electricity bill - February',
+            amount: 85,
             currency: 'USD',
-            paidBy: ['demo-user-maria'],
-            paidByAmounts: { 'demo-user-maria': 450 },
-            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan', 'demo-user-ana'],
-            createdAt: Date.now() - (5 * 24 * 60 * 60 * 1000),
-            createdBy: 'demo-user-maria',
+            paidBy: ['demo-user-carlos'],
+            paidByAmounts: { 'demo-user-carlos': 85 },
+            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan'],
+            createdAt: Date.now() - (10 * 24 * 60 * 60 * 1000),
+            createdBy: 'demo-user-carlos',
             status: 'approved',
-            category: 'accommodation'
+            category: 'utilities'
         },
         'demo-expense-2': {
             id: 'demo-expense-2',
-            description: 'Restaurant dinner 🍽️',
-            amount: 180,
+            description: 'Internet - Monthly',
+            amount: 60,
             currency: 'USD',
-            paidBy: ['demo-user-carlos'],
-            paidByAmounts: { 'demo-user-carlos': 180 },
-            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan', 'demo-user-ana'],
-            createdAt: Date.now() - (3 * 24 * 60 * 60 * 1000),
-            createdBy: 'demo-user-carlos',
+            paidBy: ['demo-user-maria'],
+            paidByAmounts: { 'demo-user-maria': 60 },
+            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan'],
+            createdAt: Date.now() - (8 * 24 * 60 * 60 * 1000),
+            createdBy: 'demo-user-maria',
             status: 'approved',
-            category: 'food'
+            category: 'utilities'
         },
         'demo-expense-3': {
             id: 'demo-expense-3',
-            description: 'Taxi from airport',
-            amount: 75,
+            description: 'Groceries 🛒',
+            amount: 120,
             currency: 'USD',
             paidBy: ['demo-user-juan'],
-            paidByAmounts: { 'demo-user-juan': 75 },
-            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan', 'demo-user-ana'],
-            createdAt: Date.now() - (4 * 24 * 60 * 60 * 1000),
+            paidByAmounts: { 'demo-user-juan': 120 },
+            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan'],
+            createdAt: Date.now() - (3 * 24 * 60 * 60 * 1000),
             createdBy: 'demo-user-juan',
             status: 'approved',
-            category: 'transport'
+            category: 'food'
         },
         'demo-expense-4': {
             id: 'demo-expense-4',
-            description: 'Souvenirs & gifts',
-            amount: 120,
-            currency: 'USD',
-            paidBy: ['demo-user-ana'],
-            paidByAmounts: { 'demo-user-ana': 120 },
-            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan', 'demo-user-ana'],
-            createdAt: Date.now() - (1 * 24 * 60 * 60 * 1000),
-            createdBy: 'demo-user-ana',
-            status: 'approved',
-            category: 'other'
-        },
-        'demo-expense-5': {
-            id: 'demo-expense-5',
-            description: 'Beach club entry',
-            amount: 200,
+            description: 'Cleaning supplies',
+            amount: 35,
             currency: 'USD',
             paidBy: ['demo-user-carlos'],
-            paidByAmounts: { 'demo-user-carlos': 200 },
-            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan', 'demo-user-ana'],
-            createdAt: Date.now() - (2 * 24 * 60 * 60 * 1000),
+            paidByAmounts: { 'demo-user-carlos': 35 },
+            participants: ['demo-user-carlos', 'demo-user-maria', 'demo-user-juan'],
+            createdAt: Date.now() - (1 * 24 * 60 * 60 * 1000),
             createdBy: 'demo-user-carlos',
             status: 'approved',
-            category: 'entertainment'
+            category: 'other'
         }
     },
     
