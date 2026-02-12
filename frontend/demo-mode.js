@@ -515,16 +515,75 @@ function populateDemoGroupDetail() {
     if (fundDetailDescription) fundDetailDescription.textContent = group.description;
     if (fundHeaderIcon) fundHeaderIcon.textContent = group.icon;
     
+    // ========== CONFIGURE TABS FOR SIMPLE MODE ==========
+    // Hide blockchain-only tabs
+    const depositTab = document.querySelector('.fund-tab-btn[data-tab="deposit"]');
+    const proposeTab = document.querySelector('.fund-tab-btn[data-tab="propose"]');
+    const voteTab = document.querySelector('.fund-tab-btn[data-tab="vote"]');
+    const manageTab = document.querySelector('.fund-tab-btn[data-tab="manage"]');
+    
+    if (depositTab) depositTab.style.display = 'none';
+    if (proposeTab) proposeTab.style.display = 'none';
+    if (voteTab) voteTab.style.display = 'none';
+    if (manageTab) manageTab.style.display = 'none';
+    
+    // Show Simple Mode tabs
+    const inviteTab = document.querySelector('.fund-tab-btn[data-tab="invite"]');
+    const historyTab = document.querySelector('.fund-tab-btn[data-tab="history"]');
+    const balancesTab = document.querySelector('.fund-tab-btn[data-tab="balances"]');
+    const membersTab = document.querySelector('.fund-tab-btn[data-tab="members"]');
+    const mascotTab = document.querySelector('.fund-tab-btn[data-tab="mascot"]');
+    
+    if (inviteTab) inviteTab.style.display = 'flex';
+    if (historyTab) historyTab.style.display = 'flex';
+    if (balancesTab) balancesTab.style.display = 'flex';
+    if (membersTab) membersTab.style.display = 'flex';
+    if (mascotTab) mascotTab.style.display = 'flex';
+    
+    // Set history tab as active by default (it shows expenses)
+    document.querySelectorAll('.fund-tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (historyTab) historyTab.classList.add('active');
+    
+    // Show history tab content, hide others
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    const historyPane = document.getElementById('historyTab');
+    if (historyPane) historyPane.classList.add('active');
+    
+    // Update badges for Simple Mode
+    const typeBadge = document.getElementById('fundTypeBadge');
+    const statusBadge = document.getElementById('fundStatusBadge');
+    const privacyBadge = document.getElementById('fundPrivacyBadge');
+    
+    if (typeBadge) typeBadge.textContent = '🐜 Simple Mode';
+    if (statusBadge) statusBadge.textContent = '✅ Active';
+    if (privacyBadge) privacyBadge.textContent = '🌍 Public';
+    
+    // ========== END TAB CONFIGURATION ==========
+    
     // Calculate balances
     const totalExpenses = Object.values(group.expenses)
         .filter(e => e.status === 'approved')
         .reduce((sum, e) => sum + e.amount, 0);
     
     // Update balance displays
-    const balanceDisplays = document.querySelectorAll('[id*="totalBalance"], [id*="fundBalance"]');
-    balanceDisplays.forEach(el => {
-        el.textContent = `$${totalExpenses.toFixed(2)}`;
-    });
+    const fundBalanceMain = document.getElementById('fundBalanceMain');
+    if (fundBalanceMain) fundBalanceMain.textContent = `$${totalExpenses.toFixed(2)}`;
+    
+    // Update member count and expense count
+    const fundMembers = document.getElementById('fundMembers');
+    const fundProposals = document.getElementById('fundProposals');
+    
+    if (fundMembers) fundMembers.textContent = Object.keys(group.members).length.toString();
+    if (fundProposals) fundProposals.textContent = Object.keys(group.expenses).length.toString();
+    
+    // Calculate user's simulated balance
+    const myBalance = calculateDemoBalance();
+    const userContribution = document.getElementById('userContribution');
+    if (userContribution) {
+        userContribution.textContent = myBalance >= 0 
+            ? `You are owed $${Math.abs(myBalance).toFixed(2)}`
+            : `You owe $${Math.abs(myBalance).toFixed(2)}`;
+    }
     
     // Render expenses in timeline
     renderDemoTimeline();
@@ -532,15 +591,114 @@ function populateDemoGroupDetail() {
     // Render members
     renderDemoMembers();
     
+    // Render balances
+    renderDemoBalances();
+    
     // Show demo-specific UI
     showDemoGroupUI();
+}
+
+/**
+ * Calculate demo user's simulated balance
+ */
+function calculateDemoBalance() {
+    const group = DEMO_GROUP_DATA;
+    const demoUserId = 'demo-user-carlos'; // Simulate as Carlos
+    const members = Object.keys(group.members);
+    let balance = 0;
+    
+    for (const expense of Object.values(group.expenses)) {
+        const participantCount = expense.participants.length;
+        const shareAmount = expense.amount / participantCount;
+        
+        // If demo user paid
+        if (expense.paidBy.includes(demoUserId)) {
+            balance += expense.amount - shareAmount; // Others owe me
+        } else if (expense.participants.includes(demoUserId)) {
+            balance -= shareAmount; // I owe payer
+        }
+    }
+    
+    return balance;
+}
+
+/**
+ * Render demo balances tab
+ */
+function renderDemoBalances() {
+    const balancesContainer = document.getElementById('balancesTab') || 
+                              document.querySelector('.balances-list');
+    
+    if (!balancesContainer) return;
+    
+    const group = DEMO_GROUP_DATA;
+    const members = Object.entries(group.members);
+    const memberCount = members.length;
+    
+    // Calculate each member's balance
+    const balances = {};
+    for (const [id, member] of members) {
+        balances[id] = { name: member.name, balance: 0 };
+    }
+    
+    for (const expense of Object.values(group.expenses)) {
+        const shareAmount = expense.amount / expense.participants.length;
+        
+        // Payer gets credit
+        for (const payerId of expense.paidBy) {
+            if (balances[payerId]) {
+                const payerAmount = expense.paidByAmounts?.[payerId] || expense.amount;
+                balances[payerId].balance += payerAmount;
+            }
+        }
+        
+        // Participants owe
+        for (const participantId of expense.participants) {
+            if (balances[participantId]) {
+                balances[participantId].balance -= shareAmount;
+            }
+        }
+    }
+    
+    let html = `
+        <div class="balances-summary" style="padding: 1rem;">
+            <h4 style="margin-bottom: 1rem;">💰 Who owes whom</h4>
+            <div class="balance-cards">
+    `;
+    
+    for (const [id, data] of Object.entries(balances)) {
+        const status = data.balance >= 0 ? 'owed' : 'owes';
+        const statusClass = data.balance >= 0 ? 'positive' : 'negative';
+        const statusIcon = data.balance >= 0 ? '💚' : '🔴';
+        
+        html += `
+            <div class="balance-card demo-item" style="background: var(--glass-bg); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="member-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-size: 14px;">${data.name.charAt(0)}</span>
+                    <span>${data.name}</span>
+                </div>
+                <span class="${statusClass}" style="font-weight: 600; color: ${data.balance >= 0 ? 'var(--success-color)' : 'var(--error-color)'};">
+                    ${statusIcon} ${data.balance >= 0 ? '+' : ''}$${data.balance.toFixed(2)}
+                </span>
+            </div>
+        `;
+    }
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    balancesContainer.innerHTML = html;
 }
 
 /**
  * Render the demo timeline with expenses
  */
 function renderDemoTimeline() {
-    const timelineContainer = document.getElementById('timelineContainer') || 
+    // Use historyList which is the correct container in app.html historyTab
+    const timelineContainer = document.getElementById('historyList') ||
+                              document.getElementById('timelineContainer') || 
                               document.getElementById('expensesList') ||
                               document.querySelector('.timeline-list');
     
@@ -610,14 +768,26 @@ function renderDemoMembers() {
  * Show demo-specific UI elements in group detail
  */
 function showDemoGroupUI() {
-    // Override action buttons to show demo modal
+    // Show the Add Expense FAB button
     const addExpenseBtn = document.getElementById('addExpenseBtn');
-    const inviteMemberBtn = document.getElementById('inviteMemberBtn');
-    const settleUpBtn = document.getElementById('settleUpBtn');
-    
     if (addExpenseBtn) {
+        addExpenseBtn.style.display = 'flex';
         addExpenseBtn.onclick = () => showDemoActionModal('add_expense');
     }
+    
+    // Show the Add Expense Card in historyTab
+    const addExpenseCard = document.getElementById('simpleAddExpenseCard');
+    if (addExpenseCard) {
+        addExpenseCard.style.display = 'block';
+        const cardBtn = document.getElementById('addExpenseCardBtn');
+        if (cardBtn) {
+            cardBtn.onclick = () => showDemoActionModal('add_expense');
+        }
+    }
+    
+    // Override any existing invite/settle buttons (if they exist)
+    const inviteMemberBtn = document.getElementById('inviteMemberBtn');
+    const settleUpBtn = document.getElementById('settleUpBtn');
     
     if (inviteMemberBtn) {
         inviteMemberBtn.onclick = () => showDemoActionModal('invite_member');
@@ -625,6 +795,15 @@ function showDemoGroupUI() {
     
     if (settleUpBtn) {
         settleUpBtn.onclick = () => showDemoActionModal('settle_up');
+    }
+    
+    // Override tab button clicks to intercept certain actions
+    const inviteTab = document.querySelector('.fund-tab-btn[data-tab="invite"]');
+    if (inviteTab) {
+        inviteTab.onclick = (e) => {
+            e.preventDefault();
+            showDemoActionModal('invite_member');
+        };
     }
 }
 
