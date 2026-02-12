@@ -49,8 +49,9 @@ const translations = {
                 title: "Split expenses with friends.",
                 title2: "No drama.",
                 subtitle: "Create a group. Log expenses. See who owes who. Done.",
-                cta: "Try Ant Pool Free",
+                cta: "Create Your First Group →",
                 ctaSecondary: "See how it works",
+                ctaMicro: "Free forever · No credit card · 30 seconds",
                 betaBadge: "Free · No card · Beta",
                 stats: {
                     free: "FREE",
@@ -159,7 +160,7 @@ const translations = {
                     step2: "Enter amount, currency, and who paid",
                     step3: "Select who participated—balances update instantly!"
                 },
-                cta: "Try It Now—It's Free!",
+                cta: "Start Splitting Now →",
                 clickToReplay: "Click to replay"
             },
             whereAnts: {
@@ -244,8 +245,9 @@ const translations = {
             },
             finalCta: {
                 title: "Ready to stop the money drama?",
-                subtitle: "Create your first group in 30 seconds.",
-                button: "Try Ant Pool Now",
+                subtitle: "Join 150+ groups already splitting expenses.",
+                button: "Create Your Group Now →",
+                buttonMicro: "Takes 30 seconds · No signup to explore",
                 note: "Free · No card · Beta"
             },
             funFeatures: {
@@ -1353,8 +1355,9 @@ const translations = {
                 title: "Divide gastos con amigos.",
                 title2: "Sin peleas.",
                 subtitle: "Crea un grupo. Registra gastos. Mira quién debe qué. Listo.",
-                cta: "Probar Ant Pool Gratis",
+                cta: "Crea Tu Primer Grupo →",
                 ctaSecondary: "Ver cómo funciona",
+                ctaMicro: "Gratis para siempre · Sin tarjeta · 30 segundos",
                 betaBadge: "Gratis · Sin tarjeta · Beta",
                 stats: {
                     free: "GRATIS",
@@ -1463,7 +1466,7 @@ const translations = {
                     step2: "Ingresa monto, moneda y quién pagó",
                     step3: "Selecciona quién participó—¡los balances se actualizan al instante!"
                 },
-                cta: "¡Pruébalo Ahora—Es Gratis!",
+                cta: "Empieza a Dividir Ahora →",
                 clickToReplay: "Clic para repetir"
             },
             whereAnts: {
@@ -1548,8 +1551,9 @@ const translations = {
             },
             finalCta: {
                 title: "¿Listo para acabar con el drama del dinero?",
-                subtitle: "Crea tu primer grupo en 30 segundos.",
-                button: "Probar Ant Pool Ahora",
+                subtitle: "Únete a 150+ grupos que ya dividen gastos.",
+                button: "Crea Tu Grupo Ahora →",
+                buttonMicro: "Toma 30 segundos · Sin registro para explorar",
                 note: "Gratis · Sin tarjeta · Beta"
             },
             funFeatures: {

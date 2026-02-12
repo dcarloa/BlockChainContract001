@@ -26,6 +26,46 @@
             'analytics_storage': 'denied'
         });
         gtag('config', 'G-8G443F7LPT');
+        
+        // CTA Click Tracking
+        function trackCTA(location, action) {
+            gtag('event', 'cta_click', {
+                'event_category': 'conversion',
+                'event_label': location,
+                'cta_location': location,
+                'cta_action': action || 'create_group'
+            });
+            console.log('📊 CTA tracked:', location);
+        }
+        
+        // Scroll Depth Tracking
+        (function() {
+            var scrollThresholds = [25, 50, 75, 90];
+            var scrolledTo = {};
+            
+            function getScrollPercent() {
+                var h = document.documentElement;
+                var b = document.body;
+                var st = 'scrollTop';
+                var sh = 'scrollHeight';
+                return Math.round((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight) * 100);
+            }
+            
+            window.addEventListener('scroll', function() {
+                var percent = getScrollPercent();
+                scrollThresholds.forEach(function(threshold) {
+                    if (percent >= threshold && !scrolledTo[threshold]) {
+                        scrolledTo[threshold] = true;
+                        gtag('event', 'scroll_depth', {
+                            'event_category': 'engagement',
+                            'event_label': threshold + '%',
+                            'scroll_percentage': threshold
+                        });
+                        console.log('📊 Scroll depth:', threshold + '%');
+                    }
+                });
+            }, { passive: true });
+        })();
     </script>
     
     <meta charset="UTF-8">
@@ -84,7 +124,7 @@
                 <button class="settings-btn" onclick="openSettings()" title="Settings">
                     ⚙️
                 </button>
-                <a href="app.html" class="btn btn-primary" data-i18n="nav.launchApp" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; border: none; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">Launch App</a>
+                <a href="app.html" class="btn btn-primary" data-i18n="nav.launchApp" onclick="trackCTA('navbar', 'launch_app')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; border: none; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">Launch App</a>
             </div>
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                 <span></span>
@@ -157,11 +197,12 @@
                         Trips, roommates, dinners, events. Everyone pays, Ant Pool does the math. No spreadsheets. No arguments.
                     </p>
                     <div class="hero-buttons">
-                        <a href="app.html" class="btn btn-large btn-primary">
-                            <span data-i18n="landing.hero.cta">🐜 Try Ant Pool Free</span>
+                        <a href="app.html" class="btn btn-large btn-primary" onclick="trackCTA('hero', 'create_group')">
+                            <span data-i18n="landing.hero.cta">Create Your First Group →</span>
                         </a>
                     </div>
-                    <p class="hero-beta-badge" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+                    <p class="hero-micro-text" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
+                    <p class="hero-beta-badge" style="margin-top: 0.75rem; font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
                         <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;" data-i18n="landing.hero.betaBadge">Free · No card · Beta</span>
                     </p>
                 </div>
@@ -318,9 +359,10 @@
                 </div>
             </div>
             <div style="text-align: center; margin-top: 2.5rem;">
-                <a href="app.html" class="btn btn-large" style="background: white; color: #667eea; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                    <span data-i18n="landing.hero.cta">🐜 Try Ant Pool Free</span>
+                <a href="app.html" class="btn btn-large" onclick="trackCTA('modes_section', 'create_group')" style="background: white; color: #667eea; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <span data-i18n="landing.hero.cta">Create Your First Group →</span>
                 </a>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: rgba(255,255,255,0.85);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
             </div>
         </div>
     </section>
@@ -575,10 +617,10 @@
             
             <!-- CTA after tutorials -->
             <div style="text-align: center; margin-top: 2.5rem;">
-                <a href="app.html" class="btn-primary-hero" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
-                    <span data-i18n="landing.tutorials.cta">Try It Now—It's Free!</span>
-                    <span>🚀</span>
+                <a href="app.html" class="btn-primary-hero" onclick="trackCTA('tutorials', 'start_splitting')" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                    <span data-i18n="landing.tutorials.cta">Start Splitting Now →</span>
                 </a>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
             </div>
         </div>
     </section>
@@ -796,7 +838,7 @@
                 </div>
             </div>
             <div style="text-align: center; margin-top: 2.5rem;">
-                <a href="app.html" class="btn btn-large btn-primary">
+                <a href="app.html" class="btn btn-large btn-primary" onclick="trackCTA('use_cases', 'create_group')">
                     <span data-i18n="landing.hero.cta">🐜 Try Ant Pool Free</span>
                 </a>
             </div>
@@ -907,13 +949,13 @@
             <div class="cta-content">
                 <h2 class="cta-title" data-i18n="landing.finalCta.title">🐜 Ready to stop the money drama?</h2>
                 <p class="cta-subtitle" data-i18n="landing.finalCta.subtitle">
-                    Create your first group in 30 seconds.
+                    Join 150+ groups already splitting expenses.
                 </p>
-                <a href="app.html" class="btn btn-large btn-primary btn-glow">
-                    <span data-i18n="landing.finalCta.button">Try Ant Pool Now</span>
+                <a href="app.html" class="btn btn-large btn-primary btn-glow" onclick="trackCTA('final_cta', 'create_group')">
+                    <span data-i18n="landing.finalCta.button">Create Your Group Now →</span>
                 </a>
-                <p class="cta-note" data-i18n="landing.finalCta.note">
-                    Free · No card · Beta
+                <p class="cta-micro" style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.9;" data-i18n="landing.finalCta.buttonMicro">
+                    Takes 30 seconds · No signup to explore
                 </p>
             </div>
         </div>
