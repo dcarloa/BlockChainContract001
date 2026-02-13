@@ -183,26 +183,53 @@ function exitDemoMode() {
         demoCard.remove();
     }
     
+    // Clear ALL demo content from group view containers
+    // This is critical - otherwise real groups will show demo data
+    const containersToClean = [
+        'historyList',      // Expense history
+        'membersTab',       // Members list  
+        'balancesTab',      // Balances
+        'inviteTab',        // Invite section
+        'mascotTab'         // Mascot section
+    ];
+    
+    containersToClean.forEach(id => {
+        const container = document.getElementById(id);
+        if (container) {
+            container.innerHTML = '';
+        }
+    });
+    
+    // Also clear any demo items by class
+    document.querySelectorAll('.demo-item, .demo-expense-card, .demo-member-item').forEach(el => {
+        el.remove();
+    });
+    
     // If we're viewing the demo group, go back to dashboard
     const fundView = document.getElementById('fundView');
+    const fundDetailSection = document.getElementById('fundDetailSection');
     const dashboardSection = document.getElementById('dashboardSection');
-    if (fundView && fundView.style.display !== 'none') {
-        // Check if it's showing the demo group
-        const fundName = document.getElementById('fundName');
-        if (fundName && fundName.textContent === DEMO_GROUP_DATA.name) {
-            // Hide fund view, show dashboard
-            fundView.style.display = 'none';
-            if (dashboardSection) {
-                dashboardSection.style.display = 'block';
-            }
-        }
+    
+    // Hide fund detail view
+    if (fundDetailSection) {
+        fundDetailSection.classList.remove('active');
+        fundDetailSection.style.display = 'none';
+    }
+    if (fundView) {
+        fundView.style.display = 'none';
+    }
+    
+    // Show dashboard
+    if (dashboardSection) {
+        dashboardSection.classList.add('active');
+        dashboardSection.style.display = 'block';
     }
     
     // Clear demo data from window
     window.demoGroupData = null;
     window.demoCurrentUser = null;
     
-    console.log('🎭 Demo Mode fully deactivated - UI cleaned up');
+    console.log('🎭 Demo Mode fully deactivated - UI and containers cleaned up');
 }
 
 /**
