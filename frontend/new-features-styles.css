@@ -632,7 +632,413 @@
 }
 
 /* ============================================
-   RECORD PAYMENT MODAL - MODERN DESIGN V2
+   RECORD PAYMENT MODAL - MODERN DESIGN V3
+   Clean, spacious, professional design
+   ============================================ */
+
+.record-payment-modal-v3 {
+    background: var(--bg-primary);
+    border-radius: 24px;
+    width: 92%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 0;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.record-payment-modal-v3 .modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+}
+
+.record-payment-modal-v3 .modal-close-btn:hover {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* Hero Section with Visual */
+.record-payment-hero {
+    background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+    padding: 2rem 1.5rem 1.75rem;
+    text-align: center;
+    border-radius: 24px 24px 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.record-payment-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+    animation: heroShine 3s ease-in-out infinite;
+}
+
+@keyframes heroShine {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(25%, 25%); }
+}
+
+.payment-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.payment-from-avatar,
+.payment-to-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.payment-arrow {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 60px;
+}
+
+.arrow-line {
+    height: 2px;
+    flex: 1;
+    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.8), rgba(255,255,255,0.3));
+    animation: arrowPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.arrow-money {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.25rem;
+    animation: moneyFloat 2s ease-in-out infinite;
+}
+
+@keyframes moneyFloat {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+.record-payment-hero h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+/* Form Styles */
+.record-payment-form-v3 {
+    padding: 1.25rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Recipient Card */
+.payment-recipient-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(52, 211, 153, 0.08) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 12px;
+    padding: 0.875rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-recipient-card .recipient-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.payment-recipient-card .recipient-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #10b981;
+}
+
+/* Amount Section - Hero Style */
+.payment-amount-section {
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.payment-amount-section .amount-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.amount-input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.amount-input-wrapper:focus-within {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    background: var(--bg-primary);
+}
+
+.amount-input-wrapper .currency-symbol {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #10b981;
+}
+
+.amount-input-wrapper .amount-input {
+    width: 100%;
+    max-width: 150px;
+    border: none;
+    background: transparent;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: left;
+    outline: none;
+}
+
+.amount-input-wrapper .amount-input::placeholder {
+    color: var(--text-tertiary);
+    font-weight: 400;
+}
+
+/* Details Grid */
+.payment-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.detail-field label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.detail-field .field-icon {
+    font-size: 0.875rem;
+}
+
+.detail-field .optional-tag {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    background: var(--bg-tertiary);
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    margin-left: auto;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.detail-input:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Action Buttons */
+.payment-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-payment-cancel {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-payment-cancel:hover {
+    border-color: var(--text-secondary);
+    background: var(--bg-tertiary);
+}
+
+.btn-payment-submit {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.25rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-payment-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
+}
+
+.btn-payment-submit:active {
+    transform: translateY(0);
+}
+
+.btn-payment-submit .btn-check {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Light mode adjustments */
+[data-theme="light"] .record-payment-modal-v3 {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] .record-payment-modal-v3 .modal-close-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .amount-input-wrapper {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] .amount-input-wrapper:focus-within {
+    background: #ffffff;
+}
+
+[data-theme="light"] .detail-input {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] .detail-input:focus {
+    background: #ffffff;
+}
+
+[data-theme="light"] .payment-recipient-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(52, 211, 153, 0.05) 100%);
+    border-color: rgba(16, 185, 129, 0.15);
+}
+
+/* Mobile adjustments */
+@media (max-width: 400px) {
+    .record-payment-modal-v3 {
+        width: 95%;
+        max-width: none;
+    }
+    
+    .record-payment-hero {
+        padding: 1.5rem 1rem 1.25rem;
+    }
+    
+    .record-payment-form-v3 {
+        padding: 1rem;
+    }
+    
+    .amount-input-wrapper .amount-input {
+        font-size: 1.75rem;
+    }
+}
+
+/* ============================================
+   RECORD PAYMENT MODAL V2 - LEGACY (keep for fallback)
    ============================================ */
 
 .record-payment-modal-v2 {

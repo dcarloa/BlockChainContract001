@@ -47,7 +47,7 @@
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.2">
     <link rel="stylesheet" href="form-wizard-styles.css">
-    <link rel="stylesheet" href="new-features-styles.css">
+    <link rel="stylesheet" href="new-features-styles.css?v=1.2">
     <link rel="stylesheet" href="colony-styles.css?v=1.2">
     <link rel="stylesheet" href="mascot-styles.css?v=1.1">
     <link rel="stylesheet" href="subscription-styles.css?v=1.1">
@@ -1828,37 +1828,39 @@ Simple, fast, and free.</p>
 
             <!-- Record Payment Modal -->
             <div id="recordPaymentModal" class="modal" style="display: none;">
-                <div class="modal-content record-payment-modal-v2">
+                <div class="modal-content record-payment-modal-v3">
                     <button class="modal-close-btn" onclick="closeRecordPaymentModal()">&times;</button>
                     
-                    <div class="record-payment-header">
-                        <div class="record-payment-icon">💸</div>
+                    <!-- Visual Header with Animation -->
+                    <div class="record-payment-hero">
+                        <div class="payment-visual">
+                            <div class="payment-from-avatar">👤</div>
+                            <div class="payment-arrow">
+                                <div class="arrow-line"></div>
+                                <div class="arrow-money">💸</div>
+                            </div>
+                            <div class="payment-to-avatar" id="paymentToAvatar">👤</div>
+                        </div>
                         <h2 data-i18n="app.modals.recordPayment.title">Record Payment</h2>
-                        <p class="record-payment-subtitle" data-i18n="app.modals.recordPayment.subtitle">Register a payment you've made to settle a debt</p>
                     </div>
                     
-                    <form id="recordPaymentForm" class="record-payment-form-v2">
-                        <!-- Payment Summary Card -->
-                        <div class="payment-summary-card">
-                            <div class="payment-summary-row">
-                                <span class="payment-label" data-i18n="app.modals.recordPayment.payingTo">Paying to</span>
-                                <span class="payment-recipient" id="paymentTo">-</span>
-                            </div>
+                    <form id="recordPaymentForm" class="record-payment-form-v3">
+                        <!-- Recipient Card -->
+                        <div class="payment-recipient-card">
+                            <div class="recipient-label" data-i18n="app.modals.recordPayment.payingTo">Paying to</div>
+                            <div class="recipient-name" id="paymentTo">-</div>
                         </div>
 
-                        <div class="form-field">
-                            <label for="paymentAmount">
-                                <span class="field-icon">💵</span>
-                                <span data-i18n="app.modals.recordPayment.amountLabel">Amount</span>
-                                <span class="required">*</span>
-                            </label>
-                            <div class="input-with-currency">
-                                <span class="currency-badge" id="paymentCurrencyBadge">$</span>
+                        <!-- Amount Input - Hero Style -->
+                        <div class="payment-amount-section">
+                            <label class="amount-label" data-i18n="app.modals.recordPayment.amountLabel">Amount</label>
+                            <div class="amount-input-wrapper">
+                                <span class="currency-symbol" id="paymentCurrencyBadge">$</span>
                                 <input 
                                     type="number" 
                                     id="paymentAmount" 
                                     name="amount"
-                                    class="input-modern input-large" 
+                                    class="amount-input" 
                                     step="0.01" 
                                     min="0.01"
                                     required
@@ -1868,45 +1870,48 @@ Simple, fast, and free.</p>
                             </div>
                         </div>
 
-                        <div class="form-field">
-                            <label for="paymentDate">
-                                <span class="field-icon">📅</span>
-                                <span data-i18n="app.modals.recordPayment.dateLabel">Payment Date</span>
-                                <span class="required">*</span>
-                            </label>
-                            <input 
-                                type="date" 
-                                id="paymentDate" 
-                                name="date"
-                                class="input-modern"
-                                required
-                            >
-                        </div>
+                        <!-- Additional Fields in Cards -->
+                        <div class="payment-details-grid">
+                            <div class="detail-field">
+                                <label for="paymentDate">
+                                    <span class="field-icon">📅</span>
+                                    <span data-i18n="app.modals.recordPayment.dateLabel">Date</span>
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="paymentDate" 
+                                    name="date"
+                                    class="detail-input"
+                                    required
+                                >
+                            </div>
 
-                        <div class="form-field">
-                            <label for="paymentNotes">
-                                <span class="field-icon">📝</span>
-                                <span data-i18n="app.modals.recordPayment.notesLabel">Notes</span>
-                                <span class="optional-badge" data-i18n="app.modals.recordPayment.optional">Optional</span>
-                            </label>
-                            <textarea 
-                                id="paymentNotes" 
-                                name="notes"
-                                class="input-modern"
-                                rows="2"
-                                data-i18n-placeholder="app.modals.recordPayment.notesPlaceholder"
-                                placeholder="Payment method, reference number, etc..."
-                            ></textarea>
+                            <div class="detail-field detail-field-full">
+                                <label for="paymentNotes">
+                                    <span class="field-icon">📝</span>
+                                    <span data-i18n="app.modals.recordPayment.notesLabel">Notes</span>
+                                    <span class="optional-tag" data-i18n="app.modals.recordPayment.optional">Optional</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="paymentNotes" 
+                                    name="notes"
+                                    class="detail-input"
+                                    data-i18n-placeholder="app.modals.recordPayment.notesPlaceholder"
+                                    placeholder="Venmo, cash, bank transfer..."
+                                >
+                            </div>
                         </div>
 
                         <input type="hidden" id="paymentToId" name="toUserId">
 
-                        <div class="record-payment-actions">
-                            <button type="button" class="btn-cancel" onclick="closeRecordPaymentModal()">
+                        <!-- Action Buttons -->
+                        <div class="payment-actions">
+                            <button type="button" class="btn-payment-cancel" onclick="closeRecordPaymentModal()">
                                 <span data-i18n="app.modals.recordPayment.cancelButton">Cancel</span>
                             </button>
-                            <button type="submit" class="btn-record-payment-submit">
-                                <span class="btn-icon">✅</span>
+                            <button type="submit" class="btn-payment-submit">
+                                <span class="btn-check">✓</span>
                                 <span data-i18n="app.modals.recordPayment.recordButton">Record Payment</span>
                             </button>
                         </div>
