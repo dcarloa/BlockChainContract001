@@ -1731,6 +1731,10 @@ let currentFundContract = null;
 
 async function openFund(fundAddress) {
     try {
+        console.log('[openFund] Starting with fundAddress:', fundAddress);
+        console.log('[openFund] allUserGroups count:', allUserGroups.length);
+        console.log('[openFund] Available fundAddresses:', allUserGroups.map(f => f.fundAddress));
+        
         const t = translations[getCurrentLanguage()];
         showLoading(t.app.loading.loadingFund);
         
@@ -1738,13 +1742,22 @@ async function openFund(fundAddress) {
             throw new Error("Invalid fund address");
         }
         
-        // Find current fund
+        // Find current fund - Case insensitive comparison for blockchain, exact for simple mode
         currentFund = allUserGroups.find(f => {
-            return f.fundAddress && f.fundAddress.toLowerCase() === fundAddress.toLowerCase();
+            if (!f.fundAddress) return false;
+            // For simple mode groups (grp_xxx), do exact match
+            if (f.fundAddress.startsWith('grp_')) {
+                return f.fundAddress === fundAddress;
+            }
+            // For blockchain addresses, do case insensitive
+            return f.fundAddress.toLowerCase() === fundAddress.toLowerCase();
         });
         
+        console.log('[openFund] Found currentFund:', currentFund);
+        
         if (!currentFund) {
-            console.error("Fund not found. Available addresses:", allUserGroups.map(f => f.fundAddress));
+            console.error("Fund not found. Looking for:", fundAddress);
+            console.error("Available addresses:", allUserGroups.map(f => f.fundAddress));
             throw new Error("Fund not found in your list");
         }
         
