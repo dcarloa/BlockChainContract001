@@ -145,6 +145,13 @@ function isInDemoMode() {
  */
 function enterDemoMode() {
     console.log('🎭 enterDemoMode() called');
+    
+    // CRITICAL: Don't enter demo mode if user is already authenticated
+    if (window.FirebaseConfig && window.FirebaseConfig.isAuthenticated()) {
+        console.log('🎭 Skipping Demo Mode - user is already authenticated');
+        return;
+    }
+    
     isDemoMode = true;
     
     // Track demo mode start

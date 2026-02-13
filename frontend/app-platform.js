@@ -120,8 +120,20 @@ window.addEventListener('DOMContentLoaded', async () => {
         firebaseInitialized = await window.FirebaseConfig.initialize();
         
         if (firebaseInitialized) {
+            // Check if user is ALREADY authenticated before setting up listener
+            const existingUser = window.FirebaseConfig.getCurrentUser();
+            if (existingUser) {
+                console.log('[Auth] User already logged in:', existingUser.email);
+                // Force exit demo mode immediately if user is already logged in
+                if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+                    console.log('[Auth] Exiting Demo Mode - user already authenticated');
+                    window.DemoMode.exit();
+                }
+            }
+            
             // Setup Firebase auth state listener
             window.FirebaseConfig.onAuthStateChanged = (user) => {
+                console.log('[Auth] onAuthStateChanged fired, user:', user?.email || 'null');
                 updateUIForFirebaseUser(user);
                 
                 // If no user and no wallet, enter Demo Mode
@@ -130,6 +142,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                         // Small delay to ensure UI is ready
                         setTimeout(() => {
                             if (!window.DemoMode.isActive()) {
+                                console.log('[Auth] Entering Demo Mode - no user');
                                 window.DemoMode.enter();
                             }
                         }, 100);
@@ -137,6 +150,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 } else if (user) {
                     // User logged in - exit demo mode if active
                     if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+                        console.log('[Auth] Exiting Demo Mode - user logged in');
                         window.DemoMode.exit();
                         loadUserFunds(); // Reload real data
                     }
