@@ -1866,10 +1866,28 @@ function backToDashboard() {
     const fabBtn = document.getElementById('addExpenseBtn');
     if (fabBtn) fabBtn.style.display = 'none';
     
-    document.getElementById('fundDetailSection').classList.remove('active');
-    document.getElementById('dashboardSection').classList.add('active');
+    const fundDetailSection = document.getElementById('fundDetailSection');
+    const dashboardSection = document.getElementById('dashboardSection');
+    
+    // Hide fund detail section
+    if (fundDetailSection) {
+        fundDetailSection.classList.remove('active');
+        fundDetailSection.style.display = 'none'; // Clear inline style
+    }
+    
+    // Show dashboard section
+    if (dashboardSection) {
+        dashboardSection.classList.add('active');
+        dashboardSection.style.display = 'block'; // Set inline style
+    }
+    
     currentFund = null;
     currentFundContract = null;
+    
+    // If in Demo Mode, re-display demo groups
+    if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+        window.DemoMode.displayDemoGroups();
+    }
 }
 
 /**

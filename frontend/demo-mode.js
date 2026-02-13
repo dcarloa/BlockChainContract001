@@ -660,6 +660,8 @@ function displayDemoGroups() {
  * Open the demo group detail view
  */
 function openDemoGroup() {
+    console.log('🎭 openDemoGroup() called');
+    
     // Track interaction
     if (typeof gtag === 'function') {
         gtag('event', 'demo_interaction', {
@@ -668,12 +670,18 @@ function openDemoGroup() {
         });
     }
     
-    // Show fund detail section
+    // Show fund detail section, hide dashboard
     const dashboardSection = document.getElementById('dashboardSection');
     const fundDetailSection = document.getElementById('fundDetailSection');
     
-    if (dashboardSection) dashboardSection.classList.remove('active');
-    if (fundDetailSection) fundDetailSection.classList.add('active');
+    if (dashboardSection) {
+        dashboardSection.classList.remove('active');
+        dashboardSection.style.display = 'none'; // Force hide (override inline styles)
+    }
+    if (fundDetailSection) {
+        fundDetailSection.classList.add('active');
+        fundDetailSection.style.display = 'block'; // Force display
+    }
     
     // Populate with demo data
     populateDemoGroupDetail();
