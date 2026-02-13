@@ -2925,7 +2925,9 @@ function switchFundTab(tabName) {
     
     // Load mascot when mascot tab is selected
     if (tabName === 'mascot' && window.MascotSystem && currentFund) {
-        const groupId = currentFund.fundAddress || currentFund.groupId;
+        // For Simple Mode: fundId is the group ID (grp_xxx)
+        // For Blockchain Mode: fundAddress is the contract address
+        const groupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
         if (groupId) {
             window.MascotSystem.loadMascotTab(groupId);
         } else {

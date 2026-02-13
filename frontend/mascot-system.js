@@ -320,7 +320,7 @@ async function addItemToWardrobe(groupId, itemId) {
             lastObtained: Date.now()
         });
         
-        console.log(`[Mascot] Added ${itemId}, copies: ${newCopies}, level: ${newLevel}`);
+        console.log(`[Mascot] Added ${itemId} to group ${groupId}, copies: ${newCopies}, level: ${newLevel}`);
         
         return {
             itemId,
