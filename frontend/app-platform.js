@@ -2719,9 +2719,21 @@ async function signOutFromFirebase() {
         await window.FirebaseConfig.signOut();
         showToast("Signed out successfully", "success");
         
-        // Reload to update UI
-        await loadUserFunds();
+        // Clear current user data
+        allUserGroups = [];
+        
         hideLoading();
+        
+        // If no wallet connected, enter Demo Mode
+        if (!userAddress) {
+            console.log('[SignOut] No wallet, entering Demo Mode');
+            if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
+                window.DemoMode.enter();
+            }
+        } else {
+            // Wallet still connected, reload user funds (blockchain only)
+            await loadUserFunds();
+        }
     } catch (error) {
         hideLoading();
         console.error("Sign out error:", error);
