@@ -1515,7 +1515,8 @@ window.DemoMode = {
     showActionModal: showDemoActionModal,
     promptSignup: promptDemoSignup,
     getDemoGroup: () => DEMO_GROUP_DATA,
-    getDemoUser: () => DEMO_CURRENT_USER
+    getDemoUser: () => DEMO_CURRENT_USER,
+    displayDemoGroups: displayDemoGroups
 };
 
 // Expose functions globally for onclick handlers in HTML

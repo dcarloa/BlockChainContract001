@@ -88,7 +88,29 @@ let currentFilter = 'all';
 
 // Expose allUserGroups to window so demo-mode can clear it
 window.getAllUserGroups = () => allUserGroups;
-window.clearAllUserGroups = () => { allUserGroups = []; };
+window.clearAllUserGroups = () => { 
+    allUserGroups = []; 
+    // Also reset all counters to prevent showing old data
+    const countAllEl = document.getElementById('countAll');
+    const countCreatedEl = document.getElementById('countCreated');
+    const countParticipatingEl = document.getElementById('countParticipating');
+    const totalCreatedEl = document.getElementById('totalGroupsCreated');
+    const totalParticipatingEl = document.getElementById('totalGroupsParticipating');
+    const totalJoinedEl = document.getElementById('totalGroupsJoined');
+    
+    if (countAllEl) countAllEl.textContent = '0';
+    if (countCreatedEl) countCreatedEl.textContent = '0';
+    if (countParticipatingEl) countParticipatingEl.textContent = '0';
+    if (totalCreatedEl) totalCreatedEl.textContent = '0';
+    if (totalParticipatingEl) totalParticipatingEl.textContent = '0';
+    if (totalJoinedEl) totalJoinedEl.textContent = '0';
+    
+    // Clear the groups grid
+    const groupsGrid = document.getElementById('groupsGrid');
+    if (groupsGrid) groupsGrid.innerHTML = '';
+    
+    console.log('✅ Cleared all user groups, counters, and grid');
+};
 
 // ============================================
 // INITIALIZATION
@@ -1655,6 +1677,12 @@ function filterAndSortGroups() {
 }
 
 function filterFunds() {
+    // If in Demo Mode, display demo groups instead
+    if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+        console.log('🎭 Demo Mode active - displaying demo groups instead of filtering');
+        window.DemoMode.displayDemoGroups();
+        return;
+    }
     // Redirect to new function for backwards compatibility
     filterAndSortGroups();
 }
