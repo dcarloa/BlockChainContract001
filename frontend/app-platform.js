@@ -1286,6 +1286,12 @@ Would you like to sign in now?`;
 
 async function loadUserFunds() {
     try {
+        // Skip if Demo Mode is active - demo data is handled separately
+        if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+            console.log('[loadUserFunds] Demo Mode active, skipping...');
+            return;
+        }
+        
         // Check if user is authenticated (either Firebase or Wallet)
         const hasFirebaseAuth = window.FirebaseConfig && window.FirebaseConfig.isAuthenticated();
         const hasWallet = !!userAddress;
