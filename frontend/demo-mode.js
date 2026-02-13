@@ -323,7 +323,7 @@ function showDemoActionModal(actionType) {
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -331,33 +331,83 @@ function showDemoActionModal(actionType) {
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
+            backdrop-filter: blur(4px);
         `;
+        // Close on backdrop click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                window.closeDemoActionModal();
+            }
+        });
         document.body.appendChild(modal);
     }
     
     modal.innerHTML = `
-        <div class="modal demo-action-modal" style="position: relative; background: var(--glass-bg); border-radius: 16px; padding: 2rem; max-width: 400px; margin: auto;">
-            <button class="modal-close" onclick="window.closeDemoActionModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary);">&times;</button>
-            <div class="demo-modal-content">
-                <div class="demo-modal-icon">🐜</div>
-                <h2 class="demo-modal-title">${t.title}</h2>
-                <p class="demo-modal-subtitle">${t.subtitle}</p>
-                
-                <div class="demo-modal-benefits">
-                    <div class="demo-benefit">${t.benefit1}</div>
-                    <div class="demo-benefit">${t.benefit2}</div>
-                    <div class="demo-benefit">${t.benefit3}</div>
-                    <div class="demo-benefit">${t.benefit4}</div>
-                </div>
-                
-                <div class="demo-modal-actions">
-                    <button class="btn btn-primary btn-large" onclick="promptDemoSignup('action_modal')">
-                        ${t.button}
-                    </button>
-                    <button class="btn btn-ghost" onclick="window.closeDemoActionModal()">
-                        ${t.later}
-                    </button>
-                </div>
+        <div class="demo-action-modal" style="
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            margin: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            text-align: center;
+        ">
+            <button onclick="window.closeDemoActionModal()" style="
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: rgba(255,255,255,0.1);
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: white;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">&times;</button>
+            
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🐜</div>
+            <h2 style="color: white; margin-bottom: 0.5rem; font-size: 1.5rem;">${t.title}</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; line-height: 1.5;">${t.subtitle}</p>
+            
+            <div style="text-align: left; margin-bottom: 1.5rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                <div style="color: #4ade80; margin-bottom: 0.5rem;">${t.benefit1}</div>
+                <div style="color: #4ade80; margin-bottom: 0.5rem;">${t.benefit2}</div>
+                <div style="color: #4ade80; margin-bottom: 0.5rem;">${t.benefit3}</div>
+                <div style="color: #4ade80;">${t.benefit4}</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <button onclick="window.promptDemoSignup('action_modal')" style="
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    padding: 1rem 2rem;
+                    border-radius: 8px;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                ">
+                    ${t.button}
+                </button>
+                <button onclick="window.closeDemoActionModal()" style="
+                    background: transparent;
+                    color: rgba(255,255,255,0.7);
+                    border: 1px solid rgba(255,255,255,0.2);
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    cursor: pointer;
+                ">
+                    ${t.later}
+                </button>
             </div>
         </div>
     `;
