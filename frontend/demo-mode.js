@@ -930,27 +930,27 @@ function renderDemoBalances() {
             </div>
         </div>
         
-        <!-- Your Balance Card -->
-        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+        <!-- Your Balance Card - Theme aware -->
+        <div class="demo-balance-card" style="background: var(--glass-bg); backdrop-filter: blur(20px); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
                 <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; font-weight: 600;">C</div>
                 <div>
-                    <div style="font-weight: 600; color: white; font-size: 1.1rem;">Carlos (${lang === 'es' ? 'Tú' : 'You'})</div>
-                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">carlos@example.com</div>
+                    <div style="font-weight: 600; color: var(--text-primary); font-size: 1.1rem;">Carlos (${lang === 'es' ? 'Tú' : 'You'})</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">carlos@example.com</div>
                 </div>
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
-                <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 0.75rem; text-align: center;">
-                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-bottom: 0.25rem;">${tr.youPaid}</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: white;">$${myPaid.toFixed(0)}</div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.youPaid}</div>
+                    <div style="font-size: 1rem; font-weight: 600; color: var(--text-primary);">$${myPaid.toFixed(0)}</div>
                 </div>
-                <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 0.75rem; text-align: center;">
-                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-bottom: 0.25rem;">${tr.yourShare}</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: white;">$${myShare.toFixed(0)}</div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.yourShare}</div>
+                    <div style="font-size: 1rem; font-weight: 600; color: var(--text-primary);">$${myShare.toFixed(0)}</div>
                 </div>
-                <div style="background: ${myBalanceAmount >= 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 12px; padding: 0.75rem; text-align: center;">
-                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-bottom: 0.25rem;">${tr.yourBalance}</div>
+                <div style="background: ${myBalanceAmount >= 0 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)'}; border: 1px solid ${myBalanceAmount >= 0 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; border-radius: 12px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.yourBalance}</div>
                     <div style="font-size: 1rem; font-weight: 700; color: ${myBalanceAmount >= 0 ? '#22c55e' : '#ef4444'};">${myBalanceAmount >= 0 ? '+' : ''}$${myBalanceAmount.toFixed(2)}</div>
                 </div>
             </div>
@@ -989,9 +989,9 @@ function renderDemoBalances() {
         const balanceIcon = member.balance >= 0 ? '↑' : '↓';
         
         html += `
-            <div style="background: ${isCurrentUser ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))' : 'rgba(255,255,255,0.03)'}; border: 1px solid ${isCurrentUser ? 'rgba(102, 126, 234, 0.3)' : 'rgba(255,255,255,0.08)'}; border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="background: ${isCurrentUser ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))' : 'var(--glass-bg)'}; border: 1px solid ${isCurrentUser ? 'rgba(102, 126, 234, 0.3)' : 'var(--glass-border)'}; border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, ${isCurrentUser ? '#667eea, #764ba2' : '#374151, #4b5563'}); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">${member.name.charAt(0)}</div>
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, ${isCurrentUser ? '#667eea, #764ba2' : '#6b7280, #9ca3af'}); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">${member.name.charAt(0)}</div>
                     <div>
                         <div style="font-weight: 600; color: var(--text-primary);">${member.name} ${isCurrentUser ? '(You)' : ''}</div>
                         <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.paid} $${member.paid.toFixed(0)} · ${tr.share} $${member.share.toFixed(0)}</div>
