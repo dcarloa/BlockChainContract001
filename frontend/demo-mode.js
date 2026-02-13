@@ -171,9 +171,38 @@ function enterDemoMode() {
  */
 function exitDemoMode() {
     isDemoMode = false;
+    
+    // Hide demo UI elements
     hideDemoBanner();
     hideDemoSignupCTA();
-    console.log('🎭 Demo Mode deactivated');
+    closeDemoActionModal();
+    
+    // Remove demo group card from grid
+    const demoCard = document.querySelector('.fund-card[data-demo-group="true"]');
+    if (demoCard) {
+        demoCard.remove();
+    }
+    
+    // If we're viewing the demo group, go back to dashboard
+    const fundView = document.getElementById('fundView');
+    const dashboardSection = document.getElementById('dashboardSection');
+    if (fundView && fundView.style.display !== 'none') {
+        // Check if it's showing the demo group
+        const fundName = document.getElementById('fundName');
+        if (fundName && fundName.textContent === DEMO_GROUP_DATA.name) {
+            // Hide fund view, show dashboard
+            fundView.style.display = 'none';
+            if (dashboardSection) {
+                dashboardSection.style.display = 'block';
+            }
+        }
+    }
+    
+    // Clear demo data from window
+    window.demoGroupData = null;
+    window.demoCurrentUser = null;
+    
+    console.log('🎭 Demo Mode fully deactivated - UI cleaned up');
 }
 
 /**
@@ -519,7 +548,7 @@ function displayDemoGroups() {
     
     // Render demo group card using the SAME format as createFundCard()
     groupsGrid.innerHTML = `
-        <div class="fund-card demo-fund-card" onclick="window.openDemoGroup()">
+        <div class="fund-card demo-fund-card" data-demo-group="true" onclick="window.openDemoGroup()">
             <div class="fund-card-content">
                 <div class="demo-badge-corner">DEMO</div>
                 
