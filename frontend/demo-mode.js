@@ -460,9 +460,15 @@ function promptDemoSignup(source) {
     // Close any open modals
     closeDemoActionModal();
     
-    // Open sign in modal
-    if (typeof openSignInModal === 'function') {
-        openSignInModal();
+    // Open sign in modal - showSignInModal is the correct function name
+    if (typeof showSignInModal === 'function') {
+        showSignInModal();
+    } else {
+        // Fallback: try to show the modal directly
+        const signInModal = document.getElementById('signInModal');
+        if (signInModal) {
+            signInModal.style.display = 'flex';
+        }
     }
 }
 
