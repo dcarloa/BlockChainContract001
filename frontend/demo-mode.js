@@ -144,11 +144,8 @@ function isInDemoMode() {
  * Enter demo mode - called when unauthenticated user tries to use the app
  */
 function enterDemoMode() {
-    console.log('🎭 enterDemoMode() called');
-    
     // CRITICAL: Don't enter demo mode if user is already authenticated
     if (window.FirebaseConfig && window.FirebaseConfig.isAuthenticated()) {
-        console.log('🎭 Skipping Demo Mode - user is already authenticated');
         return;
     }
     
@@ -163,14 +160,10 @@ function enterDemoMode() {
     }
     
     // Show demo banner
-    console.log('🎭 Calling showDemoBanner()');
     showDemoBanner();
     
     // Load demo data
-    console.log('🎭 Calling loadDemoData()');
     loadDemoData();
-    
-    console.log('🎭 Demo Mode activated');
 }
 
 /**
@@ -235,8 +228,6 @@ function exitDemoMode() {
     // Clear demo data from window
     window.demoGroupData = null;
     window.demoCurrentUser = null;
-    
-    console.log('🎭 Demo Mode fully deactivated - UI and containers cleaned up');
 }
 
 /**
@@ -258,18 +249,15 @@ function showDemoBanner() {
         
         // Insert at the beginning of main content
         const mainContent = document.querySelector('.main-content');
-        console.log('🎭 mainContent element:', mainContent);
         if (mainContent) {
             mainContent.insertBefore(banner, mainContent.firstChild);
         } else {
             // Fallback: try to find dashboard section
             const dashboard = document.getElementById('dashboardSection');
-            console.log('🎭 dashboardSection element:', dashboard);
             if (dashboard) {
                 dashboard.insertBefore(banner, dashboard.firstChild);
             } else {
                 // Last resort: append to body
-                console.log('🎭 Appending banner to body');
                 document.body.appendChild(banner);
             }
         }
@@ -539,12 +527,9 @@ function promptDemoSignup(source) {
  * Load demo data into the app
  */
 function loadDemoData() {
-    console.log('🎭 loadDemoData() - starting');
-    
     // CRITICAL: Clear real user data to prevent showing real groups
     if (typeof window.clearAllUserGroups === 'function') {
         window.clearAllUserGroups();
-        console.log('🎭 Cleared allUserGroups');
     }
     
     // Set global variables that the app expects
@@ -566,8 +551,6 @@ function loadDemoData() {
     
     // Show the demo group in the dashboard
     displayDemoGroups();
-    
-    console.log('🎭 loadDemoData() - demo groups displayed');
     
     // Show the floating CTA after a short delay
     setTimeout(() => {
@@ -660,8 +643,6 @@ function displayDemoGroups() {
  * Open the demo group detail view
  */
 function openDemoGroup() {
-    console.log('🎭 openDemoGroup() called');
-    
     // Track interaction
     if (typeof gtag === 'function') {
         gtag('event', 'demo_interaction', {

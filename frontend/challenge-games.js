@@ -2504,5 +2504,3 @@ function clickEmojiCell(cell) {
 // ============================================
 // INITIALIZATION
 // ============================================
-
-console.log('✅ Challenge Games System loaded');

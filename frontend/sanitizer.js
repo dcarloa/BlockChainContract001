@@ -363,5 +363,3 @@ window.Sanitizer = Sanitizer;
 window.Validators = Validators;
 window.safeRender = safeRender;
 window.safeRenderHTML = safeRenderHTML;
-
-console.log('✅ Sanitizer and Validators initialized');

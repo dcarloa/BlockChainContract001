@@ -62,7 +62,7 @@
     <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
     
     <!-- Demo Mode System -->
-    <script src="demo-mode.js?v=2.2"></script>
+    <script src="demo-mode.js?v=2.3"></script>
     
     <!-- Subscription Manager -->
     <script src="subscription-manager.js?v=1.0"></script>
@@ -2127,7 +2127,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.7"></script>
     <script src="mascot-system.js?v=1.9"></script>
-    <script src="app-platform.js?v=3.3"></script>
+    <script src="app-platform.js?v=3.4"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)
@@ -2164,7 +2164,6 @@ Simple, fast, and free.</p>
             if (typeof window.FirebaseConfig !== 'undefined') {
                 window.FirebaseConfig.initialize().then(success => {
                     if (success) {
-                        console.log('✅ Firebase ready for Simple Mode');
                         // Show BETA modal after Firebase is ready
                         checkAndShowBetaModal();
                     } else {
@@ -3321,8 +3320,6 @@ Simple, fast, and free.</p>
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
                     .then(reg => {
-                        console.log('✅ Service Worker registered:', reg.scope);
-                        
                         // Show installing message
                         if (reg.installing) {
                             swInstalling = true;
@@ -3358,7 +3355,7 @@ Simple, fast, and free.</p>
                                 }
                                 
                                 if (newWorker.state === 'activated') {
-                                    console.log('✅ Service Worker activated');
+                                    // Service Worker activated
                                 }
                             });
                         });
@@ -3370,7 +3367,7 @@ Simple, fast, and free.</p>
                 
                 // Listen for controller change (new SW activated)
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
-                    console.log('🔄 New Service Worker activated');
+                    // New Service Worker activated
                 });
             });
         }

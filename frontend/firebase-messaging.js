@@ -38,8 +38,6 @@ async function initializeMessaging() {
 
         // Handle foreground messages
         messagingInstance.onMessage((payload) => {
-            console.log('📬 Foreground message received:', payload);
-            
             // Show in-app notification
             if (payload.notification) {
                 showInAppNotification(payload.notification, payload.data);
@@ -51,7 +49,6 @@ async function initializeMessaging() {
             }
         });
 
-        console.log('✅ Firebase Messaging initialized');
         return true;
 
     } catch (error) {
@@ -67,19 +64,16 @@ async function requestNotificationPermission() {
     try {
         // Check if notifications are supported
         if (!('Notification' in window)) {
-            console.log('⚠️ This browser does not support notifications');
             throw new Error('NOTIFICATIONS_NOT_SUPPORTED');
         }
         
         // Check if service workers are supported
         if (!('serviceWorker' in navigator)) {
-            console.log('⚠️ This browser does not support service workers');
             throw new Error('SERVICE_WORKERS_NOT_SUPPORTED');
         }
         
         // Check if already blocked
         if (Notification.permission === 'denied') {
-            console.log('⚠️ Notification permission was previously denied');
             throw new Error('PERMISSION_BLOCKED');
         }
         
@@ -92,13 +86,10 @@ async function requestNotificationPermission() {
         const permission = await Notification.requestPermission();
         
         if (permission === 'granted') {
-            console.log('✅ Notification permission granted');
             return await getFCMToken();
         } else if (permission === 'denied') {
-            console.log('⚠️ Notification permission denied by user');
             throw new Error('PERMISSION_DENIED');
         } else {
-            console.log('⚠️ Notification permission dismissed');
             return null;
         }
 
@@ -131,7 +122,6 @@ async function getFCMToken() {
         });
 
         if (token) {
-            console.log('✅ FCM Token obtained');
             currentFCMToken = token;
             
             // Save token to Firebase
@@ -139,7 +129,6 @@ async function getFCMToken() {
             
             return token;
         } else {
-            console.log('⚠️ No FCM token available');
             return null;
         }
 
@@ -177,8 +166,6 @@ async function saveFCMToken(token) {
             }
         });
 
-        console.log('✅ FCM token saved to database');
-
     } catch (error) {
         console.error('❌ Error saving FCM token:', error);
     }
@@ -205,7 +192,6 @@ async function removeFCMToken() {
             .ref(`fcmTokens/${user.uid}/${sanitizedToken}`)
             .remove();
 
-        console.log('✅ FCM token removed');
         currentFCMToken = null;
 
     } catch (error) {

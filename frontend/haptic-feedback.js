@@ -37,8 +37,6 @@ const HapticFeedback = {
         // Initialize AudioContext on first user interaction
         document.addEventListener('click', () => this.initAudio(), { once: true });
         document.addEventListener('touchstart', () => this.initAudio(), { once: true });
-        
-        console.log('✅ Haptic Feedback System initialized');
     },
     
     /**
@@ -49,9 +47,8 @@ const HapticFeedback = {
         
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            console.log('✅ Audio Context initialized');
         } catch (e) {
-            console.warn('⚠️ Web Audio API not supported');
+            // Web Audio API not supported
         }
     },
     

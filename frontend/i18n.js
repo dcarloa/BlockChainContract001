@@ -2700,11 +2700,8 @@ function applyTranslations() {
     const lang = getCurrentLanguage();
     document.documentElement.lang = lang;
     
-    console.log(`[i18n] Applying translations for language: ${lang}`);
-    
     // Apply translations to elements with data-i18n attribute
     const elements = document.querySelectorAll('[data-i18n]');
-    console.log(`[i18n] Found ${elements.length} elements with data-i18n`);
     
     let successCount = 0;
     let failCount = 0;
@@ -2727,12 +2724,10 @@ function applyTranslations() {
                 failCount++;
             }
         } else {
-            console.warn(`[i18n] Translation not found or empty for key: ${key}`);
+            // Translation not found for key
             failCount++;
         }
     });
-    
-    console.log(`[i18n] Translation application complete: ${successCount} successful, ${failCount} failed`);
 }
 
 // Initialize translations on page load

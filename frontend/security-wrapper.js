@@ -14,8 +14,6 @@
 (function() {
     'use strict';
     
-    console.log('🛡️ Security Wrapper initializing...');
-    
     // ============================================
     // 1. PROTECCIÓN DE FUNCIONES CRÍTICAS
     // ============================================
@@ -61,7 +59,6 @@
             }
         });
         
-        console.log('✅ Protected functions:', PROTECTED_FUNCTIONS);
     }
     
     // ============================================
@@ -113,7 +110,6 @@
             }
         });
         
-        console.log('✅ innerHTML auto-sanitization enabled');
     }
     
     // ============================================
@@ -148,7 +144,6 @@
             return originalSetInterval.apply(this, arguments);
         };
         
-        console.log('✅ Dangerous functions blocked/monitored');
     }
     
     // ============================================
@@ -177,7 +172,6 @@
             }
         });
         
-        console.log('✅ CSP violation reporting enabled');
     }
     
     // ============================================
@@ -243,7 +237,6 @@
         // Check cada segundo
         setInterval(checkDevTools, 1000);
         
-        console.log('✅ Console monitoring active');
     }
     
     // ============================================
@@ -271,7 +264,6 @@
             return originalClear.call(this);
         };
         
-        console.log('✅ localStorage protection enabled');
     }
     
     // ============================================
@@ -302,7 +294,6 @@
             });
         });
         
-        console.log('✅ Input auto-sanitization enabled');
     }
     
     // ============================================
@@ -323,8 +314,6 @@
                     return true;
                 }
             };
-        } else {
-            console.log('✅ RateLimiter active');
         }
     }
     
@@ -336,7 +325,6 @@
      * Inicializar todas las protecciones
      */
     function initializeSecurity() {
-        console.log('🔐 Initializing security measures...');
         
         // Protecciones inmediatas
         blockDangerousFunctions();
@@ -355,7 +343,6 @@
             setTimeout(() => {
                 if (typeof DOMPurify !== 'undefined') {
                     protectInnerHTML();
-                    console.log('✅ DOMPurify loaded late, protection enabled');
                 }
             }, 2000);
         }
@@ -382,12 +369,6 @@
         // Proteger Firebase cuando esté disponible
         setTimeout(protectFirebaseConfig, 1000);
         
-        console.log('✅ Security initialization complete');
-        
-        // Advertencia en consola
-        console.log('%c⚠️ WARNING', 'color: red; font-size: 24px; font-weight: bold;');
-        console.log('%cDo not paste code here unless you know what you are doing!', 'color: orange; font-size: 16px;');
-        console.log('%cPasting malicious code can compromise your account and data.', 'color: orange; font-size: 14px;');
     }
     
     // Ejecutar cuando el DOM esté listo
@@ -407,7 +388,5 @@
         protectFirebaseConfig,
         isDevToolsOpen: () => devtools && devtools.isOpen
     };
-    
-    console.log('🛡️ Security Wrapper v1.0.0 loaded');
     
 })();

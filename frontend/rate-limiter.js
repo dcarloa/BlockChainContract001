@@ -281,5 +281,3 @@ window.checkRateLimit = checkRateLimit;
 window.recordRateLimitAction = recordRateLimitAction;
 window.getRateLimitInfo = getRateLimitInfo;
 window.RATE_LIMITS = RATE_LIMITS;
-
-console.log('✅ Rate Limiter initialized with limits:', RATE_LIMITS);

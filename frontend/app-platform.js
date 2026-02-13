@@ -108,8 +108,6 @@ window.clearAllUserGroups = () => {
     // Clear the groups grid
     const groupsGrid = document.getElementById('groupsGrid');
     if (groupsGrid) groupsGrid.innerHTML = '';
-    
-    console.log('✅ Cleared all user groups, counters, and grid');
 };
 
 // ============================================
@@ -149,17 +147,14 @@ window.addEventListener('DOMContentLoaded', async () => {
             // Check if user is ALREADY authenticated before setting up listener
             const existingUser = window.FirebaseConfig.getCurrentUser();
             if (existingUser) {
-                console.log('[Auth] User already logged in:', existingUser.email);
                 // Force exit demo mode immediately if user is already logged in
                 if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
-                    console.log('[Auth] Exiting Demo Mode - user already authenticated');
                     window.DemoMode.exit();
                 }
             }
             
             // Setup Firebase auth state listener
             window.FirebaseConfig.onAuthStateChanged = (user) => {
-                console.log('[Auth] onAuthStateChanged fired, user:', user?.email || 'null');
                 updateUIForFirebaseUser(user);
                 
                 // If no user and no wallet, enter Demo Mode
@@ -167,7 +162,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                     if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
                         // Check one more time that user is really not auth'd
                         if (!window.FirebaseConfig.isAuthenticated()) {
-                            console.log('[Auth] Confirmed no user - entering Demo Mode');
                             // No delay needed since auth state is already confirmed
                             if (!window.DemoMode.isActive()) {
                                 window.DemoMode.enter();
@@ -177,7 +171,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                 } else if (user) {
                     // User logged in - exit demo mode if active
                     if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
-                        console.log('[Auth] Exiting Demo Mode - user logged in');
                         window.DemoMode.exit();
                     }
                     // Always reload user funds when user is confirmed
@@ -1298,7 +1291,6 @@ async function loadUserFunds() {
     try {
         // Skip if Demo Mode is active - demo data is handled separately
         if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
-            console.log('[loadUserFunds] Demo Mode active, skipping...');
             return;
         }
         
@@ -1314,7 +1306,6 @@ async function loadUserFunds() {
         // If no authentication at all, show loading state and wait for auth check
         // Demo Mode will be activated by onAuthStateChanged if no user is found
         if (!hasFirebaseAuth && !hasWallet) {
-            console.log('[loadUserFunds] No auth yet, waiting for auth state...');
             if (loadingGroups) loadingGroups.style.display = 'none';
             
             // Show a temporary loading/waiting state instead of entering demo mode here
@@ -1695,7 +1686,6 @@ function filterAndSortGroups() {
 function filterFunds() {
     // If in Demo Mode, display demo groups instead
     if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
-        console.log('🎭 Demo Mode active - displaying demo groups instead of filtering');
         window.DemoMode.displayDemoGroups();
         return;
     }
@@ -1788,10 +1778,6 @@ let currentFundContract = null;
 
 async function openFund(fundAddress) {
     try {
-        console.log('[openFund] Starting with fundAddress:', fundAddress);
-        console.log('[openFund] allUserGroups count:', allUserGroups.length);
-        console.log('[openFund] Available fundAddresses:', allUserGroups.map(f => f.fundAddress));
-        
         const t = translations[getCurrentLanguage()];
         showLoading(t.app.loading.loadingFund);
         
@@ -1810,11 +1796,8 @@ async function openFund(fundAddress) {
             return f.fundAddress.toLowerCase() === fundAddress.toLowerCase();
         });
         
-        console.log('[openFund] Found currentFund:', currentFund);
-        
         if (!currentFund) {
-            console.error("Fund not found. Looking for:", fundAddress);
-            console.error("Available addresses:", allUserGroups.map(f => f.fundAddress));
+            console.error("Fund not found. Looking for:", fundAddress, "Available:", allUserGroups.map(f => f.fundAddress));
             throw new Error("Fund not found in your list");
         }
         
@@ -2801,7 +2784,6 @@ async function signOutFromFirebase() {
         
         // If no wallet connected, enter Demo Mode
         if (!userAddress) {
-            console.log('[SignOut] No wallet, entering Demo Mode');
             if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
                 window.DemoMode.enter();
             }
