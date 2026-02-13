@@ -246,11 +246,11 @@ function showDemoSignupCTA() {
                     <strong data-i18n="app.demo.ctaTitle">Like what you see?</strong>
                     <span data-i18n="app.demo.ctaSubtitle">Create your real group in 30 seconds</span>
                 </div>
-                <button class="btn btn-primary demo-cta-button" onclick="promptDemoSignup('floating_cta')">
+                <button class="btn btn-primary demo-cta-button" onclick="window.promptDemoSignup('floating_cta')">
                     <span data-i18n="app.demo.ctaButton">Create My Group →</span>
                 </button>
             </div>
-            <button class="demo-cta-close" onclick="minimizeDemoSignupCTA()" title="Minimize">−</button>
+            <button class="demo-cta-close" onclick="window.minimizeDemoSignupCTA()" title="Minimize">−</button>
         `;
         
         document.body.appendChild(cta);
@@ -720,12 +720,12 @@ function renderDemoBalances() {
     
     const group = DEMO_GROUP_DATA;
     const members = Object.entries(group.members);
-    const demoUserId = 'demo-user-carlos'; // Current demo user
+    const demoUserId = 'demo-user-carlos'; // Current demo user (Carlos)
     
     // Calculate each member's balance
     const balances = {};
     for (const [id, member] of members) {
-        balances[id] = { id, name: member.name, balance: 0 };
+        balances[id] = { id, name: member.name, balance: 0, paid: 0, share: 0 };
     }
     
     for (const expense of Object.values(group.expenses)) {
@@ -736,6 +736,7 @@ function renderDemoBalances() {
             if (balances[payerId]) {
                 const payerAmount = expense.paidByAmounts?.[payerId] || expense.amount;
                 balances[payerId].balance += payerAmount;
+                balances[payerId].paid += payerAmount;
             }
         }
         
@@ -743,31 +744,7 @@ function renderDemoBalances() {
         for (const participantId of expense.participants) {
             if (balances[participantId]) {
                 balances[participantId].balance -= shareAmount;
-            }
-        }
-    }
-    
-    // Calculate pairwise debts (simplified)
-    const debts = [];
-    const balanceArray = Object.values(balances);
-    
-    // Find who owes whom
-    for (const member of balanceArray) {
-        if (member.balance < -0.01) { // This person owes money
-            // Find who they owe to (people with positive balance)
-            for (const creditor of balanceArray) {
-                if (creditor.balance > 0.01 && member.id !== creditor.id) {
-                    const amount = Math.min(Math.abs(member.balance), creditor.balance);
-                    if (amount > 0.01) {
-                        debts.push({
-                            from: member.id,
-                            fromName: member.name,
-                            to: creditor.id,
-                            toName: creditor.name,
-                            amount: amount
-                        });
-                    }
-                }
+                balances[participantId].share += shareAmount;
             }
         }
     }
@@ -778,128 +755,168 @@ function renderDemoBalances() {
         .reduce((sum, e) => sum + e.amount, 0);
     const perPerson = totalExpenses / members.length;
     
-    // Separate: I owe vs owes me
-    const iOwe = debts.filter(d => d.from === demoUserId);
-    const owesMe = debts.filter(d => d.to === demoUserId);
-    
     // Get current language
     const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
     const t = {
         en: {
-            dashboard: 'Balance Dashboard',
+            title: '⚖️ Smart Balance Tracking',
+            subtitle: 'See exactly who owes whom - no more awkward calculations!',
             totalSpent: 'Total Spent',
-            perPerson: 'Per Person',
+            perPerson: 'Per Person', 
             members: 'Members',
-            youOwe: '👉 You owe:',
-            owesYou: '👈 Owes you:',
-            allSettled: '✅ All Settled Up!',
-            allSettledDesc: 'Everyone is even. No pending payments.',
-            recordPayment: 'Record Payment',
-            youOweThis: 'You owe this person',
-            thisOwesYou: 'This person owes you'
+            youPaid: 'You paid',
+            yourShare: 'Your share',
+            yourBalance: 'Your balance',
+            youGet: 'You get back',
+            youOwe: 'You owe',
+            smartSettlements: '✨ Smart Settlements',
+            settlementsDesc: 'One-click to settle all debts with minimum payments',
+            settleNow: 'Settle Up Now',
+            memberBreakdown: '📊 Member Breakdown',
+            paid: 'Paid',
+            share: 'Share', 
+            balance: 'Balance',
+            signInCTA: '🚀 Sign in to track your real expenses!'
         },
         es: {
-            dashboard: 'Panel de Balances',
+            title: '⚖️ Seguimiento Inteligente de Balances',
+            subtitle: '¡Mira exactamente quién debe a quién - sin cálculos incómodos!',
             totalSpent: 'Total Gastado',
             perPerson: 'Por Persona',
             members: 'Miembros',
-            youOwe: '👉 Debes:',
-            owesYou: '👈 Te deben:',
-            allSettled: '✅ ¡Todo Liquidado!',
-            allSettledDesc: 'Todos están a mano. Sin pagos pendientes.',
-            recordPayment: 'Registrar Pago',
-            youOweThis: 'Le debes a esta persona',
-            thisOwesYou: 'Esta persona te debe'
+            youPaid: 'Pagaste',
+            yourShare: 'Tu parte',
+            yourBalance: 'Tu balance',
+            youGet: 'Te deben',
+            youOwe: 'Debes',
+            smartSettlements: '✨ Liquidaciones Inteligentes',
+            settlementsDesc: 'Un clic para liquidar todas las deudas con pagos mínimos',
+            settleNow: 'Liquidar Ahora',
+            memberBreakdown: '📊 Desglose por Miembro',
+            paid: 'Pagó',
+            share: 'Parte',
+            balance: 'Balance',
+            signInCTA: '🚀 ¡Inicia sesión para rastrear tus gastos reales!'
         }
     };
     const tr = t[lang] || t.en;
     
+    // Carlos's balance
+    const myBalance = balances[demoUserId];
+    const myBalanceAmount = myBalance?.balance || 0;
+    const myPaid = myBalance?.paid || 0;
+    const myShare = myBalance?.share || 0;
+    
     let html = `
-        <!-- Balance Dashboard -->
-        <div id="simpleModeBalanceDashboard" class="balance-dashboard" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
-            <h4 style="margin: 0 0 1rem 0; font-size: 1rem; color: var(--text-primary);">📊 ${tr.dashboard}</h4>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                <div style="text-align: center;">
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.totalSpent}</div>
-                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">$${totalExpenses.toFixed(2)}</div>
+        <!-- Hero Section -->
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">${tr.title}</h3>
+            <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">${tr.subtitle}</p>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+            <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%); border-radius: 16px; padding: 1rem; text-align: center; border: 1px solid rgba(102, 126, 234, 0.2);">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">$${totalExpenses.toFixed(0)}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">${tr.totalSpent}</div>
+            </div>
+            <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.15) 100%); border-radius: 16px; padding: 1rem; text-align: center; border: 1px solid rgba(34, 197, 94, 0.2);">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #22c55e;">$${perPerson.toFixed(0)}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">${tr.perPerson}</div>
+            </div>
+            <div style="background: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(234, 88, 12, 0.15) 100%); border-radius: 16px; padding: 1rem; text-align: center; border: 1px solid rgba(251, 146, 60, 0.2);">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #fb923c;">${members.length}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">${tr.members}</div>
+            </div>
+        </div>
+        
+        <!-- Your Balance Card -->
+        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; font-weight: 600;">C</div>
+                <div>
+                    <div style="font-weight: 600; color: white; font-size: 1.1rem;">Carlos (${lang === 'es' ? 'Tú' : 'You'})</div>
+                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">carlos@example.com</div>
                 </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.perPerson}</div>
-                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">$${perPerson.toFixed(2)}</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+                <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-bottom: 0.25rem;">${tr.youPaid}</div>
+                    <div style="font-size: 1rem; font-weight: 600; color: white;">$${myPaid.toFixed(0)}</div>
                 </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.members}</div>
-                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">${members.length}</div>
+                <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-bottom: 0.25rem;">${tr.yourShare}</div>
+                    <div style="font-size: 1rem; font-weight: 600; color: white;">$${myShare.toFixed(0)}</div>
+                </div>
+                <div style="background: ${myBalanceAmount >= 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 12px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-bottom: 0.25rem;">${tr.yourBalance}</div>
+                    <div style="font-size: 1rem; font-weight: 700; color: ${myBalanceAmount >= 0 ? '#22c55e' : '#ef4444'};">${myBalanceAmount >= 0 ? '+' : ''}$${myBalanceAmount.toFixed(2)}</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding: 0.75rem; background: ${myBalanceAmount >= 0 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)'}; border-radius: 12px; border: 1px solid ${myBalanceAmount >= 0 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'};">
+                <span style="font-size: 1.25rem;">${myBalanceAmount >= 0 ? '💚' : '🔴'}</span>
+                <span style="color: ${myBalanceAmount >= 0 ? '#22c55e' : '#ef4444'}; font-weight: 600; margin-left: 0.5rem;">
+                    ${myBalanceAmount >= 0 ? tr.youGet : tr.youOwe} $${Math.abs(myBalanceAmount).toFixed(2)}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Smart Settlements Feature -->
+        <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                <div style="font-size: 2rem;">💡</div>
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #fbbf24; font-size: 1rem;">${tr.smartSettlements}</h4>
+                    <p style="margin: 0 0 1rem 0; color: var(--text-secondary); font-size: 0.85rem;">${tr.settlementsDesc}</p>
+                    <button onclick="window.showDemoActionModal('smart_settlements')" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                        <span>⚡</span> ${tr.settleNow}
+                    </button>
                 </div>
             </div>
         </div>
         
-        <!-- Balance List -->
-        <div id="balancesList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <!-- Member Breakdown -->
+        <h4 style="margin: 0 0 1rem 0; color: var(--text-primary);">${tr.memberBreakdown}</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
     `;
     
-    // Show debts I owe
-    if (iOwe.length > 0) {
-        html += `<h4 class="balance-section-title" style="color: #ef4444; margin: 0.5rem 0;">${tr.youOwe}</h4>`;
-        iOwe.forEach(debt => {
-            html += `
-                <div class="balance-card-simple owes" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">${debt.toName.charAt(0)}</div>
-                            <div>
-                                <div style="font-weight: 600; color: var(--text-primary);">${debt.toName}</div>
-                                <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.youOweThis}</div>
-                            </div>
-                        </div>
-                        <div style="font-size: 1.25rem; font-weight: 700; color: #ef4444;">
-                            $${debt.amount.toFixed(2)}
-                        </div>
-                    </div>
-                    <button onclick="window.showDemoActionModal('record_payment')" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                        <span>💵</span>
-                        <span>${tr.recordPayment}</span>
-                    </button>
-                </div>
-            `;
-        });
-    }
-    
-    // Show debts owed to me
-    if (owesMe.length > 0) {
-        html += `<h4 class="balance-section-title" style="color: #22c55e; margin: 0.5rem 0;">${tr.owesYou}</h4>`;
-        owesMe.forEach(debt => {
-            html += `
-                <div class="balance-card-simple owed" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">${debt.fromName.charAt(0)}</div>
-                            <div>
-                                <div style="font-weight: 600; color: var(--text-primary);">${debt.fromName}</div>
-                                <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.thisOwesYou}</div>
-                            </div>
-                        </div>
-                        <div style="font-size: 1.25rem; font-weight: 700; color: #22c55e;">
-                            +$${debt.amount.toFixed(2)}
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-    }
-    
-    // If no debts, show all settled message
-    if (iOwe.length === 0 && owesMe.length === 0) {
+    // Show all members with their balances
+    Object.values(balances).forEach(member => {
+        const isCurrentUser = member.id === demoUserId;
+        const balanceColor = member.balance >= 0 ? '#22c55e' : '#ef4444';
+        const balanceIcon = member.balance >= 0 ? '↑' : '↓';
+        
         html += `
-            <div style="text-align: center; padding: 2rem; background: rgba(34, 197, 94, 0.1); border-radius: 12px;">
-                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
-                <h4 style="color: #22c55e; margin: 0 0 0.5rem 0;">${tr.allSettled}</h4>
-                <p style="color: var(--text-secondary); margin: 0;">${tr.allSettledDesc}</p>
+            <div style="background: ${isCurrentUser ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))' : 'rgba(255,255,255,0.03)'}; border: 1px solid ${isCurrentUser ? 'rgba(102, 126, 234, 0.3)' : 'rgba(255,255,255,0.08)'}; border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, ${isCurrentUser ? '#667eea, #764ba2' : '#374151, #4b5563'}); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">${member.name.charAt(0)}</div>
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-primary);">${member.name} ${isCurrentUser ? '(You)' : ''}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.paid} $${member.paid.toFixed(0)} · ${tr.share} $${member.share.toFixed(0)}</div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 1.1rem; font-weight: 700; color: ${balanceColor};">
+                        ${balanceIcon} $${Math.abs(member.balance).toFixed(2)}
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">${tr.balance}</div>
+                </div>
             </div>
         `;
-    }
+    });
     
-    html += `</div>`;
+    html += `
+        </div>
+        
+        <!-- CTA -->
+        <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-radius: 16px; border: 1px solid rgba(102, 126, 234, 0.2);">
+            <button onclick="window.promptDemoSignup('balances_cta')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                ${tr.signInCTA}
+            </button>
+        </div>
+    `;
     
     balancesContainer.innerHTML = html;
 }
@@ -1067,6 +1084,50 @@ function showDemoGroupUI() {
             </div>
         `;
     }
+    
+    // ========== OVERRIDE TAB BUTTON CLICKS FOR DEMO MODE ==========
+    // This prevents the real app from trying to load Firebase/blockchain data
+    
+    const tabButtons = document.querySelectorAll('.fund-tab-btn');
+    tabButtons.forEach(btn => {
+        const tabName = btn.getAttribute('data-tab');
+        
+        // Clone and replace to remove existing event listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Update active states
+            document.querySelectorAll('.fund-tab-btn').forEach(b => b.classList.remove('active'));
+            newBtn.classList.add('active');
+            
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            const targetPane = document.getElementById(tabName + 'Tab');
+            if (targetPane) targetPane.classList.add('active');
+            
+            // Render demo content based on tab
+            switch(tabName) {
+                case 'history':
+                    renderDemoTimeline();
+                    break;
+                case 'balances':
+                    renderDemoBalances();
+                    break;
+                case 'members':
+                    renderDemoMembers();
+                    break;
+                case 'invite':
+                    // Already rendered placeholder
+                    break;
+                case 'mascot':
+                    // Already rendered placeholder
+                    break;
+            }
+        });
+    });
 }
 
 /**
