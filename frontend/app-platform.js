@@ -86,6 +86,10 @@ let metamaskProviderDirect = null;
 let allUserGroups = [];
 let currentFilter = 'all';
 
+// Expose allUserGroups to window so demo-mode can clear it
+window.getAllUserGroups = () => allUserGroups;
+window.clearAllUserGroups = () => { allUserGroups = []; };
+
 // ============================================
 // INITIALIZATION
 // ============================================

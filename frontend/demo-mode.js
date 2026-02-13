@@ -539,12 +539,35 @@ function promptDemoSignup(source) {
  * Load demo data into the app
  */
 function loadDemoData() {
+    console.log('🎭 loadDemoData() - starting');
+    
+    // CRITICAL: Clear real user data to prevent showing real groups
+    if (typeof window.clearAllUserGroups === 'function') {
+        window.clearAllUserGroups();
+        console.log('🎭 Cleared allUserGroups');
+    }
+    
     // Set global variables that the app expects
     window.demoGroupData = DEMO_GROUP_DATA;
     window.demoCurrentUser = DEMO_CURRENT_USER;
     
+    // Ensure dashboard is visible
+    const dashboardSection = document.getElementById('dashboardSection');
+    const fundDetailSection = document.getElementById('fundDetailSection');
+    
+    if (fundDetailSection) {
+        fundDetailSection.classList.remove('active');
+        fundDetailSection.style.display = 'none';
+    }
+    if (dashboardSection) {
+        dashboardSection.classList.add('active');
+        dashboardSection.style.display = 'block';
+    }
+    
     // Show the demo group in the dashboard
     displayDemoGroups();
+    
+    console.log('🎭 loadDemoData() - demo groups displayed');
     
     // Show the floating CTA after a short delay
     setTimeout(() => {
