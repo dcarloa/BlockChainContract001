@@ -139,21 +139,23 @@ window.addEventListener('DOMContentLoaded', async () => {
                 // If no user and no wallet, enter Demo Mode
                 if (!user && !userAddress) {
                     if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
-                        // Small delay to ensure UI is ready
-                        setTimeout(() => {
+                        // Check one more time that user is really not auth'd
+                        if (!window.FirebaseConfig.isAuthenticated()) {
+                            console.log('[Auth] Confirmed no user - entering Demo Mode');
+                            // No delay needed since auth state is already confirmed
                             if (!window.DemoMode.isActive()) {
-                                console.log('[Auth] Entering Demo Mode - no user');
                                 window.DemoMode.enter();
                             }
-                        }, 100);
+                        }
                     }
                 } else if (user) {
                     // User logged in - exit demo mode if active
                     if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
                         console.log('[Auth] Exiting Demo Mode - user logged in');
                         window.DemoMode.exit();
-                        loadUserFunds(); // Reload real data
                     }
+                    // Always reload user funds when user is confirmed
+                    loadUserFunds();
                 }
                 
                 // Initialize Firebase Messaging when user logs in
@@ -1267,28 +1269,21 @@ async function loadUserFunds() {
         const groupsGrid = document.getElementById('groupsGrid');
         const emptyState = document.getElementById('emptyState');
         
-        // If no authentication at all, enter Demo Mode
+        // If no authentication at all, show loading state and wait for auth check
+        // Demo Mode will be activated by onAuthStateChanged if no user is found
         if (!hasFirebaseAuth && !hasWallet) {
+            console.log('[loadUserFunds] No auth yet, waiting for auth state...');
             if (loadingGroups) loadingGroups.style.display = 'none';
             
-            // Enter Demo Mode instead of showing sign-in prompt
-            if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
-                window.DemoMode.enter();
-                return;
-            }
-            
-            // Fallback if Demo Mode not available
+            // Show a temporary loading/waiting state instead of entering demo mode here
+            // The onAuthStateChanged handler will trigger demo mode if needed
             if (groupsGrid) groupsGrid.style.display = 'none';
             if (emptyState) {
                 emptyState.style.display = 'flex';
                 emptyState.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">🔐</div>
-                        <h3>Sign In Required</h3>
-                        <p>Please sign in to view and manage your groups</p>
-                        <button class="btn btn-primary" onclick="openSignInModal()" style="margin-top: 1rem;">
-                            🔑 Sign In
-                        </button>
+                        <div class="empty-icon" style="animation: pulse 1.5s ease-in-out infinite;">⏳</div>
+                        <h3>Loading...</h3>
                     </div>
                 `;
             }
