@@ -124,6 +124,24 @@ window.addEventListener('DOMContentLoaded', async () => {
             window.FirebaseConfig.onAuthStateChanged = (user) => {
                 updateUIForFirebaseUser(user);
                 
+                // If no user and no wallet, enter Demo Mode
+                if (!user && !userAddress) {
+                    if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
+                        // Small delay to ensure UI is ready
+                        setTimeout(() => {
+                            if (!window.DemoMode.isActive()) {
+                                window.DemoMode.enter();
+                            }
+                        }, 100);
+                    }
+                } else if (user) {
+                    // User logged in - exit demo mode if active
+                    if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+                        window.DemoMode.exit();
+                        loadUserFunds(); // Reload real data
+                    }
+                }
+                
                 // Initialize Firebase Messaging when user logs in
                 if (user && typeof initializeMessaging === 'function') {
                     initializeMessaging().then(() => {
