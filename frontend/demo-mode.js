@@ -710,7 +710,7 @@ function calculateDemoBalance() {
 }
 
 /**
- * Render demo balances tab
+ * Render demo balances tab - matches the real app's balance display
  */
 function renderDemoBalances() {
     const balancesContainer = document.getElementById('balancesTab') || 
@@ -720,12 +720,12 @@ function renderDemoBalances() {
     
     const group = DEMO_GROUP_DATA;
     const members = Object.entries(group.members);
-    const memberCount = members.length;
+    const demoUserId = 'demo-user-carlos'; // Current demo user
     
     // Calculate each member's balance
     const balances = {};
     for (const [id, member] of members) {
-        balances[id] = { name: member.name, balance: 0 };
+        balances[id] = { id, name: member.name, balance: 0 };
     }
     
     for (const expense of Object.values(group.expenses)) {
@@ -739,7 +739,7 @@ function renderDemoBalances() {
             }
         }
         
-        // Participants owe
+        // Participants owe their share
         for (const participantId of expense.participants) {
             if (balances[participantId]) {
                 balances[participantId].balance -= shareAmount;
@@ -747,34 +747,159 @@ function renderDemoBalances() {
         }
     }
     
+    // Calculate pairwise debts (simplified)
+    const debts = [];
+    const balanceArray = Object.values(balances);
+    
+    // Find who owes whom
+    for (const member of balanceArray) {
+        if (member.balance < -0.01) { // This person owes money
+            // Find who they owe to (people with positive balance)
+            for (const creditor of balanceArray) {
+                if (creditor.balance > 0.01 && member.id !== creditor.id) {
+                    const amount = Math.min(Math.abs(member.balance), creditor.balance);
+                    if (amount > 0.01) {
+                        debts.push({
+                            from: member.id,
+                            fromName: member.name,
+                            to: creditor.id,
+                            toName: creditor.name,
+                            amount: amount
+                        });
+                    }
+                }
+            }
+        }
+    }
+    
+    // Calculate totals
+    const totalExpenses = Object.values(group.expenses)
+        .filter(e => e.status === 'approved')
+        .reduce((sum, e) => sum + e.amount, 0);
+    const perPerson = totalExpenses / members.length;
+    
+    // Separate: I owe vs owes me
+    const iOwe = debts.filter(d => d.from === demoUserId);
+    const owesMe = debts.filter(d => d.to === demoUserId);
+    
+    // Get current language
+    const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
+    const t = {
+        en: {
+            dashboard: 'Balance Dashboard',
+            totalSpent: 'Total Spent',
+            perPerson: 'Per Person',
+            members: 'Members',
+            youOwe: '👉 You owe:',
+            owesYou: '👈 Owes you:',
+            allSettled: '✅ All Settled Up!',
+            allSettledDesc: 'Everyone is even. No pending payments.',
+            recordPayment: 'Record Payment',
+            youOweThis: 'You owe this person',
+            thisOwesYou: 'This person owes you'
+        },
+        es: {
+            dashboard: 'Panel de Balances',
+            totalSpent: 'Total Gastado',
+            perPerson: 'Por Persona',
+            members: 'Miembros',
+            youOwe: '👉 Debes:',
+            owesYou: '👈 Te deben:',
+            allSettled: '✅ ¡Todo Liquidado!',
+            allSettledDesc: 'Todos están a mano. Sin pagos pendientes.',
+            recordPayment: 'Registrar Pago',
+            youOweThis: 'Le debes a esta persona',
+            thisOwesYou: 'Esta persona te debe'
+        }
+    };
+    const tr = t[lang] || t.en;
+    
     let html = `
-        <div class="balances-summary" style="padding: 1rem;">
-            <h4 style="margin-bottom: 1rem;">💰 Who owes whom</h4>
-            <div class="balance-cards">
+        <!-- Balance Dashboard -->
+        <div id="simpleModeBalanceDashboard" class="balance-dashboard" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <h4 style="margin: 0 0 1rem 0; font-size: 1rem; color: var(--text-primary);">📊 ${tr.dashboard}</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div style="text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.totalSpent}</div>
+                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">$${totalExpenses.toFixed(2)}</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.perPerson}</div>
+                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">$${perPerson.toFixed(2)}</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.members}</div>
+                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">${members.length}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Balance List -->
+        <div id="balancesList" style="display: flex; flex-direction: column; gap: 0.75rem;">
     `;
     
-    for (const [id, data] of Object.entries(balances)) {
-        const status = data.balance >= 0 ? 'owed' : 'owes';
-        const statusClass = data.balance >= 0 ? 'positive' : 'negative';
-        const statusIcon = data.balance >= 0 ? '💚' : '🔴';
-        
-        html += `
-            <div class="balance-card demo-item" style="background: var(--glass-bg); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="member-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-size: 14px;">${data.name.charAt(0)}</span>
-                    <span>${data.name}</span>
+    // Show debts I owe
+    if (iOwe.length > 0) {
+        html += `<h4 class="balance-section-title" style="color: #ef4444; margin: 0.5rem 0;">${tr.youOwe}</h4>`;
+        iOwe.forEach(debt => {
+            html += `
+                <div class="balance-card-simple owes" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">${debt.toName.charAt(0)}</div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-primary);">${debt.toName}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.youOweThis}</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 1.25rem; font-weight: 700; color: #ef4444;">
+                            $${debt.amount.toFixed(2)}
+                        </div>
+                    </div>
+                    <button onclick="window.showDemoActionModal('record_payment')" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span>💵</span>
+                        <span>${tr.recordPayment}</span>
+                    </button>
                 </div>
-                <span class="${statusClass}" style="font-weight: 600; color: ${data.balance >= 0 ? 'var(--success-color)' : 'var(--error-color)'};">
-                    ${statusIcon} ${data.balance >= 0 ? '+' : ''}$${data.balance.toFixed(2)}
-                </span>
+            `;
+        });
+    }
+    
+    // Show debts owed to me
+    if (owesMe.length > 0) {
+        html += `<h4 class="balance-section-title" style="color: #22c55e; margin: 0.5rem 0;">${tr.owesYou}</h4>`;
+        owesMe.forEach(debt => {
+            html += `
+                <div class="balance-card-simple owed" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">${debt.fromName.charAt(0)}</div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-primary);">${debt.fromName}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.thisOwesYou}</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 1.25rem; font-weight: 700; color: #22c55e;">
+                            +$${debt.amount.toFixed(2)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    
+    // If no debts, show all settled message
+    if (iOwe.length === 0 && owesMe.length === 0) {
+        html += `
+            <div style="text-align: center; padding: 2rem; background: rgba(34, 197, 94, 0.1); border-radius: 12px;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+                <h4 style="color: #22c55e; margin: 0 0 0.5rem 0;">${tr.allSettled}</h4>
+                <p style="color: var(--text-secondary); margin: 0;">${tr.allSettledDesc}</p>
             </div>
         `;
     }
     
-    html += `
-            </div>
-        </div>
-    `;
+    html += `</div>`;
     
     balancesContainer.innerHTML = html;
 }
