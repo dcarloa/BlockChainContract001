@@ -144,6 +144,7 @@ function isInDemoMode() {
  * Enter demo mode - called when unauthenticated user tries to use the app
  */
 function enterDemoMode() {
+    console.log('🎭 enterDemoMode() called');
     isDemoMode = true;
     
     // Track demo mode start
@@ -155,9 +156,11 @@ function enterDemoMode() {
     }
     
     // Show demo banner
+    console.log('🎭 Calling showDemoBanner()');
     showDemoBanner();
     
     // Load demo data
+    console.log('🎭 Calling loadDemoData()');
     loadDemoData();
     
     console.log('🎭 Demo Mode activated');
@@ -192,8 +195,20 @@ function showDemoBanner() {
         
         // Insert at the beginning of main content
         const mainContent = document.querySelector('.main-content');
+        console.log('🎭 mainContent element:', mainContent);
         if (mainContent) {
             mainContent.insertBefore(banner, mainContent.firstChild);
+        } else {
+            // Fallback: try to find dashboard section
+            const dashboard = document.getElementById('dashboardSection');
+            console.log('🎭 dashboardSection element:', dashboard);
+            if (dashboard) {
+                dashboard.insertBefore(banner, dashboard.firstChild);
+            } else {
+                // Last resort: append to body
+                console.log('🎭 Appending banner to body');
+                document.body.appendChild(banner);
+            }
         }
     }
     
