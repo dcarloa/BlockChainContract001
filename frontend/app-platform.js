@@ -937,9 +937,17 @@ window.openInvitedFund = async function(fundAddress) {
             signer
         );
         
-        // Navigate to fund detail
-        document.getElementById('dashboardSection').classList.remove('active');
-        document.getElementById('fundDetailSection').classList.add('active');
+        // Navigate to fund detail (use inline styles to ensure proper visibility)
+        const dashboardSection = document.getElementById('dashboardSection');
+        const fundDetailSection = document.getElementById('fundDetailSection');
+        if (dashboardSection) {
+            dashboardSection.classList.remove('active');
+            dashboardSection.style.display = 'none';
+        }
+        if (fundDetailSection) {
+            fundDetailSection.classList.add('active');
+            fundDetailSection.style.display = 'block';
+        }
         
         // Load fund details
         await loadFundDetailView();
@@ -961,16 +969,18 @@ function showDashboard() {
     const addExpenseCard = document.getElementById('simpleAddExpenseCard');
     if (addExpenseCard) addExpenseCard.style.display = 'none';
     
-    // Make sure dashboard section is visible
+    // Make sure dashboard section is visible (use inline styles to override any Demo Mode inline styles)
     const dashboardSection = document.getElementById('dashboardSection');
     const fundDetailSection = document.getElementById('fundDetailSection');
     
     
     if (dashboardSection) {
         dashboardSection.classList.add('active');
+        dashboardSection.style.display = 'block';
     }
     if (fundDetailSection) {
         fundDetailSection.classList.remove('active');
+        fundDetailSection.style.display = 'none';
     }
     
     // Enable create fund button for both modes
@@ -1841,9 +1851,18 @@ async function openFund(fundAddress) {
             );
         }
         
-        // Hide dashboard, show detail
-        document.getElementById('dashboardSection').classList.remove('active');
-        document.getElementById('fundDetailSection').classList.add('active');
+        // Hide dashboard, show detail (use inline styles to override any Demo Mode inline styles)
+        const dashboardSection = document.getElementById('dashboardSection');
+        const fundDetailSection = document.getElementById('fundDetailSection');
+        
+        if (dashboardSection) {
+            dashboardSection.classList.remove('active');
+            dashboardSection.style.display = 'none';
+        }
+        if (fundDetailSection) {
+            fundDetailSection.classList.add('active');
+            fundDetailSection.style.display = 'block';
+        }
         
         // Hide FAB button (will show if Simple Mode)
         const fabBtn = document.getElementById('addExpenseBtn');
