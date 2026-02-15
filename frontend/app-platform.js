@@ -317,9 +317,10 @@ function setupEventListeners() {
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            currentFilter = e.target.dataset.filter;
+            const filterBtn = e.currentTarget;
+            currentFilter = filterBtn.dataset.filter;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
+            filterBtn.classList.add('active');
             filterFunds();
         });
     });
@@ -2260,6 +2261,9 @@ async function createSimpleFund(fundInfo) {
         
         showToast(`Group "${fundInfo.name}" created successfully!`, "success");
         
+        // Track group creation
+        window.dispatchEvent(new CustomEvent('groupCreated', { detail: { type: 'simple', groupId: groupId } }));
+        
         // Reload funds list
         await loadUserFunds();
         
@@ -2645,11 +2649,19 @@ async function signInWithGoogleOnly() {
         showLoading(t('app.loading.signingInGoogle'));
         const user = await window.FirebaseConfig.signInWithGoogle();
         showToast(`Welcome ${user.displayName || user.email}!`, "success");
+        
+        // Track signin success
+        window.dispatchEvent(new CustomEvent('signinComplete', { detail: { method: 'google' } }));
+        
         closeSignInModal();
         hideLoading();
     } catch (error) {
         hideLoading();
         console.error("Google sign-in error:", error);
+        
+        // Track signin error
+        window.dispatchEvent(new CustomEvent('signinError', { detail: { method: 'google', error: error.code || error.message } }));
+        
         showToast("Sign in failed: " + error.message, "error");
     }
 }
@@ -2706,11 +2718,19 @@ async function handleEmailSignIn(event) {
         showLoading(t('app.loading.signingIn'));
         const user = await window.FirebaseConfig.signInWithEmail(email, password);
         showToast(`Welcome back!`, "success");
+        
+        // Track signin success
+        window.dispatchEvent(new CustomEvent('signinComplete', { detail: { method: 'email' } }));
+        
         closeSignInModal();
         hideLoading();
     } catch (error) {
         hideLoading();
         console.error("Email sign-in error:", error);
+        
+        // Track signin error
+        window.dispatchEvent(new CustomEvent('signinError', { detail: { method: 'email', error: error.code || error.message } }));
+        
         showToast("Sign in failed: " + error.message, "error");
     }
 }
@@ -2747,11 +2767,19 @@ async function handleCreateAccount(event) {
         showLoading(t('app.loading.creatingAccount'));
         const user = await window.FirebaseConfig.createAccount(email, password, name);
         showToast(`Welcome ${name}!`, "success");
+        
+        // Track signup success
+        window.dispatchEvent(new CustomEvent('signupComplete', { detail: { method: 'email' } }));
+        
         closeSignInModal();
         hideLoading();
     } catch (error) {
         hideLoading();
         console.error("Account creation error:", error);
+        
+        // Track signup error
+        window.dispatchEvent(new CustomEvent('signupError', { detail: { error: error.code || error.message } }));
+        
         showToast("Account creation failed: " + error.message, "error");
     }
 }
@@ -3316,6 +3344,7 @@ async function loadSimpleModeExpenses() {
     const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
     const historyContainer = document.getElementById('historyList');
     const searchSection = document.getElementById('expenseSearchSection');
+    const noHistory = document.getElementById('noHistory');
     
     if (!historyContainer) {
         console.error('History container not found (historyList)');
@@ -3349,21 +3378,13 @@ async function loadSimpleModeExpenses() {
     
     if (items.length === 0) {
         if (searchSection) searchSection.style.display = 'none';
-        historyContainer.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">📄</div>
-                <h4>No transactions yet</h4>
-                <p>Add your first expense to start tracking</p>
-                <button class="btn btn-primary" onclick="showAddExpenseModal()">
-                    <span class="btn-icon">➕</span>
-                    <span>Add Expense</span>
-                </button>
-            </div>
-        `;
+        historyContainer.innerHTML = '';
+        if (noHistory) noHistory.style.display = 'block';
         return;
     }
     
-    // Show search section when there are items
+    // Hide empty state and show search section when there are items
+    if (noHistory) noHistory.style.display = 'none';
     if (searchSection) searchSection.style.display = 'block';
     
     // Sort by timestamp (newest first)
@@ -6308,6 +6329,10 @@ async function handleExpenseSubmission(event) {
         await window.modeManager.addSimpleExpense(expenseInfo);
 
         showToast('Expense added successfully!', 'success');
+        
+        // Track expense added
+        window.dispatchEvent(new CustomEvent('expenseAdded', { detail: { amount: amount, currency: currency || 'USD' } }));
+        
         closeAddExpenseModal();
 
         // Refresh expense list and balances
@@ -8259,11 +8284,11 @@ function toggleExpenseDetails(expenseId) {
     
     if (details.style.display === 'none') {
         details.style.display = 'block';
-        expandIcon.textContent = '?';
+        expandIcon.textContent = '\u25B2';
         card.classList.add('expanded');
     } else {
         details.style.display = 'none';
-        expandIcon.textContent = '?';
+        expandIcon.textContent = '\u25BC';
         card.classList.remove('expanded');
     }
 }

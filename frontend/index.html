@@ -118,6 +118,7 @@
             </div>
             <div class="nav-links">
                 <a href="#features" data-i18n="nav.features">Features</a>
+                <a href="#tutorials" data-i18n="nav.demos">Watch Demos</a>
                 <a href="#how-it-works" data-i18n="nav.howItWorks">How It Works</a>
                 <a href="#benefits" data-i18n="nav.benefits">Benefits</a>
                 <a href="#faq" data-i18n="nav.faq">FAQ</a>
@@ -196,9 +197,12 @@
                     <p class="hero-subtitle" data-i18n="landing.hero.subtitle">
                         Trips, roommates, dinners, events. Everyone pays, Ant Pool does the math. No spreadsheets. No arguments.
                     </p>
-                    <div class="hero-buttons">
+                    <div class="hero-buttons" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
                         <a href="app.html" class="btn btn-large btn-primary" onclick="trackCTA('hero', 'create_group')">
-                            <span data-i18n="landing.hero.cta">Create Your First Group →</span>
+                            <span data-i18n="landing.hero.cta">Start Free →</span>
+                        </a>
+                        <a href="app.html?demo=true" class="btn btn-large btn-secondary" onclick="trackCTA('hero', 'try_demo')" style="background: var(--glass-bg); border: 2px solid var(--primary); color: var(--primary); font-weight: 600;">
+                            <span data-i18n="landing.hero.tryDemo">Try Demo First</span>
                         </a>
                     </div>
                     <p class="hero-micro-text" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
@@ -315,21 +319,426 @@
             <p style="font-size: 1.5rem; color: var(--primary); font-weight: 700; margin-top: 2rem;" data-i18n="landing.problem.solution">🐜 Ant Pool fixes this.</p>
         </div>
     </section>
+
+    <!-- Video Tutorials Section -->
+    <section id="tutorials" class="tutorials-section" style="background: var(--bg-primary); padding: 5rem 0;">
+        <div class="container">
+            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                <h2 class="section-title" data-i18n="landing.tutorials.title">📱 See It In Action</h2>
+                <p class="section-subtitle" data-i18n="landing.tutorials.subtitle">Watch how easy it is to manage group expenses</p>
+            </div>
+            
+            <!-- Tutorial Tabs -->
+            <div class="tutorial-tabs" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+                <button class="tutorial-tab active" data-tutorial="create-group" onclick="switchTutorial('create-group')" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 50px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                    <span style="font-size: 1.25rem;">🐜</span>
+                    <span data-i18n="landing.tutorials.tab1">Create a Group</span>
+                </button>
+                <button class="tutorial-tab" data-tutorial="add-expense" onclick="switchTutorial('add-expense')" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50px; color: var(--text-primary); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    <span style="font-size: 1.25rem;">💸</span>
+                    <span data-i18n="landing.tutorials.tab2">Add an Expense</span>
+                </button>
+            </div>
+            
+            <!-- Tutorial Content -->
+            <div class="tutorial-content" style="max-width: 900px; margin: 0 auto;">
+                <!-- Create Group Tutorial -->
+                <div id="tutorial-create-group" class="tutorial-panel" style="display: block;">
+                    <div class="tutorial-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <div class="tutorial-header" style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 1rem;">
+                            <div style="font-size: 2.5rem;">🐜</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.35rem; color: var(--text-primary);" data-i18n="landing.tutorials.createGroup.title">Creating Your First Colony</h3>
+                                <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.9rem;" data-i18n="landing.tutorials.createGroup.duration">⏱️ Takes less than 30 seconds</p>
+                            </div>
+                        </div>
+                        <div class="tutorial-gif" style="padding: 1rem; background: var(--bg-secondary); position: relative;">
+                            <video src="assets/CreateGroup.mp4" autoplay loop muted playsinline style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: pointer;" alt="Tutorial: Creating a group in Ant Pool"></video>
+                        </div>
+                        <div class="tutorial-steps" style="padding: 1.5rem 2rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">1</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step1">Click "Create New Group" button</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">2</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step2">Name your group and choose a type</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">3</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step3">Invite members by email—done!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Expense Tutorial -->
+                <div id="tutorial-add-expense" class="tutorial-panel" style="display: none;">
+                    <div class="tutorial-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                        <div class="tutorial-header" style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 1rem;">
+                            <div style="font-size: 2.5rem;">💸</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.35rem; color: var(--text-primary);" data-i18n="landing.tutorials.addExpense.title">Adding a Shared Expense</h3>
+                                <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.9rem;" data-i18n="landing.tutorials.addExpense.duration">⏱️ Just a few taps</p>
+                            </div>
+                        </div>
+                        <div class="tutorial-gif" style="padding: 1rem; background: var(--bg-secondary); position: relative;">
+                            <video src="assets/CreateExpense.mp4" autoplay loop muted playsinline style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: pointer;" alt="Tutorial: Adding an expense in Ant Pool"></video>
+                        </div>
+                        <div class="tutorial-steps" style="padding: 1.5rem 2rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">1</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step1">Tap "Add Expense" in your group</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">2</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step2">Enter amount, currency, and who paid</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">3</span>
+                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step3">Select who participated—balances update instantly!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA after tutorials -->
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <a href="app.html" class="btn-primary-hero" onclick="trackCTA('tutorials', 'start_splitting')" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                    <span data-i18n="landing.tutorials.cta">Start Splitting Now →</span>
+                </a>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        function switchTutorial(tutorial) {
+            // Update tabs
+            document.querySelectorAll('.tutorial-tab').forEach(tab => {
+                if (tab.dataset.tutorial === tutorial) {
+                    tab.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    tab.style.color = 'white';
+                    tab.style.border = 'none';
+                    tab.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+                    tab.classList.add('active');
+                } else {
+                    tab.style.background = 'var(--glass-bg)';
+                    tab.style.color = 'var(--text-primary)';
+                    tab.style.border = '1px solid var(--glass-border)';
+                    tab.style.boxShadow = 'none';
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Update panels
+            document.querySelectorAll('.tutorial-panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            const activePanel = document.getElementById('tutorial-' + tutorial);
+            activePanel.style.display = 'block';
+            
+            // Restart video in the active panel
+            const video = activePanel.querySelector('.tutorial-gif video');
+            if (video) { video.currentTime = 0; video.play(); }
+        }
+    </script>
     
     <style>
-        /* Problem section responsive */
-        @media (max-width: 600px) {
-            #problem .container > div:nth-child(2) {
-                grid-template-columns: 1fr !important;
-            }
-            #problem h2 {
-                font-size: 2rem !important;
-            }
-        }
-        /* Modes section responsive */
+        /* ========================================
+           MOBILE OPTIMIZATIONS - Landing Page
+           ======================================== */
+        
+        /* Tablet and below (900px) */
         @media (max-width: 900px) {
             #modes .features-highlight-grid {
                 grid-template-columns: 1fr !important;
+            }
+            
+            /* Reduce section padding */
+            #tutorials,
+            #modes,
+            #features,
+            #how-it-works,
+            #benefits {
+                padding: 3rem 0 !important;
+            }
+        }
+        
+        /* Mobile (768px) */
+        @media (max-width: 768px) {
+            /* Tutorial section optimizations */
+            #tutorials .tutorial-tabs {
+                gap: 0.5rem !important;
+            }
+            
+            #tutorials .tutorial-tab {
+                padding: 0.75rem 1rem !important;
+                font-size: 0.9rem !important;
+                min-height: 44px;
+            }
+            
+            #tutorials .tutorial-header {
+                padding: 1rem 1.25rem !important;
+            }
+            
+            #tutorials .tutorial-header h3 {
+                font-size: 1.15rem !important;
+            }
+            
+            #tutorials .tutorial-steps {
+                padding: 1rem 1.25rem !important;
+            }
+            
+            /* Modes section mobile */
+            #modes h2 {
+                font-size: 1.75rem !important;
+            }
+            
+            #modes p.section-subtitle {
+                font-size: 1rem !important;
+            }
+            
+            /* CTA buttons - ensure touch-friendly */
+            .btn-primary-hero,
+            .btn-large {
+                min-height: 48px !important;
+                padding: 0.875rem 1.5rem !important;
+            }
+        }
+        
+        /* Small mobile (600px) */
+        @media (max-width: 600px) {
+            /* Problem section */
+            #problem .container > div:nth-child(2) {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            
+            #problem h2 {
+                font-size: 1.75rem !important;
+            }
+            
+            #problem .container > div > div {
+                padding: 1rem !important;
+            }
+            
+            #problem .container > div > div span:first-child {
+                font-size: 1.5rem !important;
+            }
+            
+            #problem .container > div > div span:last-child {
+                font-size: 0.95rem !important;
+            }
+            
+            #problem p[data-i18n="landing.problem.solution"] {
+                font-size: 1.25rem !important;
+            }
+            
+            /* Tutorial section small mobile */
+            #tutorials .section-header {
+                margin-bottom: 2rem !important;
+            }
+            
+            #tutorials .tutorial-tab {
+                padding: 0.625rem 0.875rem !important;
+                font-size: 0.85rem !important;
+            }
+            
+            #tutorials .tutorial-tab span:first-child {
+                font-size: 1rem !important;
+            }
+            
+            #tutorials .tutorial-header > div:first-child {
+                font-size: 2rem !important;
+            }
+            
+            #tutorials .tutorial-content {
+                margin: 0 -0.5rem !important;
+            }
+            
+            #tutorials .tutorial-card {
+                border-radius: 16px !important;
+            }
+            
+            #tutorials .tutorial-gif {
+                padding: 0.5rem !important;
+            }
+            
+            /* Modes section small mobile */
+            #modes {
+                padding: 2.5rem 0 !important;
+            }
+            
+            #modes h2 {
+                font-size: 1.5rem !important;
+            }
+            
+            #modes .features-highlight-grid {
+                gap: 1rem !important;
+                margin-top: 1.5rem !important;
+            }
+            
+            #modes .features-highlight-grid > div {
+                padding: 1.5rem 1.25rem !important;
+            }
+            
+            #modes .features-highlight-grid > div > div:first-child {
+                font-size: 2.5rem !important;
+            }
+            
+            /* General section titles */
+            .section-title {
+                font-size: 1.5rem !important;
+            }
+            
+            .section-subtitle {
+                font-size: 0.9rem !important;
+            }
+            
+            /* CTA buttons full width on very small screens */
+            .btn-primary-hero {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+        }
+        
+        /* Extra small mobile (380px) */
+        @media (max-width: 380px) {
+            #tutorials .tutorial-tabs {
+                flex-direction: column !important;
+            }
+            
+            #tutorials .tutorial-tab {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            
+            #problem .container > div > div span:last-child {
+                font-size: 0.875rem !important;
+            }
+        }
+        
+        /* FAQ mobile optimization */
+        @media (max-width: 768px) {
+            #faq {
+                padding: 3rem 0 !important;
+            }
+            
+            .faq-question {
+                min-height: 48px !important;
+                padding: 1rem !important;
+            }
+            
+            .faq-question h4 {
+                font-size: 0.95rem !important;
+            }
+        }
+        
+        /* Floating Install Button */
+        .install-fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            animation: fabSlideIn 0.4s ease-out;
+        }
+        
+        .install-fab.visible {
+            display: flex;
+        }
+        
+        .install-fab-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .install-fab-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 28px rgba(102, 126, 234, 0.5);
+        }
+        
+        .install-fab-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .install-fab-btn svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+        
+        .install-fab-label {
+            background: var(--bg-primary, #1a1a2e);
+            color: var(--text-primary, #fff);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .install-fab-close {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-tertiary, #333);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--text-secondary, #aaa);
+        }
+        
+        .install-fab-close:hover {
+            background: #ff4757;
+            color: white;
+        }
+        
+        @keyframes fabSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .install-fab {
+                bottom: 16px;
+                right: 16px;
+            }
+            
+            .install-fab-btn {
+                width: 56px;
+                height: 56px;
             }
         }
     </style>
@@ -528,135 +937,6 @@
         </div>
     </section>
 
-    <!-- Video Tutorials Section -->
-    <section id="tutorials" class="tutorials-section" style="background: var(--bg-primary); padding: 5rem 0;">
-        <div class="container">
-            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
-                <h2 class="section-title" data-i18n="landing.tutorials.title">📱 See It In Action</h2>
-                <p class="section-subtitle" data-i18n="landing.tutorials.subtitle">Watch how easy it is to manage group expenses</p>
-            </div>
-            
-            <!-- Tutorial Tabs -->
-            <div class="tutorial-tabs" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
-                <button class="tutorial-tab active" data-tutorial="create-group" onclick="switchTutorial('create-group')" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 50px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
-                    <span style="font-size: 1.25rem;">🐜</span>
-                    <span data-i18n="landing.tutorials.tab1">Create a Group</span>
-                </button>
-                <button class="tutorial-tab" data-tutorial="add-expense" onclick="switchTutorial('add-expense')" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50px; color: var(--text-primary); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-                    <span style="font-size: 1.25rem;">💸</span>
-                    <span data-i18n="landing.tutorials.tab2">Add an Expense</span>
-                </button>
-            </div>
-            
-            <!-- Tutorial Content -->
-            <div class="tutorial-content" style="max-width: 900px; margin: 0 auto;">
-                <!-- Create Group Tutorial -->
-                <div id="tutorial-create-group" class="tutorial-panel" style="display: block;">
-                    <div class="tutorial-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
-                        <div class="tutorial-header" style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 1rem;">
-                            <div style="font-size: 2.5rem;">🐜</div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.35rem; color: var(--text-primary);" data-i18n="landing.tutorials.createGroup.title">Creating Your First Colony</h3>
-                                <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.9rem;" data-i18n="landing.tutorials.createGroup.duration">⏱️ Takes less than 30 seconds</p>
-                            </div>
-                        </div>
-                        <div class="tutorial-gif" style="padding: 1rem; background: var(--bg-secondary); position: relative;">
-                            <video src="assets/CreateGroup.mp4" autoplay loop muted playsinline style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: pointer;" alt="Tutorial: Creating a group in Ant Pool"></video>
-                        </div>
-                        <div class="tutorial-steps" style="padding: 1.5rem 2rem;">
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">1</span>
-                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step1">Click "Create New Group" button</span>
-                                </div>
-                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">2</span>
-                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step2">Name your group and choose a type</span>
-                                </div>
-                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">3</span>
-                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.createGroup.step3">Invite members by email—done!</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Add Expense Tutorial -->
-                <div id="tutorial-add-expense" class="tutorial-panel" style="display: none;">
-                    <div class="tutorial-card" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
-                        <div class="tutorial-header" style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 1rem;">
-                            <div style="font-size: 2.5rem;">💸</div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.35rem; color: var(--text-primary);" data-i18n="landing.tutorials.addExpense.title">Adding a Shared Expense</h3>
-                                <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.9rem;" data-i18n="landing.tutorials.addExpense.duration">⏱️ Just a few taps</p>
-                            </div>
-                        </div>
-                        <div class="tutorial-gif" style="padding: 1rem; background: var(--bg-secondary); position: relative;">
-                            <video src="assets/CreateExpense.mp4" autoplay loop muted playsinline style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: pointer;" alt="Tutorial: Adding an expense in Ant Pool"></video>
-                        </div>
-                        <div class="tutorial-steps" style="padding: 1.5rem 2rem;">
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">1</span>
-                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step1">Tap "Add Expense" in your group</span>
-                                </div>
-                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">2</span>
-                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step2">Enter amount, currency, and who paid</span>
-                                </div>
-                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">3</span>
-                                    <span style="color: var(--text-secondary);" data-i18n="landing.tutorials.addExpense.step3">Select who participated—balances update instantly!</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- CTA after tutorials -->
-            <div style="text-align: center; margin-top: 2.5rem;">
-                <a href="app.html" class="btn-primary-hero" onclick="trackCTA('tutorials', 'start_splitting')" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
-                    <span data-i18n="landing.tutorials.cta">Start Splitting Now →</span>
-                </a>
-                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
-            </div>
-        </div>
-    </section>
-    
-    <script>
-        function switchTutorial(tutorial) {
-            // Update tabs
-            document.querySelectorAll('.tutorial-tab').forEach(tab => {
-                if (tab.dataset.tutorial === tutorial) {
-                    tab.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                    tab.style.color = 'white';
-                    tab.style.border = 'none';
-                    tab.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
-                    tab.classList.add('active');
-                } else {
-                    tab.style.background = 'var(--glass-bg)';
-                    tab.style.color = 'var(--text-primary)';
-                    tab.style.border = '1px solid var(--glass-border)';
-                    tab.style.boxShadow = 'none';
-                    tab.classList.remove('active');
-                }
-            });
-            
-            // Update panels
-            document.querySelectorAll('.tutorial-panel').forEach(panel => {
-                panel.style.display = 'none';
-            });
-            const activePanel = document.getElementById('tutorial-' + tutorial);
-            activePanel.style.display = 'block';
-            
-            // Restart video in the active panel
-            const video = activePanel.querySelector('.tutorial-gif video');
-            if (video) { video.currentTime = 0; video.play(); }
-        }
-    </script>
-
     <!-- Benefits Section -->
     <section id="benefits" class="benefits-redesign" style="background: var(--bg-primary); padding: 5rem 0;">
         <div class="container">
@@ -839,7 +1119,7 @@
             </div>
             <div style="text-align: center; margin-top: 2.5rem;">
                 <a href="app.html" class="btn btn-large btn-primary" onclick="trackCTA('use_cases', 'create_group')">
-                    <span data-i18n="landing.hero.cta">🐜 Try Ant Pool Free</span>
+                    <span data-i18n="landing.hero.cta">Start Free →</span>
                 </a>
             </div>
         </div>
@@ -1018,7 +1298,7 @@
     </footer>
 
     <!-- i18n and theme system -->
-    <script src="i18n.js"></script>
+    <script src="i18n.js?v=2.0.0"></script>
     <script src="theme.js"></script>
     <script src="landing-script.js"></script>
     <script>
@@ -1103,6 +1383,87 @@
             "ratingCount": "150"
         }
     }
+    </script>
+
+    <!-- Floating Install App Button -->
+    <div id="installFab" class="install-fab">
+        <button class="install-fab-close" onclick="dismissInstallFab()" aria-label="Close">×</button>
+        <button class="install-fab-btn" onclick="handleInstallClick()" aria-label="Install App">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+        </button>
+        <span class="install-fab-label" data-i18n="landing.installApp">Install App</span>
+    </div>
+
+    <script>
+        // PWA Install Logic
+        let deferredInstallPrompt = null;
+        const installFab = document.getElementById('installFab');
+        
+        // Check if already dismissed
+        const installDismissed = localStorage.getItem('installFabDismissed');
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            
+            // Show button after 3 seconds if not dismissed
+            if (!installDismissed && !isStandalone) {
+                setTimeout(() => {
+                    installFab.classList.add('visible');
+                    gtag('event', 'install_prompt_shown', { event_category: 'PWA' });
+                }, 3000);
+            }
+        });
+        
+        function handleInstallClick() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt.userChoice.then((result) => {
+                    gtag('event', 'install_prompt_result', { 
+                        event_category: 'PWA',
+                        event_label: result.outcome 
+                    });
+                    if (result.outcome === 'accepted') {
+                        installFab.classList.remove('visible');
+                    }
+                    deferredInstallPrompt = null;
+                });
+            } else {
+                // Fallback: show instructions for iOS/browsers without prompt support
+                showInstallInstructions();
+            }
+        }
+        
+        function showInstallInstructions() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const msg = isIOS 
+                ? 'Tap the Share button (bottom bar) \u2192 "Add to Home Screen"'
+                : 'Open browser menu (\u22ee) \u2192 "Install App" or "Add to Home Screen"';
+            alert(msg);
+            gtag('event', 'install_instructions_shown', { event_category: 'PWA' });
+        }
+        
+        function dismissInstallFab() {
+            installFab.classList.remove('visible');
+            localStorage.setItem('installFabDismissed', 'true');
+            gtag('event', 'install_prompt_dismissed', { event_category: 'PWA' });
+        }
+        
+        // Also show on iOS after scroll (no beforeinstallprompt event)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS && !installDismissed && !isStandalone) {
+            let hasShown = false;
+            window.addEventListener('scroll', () => {
+                if (!hasShown && window.scrollY > 400) {
+                    hasShown = true;
+                    installFab.classList.add('visible');
+                    gtag('event', 'install_prompt_shown', { event_category: 'PWA', event_label: 'iOS' });
+                }
+            }, { passive: true });
+        }
     </script>
 
     <!-- Service Worker Registration -->

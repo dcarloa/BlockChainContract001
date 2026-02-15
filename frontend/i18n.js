@@ -7,6 +7,7 @@ const translations = {
         nav: {
             features: "The Colony",
             howItWorks: "How Ants Work",
+            demos: "Watch Demos",
             benefits: "Ant Power",
             faq: "FAQ",
             launchApp: "Join Colony"
@@ -45,11 +46,13 @@ const translations = {
         },
         // Landing Page
         landing: {
+            installApp: "Install App",
             hero: {
                 title: "Split expenses with friends.",
                 title2: "No drama.",
                 subtitle: "Create a group. Log expenses. See who owes who. Done.",
-                cta: "Create Your First Group →",
+                cta: "Start Free →",
+                tryDemo: "Try Demo First",
                 ctaSecondary: "See how it works",
                 ctaMicro: "Free forever · No credit card · 30 seconds",
                 betaBadge: "Free · No card · Beta",
@@ -1329,6 +1332,7 @@ const translations = {
         nav: {
             features: "La Colonia",
             howItWorks: "Cómo Trabajan las Hormigas",
+            demos: "Ver Demos",
             benefits: "Poder Hormiga",
             faq: "FAQ",
             launchApp: "Unirse a la Colonia"
@@ -1367,11 +1371,13 @@ const translations = {
         },
         // Landing Page
         landing: {
+            installApp: "Instalar App",
             hero: {
                 title: "Divide gastos con amigos.",
                 title2: "Sin peleas.",
                 subtitle: "Crea un grupo. Registra gastos. Mira quién debe qué. Listo.",
-                cta: "Crea Tu Primer Grupo →",
+                cta: "Empieza Gratis →",
+                tryDemo: "Prueba el Demo",
                 ctaSecondary: "Ver cómo funciona",
                 ctaMicro: "Gratis para siempre · Sin tarjeta · 30 segundos",
                 betaBadge: "Gratis · Sin tarjeta · Beta",

@@ -62,7 +62,7 @@
     <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
     
     <!-- Demo Mode System -->
-    <script src="demo-mode.js?v=2.3"></script>
+    <script src="demo-mode.js?v=2.4"></script>
     
     <!-- Subscription Manager -->
     <script src="subscription-manager.js?v=1.0"></script>
@@ -2096,7 +2096,7 @@ Simple, fast, and free.</p>
     </div>
 
     <!-- Scripts -->
-    <script src="i18n.js?v=1.9.0"></script>
+    <script src="i18n.js?v=2.0.0"></script>
     <script src="theme.js"></script>
     <script src="ethers.umd.min.js"></script>
     
@@ -2127,7 +2127,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.7"></script>
     <script src="mascot-system.js?v=1.9"></script>
-    <script src="app-platform.js?v=3.4"></script>
+    <script src="app-platform.js?v=3.6"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)
@@ -3235,6 +3235,35 @@ Simple, fast, and free.</p>
                 gtag('event', eventName, eventParams);
             }
         }
+        
+        // Track signup completion
+        window.addEventListener('signupComplete', function(e) {
+            trackEvent('signup_complete', {
+                'method': e.detail.method || 'unknown'
+            });
+        });
+        
+        // Track signup errors
+        window.addEventListener('signupError', function(e) {
+            trackEvent('signup_error', {
+                'error_code': e.detail.error || 'unknown'
+            });
+        });
+        
+        // Track signin completion
+        window.addEventListener('signinComplete', function(e) {
+            trackEvent('signin_complete', {
+                'method': e.detail.method || 'unknown'
+            });
+        });
+        
+        // Track signin errors
+        window.addEventListener('signinError', function(e) {
+            trackEvent('signin_error', {
+                'method': e.detail.method || 'unknown',
+                'error_code': e.detail.error || 'unknown'
+            });
+        });
         
         // Track group creation
         window.addEventListener('groupCreated', function(e) {

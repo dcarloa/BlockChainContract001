@@ -1514,3 +1514,20 @@ window.showDemoActionModal = showDemoActionModal;
 window.closeDemoActionModal = closeDemoActionModal;
 window.promptDemoSignup = promptDemoSignup;
 window.minimizeDemoSignupCTA = minimizeDemoSignupCTA;
+
+// Auto-enter demo mode if URL has ?demo=true parameter
+(function checkDemoUrlParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('demo') === 'true') {
+        // Wait for DOM and Firebase to be ready, then enter demo mode
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (!isInDemoMode() && window.DemoMode && typeof window.DemoMode.enter === 'function') {
+                    window.DemoMode.enter();
+                    // Clean up URL without reloading
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }, 500);
+        });
+    }
+})();
