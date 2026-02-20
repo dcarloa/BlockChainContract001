@@ -2650,8 +2650,16 @@ async function signInWithGoogleOnly() {
         const user = await window.FirebaseConfig.signInWithGoogle();
         showToast(`Welcome ${user.displayName || user.email}!`, "success");
         
-        // Track signin success
-        window.dispatchEvent(new CustomEvent('signinComplete', { detail: { method: 'google' } }));
+        // Track signin/signup success with isNewUser distinction
+        if (user.isNewUser) {
+            // First-time Google signup
+            window.dispatchEvent(new CustomEvent('signupComplete', { detail: { method: 'google_signup' } }));
+            console.log('📊 Analytics: google_signup (NEW user)');
+        } else {
+            // Returning user signin
+            window.dispatchEvent(new CustomEvent('signinComplete', { detail: { method: 'google_signin' } }));
+            console.log('📊 Analytics: google_signin (RETURNING user)');
+        }
         
         closeSignInModal();
         hideLoading();

@@ -92,6 +92,12 @@ async function signInWithGoogle() {
         
         const provider = new firebase.auth.GoogleAuthProvider();
         const result = await firebaseAuth.signInWithPopup(provider);
+        
+        // Return user with isNewUser flag for analytics
+        const isNewUser = result.additionalUserInfo?.isNewUser || false;
+        result.user.isNewUser = isNewUser;
+        console.log(`🔐 Google sign-in: ${isNewUser ? 'NEW user' : 'RETURNING user'}`);
+        
         return result.user;
     } catch (error) {
         console.error("❌ Google sign-in failed:", error);

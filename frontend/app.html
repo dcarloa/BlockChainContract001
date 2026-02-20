@@ -3234,7 +3234,7 @@ Simple, fast, and free.</p>
             console.log(`[Analytics] Event: ${eventName}`, eventParams);
             
             // For conversion events, always attempt to send (first-party data)
-            const conversionEvents = ['signup_complete', 'signin_complete', 'group_created'];
+            const conversionEvents = ['signup_complete', 'signin_complete', 'group_created', 'google_signup', 'google_signin'];
             const isConversion = conversionEvents.includes(eventName);
             
             if (typeof gtag !== 'undefined') {
@@ -3250,26 +3250,10 @@ Simple, fast, and free.</p>
             }
         }
         
-        // Track signup completion
-        window.addEventListener('signupComplete', function(e) {
-            console.log('[Analytics] signupComplete event received', e.detail);
-            trackEvent('signup_complete', {
-                'method': e.detail.method || 'unknown'
-            });
-        });
-        
         // Track signup errors
         window.addEventListener('signupError', function(e) {
             trackEvent('signup_error', {
                 'error_code': e.detail.error || 'unknown'
-            });
-        });
-        
-        // Track signin completion
-        window.addEventListener('signinComplete', function(e) {
-            console.log('[Analytics] signinComplete event received', e.detail);
-            trackEvent('signin_complete', {
-                'method': e.detail.method || 'unknown'
             });
         });
         
@@ -3278,6 +3262,37 @@ Simple, fast, and free.</p>
             trackEvent('signin_error', {
                 'method': e.detail.method || 'unknown',
                 'error_code': e.detail.error || 'unknown'
+            });
+        });
+        
+        // Track Google first-time signup (new user)
+        window.addEventListener('signupComplete', function(e) {
+            if (e.detail.method === 'google_signup') {
+                console.log('[Analytics] Google FIRST-TIME signup detected');
+                trackEvent('google_signup', {
+                    'method': 'google_auth',
+                    'user_type': 'new'
+                });
+            }
+            // Also send the general signup_complete
+            trackEvent('signup_complete', {
+                'method': e.detail.method || 'unknown'
+            });
+        });
+        
+        // Track Google returning signin
+        window.addEventListener('signinComplete', function(e) {
+            if (e.detail.method === 'google_signin') {
+                console.log('[Analytics] Google RETURNING user signin detected');
+                trackEvent('google_signin', {
+                    'method': 'google_auth',
+                    'user_type': 'returning'
+                });
+            }
+            // Also send the general signin_complete
+            console.log('[Analytics] signinComplete event received', e.detail);
+            trackEvent('signin_complete', {
+                'method': e.detail.method || 'unknown'
             });
         });
         
