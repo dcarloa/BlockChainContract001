@@ -3835,7 +3835,7 @@ function renderBalanceChart(memberBalances, currency = 'USD') {
     const maxBalance = Math.max(...memberBalances.map(m => Math.abs(m.balance)));
     
     if (maxBalance === 0) {
-        chartContainer.innerHTML = '<div class="chart-empty">No balances to display</div>';
+        chartContainer.innerHTML = '<div class="chart-empty">✅ All settled! No outstanding balances.</div>';
         return;
     }
     
@@ -3845,22 +3845,42 @@ function renderBalanceChart(memberBalances, currency = 'USD') {
         const memberData = currentFund.members[member.memberId];
         const memberName = memberData?.name || memberData?.email || member.memberId;
         const shortName = memberName.split(' ')[0]; // First name only
+        const initial = (memberName || 'U').charAt(0).toUpperCase();
         
         const percentage = (Math.abs(member.balance) / maxBalance) * 100;
         const isPositive = member.balance > 0;
         const isNegative = member.balance < 0;
+        const statusClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
+        const statusIcon = isPositive ? '📈' : isNegative ? '📉' : '✅';
         
         html += `
             <div class="chart-bar-item">
-                <div class="chart-bar-label">${shortName}</div>
-                <div class="chart-bar-container">
-                    <div class="chart-bar ${isPositive ? 'positive' : isNegative ? 'negative' : 'neutral'}" 
-                         style="width: ${percentage}%"
-                         title="${memberName}: ${currencySymbol}${member.balance.toFixed(2)} ${currency}">
+                <div class="chart-bar-header">
+                    <div class="chart-bar-label">
+                        <span class="member-avatar-mini" style="
+                            width: 32px;
+                            height: 32px;
+                            background: linear-gradient(135deg, ${isPositive ? '#10b981' : isNegative ? '#ef4444' : '#6b7280'} 0%, ${isPositive ? '#059669' : isNegative ? '#dc2626' : '#4b5563'} 100%);
+                            border-radius: 50%;
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 700;
+                            font-size: 0.875rem;
+                            color: white;
+                            flex-shrink: 0;
+                        ">${initial}</span>
+                        ${shortName}
+                    </div>
+                    <div class="chart-bar-value ${statusClass}">
+                        ${isPositive ? '+' : ''}${currencySymbol}${Math.abs(member.balance).toFixed(2)} ${currency}
                     </div>
                 </div>
-                <div class="chart-bar-value ${isPositive ? 'positive' : isNegative ? 'negative' : ''}">
-                    ${isPositive ? '+' : ''}${currencySymbol}${Math.abs(member.balance).toFixed(2)} ${currency}
+                <div class="chart-bar-container">
+                    <div class="chart-bar ${statusClass}" 
+                         style="width: ${Math.max(percentage, 5)}%"
+                         title="${memberName}: ${currencySymbol}${member.balance.toFixed(2)} ${currency}">
+                    </div>
                 </div>
             </div>
         `;
