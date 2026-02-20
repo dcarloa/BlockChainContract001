@@ -3547,6 +3547,11 @@ function renderExpenseItem(expense, currentUserId, groupData) {
                 </div>
                 ${expense.notes ? `<p class="expense-notes">📝 ${expense.notes}</p>` : ''}
                 
+                <!-- View Full Details Button -->
+                <button class="btn btn-secondary btn-sm btn-full-details" onclick="showExpenseDetailsModal('${expense.id}')" style="margin-bottom: 0.5rem;">
+                    📋 View Full Details
+                </button>
+                
                 <!-- Interaction Bar -->
                 <div class="expense-interactions">
                 <button class="interaction-btn ${hasLiked ? 'active' : ''}" onclick="toggleLikeExpense('${expense.id}')" title="Like">
@@ -3686,26 +3691,36 @@ async function loadSimpleModeBalances() {
             totalText = '$0.00 USD';
         }
         
-        document.getElementById('simpleModeTotalExpenses').textContent = totalText;
-        document.getElementById('simpleModeTotalExpenses').title = currencies.length > 1 ? 
-            'Converted to USD using current exchange rates' : '';
+        const totalExpensesEl = document.getElementById('simpleModeTotalExpenses');
+        const perPersonEl = document.getElementById('simpleModePerPerson');
+        const activeMembersEl = document.getElementById('simpleModeActiveMembers');
         
-        // For per share (not per member - considers shares)
-        if (currencies.length > 1) {
-            const perShareUSD = totalShares > 0 ? totalExpensesUSD / totalShares : 0;
-            document.getElementById('simpleModePerPerson').textContent = `$${perShareUSD.toFixed(2)} USD`;
-            document.getElementById('simpleModePerPerson').title = `Per share (${totalShares} shares total)`;
-        } else if (currencies.length === 1) {
-            const currency = currencies[0];
-            const symbol = getCurrencySymbol(currency);
-            const perShare = totalShares > 0 ? currencyTotals[currency] / totalShares : 0;
-            document.getElementById('simpleModePerPerson').textContent = `${symbol}${perShare.toFixed(2)} ${currency}`;
-            document.getElementById('simpleModePerPerson').title = `Per share (${totalShares} shares total)`;
-        } else {
-            document.getElementById('simpleModePerPerson').textContent = '$0.00 USD';
+        if (totalExpensesEl) {
+            totalExpensesEl.textContent = totalText;
+            totalExpensesEl.title = currencies.length > 1 ? 
+                'Converted to USD using current exchange rates' : '';
         }
         
-        document.getElementById('simpleModeActiveMembers').textContent = memberCount;
+        // For per share (not per member - considers shares)
+        if (perPersonEl) {
+            if (currencies.length > 1) {
+                const perShareUSD = totalShares > 0 ? totalExpensesUSD / totalShares : 0;
+                perPersonEl.textContent = `$${perShareUSD.toFixed(2)} USD`;
+                perPersonEl.title = `Per share (${totalShares} shares total)`;
+            } else if (currencies.length === 1) {
+                const currency = currencies[0];
+                const symbol = getCurrencySymbol(currency);
+                const perShare = totalShares > 0 ? currencyTotals[currency] / totalShares : 0;
+                perPersonEl.textContent = `${symbol}${perShare.toFixed(2)} ${currency}`;
+                perPersonEl.title = `Per share (${totalShares} shares total)`;
+            } else {
+                perPersonEl.textContent = '$0.00 USD';
+            }
+        }
+        
+        if (activeMembersEl) {
+            activeMembersEl.textContent = memberCount;
+        }
         
         // Determine display currency before rendering chart
         const displayCurrency = currencies.length === 1 ? currencies[0] : 'USD';
@@ -4419,6 +4434,11 @@ function loadSimpleModeMembers() {
     // Update member counter with subscription limits
     updateMemberCounter(members.length, currentFund.creator);
 
+    if (!membersList) {
+        console.warn('membersList element not found');
+        return;
+    }
+    
     membersList.innerHTML = members.map(([uid, member]) => {
         const joinDate = member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'N/A';
         const isCurrentUser = uid === currentUserId;
@@ -4450,6 +4470,16 @@ function loadSimpleModeMembers() {
             }
         }
 
+        // Add edit nickname button for current user
+        let editNicknameBtn = '';
+        if (isCurrentUser) {
+            editNicknameBtn = `
+                <button class="btn btn-secondary btn-sm" onclick="showEditNicknameModal('${uid}', '${(member.name || '').replace(/'/g, "\\'")}')">
+                    <span>✏️ Edit Name</span>
+                </button>
+            `;
+        }
+
         return `
             <div class="member-card">
                 <div class="member-info">
@@ -4466,7 +4496,10 @@ function loadSimpleModeMembers() {
                         </p>
                     </div>
                 </div>
-                ${actionsHtml ? `<div class="member-actions">${actionsHtml}</div>` : ''}
+                <div class="member-actions">
+                    ${editNicknameBtn}
+                    ${actionsHtml}
+                </div>
             </div>
         `;
     }).join('');
@@ -4794,6 +4827,65 @@ async function removeMember(memberId) {
 }
 
 /**
+ * Show modal to edit user's nickname in the group
+ */
+function showEditNicknameModal(userId, currentName) {
+    const newName = prompt('Enter your display name for this group:', currentName || '');
+    
+    if (newName === null) return; // Cancelled
+    
+    if (newName.trim().length === 0) {
+        showToast('Please enter a valid name', 'error');
+        return;
+    }
+    
+    if (newName.trim().length > 30) {
+        showToast('Name must be 30 characters or less', 'error');
+        return;
+    }
+    
+    updateMemberNickname(userId, newName.trim());
+}
+
+/**
+ * Update member nickname in Firebase
+ */
+async function updateMemberNickname(userId, newName) {
+    try {
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        
+        if (!groupId) {
+            showToast('Group not found', 'error');
+            return;
+        }
+        
+        // Update the member's name in Firebase
+        await window.FirebaseConfig.updateDb(`groups/${groupId}/members/${userId}`, {
+            name: newName
+        });
+        
+        // Update local cache
+        if (currentFund.members && currentFund.members[userId]) {
+            currentFund.members[userId].name = newName;
+        }
+        
+        showToast('Name updated successfully!', 'success');
+        
+        // Reload the members list to reflect the change
+        loadSimpleModeMembers();
+        
+        // Also reload balances as they display names too
+        if (typeof loadSimpleModeBalances === 'function') {
+            loadSimpleModeBalances();
+        }
+        
+    } catch (error) {
+        console.error('Error updating nickname:', error);
+        showToast('Failed to update name. Please try again.', 'error');
+    }
+}
+
+/**
  * Load removal requests for group creator
  */
 async function loadRemovalRequests() {
@@ -5039,6 +5131,158 @@ async function toggleLikeExpense(expenseId) {
         console.error('Error toggling like:', error);
         showToast('Error updating like', 'error');
     }
+}
+
+/**
+ * Show full expense details modal
+ */
+async function showExpenseDetailsModal(expenseId) {
+    try {
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        
+        // Get expense data from Firebase
+        const expense = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses/${expenseId}`);
+        
+        if (!expense) {
+            showToast('Expense not found', 'error');
+            return;
+        }
+        
+        // Format date
+        let dateStr = 'No date';
+        if (expense.date) {
+            dateStr = new Date(expense.date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        } else if (expense.timestamp) {
+            dateStr = new Date(expense.timestamp).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        // Format amount
+        const currency = expense.currency || 'USD';
+        const currencySymbol = getCurrencySymbol(currency);
+        const amountStr = `${currencySymbol}${Math.abs(expense.amount).toFixed(2)} ${currency}`;
+        
+        // Get payer info
+        const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
+        const payerNames = paidByArray.map(uid => {
+            const member = currentFund.members?.[uid];
+            return member?.name || member?.email || uid.substring(0, 8) + '...';
+        });
+        
+        // Calculate split breakdown
+        const splitBetween = expense.splitBetween || [];
+        const shareCount = {};
+        splitBetween.forEach(uid => {
+            shareCount[uid] = (shareCount[uid] || 0) + 1;
+        });
+        
+        const totalShares = splitBetween.length;
+        const perShareAmount = totalShares > 0 ? expense.amount / totalShares : 0;
+        
+        // Build split breakdown HTML
+        let splitBreakdownHtml = '';
+        Object.entries(shareCount).forEach(([uid, shares]) => {
+            const member = currentFund.members?.[uid];
+            const memberName = member?.name || member?.email || uid.substring(0, 8) + '...';
+            const owesAmount = (perShareAmount * shares).toFixed(2);
+            const shareLabel = shares > 1 ? `(${shares} shares)` : '';
+            splitBreakdownHtml += `
+                <div class="split-row">
+                    <span class="split-member">${memberName} ${shareLabel}</span>
+                    <span class="split-amount">${currencySymbol}${owesAmount}</span>
+                </div>
+            `;
+        });
+        
+        // Interactions summary
+        const likesCount = expense.likes ? Object.keys(expense.likes).length : 0;
+        const commentsCount = expense.comments ? Object.keys(expense.comments).length : 0;
+        
+        // Build modal HTML
+        const modalHtml = `
+            <div id="expenseDetailsModal" class="modal" style="display: flex;">
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3>📋 Transaction Details</h3>
+                        <button class="modal-close" onclick="closeExpenseDetailsModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="expense-detail-section">
+                            <h4 class="expense-detail-title">${expense.description}</h4>
+                            <div class="expense-detail-amount">${amountStr}</div>
+                            <div class="expense-detail-date">📅 ${dateStr}</div>
+                        </div>
+                        
+                        <div class="expense-detail-section">
+                            <h5>💳 Paid by</h5>
+                            <p>${payerNames.join(', ')}</p>
+                        </div>
+                        
+                        <div class="expense-detail-section">
+                            <h5>👥 Split Breakdown</h5>
+                            <div class="split-breakdown">
+                                ${splitBreakdownHtml}
+                            </div>
+                            <p class="split-total">Total: ${totalShares} share${totalShares !== 1 ? 's' : ''} · ${currencySymbol}${perShareAmount.toFixed(2)} each</p>
+                        </div>
+                        
+                        ${expense.notes ? `
+                            <div class="expense-detail-section">
+                                <h5>📝 Notes</h5>
+                                <p class="expense-notes-full">${expense.notes}</p>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="expense-detail-section">
+                            <h5>💬 Interactions</h5>
+                            <div class="expense-interactions-summary">
+                                <span>❤️ ${likesCount} like${likesCount !== 1 ? 's' : ''}</span>
+                                <span>💬 ${commentsCount} comment${commentsCount !== 1 ? 's' : ''}</span>
+                            </div>
+                        </div>
+                        
+                        ${expense.category ? `
+                            <div class="expense-detail-section">
+                                <h5>📁 Category</h5>
+                                <p>${expense.category}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeExpenseDetailsModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        const existingModal = document.getElementById('expenseDetailsModal');
+        if (existingModal) existingModal.remove();
+        
+        // Insert and show modal
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+    } catch (error) {
+        console.error('Error showing expense details:', error);
+        showToast('Failed to load expense details', 'error');
+    }
+}
+
+/**
+ * Close expense details modal
+ */
+function closeExpenseDetailsModal() {
+    const modal = document.getElementById('expenseDetailsModal');
+    if (modal) modal.remove();
 }
 
 /**

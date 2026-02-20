@@ -2218,6 +2218,12 @@ header,
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   overflow-x: auto;
   scrollbar-width: none;
+  background: rgba(102, 126, 234, 0.08);
+  padding: 0.5rem 0.5rem 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .fund-tabs::-webkit-scrollbar {
@@ -2227,6 +2233,7 @@ header,
 /* Improve tab button visibility in light mode */
 [data-theme="light"] .fund-tabs {
   border-bottom: 2px solid #cbd5e1;
+  background: rgba(102, 126, 234, 0.05);
 }
 
 [data-theme="light"] .fund-tab-btn,
@@ -2252,9 +2259,9 @@ header,
 .fund-tab-btn,
 .tab-btn {
   padding: var(--spacing-sm) var(--spacing-md);
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   color: var(--text-secondary);
   font-size: 0.875rem;
   font-weight: 600;
@@ -2265,18 +2272,22 @@ header,
   align-items: center;
   gap: var(--spacing-xs);
   margin-bottom: -2px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .fund-tab-btn:hover,
 .tab-btn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
 }
 
 .fund-tab-btn.active,
 .tab-btn.active {
   color: var(--primary-light);
   border-bottom-color: var(--primary-light);
+  background: rgba(102, 126, 234, 0.2);
+  box-shadow: 0 -2px 8px rgba(102, 126, 234, 0.3);
 }
 
 /* Tab Content */
@@ -4571,6 +4582,22 @@ header,
   align-items: center;
   gap: var(--spacing-md);
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.balance-details {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.balance-name {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  font-weight: 600;
 }
 
 .balance-amount-display {
@@ -5590,6 +5617,117 @@ header,
     min-width: 60px;
     font-size: 1.8rem;
   }
+}
+
+/* Expense Details Modal */
+.expense-detail-section {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.expense-detail-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.expense-detail-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.expense-detail-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-light);
+  margin-bottom: 0.25rem;
+}
+
+.expense-detail-date {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.expense-detail-section h5 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.expense-detail-section p {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.split-breakdown {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+}
+
+.split-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.split-row:last-child {
+  border-bottom: none;
+}
+
+.split-member {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.split-amount {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.split-total {
+  margin-top: 0.75rem !important;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.expense-notes-full {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  font-style: italic;
+  color: var(--text-secondary) !important;
+}
+
+.expense-interactions-summary {
+  display: flex;
+  gap: 1.5rem;
+  color: var(--text-secondary);
+}
+
+/* Light mode expense details */
+[data-theme="light"] .expense-detail-section {
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] .split-breakdown {
+  background: #f8fafc;
+}
+
+[data-theme="light"] .split-row {
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] .expense-notes-full {
+  background: #f8fafc;
 }
 
 /* Members Selection Styles */
