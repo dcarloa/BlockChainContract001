@@ -4018,6 +4018,9 @@ async function loadSmartSettlements() {
         document.getElementById('settlementsCount').textContent = settlements.length;
         document.getElementById('settlementsTotal').textContent = `$${totalAmount.toFixed(2)}`;
         
+        // Get translated "pays" label
+        const paysLabel = t('app.groups.balances.settlementsPays') || 'pays';
+        
         // Render settlements
         const listContainer = document.getElementById('settlementsList');
         let html = '';
@@ -4028,21 +4031,24 @@ async function loadSmartSettlements() {
             const fromName = fromMember?.name || fromMember?.email || 'Unknown';
             const toName = toMember?.name || toMember?.email || 'Unknown';
             
+            // Truncate long names for display
+            const truncate = (str, len = 20) => str.length > len ? str.substring(0, len) + '...' : str;
+            
             html += `
                 <div class="settlement-item" id="settlement-${index}">
                     <div class="settlement-arrow">→</div>
                     <div class="settlement-content">
                         <div class="settlement-from">
                             <div class="settlement-avatar">${fromName.charAt(0).toUpperCase()}</div>
-                            <div class="settlement-name">${fromName}</div>
+                            <div class="settlement-name" title="${fromName}">${truncate(fromName)}</div>
                         </div>
                         <div class="settlement-details">
-                            <div class="settlement-label">pays</div>
+                            <div class="settlement-label">${paysLabel}</div>
                             <div class="settlement-amount">$${settlement.amount.toFixed(2)}</div>
                         </div>
                         <div class="settlement-to">
                             <div class="settlement-avatar">${toName.charAt(0).toUpperCase()}</div>
-                            <div class="settlement-name">${toName}</div>
+                            <div class="settlement-name" title="${toName}">${truncate(toName)}</div>
                         </div>
                     </div>
                     <button class="settlement-mark-btn" onclick="markSettlementComplete(${index})" title="Mark as complete">

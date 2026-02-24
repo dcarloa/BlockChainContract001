@@ -2055,22 +2055,22 @@ Simple, fast, and free.</p>
     <div id="smartSettlementsModal" class="modal-overlay" style="display: none;" onclick="closeSmartSettlements(event)">
         <div class="modal-content smart-settlements-modal" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3>🎯 Smart Settlements</h3>
-                <button class="close-btn" onclick="closeSmartSettlements()">&times;</button>
+                <h3>🎯 <span data-i18n="app.groups.balances.smartSettlements">Smart Settlements</span></h3>
+                <button class="close-btn" onclick="closeSmartSettlements()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="settlements-intro">
-                    <p class="settlements-description">
+                    <p class="settlements-description" data-i18n="app.groups.balances.settlementsDescription">
                         💡 We've optimized your payments to minimize the number of transactions needed to settle all debts.
                     </p>
                     <div class="settlements-stats">
                         <div class="stat-badge">
                             <span class="stat-number" id="settlementsCount">0</span>
-                            <span class="stat-label">payments needed</span>
+                            <span class="stat-label" data-i18n="app.groups.balances.settlementsPaymentsNeeded">payments needed</span>
                         </div>
                         <div class="stat-badge">
                             <span class="stat-number" id="settlementsTotal">$0</span>
-                            <span class="stat-label">total to settle</span>
+                            <span class="stat-label" data-i18n="app.groups.balances.settlementsTotalToSettle">total to settle</span>
                         </div>
                     </div>
                 </div>
@@ -2079,17 +2079,19 @@ Simple, fast, and free.</p>
                     <!-- Settlements will be rendered here -->
                 </div>
                 
-                <div id="noSettlements" class="empty-state" style="display: none;">
+                <div id="noSettlements" class="empty-state">
                     <div class="empty-icon">✅</div>
-                    <h4>All Settled!</h4>
-                    <p>Everyone is even. No payments needed.</p>
+                    <h4 data-i18n="app.groups.balances.settlementsAllSettled">All Settled!</h4>
+                    <p data-i18n="app.groups.balances.settlementsNoPayments">Everyone is even. No payments needed.</p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeSmartSettlements()">Close</button>
+                <button class="btn btn-secondary" onclick="closeSmartSettlements()">
+                    <span data-i18n="app.fundDetail.close">Close</span>
+                </button>
                 <button class="btn btn-success" id="markAllSettledBtn" onclick="markAllSettled()" style="display: none;">
                     <span class="btn-icon">✓</span>
-                    <span>Mark All as Settled</span>
+                    <span data-i18n="app.groups.balances.settlementsMarkAllSettled">Mark All as Settled</span>
                 </button>
             </div>
         </div>

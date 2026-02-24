@@ -12337,17 +12337,16 @@ header,
   background-clip: content-box;
 }
 
-/* Settlement Item - ULTRA CLEAR SINGLE LINE */
+/* Settlement Item - Matching JS Structure */
 .settlement-item {
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important;
-  gap: 1rem !important;
-  padding: 1.25rem 1.5rem !important;
-  margin-bottom: 1rem !important;
+  gap: 0.75rem !important;
+  padding: 1rem 1.25rem !important;
+  margin-bottom: 0.75rem !important;
   background: var(--glass-bg) !important;
   border: 2px solid var(--glass-border) !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   transition: all 0.2s ease !important;
   visibility: visible !important;
   width: 100% !important;
@@ -12355,57 +12354,73 @@ header,
 }
 
 [data-theme="dark"] .settlement-item {
-  background: rgba(30, 41, 59, 0.6) !important;
+  background: rgba(30, 41, 59, 0.7) !important;
   border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
 [data-theme="light"] .settlement-item {
-  background: white !important;
-  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
 }
 
 .settlement-item:hover {
-  background: rgba(16, 185, 129, 0.05);
-  border-color: rgba(16, 185, 129, 0.5) !important;
+  border-color: rgba(16, 185, 129, 0.6) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
 }
 
-/* Remove settlement-header wrapper - direct layout */
-.settlement-header {
-  display: none !important;
-}
-
-/* Settlement content flows directly */
-.settlement-item > * {
-  display: inline-flex !important;
+/* Arrow at start */
+.settlement-item > .settlement-arrow {
+  font-size: 1.25rem !important;
+  color: #10b981 !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
   align-items: center !important;
-  visibility: visible !important;
+}
+
+/* Main content wrapper */
+.settlement-content {
+  display: flex !important;
+  align-items: center !important;
+  flex: 1 !important;
+  gap: 0.5rem !important;
+  flex-wrap: wrap !important;
+  min-width: 0 !important;
+}
+
+/* From/To person blocks */
+.settlement-from,
+.settlement-to {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  min-width: 0 !important;
 }
 
 .settlement-avatar {
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
   border-radius: 50% !important;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  display: inline-flex !important;
+  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 1rem !important;
+  font-size: 0.9rem !important;
   font-weight: 700 !important;
   color: white !important;
   flex-shrink: 0 !important;
-  visibility: visible !important;
-  margin-right: 0.5rem !important;
 }
 
 .settlement-name {
-  font-size: 1rem !important;
+  font-size: 0.875rem !important;
   font-weight: 600 !important;
   color: var(--text-primary) !important;
-  display: inline-block !important;
-  visibility: visible !important;
   white-space: nowrap !important;
-  margin-right: 0.75rem !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 140px !important;
 }
 
 [data-theme="dark"] .settlement-name {
@@ -12413,69 +12428,135 @@ header,
 }
 
 [data-theme="light"] .settlement-name {
-  color: #0f172a !important;
+  color: #1e293b !important;
 }
 
-.settlement-arrow {
-  font-size: 1.5rem !important;
-  color: #10b981 !important;
-  margin: 0 0.75rem !important;
-  display: inline-block !important;
-  visibility: visible !important;
+/* Amount and label in middle */
+.settlement-details {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding: 0 0.75rem !important;
   flex-shrink: 0 !important;
+}
+
+.settlement-label {
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  margin-bottom: 0.125rem !important;
+}
+
+[data-theme="dark"] .settlement-label {
+  color: #94a3b8 !important;
+}
+
+[data-theme="light"] .settlement-label {
+  color: #64748b !important;
 }
 
 .settlement-amount {
   font-size: 1.25rem !important;
   font-weight: 800 !important;
   color: #10b981 !important;
-  display: inline-block !important;
-  visibility: visible !important;
   white-space: nowrap !important;
-  margin: 0 1rem !important;
-  flex-shrink: 0 !important;
-}
-
-.settlement-arrow-to {
-  font-size: 1.5rem !important;
-  color: #10b981 !important;
-  margin: 0 0.75rem !important;
-  display: inline-block !important;
-  visibility: visible !important;
-  flex-shrink: 0 !important;
-}
-
-[data-theme="dark"] .settlement-amount {
-  color: #10b981 !important;
 }
 
 [data-theme="light"] .settlement-amount {
   color: #059669 !important;
 }
 
-.settlement-actions {
-  display: inline-flex !important;
-  gap: 0.75rem !important;
-  margin-left: auto !important;
-  visibility: visible !important;
-  flex-shrink: 0 !important;
-}
-
-.settlement-actions .btn {
-  padding: 0.5rem 1rem !important;
-  font-size: 0.875rem !important;
-  display: inline-flex !important;
-  visibility: visible !important;
-  white-space: nowrap !important;
-}
-
-.settlement-check-icon {
-  font-size: 1.25rem !important;
+/* Mark button */
+.settlement-mark-btn {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+  border: 2px solid rgba(16, 185, 129, 0.3) !important;
   color: #10b981 !important;
-  display: inline-block !important;
-  visibility: visible !important;
-  margin-left: auto !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   flex-shrink: 0 !important;
+  transition: all 0.2s ease !important;
+  margin-left: auto !important;
+}
+
+.settlement-mark-btn:hover {
+  background: #10b981 !important;
+  color: white !important;
+  transform: scale(1.1);
+}
+
+.settlement-mark-btn .btn-icon {
+  font-size: 1rem !important;
+}
+
+/* Completed state */
+.settlement-item.settlement-completed {
+  opacity: 0.6;
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: #10b981 !important;
+}
+
+.settlement-item.settlement-completed .settlement-mark-btn {
+  background: #10b981 !important;
+  color: white !important;
+}
+
+/* Empty state - noSettlements */
+#noSettlements {
+  display: none;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 3rem 2rem !important;
+  text-align: center !important;
+}
+
+#noSettlements.show,
+#noSettlements[style*="display: flex"] {
+  display: flex !important;
+}
+
+#noSettlements .empty-icon {
+  font-size: 4rem !important;
+  margin-bottom: 1rem !important;
+  filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3));
+}
+
+#noSettlements h4 {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  margin: 0 0 0.5rem 0 !important;
+}
+
+[data-theme="dark"] #noSettlements h4 {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="light"] #noSettlements h4 {
+  color: #0f172a !important;
+}
+
+#noSettlements p {
+  font-size: 1rem !important;
+  color: var(--text-secondary) !important;
+  margin: 0 !important;
+}
+
+[data-theme="dark"] #noSettlements p {
+  color: #94a3b8 !important;
+}
+
+[data-theme="light"] #noSettlements p {
+  color: #64748b !important;
 }
 
 /* Light Mode Enhancements */
@@ -12515,165 +12596,207 @@ header,
   background: #f8fafc;
 }
 
-/* Mobile Responsive - Enhanced Clarity */
+/* Mobile Responsive - Enhanced for settlement items */
 @media (max-width: 768px) {
   .smart-settlements-modal {
     max-width: 95vw;
+    max-height: 90vh;
+    margin: 1rem;
   }
   
   #smartSettlementsModal .modal-header {
-    padding: 1.5rem 1rem;
-  }
-  
-  #smartSettlementsModal .modal-header h2,
-  #smartSettlementsModal .modal-header h3 {
-    font-size: 1.5rem;
-  }
-  
-  #smartSettlementsModal .modal-header h2::before,
-  #smartSettlementsModal .modal-header h3::before {
-    font-size: 1.75rem;
-  }
-  
-  .settlements-intro {
-    padding: 1.25rem 1rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .settlements-description {
-    font-size: 0.9375rem;
-  }
-  
-  .settlements-stats {
-    gap: 1rem;
-  }
-  
-  .stat-badge {
     padding: 1.25rem 1rem;
   }
   
-  .stat-number {
-    font-size: 2.25rem;
-  }
-  
-  .stat-label {
-    font-size: 0.75rem;
-  }
-  
-  .settlements-list {
-    max-height: 320px;
-    padding: 0.5rem;
-  }
-  
-  .settlement-item {
-    padding: 1rem !important;
-    gap: 0.75rem !important;
-    flex-wrap: nowrap !important;
-  }
-  
-  .settlement-avatar {
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    font-size: 0.9rem !important;
-  }
-  
-  .settlement-name {
-    font-size: 0.9rem !important;
-    margin-right: 0.5rem !important;
-  }
-  
-  .settlement-arrow,
-  .settlement-arrow-to {
-    font-size: 1.25rem !important;
-    margin: 0 0.5rem !important;
-  }
-  
-  .settlement-amount {
-    font-size: 1.125rem !important;
-    margin: 0 0.75rem !important;
-  }
-  
-  .settlement-actions .btn {
-    padding: 0.4rem 0.75rem !important;
-    font-size: 0.8125rem !important;
-  }
-  
-  .settlement-check-icon {
-    font-size: 1.125rem !important;
-  }
-}
-
-@media (max-width: 480px) {
   #smartSettlementsModal .modal-header h2,
   #smartSettlementsModal .modal-header h3 {
     font-size: 1.25rem;
   }
   
+  #smartSettlementsModal .modal-header h2::before,
+  #smartSettlementsModal .modal-header h3::before {
+    font-size: 1.5rem;
+  }
+  
   .settlements-intro {
-    padding: 1rem 0.875rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
   }
   
   .settlements-description {
     font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+  
+  .settlements-stats {
+    gap: 0.75rem;
+  }
+  
+  .stat-badge {
+    padding: 1rem 0.75rem;
+  }
+  
+  .stat-number {
+    font-size: 1.75rem;
+  }
+  
+  .stat-label {
+    font-size: 0.6875rem;
+  }
+  
+  .settlements-list {
+    max-height: 280px;
+    padding: 0.25rem;
+    gap: 0.75rem !important;
+  }
+  
+  /* Mobile settlement item - VERTICAL LAYOUT */
+  .settlement-item {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 1rem !important;
+    gap: 0.75rem !important;
+  }
+  
+  .settlement-item > .settlement-arrow {
+    display: none !important;
+  }
+  
+  .settlement-content {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  
+  .settlement-from,
+  .settlement-to {
+    justify-content: flex-start !important;
+    width: 100% !important;
+  }
+  
+  .settlement-name {
+    max-width: none !important;
+    flex: 1 !important;
+  }
+  
+  .settlement-details {
+    flex-direction: row !important;
+    justify-content: center !important;
+    padding: 0.5rem 0 !important;
+    border-top: 1px dashed rgba(16, 185, 129, 0.3);
+    border-bottom: 1px dashed rgba(16, 185, 129, 0.3);
+    margin: 0.25rem 0 !important;
+  }
+  
+  .settlement-label {
+    margin-bottom: 0 !important;
+    margin-right: 0.5rem !important;
+  }
+  
+  .settlement-amount {
+    font-size: 1.5rem !important;
+  }
+  
+  .settlement-mark-btn {
+    width: 100% !important;
+    height: 40px !important;
+    border-radius: 8px !important;
+    margin-left: 0 !important;
+  }
+  
+  .settlement-mark-btn:hover {
+    transform: none;
+  }
+  
+  /* Modal footer mobile */
+  #smartSettlementsModal .modal-footer {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    padding: 1rem !important;
+  }
+  
+  #smartSettlementsModal .modal-footer .btn {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .smart-settlements-modal {
+    max-width: 100vw;
+    max-height: 95vh;
+    margin: 0;
+    border-radius: 16px 16px 0 0;
+  }
+  
+  #smartSettlementsModal .modal-header h2,
+  #smartSettlementsModal .modal-header h3 {
+    font-size: 1.125rem;
+  }
+  
+  .settlements-intro {
+    padding: 0.875rem;
+  }
+  
+  .settlements-description {
+    font-size: 0.8125rem;
   }
   
   .settlements-stats {
     grid-template-columns: 1fr;
-    gap: 0.875rem;
+    gap: 0.5rem;
   }
   
   .stat-badge {
     flex-direction: row;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 0.75rem 1rem;
   }
   
   .stat-number {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    margin-bottom: 0;
+  }
+  
+  .stat-label {
+    font-size: 0.625rem;
+  }
+  
+  .settlements-list {
+    max-height: 240px;
   }
   
   .settlement-item {
     padding: 0.875rem !important;
-    gap: 0.5rem !important;
-    flex-wrap: nowrap !important;
-    font-size: 0.875rem !important;
   }
   
   .settlement-avatar {
     width: 32px !important;
     height: 32px !important;
     min-width: 32px !important;
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
   }
   
   .settlement-name {
-    font-size: 0.85rem !important;
-    margin-right: 0.35rem !important;
-  }
-  
-  .settlement-arrow,
-  .settlement-arrow-to {
-    font-size: 1.125rem !important;
-    margin: 0 0.35rem !important;
+    font-size: 0.8125rem !important;
   }
   
   .settlement-amount {
-    font-size: 1rem !important;
-    margin: 0 0.5rem !important;
+    font-size: 1.25rem !important;
   }
   
-  .settlement-actions {
-    margin-left: 0.5rem !important;
+  .settlement-mark-btn {
+    height: 36px !important;
   }
   
-  .settlement-actions .btn {
-    padding: 0.35rem 0.6rem !important;
-    font-size: 0.75rem !important;
+  #noSettlements .empty-icon {
+    font-size: 3rem !important;
   }
   
-  .settlement-check-icon {
-    font-size: 1rem !important;
+  #noSettlements h4 {
+    font-size: 1.25rem !important;
+  }
+  
+  #noSettlements p {
+    font-size: 0.875rem !important;
   }
 }
 
