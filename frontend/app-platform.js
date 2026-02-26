@@ -1712,11 +1712,52 @@ function createFundCard(fund) {
     const fundTypeIcons = ['🌴', '💰', '🤝', '📦'];
     const fundTypeKeys = ['travel', 'savings', 'shared', 'other'];
     
+    // Detect personal colony
+    const isPersonalColony = fund.fundAddress && fund.fundAddress.startsWith('grp_personal_');
+    
     // Use custom icon if available, otherwise fall back to type-based icon
-    const icon = fund.icon || fundTypeIcons[Number(fund.fundType)] || '📦';
+    const icon = isPersonalColony ? '🐜' : (fund.icon || fundTypeIcons[Number(fund.fundType)] || '📦');
     const typeKey = fundTypeKeys[Number(fund.fundType)] || 'other';
     const typeName = t.app.fundDetail.badges[typeKey];
     const isInactive = !fund.isActive;
+    
+    // Personal colony gets special card
+    if (isPersonalColony) {
+        return `
+            <div class="fund-card personal-colony-card" onclick="openFund('${fund.fundAddress}')">
+                <div class="personal-colony-glow"></div>
+                <div class="fund-card-content">
+                    <div class="personal-colony-header">
+                        <div class="personal-colony-icon">
+                            <span class="colony-ant">🐜</span>
+                            <span class="colony-sparkle">✨</span>
+                        </div>
+                        <div class="personal-colony-title">
+                            <h3>${currentLang === 'es' ? 'Mi Colonia Personal' : 'My Personal Colony'}</h3>
+                            <span class="personal-colony-subtitle">${currentLang === 'es' ? 'Gastos solo para ti' : 'Expenses just for you'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="personal-colony-stats">
+                        <div class="personal-colony-stat">
+                            <span class="stat-value">$${fund.balance || 0}</span>
+                            <span class="stat-label">${currentLang === 'es' ? 'Este Mes' : 'This Month'}</span>
+                        </div>
+                        <div class="personal-colony-divider"></div>
+                        <div class="personal-colony-stat">
+                            <span class="stat-value">${fund.proposals || 0}</span>
+                            <span class="stat-label">${currentLang === 'es' ? 'Gastos' : 'Expenses'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="personal-colony-cta">
+                        <span class="cta-icon">→</span>
+                        <span class="cta-text">${currentLang === 'es' ? 'Gestionar mis gastos' : 'Manage my expenses'}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
     
     return `
         <div class="fund-card ${isInactive ? 'fund-inactive' : ''}" onclick="openFund('${fund.fundAddress}')">
