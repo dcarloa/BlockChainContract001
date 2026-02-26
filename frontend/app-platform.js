@@ -4037,6 +4037,9 @@ async function loadSmartSettlements() {
         const listContainer = document.getElementById('settlementsList');
         let html = '';
         
+        // Get current user to show contextual actions
+        const currentUserId = firebase.auth().currentUser?.uid;
+        
         settlements.forEach((settlement, index) => {
             const fromMember = currentFund.members[settlement.from];
             const toMember = currentFund.members[settlement.to];
@@ -4044,28 +4047,39 @@ async function loadSmartSettlements() {
             const toName = toMember?.name || toMember?.email || 'Unknown';
             
             // Truncate long names for display
-            const truncate = (str, len = 20) => str.length > len ? str.substring(0, len) + '...' : str;
+            const truncate = (str, len = 12) => str.length > len ? str.substring(0, len) + '...' : str;
+            
+            // Check role: am I the one who pays or receives?
+            const isDebtor = currentUserId === settlement.from;
+            const isCreditor = currentUserId === settlement.to;
             
             html += `
                 <div class="settlement-item" id="settlement-${index}">
-                    <div class="settlement-arrow">→</div>
                     <div class="settlement-content">
-                        <div class="settlement-from">
-                            <div class="settlement-avatar">${fromName.charAt(0).toUpperCase()}</div>
-                            <div class="settlement-name" title="${fromName}">${truncate(fromName)}</div>
+                        <div class="settlement-flow">
+                            <div class="settlement-from">
+                                <div class="settlement-avatar ${isDebtor ? 'is-me' : ''}">${fromName.charAt(0).toUpperCase()}</div>
+                                <div class="settlement-name" title="${fromName}">${truncate(fromName)}</div>
+                            </div>
+                            <div class="settlement-details">
+                                <div class="settlement-arrow">→</div>
+                                <div class="settlement-amount">$${settlement.amount.toFixed(2)}</div>
+                            </div>
+                            <div class="settlement-to">
+                                <div class="settlement-avatar ${isCreditor ? 'is-me' : ''}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">${toName.charAt(0).toUpperCase()}</div>
+                                <div class="settlement-name" title="${toName}">${truncate(toName)}</div>
+                            </div>
                         </div>
-                        <div class="settlement-details">
-                            <div class="settlement-label">${paysLabel}</div>
-                            <div class="settlement-amount">$${settlement.amount.toFixed(2)}</div>
-                        </div>
-                        <div class="settlement-to">
-                            <div class="settlement-avatar">${toName.charAt(0).toUpperCase()}</div>
-                            <div class="settlement-name" title="${toName}">${truncate(toName)}</div>
+                        <div class="settlement-actions">
+                            <button class="settlement-done-btn" onclick="markSettlementDone(${index})" title="${t('app.quickSettlements.markPaid') || 'Mark as paid'}">
+                                <span>✓</span>
+                                <span>${t('app.quickSettlements.paid') || 'Paid'}</span>
+                            </button>
+                            <button class="settlement-share-btn" onclick="shareSettlement(${index})" title="${t('app.quickSettlements.share') || 'Share'}">
+                                📤
+                            </button>
                         </div>
                     </div>
-                    <button class="settlement-mark-btn" onclick="markSettlementComplete(${index})" title="Mark as complete">
-                        <span class="btn-icon">✓</span>
-                    </button>
                 </div>
             `;
         });
@@ -4230,6 +4244,142 @@ async function markAllSettled() {
         showToast('Error recording payments: ' + error.message, 'error');
     }
 }
+
+// ============================================
+// QUICK SETTLEMENTS - Phase 3 (One-tap actions)
+// ============================================
+
+/**
+ * Mark a single settlement as done (one-tap)
+ */
+async function markSettlementDone(index) {
+    try {
+        if (currentFund && !currentFund.isActive) {
+            showToast("⏸️ " + (t('app.quickSettlements.groupPaused') || "Group is paused"), "error");
+            return;
+        }
+        
+        const settlement = currentSettlements[index];
+        if (!settlement) {
+            showToast(t('app.quickSettlements.notFound') || 'Settlement not found', 'error');
+            return;
+        }
+        
+        const settlementEl = document.getElementById(`settlement-${index}`);
+        
+        // Animate immediately for instant feedback
+        if (settlementEl) {
+            settlementEl.classList.add('settlement-completing');
+        }
+        
+        // Record settlement in Firebase
+        window.modeManager.currentGroupId = currentFund.fundId;
+        const settlementInfo = {
+            from: settlement.from,
+            to: settlement.to,
+            amount: settlement.amount,
+            method: 'external', // Generic - settled outside the app
+            notes: `Settled on ${new Date().toLocaleDateString()}`
+        };
+        
+        await window.modeManager.recordSettlement(settlementInfo);
+        
+        // Mark as completed
+        if (settlementEl) {
+            settlementEl.classList.remove('settlement-completing');
+            settlementEl.classList.add('settlement-completed');
+        }
+        
+        // Haptic feedback
+        if (window.HapticFeedback) {
+            window.HapticFeedback.success();
+        }
+        
+        showToast('✅ ' + (t('app.quickSettlements.recorded') || 'Payment recorded!'), 'success');
+        
+        // Refresh after animation
+        setTimeout(async () => {
+            await loadSimpleModeBalances();
+            await loadSmartSettlements();
+            await loadColonyInsights(); // Update balance glance
+        }, 800);
+        
+    } catch (error) {
+        console.error('Error marking settlement done:', error);
+        showToast(t('errors.settlementRecord') || 'Error recording payment', 'error');
+        
+        // Remove animation class on error
+        const settlementEl = document.getElementById(`settlement-${index}`);
+        if (settlementEl) {
+            settlementEl.classList.remove('settlement-completing');
+        }
+    }
+}
+
+/**
+ * Share settlement via native share or clipboard
+ */
+async function shareSettlement(index) {
+    const settlement = currentSettlements[index];
+    if (!settlement) return;
+    
+    const fromMember = currentFund?.members?.[settlement.from];
+    const toMember = currentFund?.members?.[settlement.to];
+    const fromName = fromMember?.name || fromMember?.email || 'Unknown';
+    const toName = toMember?.name || toMember?.email || 'Unknown';
+    const groupName = currentFund?.fundName || 'Ant Pool';
+    
+    const currency = currentFund?.settings?.currency || 'USD';
+    const currencySymbol = getCurrencySymbol(currency);
+    
+    // Create share text
+    const shareText = `🐜 ${groupName}\n\n${fromName} → ${toName}\n💰 ${currencySymbol}${settlement.amount.toFixed(2)}\n\n— Ant Pool`;
+    
+    try {
+        // Try native share first (works great on mobile)
+        if (navigator.share) {
+            await navigator.share({
+                title: `${t('app.quickSettlements.shareTitle') || 'Settlement'} - ${groupName}`,
+                text: shareText
+            });
+            
+            // Track share
+            if (typeof gtag === 'function') {
+                gtag('event', 'settlement_shared', {
+                    'event_category': 'settlements',
+                    'method': 'native_share'
+                });
+            }
+        } else {
+            // Fallback: copy to clipboard
+            await navigator.clipboard.writeText(shareText);
+            showToast('📋 ' + (t('app.quickSettlements.copied') || 'Copied to clipboard!'), 'success');
+            
+            // Track copy
+            if (typeof gtag === 'function') {
+                gtag('event', 'settlement_shared', {
+                    'event_category': 'settlements',
+                    'method': 'clipboard'
+                });
+            }
+        }
+        
+        // Haptic feedback
+        if (window.HapticFeedback) {
+            window.HapticFeedback.light();
+        }
+        
+    } catch (error) {
+        // User cancelled share - not an error
+        if (error.name !== 'AbortError') {
+            console.error('Error sharing settlement:', error);
+        }
+    }
+}
+
+// Make quick settlement functions globally available
+window.markSettlementDone = markSettlementDone;
+window.shareSettlement = shareSettlement;
 
 // ============================================
 // EXPENSE TIMELINE FUNCTIONS

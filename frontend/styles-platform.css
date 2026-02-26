@@ -15011,3 +15011,172 @@ header,
     font-size: 1.5rem;
   }
 }
+
+/* ===================================
+   QUICK SETTLEMENTS - Phase 3
+   =================================== */
+
+/* Enhanced Settlement Item Layout */
+.settlement-item .settlement-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settlement-item .settlement-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.settlement-item .settlement-from,
+.settlement-item .settlement-to {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 60px;
+}
+
+.settlement-item .settlement-avatar.is-me {
+  box-shadow: 0 0 0 2px #10b981;
+}
+
+.settlement-item .settlement-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.settlement-item .settlement-arrow {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.settlement-item .settlement-amount {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+/* Settlement Actions */
+.settlement-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settlement-done-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settlement-done-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.settlement-done-btn:active {
+  transform: translateY(0);
+}
+
+.settlement-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 0.875rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settlement-share-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+/* Settlement Animation States */
+.settlement-item.settlement-completing {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.settlement-item.settlement-completing .settlement-done-btn {
+  background: var(--bg-tertiary);
+}
+
+.settlement-item.settlement-completed {
+  animation: settlementDone 0.5s ease forwards;
+}
+
+@keyframes settlementDone {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    background: rgba(16, 185, 129, 0.15);
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+.settlement-item.settlement-completed .settlement-done-btn {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.settlement-item.settlement-completed .settlement-done-btn span:first-child::after {
+  content: ' ✓';
+}
+
+/* Light Mode - Quick Settlements */
+[data-theme="light"] .settlement-share-btn {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .settlement-share-btn:hover {
+  background: rgba(102, 126, 234, 0.08);
+}
+
+/* Mobile - Quick Settlements */
+@media (max-width: 480px) {
+  .settlement-item .settlement-from,
+  .settlement-item .settlement-to {
+    min-width: 50px;
+  }
+  
+  .settlement-item .settlement-name {
+    font-size: 0.75rem;
+  }
+  
+  .settlement-done-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+  
+  .settlement-share-btn {
+    padding: 0.5rem 0.625rem;
+  }
+}

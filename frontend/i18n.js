@@ -707,7 +707,17 @@ const translations = {
                     unbalanced: "Unbalanced"
                 }
             },
-            createFund: {
+            // Quick Settlements - Phase 3
+            quickSettlements: {
+                paid: "Paid",
+                markPaid: "Mark as paid",
+                share: "Share",
+                recording: "Recording...",
+                recorded: "Recorded!",
+                shareTitle: "Settlement",
+                shareMessage: "Settlement: {from} pays {to} {amount}",
+                copied: "Copied to clipboard!"
+            },
                 title: "✨ Create New Group",
                 steps: {
                     basicInfo: "Basic Info",
@@ -2126,6 +2136,17 @@ const translations = {
                     pending: "Pendiente",
                     unbalanced: "Desbalanceado"
                 }
+            },
+            // Quick Settlements - Phase 3
+            quickSettlements: {
+                paid: "Pagado",
+                markPaid: "Marcar como pagado",
+                share: "Compartir",
+                recording: "Registrando...",
+                recorded: "¡Registrado!",
+                shareTitle: "Liquidación",
+                shareMessage: "Liquidación: {from} paga a {to} {amount}",
+                copied: "¡Copiado al portapapeles!"
             },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",
