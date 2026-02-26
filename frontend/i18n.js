@@ -686,38 +686,6 @@ const translations = {
                 createGroup: "Create new group",
                 addToGroup: "Add to group"
             },
-            // Smart Settlements - Phase 2
-            settlements: {
-                paymentMethod: {
-                    title: "How will you pay?",
-                    bizum: "Bizum",
-                    paypal: "PayPal",
-                    venmo: "Venmo",
-                    bank: "Bank Transfer",
-                    cash: "Cash",
-                    other: "Other"
-                },
-                actions: {
-                    pay: "Pay",
-                    remind: "Remind",
-                    markPaid: "Mark as Paid",
-                    copyInfo: "Copy Payment Info",
-                    copied: "Copied!",
-                    sendReminder: "Send Reminder",
-                    recordAll: "Record All Payments"
-                },
-                status: {
-                    pending: "Pending",
-                    completed: "Completed",
-                    reminded: "Reminded"
-                },
-                messages: {
-                    reminderSent: "Reminder sent!",
-                    paymentRecorded: "Payment recorded!",
-                    allSettled: "All debts settled!",
-                    selectMethod: "Please select a payment method"
-                }
-            },
             createFund: {
                 title: "✨ Create New Group",
                 steps: {
@@ -2116,38 +2084,6 @@ const translations = {
                 selectGroup: "Seleccionar grupo...",
                 createGroup: "Crear nuevo grupo",
                 addToGroup: "Agregar al grupo"
-            },
-            // Smart Settlements - Phase 2
-            settlements: {
-                paymentMethod: {
-                    title: "¿Cómo vas a pagar?",
-                    bizum: "Bizum",
-                    paypal: "PayPal",
-                    venmo: "Venmo",
-                    bank: "Transferencia Bancaria",
-                    cash: "Efectivo",
-                    other: "Otro"
-                },
-                actions: {
-                    pay: "Pagar",
-                    remind: "Recordar",
-                    markPaid: "Marcar como Pagado",
-                    copyInfo: "Copiar Info de Pago",
-                    copied: "¡Copiado!",
-                    sendReminder: "Enviar Recordatorio",
-                    recordAll: "Registrar Todos los Pagos"
-                },
-                status: {
-                    pending: "Pendiente",
-                    completed: "Completado",
-                    reminded: "Recordado"
-                },
-                messages: {
-                    reminderSent: "¡Recordatorio enviado!",
-                    paymentRecorded: "¡Pago registrado!",
-                    allSettled: "¡Todas las deudas saldadas!",
-                    selectMethod: "Por favor selecciona un método de pago"
-                }
             },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",

@@ -2153,68 +2153,6 @@ Simple, fast, and free.</p>
         </div>
     </div>
 
-    <!-- Payment Method Selection Modal -->
-    <div id="paymentMethodModal" class="modal-overlay" style="display: none;" onclick="closePaymentMethodModal(event)">
-        <div class="modal-content payment-method-modal" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3>💳 <span data-i18n="app.settlements.paymentMethod.title">How will you pay?</span></h3>
-                <button class="close-btn" onclick="closePaymentMethodModal()" aria-label="Close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="payment-info-summary" id="paymentInfoSummary">
-                    <!-- Filled dynamically -->
-                </div>
-                
-                <div class="payment-methods-grid">
-                    <button class="payment-method-btn" onclick="selectPaymentMethod('bizum')">
-                        <span class="payment-icon">📱</span>
-                        <span class="payment-name">Bizum</span>
-                    </button>
-                    <button class="payment-method-btn" onclick="selectPaymentMethod('paypal')">
-                        <span class="payment-icon">🅿️</span>
-                        <span class="payment-name">PayPal</span>
-                    </button>
-                    <button class="payment-method-btn" onclick="selectPaymentMethod('venmo')">
-                        <span class="payment-icon">💸</span>
-                        <span class="payment-name">Venmo</span>
-                    </button>
-                    <button class="payment-method-btn" onclick="selectPaymentMethod('bank')">
-                        <span class="payment-icon">🏦</span>
-                        <span class="payment-name" data-i18n="app.settlements.paymentMethod.bank">Bank Transfer</span>
-                    </button>
-                    <button class="payment-method-btn" onclick="selectPaymentMethod('cash')">
-                        <span class="payment-icon">💵</span>
-                        <span class="payment-name" data-i18n="app.settlements.paymentMethod.cash">Cash</span>
-                    </button>
-                    <button class="payment-method-btn" onclick="selectPaymentMethod('other')">
-                        <span class="payment-icon">💱</span>
-                        <span class="payment-name" data-i18n="app.settlements.paymentMethod.other">Other</span>
-                    </button>
-                </div>
-                
-                <div class="payment-quick-actions" id="paymentQuickActions" style="display: none;">
-                    <button class="quick-action-btn copy-btn" id="copyPaymentInfoBtn" onclick="copyPaymentInfo()">
-                        <span class="btn-icon">📋</span>
-                        <span data-i18n="app.settlements.actions.copyInfo">Copy Payment Info</span>
-                    </button>
-                    <button class="quick-action-btn remind-btn" id="sendReminderBtn" onclick="sendPaymentReminder()">
-                        <span class="btn-icon">🔔</span>
-                        <span data-i18n="app.settlements.actions.sendReminder">Send Reminder</span>
-                    </button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closePaymentMethodModal()">
-                    <span data-i18n="common.cancel">Cancel</span>
-                </button>
-                <button class="btn btn-success" id="confirmPaymentBtn" onclick="confirmSettlementWithMethod()" disabled>
-                    <span class="btn-icon">✓</span>
-                    <span data-i18n="app.settlements.actions.markPaid">Mark as Paid</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Quick Add FAB (Floating Action Button) -->
     <div id="quickAddFab" class="quick-add-fab" style="display: none;">
         <button class="fab-trigger" onclick="toggleQuickAdd()" aria-label="Quick add expense">
