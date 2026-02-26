@@ -3256,20 +3256,48 @@ async function loadSimpleModeDetailView() {
         const manageTab = document.querySelector('.fund-tab-btn[data-tab="manage"]');
         const mascotTab = document.querySelector('.fund-tab-btn[data-tab="mascot"]');
         
+        // Detect personal colony
+        const isPersonalColony = currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_personal_');
+        
         // Hide blockchain tabs
         if (depositTab) depositTab.style.display = 'none';
         if (voteTab) voteTab.style.display = 'none';
         if (proposeTab) proposeTab.style.display = 'none';
         
-        // Show Simple Mode tabs
-        if (inviteTab) {
-            inviteTab.style.display = 'flex';
-            inviteTab.innerHTML = '<span class="tab-icon">🎫</span><span>Invite</span>';
+        // Personal colony specific adjustments
+        if (isPersonalColony) {
+            // Hide tabs that don't make sense for personal use
+            if (inviteTab) inviteTab.style.display = 'none';
+            if (membersTab) membersTab.style.display = 'none';
+            if (balancesTab) balancesTab.style.display = 'none';
+            if (manageTab) manageTab.style.display = 'none';
+            if (mascotTab) mascotTab.style.display = 'flex'; // Keep mascot
+            
+            // Update header for personal colony
+            const currentLang = getCurrentLanguage();
+            if (headerIcon) headerIcon.textContent = '🐜';
+            if (detailName) detailName.textContent = currentLang === 'es' ? 'Mi Colonia Personal' : 'My Personal Colony';
+            safeUpdate('fundDetailDescription', 'textContent', currentLang === 'es' ? 'Gastos personales solo para ti' : 'Personal expenses just for you');
+            safeUpdate('fundTypeBadge', 'textContent', '✨ Personal');
+            
+            // Hide members stat for personal colony
+            const fundMembersStat = document.getElementById('fundMembersStat');
+            if (fundMembersStat) fundMembersStat.style.display = 'none';
+        } else {
+            // Regular group - Show Simple Mode tabs
+            if (inviteTab) {
+                inviteTab.style.display = 'flex';
+                inviteTab.innerHTML = '<span class="tab-icon">🎫</span><span>Invite</span>';
+            }
+            if (membersTab) membersTab.style.display = 'flex';
+            if (balancesTab) balancesTab.style.display = 'flex';
+            if (manageTab) manageTab.style.display = 'none'; // Hide for now
+            if (mascotTab) mascotTab.style.display = 'flex'; // Show mascot tab in Simple Mode
+            
+            // Ensure members stat is visible for regular groups
+            const fundMembersStat = document.getElementById('fundMembersStat');
+            if (fundMembersStat) fundMembersStat.style.display = '';
         }
-        if (membersTab) membersTab.style.display = 'flex';
-        if (balancesTab) balancesTab.style.display = 'flex';
-        if (manageTab) manageTab.style.display = 'none'; // Hide for now
-        if (mascotTab) mascotTab.style.display = 'flex'; // Show mascot tab in Simple Mode
         
         // Load Simple Mode invite UI
         loadSimpleModeInviteUI();
