@@ -299,6 +299,127 @@ function listenDb(path, callback) {
 }
 
 // ============================================
+// PERSONAL COLONY AUTO-CREATION
+// ============================================
+
+/**
+ * Ensure user has a personal colony
+ * Creates one automatically if it doesn't exist
+ * @param {Object} user Firebase user object
+ * @returns {Promise<string>} Personal colony ID
+ */
+async function ensurePersonalColony(user) {
+    if (!user) {
+        console.warn('⚠️ Cannot ensure personal colony: no user provided');
+        return null;
+    }
+    
+    const personalColonyId = `grp_personal_${user.uid}`;
+    
+    try {
+        // Check if personal colony already exists
+        const existingColony = await readDb(`groups/${personalColonyId}`);
+        
+        if (existingColony) {
+            console.log('🐜 Personal colony already exists:', personalColonyId);
+            // Update user reference
+            await updateDb(`users/${user.uid}/personalColony`, personalColonyId);
+            return personalColonyId;
+        }
+        
+        // Create new personal colony
+        console.log('🐜 Creating personal colony for user:', user.uid);
+        await createPersonalColony(user, personalColonyId);
+        
+        return personalColonyId;
+        
+    } catch (error) {
+        console.error('❌ Error ensuring personal colony:', error);
+        return null;
+    }
+}
+
+/**
+ * Create a new personal colony for user
+ * @param {Object} user Firebase user object
+ * @param {string} colonyId Colony ID
+ * @returns {Promise<void>}
+ */
+async function createPersonalColony(user, colonyId) {
+    const timestamp = Date.now();
+    
+    // Get translation function for colony name
+    const colonyName = typeof t === 'function' 
+        ? t('app.personalColony.name') 
+        : 'My Colony';
+    
+    const colonyData = {
+        id: colonyId,
+        name: colonyName,
+        description: '',
+        icon: '🐜',
+        mode: 'simple',
+        isPersonal: true,
+        createdBy: user.uid,
+        createdByEmail: user.email,
+        createdByName: user.displayName || user.email,
+        createdAt: timestamp,
+        isActive: true,
+        targetAmount: 0,
+        currency: 'USD',
+        preferredCurrency: 'NONE',
+        
+        // Only the user as member
+        members: {
+            [user.uid]: {
+                email: user.email,
+                name: user.displayName || user.email,
+                joinedAt: timestamp,
+                role: 'creator',
+                totalContributed: 0
+            }
+        },
+        
+        // Empty expenses
+        expenses: {},
+        
+        // No settlements needed for personal
+        settlements: {},
+        
+        // Personal settings
+        settings: {
+            isPersonal: true,
+            showBalances: false,
+            showMembers: false,
+            notificationsEnabled: true
+        }
+    };
+    
+    // Write colony to database
+    await writeDb(`groups/${colonyId}`, colonyData);
+    
+    // Add reference to user's data
+    await updateDb(`users/${user.uid}`, {
+        personalColony: colonyId,
+        [`groups/${colonyId}`]: {
+            name: colonyName,
+            role: 'creator',
+            joinedAt: timestamp,
+            isPersonal: true
+        }
+    });
+    
+    console.log('✅ Personal colony created successfully:', colonyId);
+    
+    // Track analytics event
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('personalColonyCreated', {
+            detail: { colonyId, userId: user.uid }
+        }));
+    }
+}
+
+// ============================================
 // PAYMENT RESULT HANDLER
 // ============================================
 
@@ -362,5 +483,7 @@ window.FirebaseConfig = {
     deleteDb,
     pushDb,
     listenDb,
-    checkPaymentResult
+    checkPaymentResult,
+    ensurePersonalColony,
+    createPersonalColony
 };

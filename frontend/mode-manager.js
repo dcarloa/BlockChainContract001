@@ -1,18 +1,19 @@
 ﻿// Mode Manager - Hybrid OFF-chain/ON-chain Architecture
-// Manages switching between Simple Mode (Firebase) and Blockchain Mode (Smart Contracts)
+// Manages switching between Simple Mode (Firebase), Personal Mode, and Blockchain Mode (Smart Contracts)
 
 // ============================================
 // MODE DETECTION AND CONFIGURATION
 // ============================================
 
 const MODE_TYPES = {
-    SIMPLE: 'simple',      // Firebase-based expense tracking
+    PERSONAL: 'personal',  // Personal colony (single user)
+    SIMPLE: 'simple',      // Firebase-based expense tracking (groups)
     BLOCKCHAIN: 'blockchain' // Smart contract-based
 };
 
 /**
  * Mode Manager Class
- * Handles all operations for both Simple and Blockchain modes
+ * Handles all operations for Personal, Simple and Blockchain modes
  */
 class ModeManager {
     constructor() {
@@ -20,20 +21,33 @@ class ModeManager {
         this.currentGroupId = null;
         this.groupData = null;
         this.listeners = [];
+        this.isPersonalColony = false;
     }
     
     /**
      * Detect mode of a group
      * @param {string} groupId Group ID or contract address
-     * @returns {string} Mode type ('simple' or 'blockchain')
+     * @returns {string} Mode type ('personal', 'simple' or 'blockchain')
      */
     detectMode(groupId) {
+        // Personal colony detection
+        if (groupId && groupId.startsWith('grp_personal_')) {
+            return MODE_TYPES.PERSONAL;
+        }
         // If it starts with '0x' and is 42 chars, it's a blockchain address
         if (groupId && groupId.startsWith('0x') && groupId.length === 42) {
             return MODE_TYPES.BLOCKCHAIN;
         }
         // Otherwise it's a Firebase simple mode group
         return MODE_TYPES.SIMPLE;
+    }
+    
+    /**
+     * Check if current group is a personal colony
+     * @returns {boolean}
+     */
+    isPersonalMode() {
+        return this.currentMode === MODE_TYPES.PERSONAL || this.isPersonalColony;
     }
     
     /**
@@ -45,11 +59,16 @@ class ModeManager {
         try {
             this.currentGroupId = groupId;
             this.currentMode = this.detectMode(groupId);
+            this.isPersonalColony = this.currentMode === MODE_TYPES.PERSONAL;
             
-            
-            if (this.currentMode === MODE_TYPES.SIMPLE) {
-                // Load simple mode data from Firebase
+            if (this.currentMode === MODE_TYPES.PERSONAL || this.currentMode === MODE_TYPES.SIMPLE) {
+                // Load simple/personal mode data from Firebase
                 this.groupData = await this.loadSimpleGroup(groupId);
+                // Double-check isPersonal flag from data
+                if (this.groupData && this.groupData.isPersonal) {
+                    this.isPersonalColony = true;
+                    this.currentMode = MODE_TYPES.PERSONAL;
+                }
             } else {
                 // Load blockchain mode data from contract
                 this.groupData = await this.loadBlockchainGroup(groupId);

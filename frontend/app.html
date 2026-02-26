@@ -915,6 +915,62 @@ Simple, fast, and free.</p>
                     </div>
                 </div>
 
+                <!-- Personal Colony Dashboard (shown when user has personal expenses) -->
+                <div id="personalDashboard" class="personal-dashboard" style="display: none;">
+                    <div class="personal-dashboard-header">
+                        <span class="personal-dashboard-title">
+                            🐜 <span data-i18n="app.personalColony.title">My Personal Colony</span>
+                        </span>
+                        <span class="personal-dashboard-month" id="personalDashboardMonth"></span>
+                    </div>
+                    
+                    <div class="personal-stat-grid">
+                        <div class="personal-stat">
+                            <div class="personal-stat-value" id="personalTotalSpent">€0</div>
+                            <div class="personal-stat-label" data-i18n="app.personalColony.stats.totalSpent">This Month</div>
+                        </div>
+                        <div class="personal-stat">
+                            <div class="personal-stat-value" id="personalExpenseCount">0</div>
+                            <div class="personal-stat-label" data-i18n="app.personalColony.stats.transactions">Transactions</div>
+                        </div>
+                        <div class="personal-stat">
+                            <div class="personal-stat-category">
+                                <span class="personal-stat-category-icon" id="personalTopCategoryIcon">🍕</span>
+                                <span id="personalTopCategoryName" data-i18n="app.categories.food">Food</span>
+                            </div>
+                            <div class="personal-stat-label" data-i18n="app.personalColony.stats.topCategory">Top Category</div>
+                        </div>
+                        <div class="personal-stat">
+                            <div class="personal-stat-value" id="personalAvgExpense">€0</div>
+                            <div class="personal-stat-label" data-i18n="app.personalColony.stats.avgExpense">Avg/Expense</div>
+                        </div>
+                    </div>
+                    
+                    <div class="budget-section" id="personalBudgetSection">
+                        <div id="budgetDisplay" style="display: none;">
+                            <div class="budget-header">
+                                <span class="budget-label" data-i18n="app.personalColony.budget.monthlyBudget">Monthly Budget</span>
+                                <span class="budget-amount" id="personalBudgetAmount">€0 / €500</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-fill" id="personalBudgetFill" style="width: 0%"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
+                                <span id="personalBudgetTrend" class="trend-indicator trend-neutral">→ 0%</span>
+                                <button class="fab-link-btn" onclick="openPersonalBudgetModal()" data-i18n="app.personalColony.budget.edit">Edit Budget</button>
+                            </div>
+                        </div>
+                        <button id="setBudgetBtn" class="budget-set-btn" onclick="openPersonalBudgetModal()" style="display: flex;">
+                            <span>📊</span>
+                            <span data-i18n="app.personalColony.budget.setMonthly">Set Monthly Budget</span>
+                        </button>
+                    </div>
+                    
+                    <button class="btn-link" onclick="viewPersonalColony()" style="margin-top: 1rem; width: 100%; text-align: center; color: #10b981; font-weight: 500;" data-i18n="app.personalColony.viewAll">
+                        View All Personal Expenses →
+                    </button>
+                </div>
+
                 <!-- Pending Invitations Banner -->
                 <div id="pendingInvitationsSection" class="pending-invitations-section" style="display: none;">
                     <div class="invitations-header">
@@ -2092,6 +2148,75 @@ Simple, fast, and free.</p>
                 <button class="btn btn-success" id="markAllSettledBtn" onclick="markAllSettled()" style="display: none;">
                     <span class="btn-icon">✓</span>
                     <span data-i18n="app.groups.balances.settlementsMarkAllSettled">Mark All as Settled</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add FAB (Floating Action Button) -->
+    <div id="quickAddFab" class="quick-add-fab" style="display: none;">
+        <button class="fab-trigger" onclick="toggleQuickAdd()" aria-label="Quick add expense">
+            <span class="fab-icon">+</span>
+        </button>
+        <div class="fab-form" id="fabForm" style="display: none;">
+            <div class="fab-header">
+                <span data-i18n="app.personalColony.quickAdd">Quick Add</span>
+                <button class="fab-close" onclick="toggleQuickAdd()" aria-label="Close">×</button>
+            </div>
+            <div class="fab-field">
+                <div class="fab-amount-wrapper">
+                    <span class="fab-currency-symbol">$</span>
+                    <input type="number" id="fabAmount" placeholder="0.00" inputmode="decimal" step="0.01" min="0">
+                </div>
+                <select id="fabCurrency" class="fab-currency-select">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="MXN">MXN</option>
+                    <option value="COP">COP</option>
+                    <option value="GBP">GBP</option>
+                </select>
+            </div>
+            <div class="fab-field">
+                <select id="fabCategory" class="fab-select">
+                    <option value="food">🍔 Food</option>
+                    <option value="transport">🚗 Transport</option>
+                    <option value="entertainment">🎬 Entertainment</option>
+                    <option value="shopping">🛍️ Shopping</option>
+                    <option value="bills">💳 Bills</option>
+                    <option value="utilities">🔧 Utilities</option>
+                    <option value="health">⚕️ Health</option>
+                    <option value="housing">🏠 Housing</option>
+                    <option value="subscriptions">📱 Subscriptions</option>
+                    <option value="education">🎓 Education</option>
+                    <option value="personal">💅 Personal</option>
+                    <option value="other">📦 Other</option>
+                </select>
+            </div>
+            <div class="fab-field">
+                <input type="text" id="fabDescription" class="fab-input" placeholder="Description (optional)" data-i18n-placeholder="expense.descriptionPlaceholder">
+            </div>
+            <!-- Shared expense toggle -->
+            <div class="fab-shared-toggle">
+                <label class="toggle-label">
+                    <span data-i18n="app.sharedExpense.toggle">Shared expense?</span>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="fabSharedToggle" onchange="toggleFabSharedOptions()">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
+            </div>
+            <div id="fabSharedOptions" class="fab-shared-options" style="display: none;">
+                <select id="fabTargetGroup" class="fab-select">
+                    <option value="" data-i18n="app.sharedExpense.selectGroup">Select group...</option>
+                </select>
+                <button class="fab-link-btn" onclick="showCreateGroupFromFab()">
+                    + <span data-i18n="app.sharedExpense.createGroup">Create new group</span>
+                </button>
+            </div>
+            <div class="fab-actions">
+                <button class="fab-btn fab-btn-save" onclick="quickAddExpense()">
+                    <span class="fab-btn-icon">✓</span>
+                    <span data-i18n="common.save">Save</span>
                 </button>
             </div>
         </div>

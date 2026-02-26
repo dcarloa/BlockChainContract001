@@ -173,6 +173,17 @@ window.addEventListener('DOMContentLoaded', async () => {
                     if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
                         window.DemoMode.exit();
                     }
+                    
+                    // Ensure user has a personal colony (auto-create if needed)
+                    window.FirebaseConfig.ensurePersonalColony(user).then(personalColonyId => {
+                        if (personalColonyId) {
+                            window.personalColonyId = personalColonyId;
+                            console.log('🐜 Personal colony ready:', personalColonyId);
+                        }
+                    }).catch(err => {
+                        console.error('Error ensuring personal colony:', err);
+                    });
+                    
                     // Always reload user funds when user is confirmed
                     loadUserFunds();
                 }
@@ -11807,3 +11818,508 @@ window.checkStripePricingTable = checkStripePricingTable;
 
 // Notification system will be initialized after Firebase auth is ready
 // See firebase-config.js auth state listener
+
+// ===================================
+// QUICK ADD FAB (FLOATING ACTION BUTTON)
+// ===================================
+
+/**
+ * Toggle Quick Add FAB form visibility
+ */
+function toggleQuickAdd() {
+    const fab = document.getElementById('quickAddFab');
+    const form = document.getElementById('fabForm');
+    
+    if (!fab || !form) return;
+    
+    const isExpanded = fab.classList.contains('expanded');
+    
+    if (isExpanded) {
+        // Close
+        fab.classList.remove('expanded');
+        form.style.display = 'none';
+    } else {
+        // Open
+        fab.classList.add('expanded');
+        form.style.display = 'block';
+        
+        // Focus on amount field
+        const amountInput = document.getElementById('fabAmount');
+        if (amountInput) {
+            setTimeout(() => amountInput.focus(), 100);
+        }
+        
+        // Track analytics
+        if (typeof gtag === 'function') {
+            gtag('event', 'fab_opened', {
+                'event_category': 'engagement',
+                'is_personal_mode': window.modeManager?.isPersonalMode() || false
+            });
+        }
+    }
+}
+
+/**
+ * Close Quick Add FAB form
+ */
+function closeFabForm() {
+    const fab = document.getElementById('quickAddFab');
+    const form = document.getElementById('fabForm');
+    
+    if (fab) fab.classList.remove('expanded');
+    if (form) form.style.display = 'none';
+    
+    // Reset form
+    resetFabForm();
+}
+
+/**
+ * Reset FAB form to initial state
+ */
+function resetFabForm() {
+    const amountInput = document.getElementById('fabAmount');
+    const categorySelect = document.getElementById('fabCategory');
+    const descInput = document.getElementById('fabDescription');
+    const sharedToggle = document.getElementById('fabSharedToggle');
+    const sharedOptions = document.getElementById('fabSharedOptions');
+    
+    if (amountInput) amountInput.value = '';
+    if (categorySelect) categorySelect.selectedIndex = 0;
+    if (descInput) descInput.value = '';
+    if (sharedToggle) sharedToggle.checked = false;
+    if (sharedOptions) sharedOptions.style.display = 'none';
+}
+
+/**
+ * Toggle shared expense options visibility
+ */
+function toggleFabSharedOptions() {
+    const sharedToggle = document.getElementById('fabSharedToggle');
+    const sharedOptions = document.getElementById('fabSharedOptions');
+    
+    if (!sharedToggle || !sharedOptions) return;
+    
+    if (sharedToggle.checked) {
+        sharedOptions.style.display = 'block';
+    } else {
+        sharedOptions.style.display = 'none';
+    }
+}
+
+/**
+ * Quick add expense from FAB
+ */
+async function quickAddExpense() {
+    try {
+        const amount = parseFloat(document.getElementById('fabAmount')?.value);
+        const currency = document.getElementById('fabCurrency')?.value || 'EUR';
+        const category = document.getElementById('fabCategory')?.value || 'other';
+        const description = document.getElementById('fabDescription')?.value?.trim() || '';
+        const isShared = document.getElementById('fabSharedToggle')?.checked || false;
+        
+        // Validate
+        if (!amount || amount <= 0) {
+            showToast(t('app.validation.enterAmount') || 'Enter an amount', 'error');
+            return;
+        }
+        
+        showLoading(t('app.loading.addingExpense') || 'Adding expense...');
+        
+        // Check if in personal mode
+        const isPersonalMode = window.modeManager?.isPersonalMode() || false;
+        
+        if (isShared && !isPersonalMode) {
+            // Shared expense - use current group
+            if (!currentFund) {
+                hideLoading();
+                showToast(t('app.validation.selectGroup') || 'Select a group first', 'error');
+                return;
+            }
+            
+            // Add as shared expense
+            const expense = {
+                amount,
+                currency,
+                category,
+                description: description || getCategoryLabel(category),
+                paidBy: firebase.auth().currentUser.uid,
+                splitType: 'equal',
+                splitWith: Object.keys(currentFund.members || {})
+            };
+            
+            await window.modeManager.addExpense(expense);
+            
+        } else {
+            // Personal expense
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                hideLoading();
+                showToast(t('common.errors.notLoggedIn') || 'Please log in', 'error');
+                return;
+            }
+            
+            // Ensure personal colony exists
+            const personalColonyId = `grp_personal_${user.uid}`;
+            await window.FirebaseConfig.ensurePersonalColony(user);
+            
+            // Add expense to personal colony
+            const expenseRef = firebase.database().ref(`groups/${personalColonyId}/expenses`).push();
+            const expenseData = {
+                amount,
+                currency,
+                category,
+                description: description || getCategoryLabel(category),
+                paidBy: user.uid,
+                createdAt: Date.now(),
+                isPersonal: true
+            };
+            
+            await expenseRef.set(expenseData);
+            
+            // Track analytics
+            if (typeof gtag === 'function') {
+                gtag('event', 'expense_added_quick', {
+                    'event_category': 'expense',
+                    'expense_category': category,
+                    'is_personal': true,
+                    'amount': amount
+                });
+            }
+        }
+        
+        hideLoading();
+        showToast(t('app.success.expenseAdded') || 'Expense added!', 'success');
+        closeFabForm();
+        
+        // Refresh expenses list if on expenses view
+        if (typeof loadExpenses === 'function') {
+            loadExpenses();
+        }
+        
+        // Provide haptic feedback
+        if (window.HapticFeedback) {
+            window.HapticFeedback.success();
+        }
+        
+    } catch (error) {
+        hideLoading();
+        console.error('Error adding quick expense:', error);
+        showToast(t('errors.expenseAdd') || 'Error adding expense', 'error');
+    }
+}
+
+/**
+ * Show create group modal from FAB
+ */
+function showCreateGroupFromFab() {
+    closeFabForm();
+    
+    // Show create group modal
+    if (typeof showCreateGroupModal === 'function') {
+        showCreateGroupModal();
+    } else {
+        // Fallback - navigate to groups view
+        if (typeof navigateTo === 'function') {
+            navigateTo('groups');
+        }
+    }
+}
+
+/**
+ * Get category label for display
+ */
+function getCategoryLabel(categoryKey) {
+    const categories = {
+        'food': '🍕 ' + (t('app.categories.food') || 'Food'),
+        'transport': '🚗 ' + (t('app.categories.transport') || 'Transport'),
+        'entertainment': '🎮 ' + (t('app.categories.entertainment') || 'Entertainment'),
+        'shopping': '🛍️ ' + (t('app.categories.shopping') || 'Shopping'),
+        'bills': '📄 ' + (t('app.categories.bills') || 'Bills'),
+        'health': '💊 ' + (t('app.categories.health') || 'Health'),
+        'travel': '✈️ ' + (t('app.categories.travel') || 'Travel'),
+        'other': '📦 ' + (t('app.categories.other') || 'Other')
+    };
+    return categories[categoryKey] || categories['other'];
+}
+
+/**
+ * Show/hide FAB based on authentication state
+ */
+function updateFabVisibility() {
+    const fab = document.getElementById('quickAddFab');
+    if (!fab) return;
+    
+    const user = firebase.auth().currentUser;
+    
+    if (user) {
+        fab.style.display = 'flex';
+    } else {
+        fab.style.display = 'none';
+    }
+}
+
+// Initialize FAB on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Set up FAB close on outside click
+    document.addEventListener('click', (e) => {
+        const fab = document.getElementById('quickAddFab');
+        if (fab && fab.classList.contains('expanded')) {
+            // Check if click is outside FAB
+            if (!fab.contains(e.target)) {
+                closeFabForm();
+            }
+        }
+    });
+    
+    // Handle shared toggle change
+    const sharedToggle = document.getElementById('fabSharedToggle');
+    if (sharedToggle) {
+        sharedToggle.addEventListener('change', toggleFabSharedOptions);
+    }
+    
+    // Handle Enter key in FAB form
+    const fabAmount = document.getElementById('fabAmount');
+    if (fabAmount) {
+        fabAmount.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                quickAddExpense();
+            }
+        });
+    }
+});
+
+// Update FAB visibility when auth state changes
+firebase.auth().onAuthStateChanged((user) => {
+    updateFabVisibility();
+});
+
+// Make FAB functions globally available
+window.toggleQuickAdd = toggleQuickAdd;
+window.closeFabForm = closeFabForm;
+window.quickAddExpense = quickAddExpense;
+window.toggleFabSharedOptions = toggleFabSharedOptions;
+window.showCreateGroupFromFab = showCreateGroupFromFab;
+window.updateFabVisibility = updateFabVisibility;
+
+// ===================================
+// PERSONAL DASHBOARD
+// ===================================
+
+/**
+ * Load and display personal dashboard data
+ */
+async function loadPersonalDashboard() {
+    const dashboard = document.getElementById('personalDashboard');
+    if (!dashboard) return;
+    
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        dashboard.style.display = 'none';
+        return;
+    }
+    
+    try {
+        const personalColonyId = `grp_personal_${user.uid}`;
+        const colonyRef = firebase.database().ref(`groups/${personalColonyId}`);
+        const snapshot = await colonyRef.once('value');
+        const colonyData = snapshot.val();
+        
+        if (!colonyData || !colonyData.expenses) {
+            // Show welcome state if no expenses
+            dashboard.style.display = 'none';
+            return;
+        }
+        
+        // Show dashboard
+        dashboard.style.display = 'block';
+        
+        // Calculate stats for current month
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).getTime();
+        
+        // Set current month label
+        const monthLabel = document.getElementById('personalDashboardMonth');
+        if (monthLabel) {
+            const monthName = now.toLocaleDateString(navigator.language || 'en', { month: 'long', year: 'numeric' });
+            monthLabel.textContent = monthName;
+        }
+        
+        const expenses = Object.values(colonyData.expenses || {});
+        const monthExpenses = expenses.filter(e => {
+            const expenseDate = e.createdAt || e.date || 0;
+            return expenseDate >= monthStart && expenseDate <= monthEnd;
+        });
+        
+        // Calculate totals
+        const totalSpent = monthExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+        const expenseCount = monthExpenses.length;
+        const avgExpense = expenseCount > 0 ? totalSpent / expenseCount : 0;
+        
+        // Get default currency
+        const currency = colonyData.settings?.currency || 'EUR';
+        const currencySymbol = getCurrencySymbol(currency);
+        
+        // Update stat displays
+        const totalSpentEl = document.getElementById('personalTotalSpent');
+        const expenseCountEl = document.getElementById('personalExpenseCount');
+        const avgExpenseEl = document.getElementById('personalAvgExpense');
+        
+        if (totalSpentEl) totalSpentEl.textContent = `${currencySymbol}${totalSpent.toFixed(2)}`;
+        if (expenseCountEl) expenseCountEl.textContent = expenseCount.toString();
+        if (avgExpenseEl) avgExpenseEl.textContent = `${currencySymbol}${avgExpense.toFixed(2)}`;
+        
+        // Calculate top category
+        const categoryTotals = {};
+        monthExpenses.forEach(e => {
+            const cat = e.category || 'other';
+            categoryTotals[cat] = (categoryTotals[cat] || 0) + (parseFloat(e.amount) || 0);
+        });
+        
+        const topCategory = Object.entries(categoryTotals)
+            .sort((a, b) => b[1] - a[1])[0];
+        
+        if (topCategory) {
+            const categoryIcons = {
+                'food': '🍕',
+                'transport': '🚗',
+                'entertainment': '🎮',
+                'shopping': '🛍️',
+                'bills': '📄',
+                'health': '💊',
+                'travel': '✈️',
+                'other': '📦'
+            };
+            
+            const topCatIconEl = document.getElementById('personalTopCategoryIcon');
+            const topCatNameEl = document.getElementById('personalTopCategoryName');
+            
+            if (topCatIconEl) topCatIconEl.textContent = categoryIcons[topCategory[0]] || '📦';
+            if (topCatNameEl) topCatNameEl.textContent = t(`app.categories.${topCategory[0]}`) || topCategory[0];
+        }
+        
+        // Load budget status
+        await loadPersonalBudgetStatus(colonyData, totalSpent, currencySymbol);
+        
+    } catch (error) {
+        console.error('Error loading personal dashboard:', error);
+        dashboard.style.display = 'none';
+    }
+}
+
+/**
+ * Load personal budget status
+ */
+async function loadPersonalBudgetStatus(colonyData, currentSpent, currencySymbol) {
+    const budgetDisplay = document.getElementById('budgetDisplay');
+    const setBudgetBtn = document.getElementById('setBudgetBtn');
+    
+    if (!budgetDisplay || !setBudgetBtn) return;
+    
+    const budget = colonyData.settings?.budget;
+    
+    if (budget && budget.amount > 0) {
+        budgetDisplay.style.display = 'block';
+        setBudgetBtn.style.display = 'none';
+        
+        const percentage = Math.min((currentSpent / budget.amount) * 100, 100);
+        
+        // Update budget amount display
+        const budgetAmountEl = document.getElementById('personalBudgetAmount');
+        if (budgetAmountEl) {
+            budgetAmountEl.textContent = `${currencySymbol}${currentSpent.toFixed(2)} / ${currencySymbol}${budget.amount}`;
+        }
+        
+        // Update progress bar
+        const budgetFillEl = document.getElementById('personalBudgetFill');
+        if (budgetFillEl) {
+            budgetFillEl.style.width = `${percentage}%`;
+            budgetFillEl.classList.remove('warning', 'danger');
+            
+            if (percentage >= 100) {
+                budgetFillEl.classList.add('danger');
+            } else if (percentage >= 80) {
+                budgetFillEl.classList.add('warning');
+            }
+        }
+        
+        // Calculate trend (compare to last month)
+        // For now, show neutral trend
+        const trendEl = document.getElementById('personalBudgetTrend');
+        if (trendEl) {
+            trendEl.className = 'trend-indicator trend-neutral';
+            trendEl.textContent = '→ On track';
+        }
+        
+    } else {
+        budgetDisplay.style.display = 'none';
+        setBudgetBtn.style.display = 'flex';
+    }
+}
+
+/**
+ * Get currency symbol
+ */
+function getCurrencySymbol(currency) {
+    const symbols = {
+        'EUR': '€',
+        'USD': '$',
+        'GBP': '£',
+        'JPY': '¥',
+        'CHF': 'CHF ',
+        'AUD': 'A$',
+        'CAD': 'C$'
+    };
+    return symbols[currency] || currency + ' ';
+}
+
+/**
+ * View personal colony expenses
+ */
+function viewPersonalColony() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    
+    const personalColonyId = `grp_personal_${user.uid}`;
+    
+    // Navigate to the personal colony fund view
+    if (typeof loadFund === 'function') {
+        loadFund(personalColonyId);
+    }
+}
+
+/**
+ * Open personal budget modal
+ */
+function openPersonalBudgetModal() {
+    // Use existing budget modal if available
+    if (typeof openBudgetModal === 'function') {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            const personalColonyId = `grp_personal_${user.uid}`;
+            // Set current fund to personal colony
+            if (window.currentFund) {
+                window.currentFund.fundId = personalColonyId;
+            }
+            openBudgetModal();
+        }
+    } else {
+        showToast('Budget feature coming soon', 'info');
+    }
+}
+
+// Update personal dashboard when auth state changes
+firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+        // Delay to let other auth handlers complete
+        setTimeout(() => {
+            loadPersonalDashboard();
+        }, 500);
+    }
+});
+
+// Make personal dashboard functions globally available
+window.loadPersonalDashboard = loadPersonalDashboard;
+window.viewPersonalColony = viewPersonalColony;
+window.openPersonalBudgetModal = openPersonalBudgetModal;

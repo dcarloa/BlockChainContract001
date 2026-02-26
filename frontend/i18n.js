@@ -620,6 +620,72 @@ const translations = {
                     member: "Member"
                 }
             },
+            // Personal Colony (My Colony)
+            personalColony: {
+                name: "My Colony",
+                title: "My Personal Colony",
+                description: "Your personal expense tracker",
+                welcomeTitle: "Welcome to your colony!",
+                welcomeSubtitle: "Start tracking your first expense",
+                quickAdd: "Quick Add",
+                thisMonth: "This Month",
+                topCategory: "Top Category",
+                noCategoryYet: "No expenses yet",
+                vsLastMonth: "vs last month",
+                viewAll: "View All Personal Expenses →",
+                budget: {
+                    title: "Monthly Budget",
+                    monthlyBudget: "Monthly Budget",
+                    set: "Set Budget",
+                    setMonthly: "Set Monthly Budget",
+                    edit: "Edit Budget",
+                    clear: "Clear Budget",
+                    save: "Save",
+                    monthlyLimit: "Monthly spending limit",
+                    alertInfo: "We'll notify you at 70% and 90% of your budget.",
+                    alert70: "You've used 70% of your monthly budget.",
+                    alert90: "Heads up! You've used 90% of your budget.",
+                    exceeded: "You've exceeded your monthly budget.",
+                    progress: "of budget",
+                    noBudget: "No budget set"
+                },
+                stats: {
+                    spent: "spent",
+                    totalSpent: "This Month",
+                    expenses: "expenses",
+                    transactions: "Transactions",
+                    avgPerWeek: "avg/week",
+                    avgExpense: "Avg/Expense",
+                    topCategory: "Top Category"
+                },
+                insights: {
+                    spendingUp: "Your spending increased {{percent}}% this week",
+                    spendingDown: "Your spending decreased {{percent}}% this week",
+                    topCategoryPercent: "{{category}} represents {{percent}}% of your expenses",
+                    onTrack: "You're on track with your budget",
+                    default: "Keep tracking to see insights"
+                },
+                weeklySummary: {
+                    title: "Weekly Colony Report",
+                    thisWeek: "This Week",
+                    expenses: "expenses",
+                    topCategory: "Top category",
+                    vsLastWeek: "vs last week",
+                    viewFull: "View Full Report"
+                },
+                empty: {
+                    title: "Your colony awaits!",
+                    subtitle: "Add your first expense to start tracking",
+                    button: "Add First Expense"
+                }
+            },
+            // Shared expense toggle
+            sharedExpense: {
+                toggle: "Shared expense?",
+                selectGroup: "Select group...",
+                createGroup: "Create new group",
+                addToGroup: "Add to group"
+            },
             createFund: {
                 title: "✨ Create New Group",
                 steps: {
@@ -1952,6 +2018,72 @@ const translations = {
                     creator: "Creador",
                     member: "Miembro"
                 }
+            },
+            // Personal Colony (Mi Colonia)
+            personalColony: {
+                name: "Mi Colonia",
+                title: "Mi Colonia Personal",
+                description: "Tu organizador personal de gastos",
+                welcomeTitle: "¡Bienvenido a tu colonia!",
+                welcomeSubtitle: "Comienza a registrar tu primer gasto",
+                quickAdd: "Agregar Rápido",
+                thisMonth: "Este Mes",
+                topCategory: "Categoría Principal",
+                noCategoryYet: "Sin gastos aún",
+                vsLastMonth: "vs mes anterior",
+                viewAll: "Ver Todos los Gastos Personales →",
+                budget: {
+                    title: "Presupuesto Mensual",
+                    monthlyBudget: "Presupuesto Mensual",
+                    set: "Establecer Presupuesto",
+                    setMonthly: "Establecer Presupuesto Mensual",
+                    edit: "Editar Presupuesto",
+                    clear: "Quitar Presupuesto",
+                    save: "Guardar",
+                    monthlyLimit: "Límite de gasto mensual",
+                    alertInfo: "Te notificaremos al 70% y 90% de tu presupuesto.",
+                    alert70: "Has usado el 70% de tu presupuesto mensual.",
+                    alert90: "¡Atención! Has usado el 90% de tu presupuesto.",
+                    exceeded: "Has excedido tu presupuesto mensual.",
+                    progress: "del presupuesto",
+                    noBudget: "Sin presupuesto"
+                },
+                stats: {
+                    spent: "gastado",
+                    totalSpent: "Este Mes",
+                    expenses: "gastos",
+                    transactions: "Transacciones",
+                    avgPerWeek: "prom/semana",
+                    avgExpense: "Prom/Gasto",
+                    topCategory: "Categoría Principal"
+                },
+                insights: {
+                    spendingUp: "Tu gasto aumentó {{percent}}% esta semana",
+                    spendingDown: "Tu gasto disminuyó {{percent}}% esta semana",
+                    topCategoryPercent: "{{category}} representa el {{percent}}% de tus gastos",
+                    onTrack: "Vas bien con tu presupuesto",
+                    default: "Sigue registrando para ver estadísticas"
+                },
+                weeklySummary: {
+                    title: "Reporte Semanal de Colonia",
+                    thisWeek: "Esta Semana",
+                    expenses: "gastos",
+                    topCategory: "Categoría principal",
+                    vsLastWeek: "vs semana anterior",
+                    viewFull: "Ver Reporte Completo"
+                },
+                empty: {
+                    title: "¡Tu colonia te espera!",
+                    subtitle: "Agrega tu primer gasto para comenzar",
+                    button: "Agregar Primer Gasto"
+                }
+            },
+            // Shared expense toggle
+            sharedExpense: {
+                toggle: "¿Gasto compartido?",
+                selectGroup: "Seleccionar grupo...",
+                createGroup: "Crear nuevo grupo",
+                addToGroup: "Agregar al grupo"
             },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",
