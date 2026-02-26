@@ -718,6 +718,7 @@ const translations = {
                 shareMessage: "Settlement: {from} pays {to} {amount}",
                 copied: "Copied to clipboard!"
             },
+            createFund: {
                 title: "✨ Create New Group",
                 steps: {
                     basicInfo: "Basic Info",
