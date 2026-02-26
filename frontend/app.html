@@ -971,6 +971,35 @@ Simple, fast, and free.</p>
                     </button>
                 </div>
 
+                <!-- Weekly Digest - Colony Insights -->
+                <div id="weeklyDigest" class="weekly-digest" style="display: none;">
+                    <div class="digest-header">
+                        <span class="digest-icon">📊</span>
+                        <span class="digest-title" data-i18n="app.insights.weeklyDigest.title">This Week</span>
+                    </div>
+                    <div class="digest-content">
+                        <div class="digest-main">
+                            <span class="digest-amount" id="digestWeeklyTotal">€0</span>
+                            <span class="digest-label" data-i18n="app.insights.weeklyDigest.spent">spent this week</span>
+                        </div>
+                        <div class="digest-comparison" id="digestComparison">
+                            <span class="digest-trend neutral">→</span>
+                            <span class="digest-trend-text" data-i18n="app.insights.weeklyDigest.sameAsLast">Same as last week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Balance Glance - Quick view of what you owe/are owed -->
+                <div id="balanceGlance" class="balance-glance" style="display: none;">
+                    <div class="glance-header">
+                        <span class="glance-icon">🐜</span>
+                        <span class="glance-title" data-i18n="app.insights.balanceGlance.title">Colony Status</span>
+                    </div>
+                    <div class="glance-content" id="glanceContent">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+
                 <!-- Pending Invitations Banner -->
                 <div id="pendingInvitationsSection" class="pending-invitations-section" style="display: none;">
                     <div class="invitations-header">

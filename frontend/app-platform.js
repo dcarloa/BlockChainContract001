@@ -1746,6 +1746,7 @@ function createFundCard(fund) {
                             ${fund.mode === 'simple' ? `<span class="badge badge-mode mode-simple">🐜 Simple</span>` : `<span class="badge badge-mode mode-blockchain">⛓️ Blockchain</span>`}
                             ${isInactive ? `<span class="badge badge-status status-inactive">${t.app.dashboard.card.inactive}</span>` : ''}
                             ${fund.isCreator ? `<span class="badge badge-creator">👑 ${t.app.fundDetail.badges.creator}</span>` : ''}
+                            ${fund.mode === 'simple' && !isInactive ? getGroupHealthBadge(fund) : ''}
                         </div>
                     </div>
                 </div>
@@ -12315,6 +12316,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
         // Delay to let other auth handlers complete
         setTimeout(() => {
             loadPersonalDashboard();
+            loadColonyInsights();
         }, 500);
     }
 });
@@ -12323,3 +12325,395 @@ firebase.auth().onAuthStateChanged(async (user) => {
 window.loadPersonalDashboard = loadPersonalDashboard;
 window.viewPersonalColony = viewPersonalColony;
 window.openPersonalBudgetModal = openPersonalBudgetModal;
+
+// ===================================
+// COLONY INSIGHTS - Phase 2
+// ===================================
+
+/**
+ * Load all Colony Insights components
+ */
+async function loadColonyInsights() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    
+    try {
+        await loadWeeklyDigest();
+        await loadBalanceGlance();
+    } catch (error) {
+        console.error('Error loading colony insights:', error);
+    }
+}
+
+/**
+ * Load Weekly Digest - Shows spending this week vs last week
+ */
+async function loadWeeklyDigest() {
+    const digest = document.getElementById('weeklyDigest');
+    if (!digest) return;
+    
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        digest.style.display = 'none';
+        return;
+    }
+    
+    try {
+        // Calculate this week's dates (Monday to Sunday)
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        
+        const thisWeekStart = new Date(now);
+        thisWeekStart.setDate(now.getDate() + mondayOffset);
+        thisWeekStart.setHours(0, 0, 0, 0);
+        
+        const lastWeekStart = new Date(thisWeekStart);
+        lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+        
+        const lastWeekEnd = new Date(thisWeekStart);
+        lastWeekEnd.setMilliseconds(-1);
+        
+        // Get all user's groups
+        const groupsRef = firebase.database().ref('groups');
+        const snapshot = await groupsRef.orderByChild(`members/${user.uid}/joinedAt`).once('value');
+        const groups = snapshot.val() || {};
+        
+        let thisWeekTotal = 0;
+        let lastWeekTotal = 0;
+        let currency = 'EUR';
+        
+        // Calculate totals from all groups
+        Object.entries(groups).forEach(([groupId, group]) => {
+            if (!group.members || !group.members[user.uid]) return;
+            
+            // Get group currency
+            if (group.settings?.currency) {
+                currency = group.settings.currency;
+            }
+            
+            const expenses = Object.values(group.expenses || {});
+            
+            expenses.forEach(expense => {
+                const expenseDate = new Date(expense.createdAt || expense.date || 0);
+                const amount = parseFloat(expense.amount) || 0;
+                
+                // Check if user paid this expense
+                if (expense.paidBy === user.uid) {
+                    if (expenseDate >= thisWeekStart) {
+                        thisWeekTotal += amount;
+                    } else if (expenseDate >= lastWeekStart && expenseDate < thisWeekStart) {
+                        lastWeekTotal += amount;
+                    }
+                }
+            });
+        });
+        
+        // Only show if there's activity
+        if (thisWeekTotal === 0 && lastWeekTotal === 0) {
+            digest.style.display = 'none';
+            return;
+        }
+        
+        digest.style.display = 'block';
+        
+        // Update amount
+        const currencySymbol = getCurrencySymbol(currency);
+        const amountEl = document.getElementById('digestWeeklyTotal');
+        if (amountEl) {
+            amountEl.textContent = `${currencySymbol}${thisWeekTotal.toFixed(2)}`;
+        }
+        
+        // Calculate trend
+        const comparisonEl = document.getElementById('digestComparison');
+        const trendEl = comparisonEl?.querySelector('.digest-trend');
+        const trendTextEl = comparisonEl?.querySelector('.digest-trend-text');
+        
+        if (comparisonEl && trendEl && trendTextEl) {
+            comparisonEl.classList.remove('up', 'down', 'neutral');
+            trendEl.classList.remove('up', 'down', 'neutral');
+            
+            if (lastWeekTotal === 0) {
+                comparisonEl.classList.add('neutral');
+                trendEl.classList.add('neutral');
+                trendEl.textContent = '→';
+                trendTextEl.textContent = t('app.insights.weeklyDigest.firstWeek') || 'First week tracking!';
+            } else {
+                const percentChange = ((thisWeekTotal - lastWeekTotal) / lastWeekTotal) * 100;
+                
+                if (percentChange > 5) {
+                    comparisonEl.classList.add('up');
+                    trendEl.classList.add('up');
+                    trendEl.textContent = '↑';
+                    trendTextEl.textContent = `+${Math.abs(percentChange).toFixed(0)}% ${t('app.insights.weeklyDigest.vsLastWeek') || 'vs last week'}`;
+                } else if (percentChange < -5) {
+                    comparisonEl.classList.add('down');
+                    trendEl.classList.add('down');
+                    trendEl.textContent = '↓';
+                    trendTextEl.textContent = `-${Math.abs(percentChange).toFixed(0)}% ${t('app.insights.weeklyDigest.vsLastWeek') || 'vs last week'}`;
+                } else {
+                    comparisonEl.classList.add('neutral');
+                    trendEl.classList.add('neutral');
+                    trendEl.textContent = '→';
+                    trendTextEl.textContent = t('app.insights.weeklyDigest.sameAsLast') || 'Same as last week';
+                }
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading weekly digest:', error);
+        digest.style.display = 'none';
+    }
+}
+
+/**
+ * Load Balance Glance - Shows who you owe and who owes you
+ */
+async function loadBalanceGlance() {
+    const glance = document.getElementById('balanceGlance');
+    const content = document.getElementById('glanceContent');
+    if (!glance || !content) return;
+    
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        glance.style.display = 'none';
+        return;
+    }
+    
+    try {
+        // Get all user's groups
+        const groupsRef = firebase.database().ref('groups');
+        const snapshot = await groupsRef.orderByChild(`members/${user.uid}/joinedAt`).once('value');
+        const groups = snapshot.val() || {};
+        
+        // Aggregate balances across all groups
+        const balancesByPerson = {}; // { oderId: { name, balance } }
+        let currency = 'EUR';
+        
+        Object.entries(groups).forEach(([groupId, group]) => {
+            if (!group.members || !group.members[user.uid]) return;
+            if (group.isPersonal) return; // Skip personal colony
+            
+            if (group.settings?.currency) {
+                currency = group.settings.currency;
+            }
+            
+            // Calculate balances for this group
+            const members = group.members || {};
+            const expenses = Object.values(group.expenses || {});
+            const settlements = Object.values(group.settlements || {});
+            
+            // Calculate what each person paid and owes
+            const memberTotals = {};
+            Object.keys(members).forEach(memberId => {
+                memberTotals[memberId] = { paid: 0, owes: 0 };
+            });
+            
+            // Process expenses
+            expenses.forEach(expense => {
+                const amount = parseFloat(expense.amount) || 0;
+                const paidBy = expense.paidBy;
+                const splitWith = expense.splitWith || Object.keys(members);
+                const splitAmount = amount / splitWith.length;
+                
+                if (memberTotals[paidBy]) {
+                    memberTotals[paidBy].paid += amount;
+                }
+                
+                splitWith.forEach(memberId => {
+                    if (memberTotals[memberId]) {
+                        memberTotals[memberId].owes += splitAmount;
+                    }
+                });
+            });
+            
+            // Process settlements
+            settlements.forEach(settlement => {
+                const amount = parseFloat(settlement.amount) || 0;
+                if (memberTotals[settlement.from]) {
+                    memberTotals[settlement.from].paid += amount;
+                }
+                if (memberTotals[settlement.to]) {
+                    memberTotals[settlement.to].owes += amount;
+                }
+            });
+            
+            // Calculate net balance (positive = owed money, negative = owes money)
+            const myBalance = (memberTotals[user.uid]?.paid || 0) - (memberTotals[user.uid]?.owes || 0);
+            
+            // Find relationships with other members
+            Object.entries(members).forEach(([memberId, memberData]) => {
+                if (memberId === user.uid) return;
+                
+                const theirBalance = (memberTotals[memberId]?.paid || 0) - (memberTotals[memberId]?.owes || 0);
+                
+                // If I have positive balance and they have negative, they owe me
+                // This is a simplification - real debt calculation is more complex
+                const memberName = memberData.name || memberData.email || 'Unknown';
+                
+                if (!balancesByPerson[memberId]) {
+                    balancesByPerson[memberId] = { 
+                        name: memberName, 
+                        balance: 0,
+                        initial: memberName.charAt(0).toUpperCase()
+                    };
+                }
+                
+                // Add this group's balance to the total with this person
+                // Positive = they owe me, Negative = I owe them
+                if (myBalance > 0 && theirBalance < 0) {
+                    // They owe someone - calculate their share to me
+                    const owedToMe = Math.min(Math.abs(theirBalance), myBalance) / Object.keys(members).length;
+                    balancesByPerson[memberId].balance += owedToMe;
+                } else if (myBalance < 0 && theirBalance > 0) {
+                    // I owe someone - calculate my share to them
+                    const iOwe = Math.min(Math.abs(myBalance), theirBalance) / Object.keys(members).length;
+                    balancesByPerson[memberId].balance -= iOwe;
+                }
+            });
+        });
+        
+        // Filter out zero balances and sort by absolute amount
+        const significantBalances = Object.values(balancesByPerson)
+            .filter(b => Math.abs(b.balance) > 0.50)
+            .sort((a, b) => Math.abs(b.balance) - Math.abs(a.balance))
+            .slice(0, 3); // Show top 3
+        
+        if (significantBalances.length === 0) {
+            // All settled!
+            glance.style.display = 'block';
+            content.innerHTML = `
+                <div class="glance-all-settled">
+                    <span>✅</span>
+                    <span data-i18n="app.insights.balanceGlance.allSettled">${t('app.insights.balanceGlance.allSettled') || 'All balanced! Colony in harmony.'}</span>
+                </div>
+            `;
+            return;
+        }
+        
+        glance.style.display = 'block';
+        const currencySymbol = getCurrencySymbol(currency);
+        
+        let html = '';
+        significantBalances.forEach(person => {
+            const isOwe = person.balance < 0;
+            const absAmount = Math.abs(person.balance);
+            
+            html += `
+                <div class="glance-item">
+                    <div class="glance-item-left">
+                        <div class="glance-avatar ${isOwe ? 'owe' : 'owed'}">${person.initial}</div>
+                        <div class="glance-name">${isOwe 
+                            ? `${t('app.insights.balanceGlance.youOwe') || 'You owe'} ${person.name}`
+                            : `${person.name} ${t('app.insights.balanceGlance.owesYou') || 'owes you'}`
+                        }</div>
+                    </div>
+                    <div class="glance-amount ${isOwe ? 'owe' : 'owed'}">${currencySymbol}${absAmount.toFixed(2)}</div>
+                </div>
+            `;
+        });
+        
+        content.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading balance glance:', error);
+        glance.style.display = 'none';
+    }
+}
+
+/**
+ * Get Group Health status
+ * @returns 'balanced' | 'warning' | 'unbalanced'
+ */
+function getGroupHealthStatus(group) {
+    if (!group || !group.members || !group.expenses) {
+        return 'balanced';
+    }
+    
+    const members = group.members;
+    const expenses = Object.values(group.expenses || {});
+    const settlements = Object.values(group.settlements || {});
+    
+    // Calculate balances
+    const memberTotals = {};
+    Object.keys(members).forEach(memberId => {
+        memberTotals[memberId] = { paid: 0, owes: 0 };
+    });
+    
+    expenses.forEach(expense => {
+        const amount = parseFloat(expense.amount) || 0;
+        const paidBy = expense.paidBy;
+        const splitWith = expense.splitWith || Object.keys(members);
+        const splitAmount = amount / splitWith.length;
+        
+        if (memberTotals[paidBy]) {
+            memberTotals[paidBy].paid += amount;
+        }
+        
+        splitWith.forEach(memberId => {
+            if (memberTotals[memberId]) {
+                memberTotals[memberId].owes += splitAmount;
+            }
+        });
+    });
+    
+    settlements.forEach(settlement => {
+        const amount = parseFloat(settlement.amount) || 0;
+        if (memberTotals[settlement.from]) {
+            memberTotals[settlement.from].paid += amount;
+        }
+        if (memberTotals[settlement.to]) {
+            memberTotals[settlement.to].owes += amount;
+        }
+    });
+    
+    // Calculate max imbalance
+    let maxImbalance = 0;
+    Object.values(memberTotals).forEach(totals => {
+        const balance = Math.abs(totals.paid - totals.owes);
+        if (balance > maxImbalance) {
+            maxImbalance = balance;
+        }
+    });
+    
+    if (maxImbalance < 1) {
+        return 'balanced';
+    } else if (maxImbalance < 20) {
+        return 'warning';
+    } else {
+        return 'unbalanced';
+    }
+}
+
+/**
+ * Get Group Health HTML badge
+ */
+function getGroupHealthBadge(group) {
+    const status = getGroupHealthStatus(group);
+    
+    const labels = {
+        balanced: t('app.insights.groupHealth.balanced') || 'Balanced',
+        warning: t('app.insights.groupHealth.pending') || 'Pending',
+        unbalanced: t('app.insights.groupHealth.unbalanced') || 'Unbalanced'
+    };
+    
+    const dotColors = {
+        balanced: 'green',
+        warning: 'yellow',
+        unbalanced: 'red'
+    };
+    
+    return `
+        <div class="group-health ${status}">
+            <span class="health-dot ${dotColors[status]}"></span>
+            <span>${labels[status]}</span>
+        </div>
+    `;
+}
+
+// Make Colony Insights functions globally available
+window.loadColonyInsights = loadColonyInsights;
+window.loadWeeklyDigest = loadWeeklyDigest;
+window.loadBalanceGlance = loadBalanceGlance;
+window.getGroupHealthStatus = getGroupHealthStatus;
+window.getGroupHealthBadge = getGroupHealthBadge;

@@ -686,6 +686,27 @@ const translations = {
                 createGroup: "Create new group",
                 addToGroup: "Add to group"
             },
+            // Colony Insights - Phase 2
+            insights: {
+                weeklyDigest: {
+                    title: "This Week",
+                    spent: "spent this week",
+                    vsLastWeek: "vs last week",
+                    sameAsLast: "Same as last week",
+                    firstWeek: "First week tracking!"
+                },
+                balanceGlance: {
+                    title: "Colony Status",
+                    youOwe: "You owe",
+                    owesYou: "owes you",
+                    allSettled: "All balanced! Colony in harmony."
+                },
+                groupHealth: {
+                    balanced: "Balanced",
+                    pending: "Pending",
+                    unbalanced: "Unbalanced"
+                }
+            },
             createFund: {
                 title: "✨ Create New Group",
                 steps: {
@@ -2084,6 +2105,27 @@ const translations = {
                 selectGroup: "Seleccionar grupo...",
                 createGroup: "Crear nuevo grupo",
                 addToGroup: "Agregar al grupo"
+            },
+            // Colony Insights - Phase 2
+            insights: {
+                weeklyDigest: {
+                    title: "Esta Semana",
+                    spent: "gastado esta semana",
+                    vsLastWeek: "vs semana pasada",
+                    sameAsLast: "Igual que la semana pasada",
+                    firstWeek: "¡Primera semana registrando!"
+                },
+                balanceGlance: {
+                    title: "Estado de la Colonia",
+                    youOwe: "Debes a",
+                    owesYou: "te debe",
+                    allSettled: "¡Todo equilibrado! Colonia en armonía."
+                },
+                groupHealth: {
+                    balanced: "Equilibrado",
+                    pending: "Pendiente",
+                    unbalanced: "Desbalanceado"
+                }
             },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",
