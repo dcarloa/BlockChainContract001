@@ -23,6 +23,16 @@ const translations = {
             sound: "Sounds",
             feedback: "Feedback"
         },
+        // Common
+        common: {
+            save: "Save",
+            cancel: "Cancel",
+            confirm: "Confirm",
+            close: "Close",
+            back: "Back",
+            next: "Next",
+            loading: "Loading..."
+        },
         // Phone Preview
         phone: {
             title: "Trip to Cancun 2025",
@@ -1453,6 +1463,16 @@ const translations = {
             vibration: "Vibración",
             sound: "Sonidos",
             feedback: "Retroalimentación"
+        },
+        // Common
+        common: {
+            save: "Guardar",
+            cancel: "Cancelar",
+            confirm: "Confirmar",
+            close: "Cerrar",
+            back: "Atrás",
+            next: "Siguiente",
+            loading: "Cargando..."
         },
         // Phone Preview
         phone: {

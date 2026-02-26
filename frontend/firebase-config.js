@@ -323,7 +323,7 @@ async function ensurePersonalColony(user) {
         if (existingColony) {
             console.log('🐜 Personal colony already exists:', personalColonyId);
             // Update user reference
-            await updateDb(`users/${user.uid}/personalColony`, personalColonyId);
+            await updateDb(`users/${user.uid}`, { personalColony: personalColonyId });
             return personalColonyId;
         }
         
