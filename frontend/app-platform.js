@@ -1788,6 +1788,7 @@ function createFundCard(fund) {
                             ${isInactive ? `<span class="badge badge-status status-inactive">${t.app.dashboard.card.inactive}</span>` : ''}
                             ${fund.isCreator ? `<span class="badge badge-creator">👑 ${t.app.fundDetail.badges.creator}</span>` : ''}
                             ${fund.mode === 'simple' && !isInactive ? getGroupHealthBadge(fund) : ''}
+                            ${fund.mode === 'simple' && fund.healthStreak?.weeks >= 2 ? getHealthStreakBadge(fund.healthStreak.weeks) : ''}
                         </div>
                     </div>
                 </div>
@@ -3358,6 +3359,13 @@ async function loadSimpleModeDetailView() {
             
         } else {
         }
+        
+        // ====== COLONY LIFE SYSTEM ======
+        // Milestones, Health Streaks, Smart Nudges
+        if (typeof initColonyLife === 'function') {
+            await initColonyLife(currentFund.fundAddress, currentFund);
+        }
+        // ====== END COLONY LIFE ======
         
         // ====== COLONIA VIVA SYSTEM ======
         // Only activate if feature is enabled and ColonySystem is available
@@ -12936,3 +12944,303 @@ window.loadWeeklyDigest = loadWeeklyDigest;
 window.loadBalanceGlance = loadBalanceGlance;
 window.getGroupHealthStatus = getGroupHealthStatus;
 window.getGroupHealthBadge = getGroupHealthBadge;
+
+// ============================================
+// COLONY LIFE SYSTEM - Phase 4
+// Milestones, Health Streaks, Smart Nudges
+// ============================================
+
+/**
+ * Milestone thresholds and their celebration messages
+ */
+const COLONY_MILESTONES = [
+    { count: 5, emoji: '🌱', key: 'firstSteps' },
+    { count: 10, emoji: '🐜', key: 'gettingStarted' },
+    { count: 25, emoji: '🎯', key: 'onTrack' },
+    { count: 50, emoji: '⭐', key: 'halfCentury' },
+    { count: 100, emoji: '🏆', key: 'centurion' },
+    { count: 250, emoji: '💎', key: 'diamond' },
+    { count: 500, emoji: '👑', key: 'legendary' }
+];
+
+/**
+ * Check if group hit a milestone and celebrate
+ * @param {string} groupId - The group ID
+ * @param {number} expenseCount - Current expense count
+ */
+async function checkColonyMilestone(groupId, expenseCount) {
+    try {
+        const currentLang = getCurrentLanguage();
+        const milestone = COLONY_MILESTONES.find(m => m.count === expenseCount);
+        
+        if (!milestone) return;
+        
+        // Check if we already celebrated this milestone
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+        
+        const celebratedKey = `milestone_${groupId}_${milestone.count}`;
+        const celebrated = localStorage.getItem(celebratedKey);
+        
+        if (celebrated) return; // Already celebrated
+        
+        // Mark as celebrated
+        localStorage.setItem(celebratedKey, Date.now().toString());
+        
+        // Get celebration message
+        const messages = {
+            en: {
+                firstSteps: 'First steps! Your colony is growing 🌱',
+                gettingStarted: 'Great start! 10 expenses tracked together',
+                onTrack: 'On track! 25 expenses as a team',
+                halfCentury: 'Half century! 50 expenses logged',
+                centurion: 'Centurion! 100 expenses - amazing teamwork!',
+                diamond: 'Diamond colony! 250 expenses together',
+                legendary: 'Legendary! 500 expenses - true ant power!'
+            },
+            es: {
+                firstSteps: '¡Primeros pasos! Tu colonia está creciendo 🌱',
+                gettingStarted: '¡Buen comienzo! 10 gastos registrados juntos',
+                onTrack: '¡En camino! 25 gastos en equipo',
+                halfCentury: '¡Medio siglo! 50 gastos registrados',
+                centurion: '¡Centurión! 100 gastos - ¡increíble trabajo en equipo!',
+                diamond: '¡Colonia diamante! 250 gastos juntos',
+                legendary: '¡Legendario! 500 gastos - ¡verdadero poder hormiga!'
+            }
+        };
+        
+        const message = (messages[currentLang] || messages.en)[milestone.key];
+        
+        // Show celebration toast with haptic
+        if (window.HapticFeedback) {
+            HapticFeedback.success();
+        }
+        
+        showToast(`${milestone.emoji} ${message}`, 'success', 5000);
+        
+        // Track analytics
+        if (typeof gtag === 'function') {
+            gtag('event', 'colony_milestone', {
+                'event_category': 'colony_life',
+                'milestone': milestone.count,
+                'group_id': groupId
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error checking colony milestone:', error);
+    }
+}
+
+/**
+ * Get health streak for a group
+ * @param {string} groupId - The group ID
+ * @returns {Promise<number>} Streak count in weeks
+ */
+async function getHealthStreak(groupId) {
+    try {
+        const streakData = await window.FirebaseConfig.readDb(`groups/${groupId}/healthStreak`);
+        return streakData?.weeks || 0;
+    } catch (error) {
+        return 0;
+    }
+}
+
+/**
+ * Update health streak based on current balance status
+ * Called weekly or when viewing group
+ * @param {string} groupId - The group ID
+ * @param {Object} group - Group data
+ */
+async function updateHealthStreak(groupId, group) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+        
+        const status = getGroupHealthStatus(group);
+        const now = Date.now();
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        
+        // Get current streak data
+        const streakData = await window.FirebaseConfig.readDb(`groups/${groupId}/healthStreak`) || {
+            weeks: 0,
+            lastCheck: 0,
+            lastStatus: null
+        };
+        
+        // Check if a week has passed since last check
+        const timeSinceLastCheck = now - (streakData.lastCheck || 0);
+        
+        if (timeSinceLastCheck >= oneWeek) {
+            // Time for a new check
+            if (status === 'balanced') {
+                // Increment streak
+                streakData.weeks = (streakData.weeks || 0) + 1;
+                
+                // Celebrate streak milestones
+                const currentLang = getCurrentLanguage();
+                if (streakData.weeks === 3) {
+                    const msg = currentLang === 'es' 
+                        ? '🔥 ¡3 semanas equilibrado! Gran trabajo en equipo'
+                        : '🔥 3 weeks balanced! Great teamwork';
+                    showToast(msg, 'success', 4000);
+                } else if (streakData.weeks === 8) {
+                    const msg = currentLang === 'es'
+                        ? '🏆 ¡2 meses equilibrado! Colonia ejemplar'
+                        : '🏆 2 months balanced! Exemplary colony';
+                    showToast(msg, 'success', 4000);
+                } else if (streakData.weeks === 12) {
+                    const msg = currentLang === 'es'
+                        ? '👑 ¡3 meses equilibrado! Colonia legendaria'
+                        : '👑 3 months balanced! Legendary colony';
+                    showToast(msg, 'success', 4000);
+                }
+            } else {
+                // Reset streak if not balanced
+                streakData.weeks = 0;
+            }
+            
+            streakData.lastCheck = now;
+            streakData.lastStatus = status;
+            
+            // Save to Firebase
+            await window.FirebaseConfig.updateDb(`groups/${groupId}`, {
+                healthStreak: streakData
+            });
+        }
+        
+        return streakData.weeks;
+        
+    } catch (error) {
+        console.error('Error updating health streak:', error);
+        return 0;
+    }
+}
+
+/**
+ * Get health streak badge HTML
+ * @param {number} weeks - Number of balanced weeks
+ * @returns {string} HTML badge or empty string
+ */
+function getHealthStreakBadge(weeks) {
+    if (!weeks || weeks < 2) return '';
+    
+    const currentLang = getCurrentLanguage();
+    let emoji = '🔥';
+    let label = '';
+    
+    if (weeks >= 12) {
+        emoji = '👑';
+        label = currentLang === 'es' ? `${weeks} sem.` : `${weeks}w`;
+    } else if (weeks >= 8) {
+        emoji = '🏆';
+        label = currentLang === 'es' ? `${weeks} sem.` : `${weeks}w`;
+    } else if (weeks >= 3) {
+        emoji = '🔥';
+        label = currentLang === 'es' ? `${weeks} sem.` : `${weeks}w`;
+    } else {
+        emoji = '✨';
+        label = currentLang === 'es' ? `${weeks} sem.` : `${weeks}w`;
+    }
+    
+    return `
+        <span class="health-streak-badge" title="${currentLang === 'es' ? 'Semanas equilibrado' : 'Weeks balanced'}">
+            ${emoji} ${label}
+        </span>
+    `;
+}
+
+/**
+ * Check for smart settle nudge
+ * Shows a subtle reminder when someone has pending balance for too long
+ * @param {Object} group - Group data
+ */
+async function checkSmartSettleNudge(group) {
+    try {
+        if (!group || !group.members || !group.expenses) return;
+        
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+        
+        // Don't show nudge for personal colony
+        if (group.fundAddress?.startsWith('grp_personal_')) return;
+        
+        // Check if we showed nudge recently (max once per 3 days)
+        const nudgeKey = `settle_nudge_${group.fundAddress || group.fundId}`;
+        const lastNudge = parseInt(localStorage.getItem(nudgeKey) || '0');
+        const threeDays = 3 * 24 * 60 * 60 * 1000;
+        
+        if (Date.now() - lastNudge < threeDays) return;
+        
+        // Check if group has unbalanced status
+        const status = getGroupHealthStatus(group);
+        if (status === 'balanced') return;
+        
+        // Check last activity (at least some recent expenses)
+        const expenses = Object.values(group.expenses || {});
+        if (expenses.length === 0) return;
+        
+        const latestExpense = Math.max(...expenses.map(e => e.createdAt || 0));
+        const fiveDays = 5 * 24 * 60 * 60 * 1000;
+        
+        // Only nudge if there's recent activity but pending balance
+        if (Date.now() - latestExpense > fiveDays) {
+            // Recent inactivity + pending balance = good time to settle
+            localStorage.setItem(nudgeKey, Date.now().toString());
+            
+            const currentLang = getCurrentLanguage();
+            const message = currentLang === 'es'
+                ? '💡 Buen momento para equilibrar balances - todos han estado activos'
+                : '💡 Good time to settle up - everyone has been active';
+            
+            // Show subtle nudge after a delay
+            setTimeout(() => {
+                showToast(message, 'info', 4000);
+            }, 2000);
+            
+            // Track analytics
+            if (typeof gtag === 'function') {
+                gtag('event', 'settle_nudge_shown', {
+                    'event_category': 'colony_life',
+                    'group_id': group.fundAddress
+                });
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error checking smart settle nudge:', error);
+    }
+}
+
+/**
+ * Initialize Colony Life for a group
+ * Call this when opening a group detail view
+ * @param {string} groupId - The group ID
+ * @param {Object} group - Group data
+ */
+async function initColonyLife(groupId, group) {
+    if (!group) return;
+    
+    // Don't run for personal colony (except milestones)
+    const isPersonal = groupId?.startsWith('grp_personal_');
+    
+    // Check expense milestone
+    const expenseCount = Object.keys(group.expenses || {}).length;
+    await checkColonyMilestone(groupId, expenseCount);
+    
+    if (!isPersonal) {
+        // Update health streak (weekly check)
+        await updateHealthStreak(groupId, group);
+        
+        // Check smart settle nudge
+        await checkSmartSettleNudge(group);
+    }
+}
+
+// Make Colony Life functions globally available
+window.checkColonyMilestone = checkColonyMilestone;
+window.getHealthStreak = getHealthStreak;
+window.updateHealthStreak = updateHealthStreak;
+window.getHealthStreakBadge = getHealthStreakBadge;
+window.checkSmartSettleNudge = checkSmartSettleNudge;
+window.initColonyLife = initColonyLife;
