@@ -15463,3 +15463,199 @@ header,
     font-size: 0.6875rem;
   }
 }
+
+/* ===================================
+   COLONY LIFE INFO CARD
+   =================================== */
+
+.colony-life-info-card {
+  margin: 1rem 0;
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.08) 0%, 
+    rgba(118, 75, 162, 0.08) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.colony-life-info-card:hover {
+  border-color: rgba(102, 126, 234, 0.35);
+}
+
+.colony-life-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.colony-life-header:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.colony-life-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.colony-life-icon {
+  font-size: 1.25rem;
+}
+
+.colony-life-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.colony-life-dismiss {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.colony-life-dismiss:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.colony-life-toggle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: transform 0.3s ease;
+}
+
+.colony-life-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
+.colony-life-content {
+  padding: 0 1.25rem 1.25rem;
+  display: block;
+}
+
+.colony-life-content.collapsed {
+  display: none;
+}
+
+.colony-life-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.colony-life-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.875rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.colony-life-feature:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.colony-life-feature .feature-emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.colony-life-feature .feature-info {
+  flex: 1;
+}
+
+.colony-life-feature .feature-info strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+}
+
+.colony-life-feature .feature-info p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.colony-life-footer {
+  margin: 1rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(102, 126, 234, 0.15);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-style: italic;
+}
+
+/* Light Mode - Colony Life Info */
+[data-theme="light"] .colony-life-info-card {
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.05) 0%, 
+    rgba(118, 75, 162, 0.05) 100%);
+  border-color: rgba(102, 126, 234, 0.15);
+}
+
+[data-theme="light"] .colony-life-feature {
+  background: rgba(102, 126, 234, 0.04);
+}
+
+[data-theme="light"] .colony-life-feature:hover {
+  background: rgba(102, 126, 234, 0.08);
+}
+
+[data-theme="light"] .colony-life-dismiss {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile - Colony Life Info */
+@media (max-width: 480px) {
+  .colony-life-info-card {
+    margin: 0.75rem 0;
+    border-radius: 12px;
+  }
+  
+  .colony-life-header {
+    padding: 0.875rem 1rem;
+  }
+  
+  .colony-life-content {
+    padding: 0 1rem 1rem;
+  }
+  
+  .colony-life-feature {
+    padding: 0.75rem;
+  }
+  
+  .colony-life-feature .feature-emoji {
+    font-size: 1.25rem;
+  }
+  
+  .colony-life-feature .feature-info strong {
+    font-size: 0.875rem;
+  }
+  
+  .colony-life-feature .feature-info p {
+    font-size: 0.75rem;
+  }
+}

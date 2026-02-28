@@ -1160,6 +1160,46 @@ Simple, fast, and free.</p>
                 <!-- Weekly Chest Banner Container -->
                 <div id="weeklyChestBannerContainer"></div>
 
+                <!-- Colony Life Info Card (collapsible) -->
+                <div id="colonyLifeInfoCard" class="colony-life-info-card" style="display: none;">
+                    <div class="colony-life-header" onclick="toggleColonyLifeInfo()">
+                        <div class="colony-life-title">
+                            <span class="colony-life-icon">🐜</span>
+                            <span data-i18n="app.colonyLife.title">Colony Life Features</span>
+                        </div>
+                        <div class="colony-life-actions">
+                            <button class="colony-life-dismiss" onclick="event.stopPropagation(); dismissColonyLifeInfo()" title="Dismiss">×</button>
+                            <span class="colony-life-toggle" id="colonyLifeToggle">▼</span>
+                        </div>
+                    </div>
+                    <div class="colony-life-content" id="colonyLifeContent">
+                        <div class="colony-life-features">
+                            <div class="colony-life-feature">
+                                <span class="feature-emoji">🏆</span>
+                                <div class="feature-info">
+                                    <strong data-i18n="app.colonyLife.milestones.title">Milestones</strong>
+                                    <p data-i18n="app.colonyLife.milestones.desc">Celebrate achievements together! Get badges at 10, 50, 100 expenses and more.</p>
+                                </div>
+                            </div>
+                            <div class="colony-life-feature">
+                                <span class="feature-emoji">🔥</span>
+                                <div class="feature-info">
+                                    <strong data-i18n="app.colonyLife.streaks.title">Health Streaks</strong>
+                                    <p data-i18n="app.colonyLife.streaks.desc">Stay balanced! Earn streak badges when your group remains settled week after week.</p>
+                                </div>
+                            </div>
+                            <div class="colony-life-feature">
+                                <span class="feature-emoji">💡</span>
+                                <div class="feature-info">
+                                    <strong data-i18n="app.colonyLife.nudges.title">Smart Reminders</strong>
+                                    <p data-i18n="app.colonyLife.nudges.desc">Gentle nudges when it's a good time to settle up with your group.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="colony-life-footer" data-i18n="app.colonyLife.footer">Work together like ants. Track, split, settle. 🐜</p>
+                    </div>
+                </div>
+
                 <!-- Closed Fund Banner -->
                 <div id="closedFundBanner" class="closed-fund-banner" style="display: none;">
                     <div class="closed-fund-content">

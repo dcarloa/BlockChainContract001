@@ -728,6 +728,23 @@ const translations = {
                 shareMessage: "Settlement: {from} pays {to} {amount}",
                 copied: "Copied to clipboard!"
             },
+            // Colony Life - Phase 4
+            colonyLife: {
+                title: "Colony Life Features",
+                milestones: {
+                    title: "Milestones",
+                    desc: "Celebrate achievements together! Get badges at 10, 50, 100 expenses and more."
+                },
+                streaks: {
+                    title: "Health Streaks",
+                    desc: "Stay balanced! Earn streak badges when your group remains settled week after week."
+                },
+                nudges: {
+                    title: "Smart Reminders",
+                    desc: "Gentle nudges when it's a good time to settle up with your group."
+                },
+                footer: "Work together like ants. Track, split, settle. 🐜"
+            },
             createFund: {
                 title: "✨ Create New Group",
                 steps: {
@@ -2168,6 +2185,23 @@ const translations = {
                 shareTitle: "Liquidación",
                 shareMessage: "Liquidación: {from} paga a {to} {amount}",
                 copied: "¡Copiado al portapapeles!"
+            },
+            // Colony Life - Phase 4
+            colonyLife: {
+                title: "Funciones de Colonia Viva",
+                milestones: {
+                    title: "Hitos",
+                    desc: "¡Celebra logros juntos! Obtén insignias a los 10, 50, 100 gastos y más."
+                },
+                streaks: {
+                    title: "Rachas de Salud",
+                    desc: "¡Mantente equilibrado! Gana insignias de racha cuando tu grupo permanece saldado semana tras semana."
+                },
+                nudges: {
+                    title: "Recordatorios Inteligentes",
+                    desc: "Recordatorios sutiles cuando es buen momento para saldar con tu grupo."
+                },
+                footer: "Trabaja en equipo como las hormigas. Registra, divide, salda. 🐜"
             },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",

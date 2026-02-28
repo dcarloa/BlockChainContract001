@@ -3365,6 +3365,12 @@ async function loadSimpleModeDetailView() {
         if (typeof initColonyLife === 'function') {
             await initColonyLife(currentFund.fundAddress, currentFund);
         }
+        
+        // Show Colony Life info card (first few visits)
+        if (typeof showColonyLifeInfoCard === 'function') {
+            initColonyLifeInfoCard();
+            showColonyLifeInfoCard(currentFund.fundAddress);
+        }
         // ====== END COLONY LIFE ======
         
         // ====== COLONIA VIVA SYSTEM ======
@@ -13244,3 +13250,111 @@ window.updateHealthStreak = updateHealthStreak;
 window.getHealthStreakBadge = getHealthStreakBadge;
 window.checkSmartSettleNudge = checkSmartSettleNudge;
 window.initColonyLife = initColonyLife;
+
+// ============================================
+// COLONY LIFE INFO CARD UI
+// ============================================
+
+/**
+ * Show/hide Colony Life info card based on user preference
+ * @param {string} groupId - Group ID to check
+ */
+function showColonyLifeInfoCard(groupId) {
+    const card = document.getElementById('colonyLifeInfoCard');
+    if (!card) return;
+    
+    // Don't show for personal colony
+    if (groupId?.startsWith('grp_personal_')) {
+        card.style.display = 'none';
+        return;
+    }
+    
+    // Check if user dismissed this card
+    const dismissed = localStorage.getItem('colony_life_info_dismissed');
+    if (dismissed === 'true') {
+        card.style.display = 'none';
+        return;
+    }
+    
+    // Check if user has seen it multiple times (show first 5 times)
+    const viewCount = parseInt(localStorage.getItem('colony_life_info_views') || '0');
+    if (viewCount >= 5) {
+        card.style.display = 'none';
+        return;
+    }
+    
+    // Increment view count
+    localStorage.setItem('colony_life_info_views', (viewCount + 1).toString());
+    
+    // Show the card
+    card.style.display = 'block';
+}
+
+/**
+ * Toggle collapse/expand of Colony Life info content
+ */
+function toggleColonyLifeInfo() {
+    const content = document.getElementById('colonyLifeContent');
+    const toggle = document.getElementById('colonyLifeToggle');
+    
+    if (!content || !toggle) return;
+    
+    const isCollapsed = content.classList.contains('collapsed');
+    
+    if (isCollapsed) {
+        content.classList.remove('collapsed');
+        toggle.classList.remove('collapsed');
+    } else {
+        content.classList.add('collapsed');
+        toggle.classList.add('collapsed');
+    }
+    
+    // Save preference
+    localStorage.setItem('colony_life_info_collapsed', (!isCollapsed).toString());
+}
+
+/**
+ * Dismiss Colony Life info card permanently
+ */
+function dismissColonyLifeInfo() {
+    const card = document.getElementById('colonyLifeInfoCard');
+    if (!card) return;
+    
+    // Animate out
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(-10px)';
+    
+    setTimeout(() => {
+        card.style.display = 'none';
+        card.style.opacity = '';
+        card.style.transform = '';
+    }, 300);
+    
+    // Save dismissal
+    localStorage.setItem('colony_life_info_dismissed', 'true');
+}
+
+/**
+ * Initialize Colony Life info card state
+ */
+function initColonyLifeInfoCard() {
+    const content = document.getElementById('colonyLifeContent');
+    const toggle = document.getElementById('colonyLifeToggle');
+    
+    if (!content || !toggle) return;
+    
+    // Check saved collapse state
+    const isCollapsed = localStorage.getItem('colony_life_info_collapsed') === 'true';
+    
+    if (isCollapsed) {
+        content.classList.add('collapsed');
+        toggle.classList.add('collapsed');
+    }
+}
+
+// Make UI functions globally available
+window.showColonyLifeInfoCard = showColonyLifeInfoCard;
+window.toggleColonyLifeInfo = toggleColonyLifeInfo;
+window.dismissColonyLifeInfo = dismissColonyLifeInfo;
+window.initColonyLifeInfoCard = initColonyLifeInfoCard;
+
