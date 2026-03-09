@@ -3256,6 +3256,7 @@ async function loadSimpleModeDetailView() {
         const balancesTab = document.querySelector('.fund-tab-btn[data-tab="balances"]');
         const manageTab = document.querySelector('.fund-tab-btn[data-tab="manage"]');
         const mascotTab = document.querySelector('.fund-tab-btn[data-tab="mascot"]');
+        const overviewTab = document.querySelector('.fund-tab-btn[data-tab="overview"]');
         
         // Detect personal colony
         const isPersonalColony = currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_personal_');
@@ -3268,6 +3269,7 @@ async function loadSimpleModeDetailView() {
         // Personal colony specific adjustments
         if (isPersonalColony) {
             // Hide tabs that don't make sense for personal use
+            if (overviewTab) overviewTab.style.display = 'none'; // Personal has different layout
             if (inviteTab) inviteTab.style.display = 'none';
             if (membersTab) membersTab.style.display = 'none';
             if (balancesTab) balancesTab.style.display = 'none';
@@ -3285,7 +3287,8 @@ async function loadSimpleModeDetailView() {
             const fundMembersStat = document.getElementById('fundMembersStat');
             if (fundMembersStat) fundMembersStat.style.display = 'none';
         } else {
-            // Regular group - Show Simple Mode tabs
+            // Regular group - Show Simple Mode tabs including Overview
+            if (overviewTab) overviewTab.style.display = 'flex';
             if (inviteTab) {
                 inviteTab.style.display = 'flex';
                 inviteTab.innerHTML = '<span class="tab-icon">🎫</span><span>Invite</span>';
@@ -3298,6 +3301,9 @@ async function loadSimpleModeDetailView() {
             // Ensure members stat is visible for regular groups
             const fundMembersStat = document.getElementById('fundMembersStat');
             if (fundMembersStat) fundMembersStat.style.display = '';
+            
+            // Load Overview tab data
+            await loadGroupOverview(groupData);
         }
         
         // Load Simple Mode invite UI
@@ -3319,8 +3325,13 @@ async function loadSimpleModeDetailView() {
             quickActions.style.display = 'grid';
         }
         
-        // Switch to expenses tab by default
-        switchFundTab('history');
+        // Switch to appropriate default tab
+        // Personal Colony: show history, Regular Group: show overview
+        if (isPersonalColony) {
+            switchFundTab('history');
+        } else {
+            switchFundTab('overview');
+        }
         
         
         // Show Add Expense Action Card
@@ -3438,6 +3449,258 @@ function calculateMyBalance(groupData) {
     // TODO: Implement balance calculation
     // This will be based on expenses and settlements
     return 0;
+}
+
+/**
+ * Load Group Overview tab data
+ * Shows monthly summary, balance, and recent activity
+ */
+async function loadGroupOverview(groupData) {
+    const currentUserId = firebase.auth().currentUser?.uid;
+    if (!currentUserId) return;
+    
+    // Calculate monthly stats
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    
+    let monthlyTotal = 0;
+    let monthlyCount = 0;
+    const recentItems = [];
+    
+    // Process expenses
+    if (groupData.expenses) {
+        Object.entries(groupData.expenses).forEach(([id, expense]) => {
+            const timestamp = expense.recordedAt || expense.timestamp || 0;
+            const amount = parseFloat(expense.amount) || 0;
+            
+            // Monthly stats
+            if (timestamp >= startOfMonth) {
+                monthlyTotal += amount;
+                monthlyCount++;
+            }
+            
+            // Recent 3 items
+            recentItems.push({
+                id,
+                type: 'expense',
+                ...expense,
+                sortTime: timestamp
+            });
+        });
+    }
+    
+    // Include settlements in recent items
+    if (groupData.settlements) {
+        Object.entries(groupData.settlements).forEach(([id, settlement]) => {
+            const timestamp = settlement.timestamp || 0;
+            recentItems.push({
+                id,
+                type: 'settlement',
+                ...settlement,
+                sortTime: timestamp
+            });
+        });
+    }
+    
+    // Sort and get recent 3
+    recentItems.sort((a, b) => b.sortTime - a.sortTime);
+    const recent3 = recentItems.slice(0, 3);
+    
+    // Calculate user balance using modeManager
+    let userBalance = 0;
+    try {
+        window.modeManager.currentGroupId = currentFund.fundId || currentFund.fundAddress;
+        window.modeManager.groupData = groupData;
+        const memberBalances = await window.modeManager.calculateSimpleBalances();
+        if (memberBalances) {
+            const myBalanceEntry = memberBalances.find(b => b.memberId === currentUserId);
+            userBalance = myBalanceEntry ? myBalanceEntry.balance : 0;
+        }
+    } catch (e) {
+        console.error('Error calculating balances for overview:', e);
+    }
+    
+    // Update UI elements
+    const monthlyTotalEl = document.getElementById('overviewMonthlyTotal');
+    const expenseCountEl = document.getElementById('overviewExpenseCount');
+    const userBalanceEl = document.getElementById('overviewUserBalance');
+    const balanceStatusEl = document.getElementById('overviewBalanceStatus');
+    const balanceExplanationEl = document.getElementById('overviewBalanceExplanation');
+    const settleBtn = document.getElementById('overviewSettleBtn');
+    const recentListEl = document.getElementById('overviewRecentList');
+    
+    const currentLang = getCurrentLanguage();
+    
+    // Monthly stats
+    if (monthlyTotalEl) {
+        monthlyTotalEl.textContent = `$${monthlyTotal.toFixed(2)}`;
+    }
+    if (expenseCountEl) {
+        expenseCountEl.textContent = monthlyCount.toString();
+    }
+    
+    // Balance display
+    if (userBalanceEl) {
+        const absBalance = Math.abs(userBalance).toFixed(2);
+        if (userBalance > 0.01) {
+            userBalanceEl.textContent = `+$${absBalance}`;
+            userBalanceEl.classList.remove('negative', 'settled');
+            userBalanceEl.classList.add('positive');
+        } else if (userBalance < -0.01) {
+            userBalanceEl.textContent = `-$${absBalance}`;
+            userBalanceEl.classList.remove('positive', 'settled');
+            userBalanceEl.classList.add('negative');
+        } else {
+            userBalanceEl.textContent = '$0.00';
+            userBalanceEl.classList.remove('positive', 'negative');
+            userBalanceEl.classList.add('settled');
+        }
+    }
+    
+    // Balance status and explanation
+    if (balanceStatusEl && balanceExplanationEl) {
+        if (userBalance > 0.01) {
+            balanceStatusEl.textContent = currentLang === 'es' ? 'Te deben' : 'Owed to you';
+            balanceExplanationEl.textContent = currentLang === 'es' 
+                ? 'Los miembros del grupo te deben dinero' 
+                : 'Group members owe you money';
+            balanceStatusEl.className = 'balance-status positive';
+        } else if (userBalance < -0.01) {
+            balanceStatusEl.textContent = currentLang === 'es' ? 'Debes' : 'You owe';
+            balanceExplanationEl.textContent = currentLang === 'es' 
+                ? 'Debes dinero a otros miembros' 
+                : 'You owe money to other members';
+            balanceStatusEl.className = 'balance-status negative';
+        } else {
+            balanceStatusEl.textContent = currentLang === 'es' ? 'Saldado' : 'Settled';
+            balanceExplanationEl.textContent = currentLang === 'es' 
+                ? '¡Todos los saldos están nivelados!' 
+                : 'All balances are settled!';
+            balanceStatusEl.className = 'balance-status settled';
+        }
+    }
+    
+    // Show/hide settle button
+    if (settleBtn) {
+        if (userBalance < -0.01) {
+            // User owes money - show settle button
+            settleBtn.style.display = 'flex';
+            settleBtn.onclick = () => openSmartSettlements();
+        } else {
+            settleBtn.style.display = 'none';
+        }
+    }
+    
+    // Add expense button
+    const addExpenseBtn = document.getElementById('overviewAddExpenseBtn');
+    if (addExpenseBtn) {
+        addExpenseBtn.onclick = () => showAddExpenseModal();
+    }
+    
+    // Recent activity
+    if (recentListEl) {
+        if (recent3.length === 0) {
+            recentListEl.innerHTML = `<p class="no-activity">${currentLang === 'es' ? 'Sin actividad reciente' : 'No recent activity'}</p>`;
+        } else {
+            recentListEl.innerHTML = recent3.map(item => {
+                if (item.type === 'settlement') {
+                    return renderOverviewSettlementItem(item, currentUserId, groupData, currentLang);
+                } else {
+                    return renderOverviewExpenseItem(item, currentUserId, groupData, currentLang);
+                }
+            }).join('');
+        }
+    }
+}
+
+/**
+ * Get display name for a member
+ */
+function getMemberDisplayName(memberId, groupData) {
+    if (!memberId || !groupData) return 'Unknown';
+    const member = groupData.members?.[memberId];
+    if (member) {
+        return member.name || member.email?.split('@')[0] || 'Member';
+    }
+    return 'Unknown';
+}
+
+/**
+ * Get category icon for an expense
+ */
+function getCategoryIcon(category) {
+    const icons = {
+        'food': '🍔',
+        'transport': '🚗',
+        'housing': '🏠',
+        'utilities': '🔧',
+        'entertainment': '🎬',
+        'shopping': '🛍️',
+        'health': '⚕️',
+        'travel': '✈️',
+        'subscription': '📱',
+        'other': '📦'
+    };
+    return icons[category?.toLowerCase()] || '💰';
+}
+
+/**
+ * Render a compact expense item for overview
+ */
+function renderOverviewExpenseItem(expense, currentUserId, groupData, lang) {
+    const amount = parseFloat(expense.amount) || 0;
+    const description = expense.description || (lang === 'es' ? 'Gasto' : 'Expense');
+    const paidBy = expense.paidBy;
+    const isPayer = paidBy === currentUserId;
+    
+    const memberName = isPayer 
+        ? (lang === 'es' ? 'Tú' : 'You')
+        : getMemberDisplayName(paidBy, groupData);
+    
+    const icon = expense.category ? getCategoryIcon(expense.category) : '💰';
+    
+    return `
+        <div class="overview-recent-item">
+            <span class="recent-icon">${icon}</span>
+            <div class="recent-info">
+                <span class="recent-description">${escapeHtml(description)}</span>
+                <span class="recent-payer">${memberName}</span>
+            </div>
+            <span class="recent-amount">$${amount.toFixed(2)}</span>
+        </div>
+    `;
+}
+
+/**
+ * Render a compact settlement item for overview
+ */
+function renderOverviewSettlementItem(settlement, currentUserId, groupData, lang) {
+    const amount = parseFloat(settlement.amount) || 0;
+    const isPayer = settlement.paidBy === currentUserId;
+    const isReceiver = settlement.paidTo === currentUserId;
+    
+    let description;
+    if (isPayer) {
+        const receiverName = getMemberDisplayName(settlement.paidTo, groupData);
+        description = lang === 'es' ? `Pagaste a ${receiverName}` : `You paid ${receiverName}`;
+    } else if (isReceiver) {
+        const payerName = getMemberDisplayName(settlement.paidBy, groupData);
+        description = lang === 'es' ? `${payerName} te pagó` : `${payerName} paid you`;
+    } else {
+        const payerName = getMemberDisplayName(settlement.paidBy, groupData);
+        const receiverName = getMemberDisplayName(settlement.paidTo, groupData);
+        description = `${payerName} → ${receiverName}`;
+    }
+    
+    return `
+        <div class="overview-recent-item settlement">
+            <span class="recent-icon">💸</span>
+            <div class="recent-info">
+                <span class="recent-description">${description}</span>
+            </div>
+            <span class="recent-amount">$${amount.toFixed(2)}</span>
+        </div>
+    `;
 }
 
 /**

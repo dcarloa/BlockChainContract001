@@ -745,6 +745,23 @@ const translations = {
                 },
                 footer: "Work together like ants. Track, split, settle. 🐜"
             },
+            // Group Overview Tab
+            groupOverview: {
+                thisMonth: "This Month",
+                totalSpent: "Total Spent",
+                expenses: "Expenses",
+                yourBalance: "Your Balance",
+                settled: "Settled",
+                owedToYou: "Owed to you",
+                youOwe: "You owe",
+                allSettled: "All balances are settled!",
+                membersOweYou: "Group members owe you money",
+                youOweMembers: "You owe money to other members",
+                settleUp: "Settle Up",
+                addExpense: "Add Expense",
+                recentActivity: "Recent Activity",
+                noActivity: "No recent activity"
+            },
             createFund: {
                 title: "✨ Create New Group",
                 steps: {
@@ -835,6 +852,7 @@ const translations = {
             },
             fundDetail: {
                 tabs: {
+                    overview: "Overview",
                     deposit: "Deposit",
                     invite: "Invite",
                     propose: "Propose Expense",
@@ -2203,6 +2221,23 @@ const translations = {
                 },
                 footer: "Trabaja en equipo como las hormigas. Registra, divide, salda. 🐜"
             },
+            // Group Overview Tab
+            groupOverview: {
+                thisMonth: "Este Mes",
+                totalSpent: "Total Gastado",
+                expenses: "Gastos",
+                yourBalance: "Tu Balance",
+                settled: "Saldado",
+                owedToYou: "Te deben",
+                youOwe: "Debes",
+                allSettled: "¡Todos los balances están saldados!",
+                membersOweYou: "Los miembros del grupo te deben dinero",
+                youOweMembers: "Debes dinero a otros miembros",
+                settleUp: "Saldar",
+                addExpense: "Añadir Gasto",
+                recentActivity: "Actividad Reciente",
+                noActivity: "Sin actividad reciente"
+            },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",
                 steps: {
@@ -2293,6 +2328,7 @@ const translations = {
             },
             fundDetail: {
                 tabs: {
+                    overview: "Resumen",
                     deposit: "Depositar",
                     invite: "Invitar",
                     propose: "Proponer Gasto",

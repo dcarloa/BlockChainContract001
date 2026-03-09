@@ -15659,3 +15659,235 @@ header,
     font-size: 0.75rem;
   }
 }
+
+/* =============================================
+   GROUP OVERVIEW TAB STYLES
+   ============================================= */
+
+.group-overview {
+  padding: 0.5rem 0;
+}
+
+.overview-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.overview-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.overview-card-header h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.overview-icon {
+  font-size: 1.25rem;
+}
+
+/* Monthly Stats */
+.overview-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.overview-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-stat .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.overview-stat .stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.125rem;
+}
+
+/* Balance Card */
+.overview-balance-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.balance-amount {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.balance-amount.positive {
+  color: #4ade80;
+}
+
+.balance-amount.negative {
+  color: #f87171;
+}
+
+.balance-amount.settled {
+  color: var(--text-secondary);
+}
+
+.balance-status {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.balance-status.positive {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.balance-status.negative {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.balance-status.settled {
+  background: rgba(156, 163, 175, 0.15);
+  color: var(--text-secondary);
+}
+
+.balance-explanation {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Actions */
+.overview-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.overview-actions .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Recent Activity */
+.overview-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.overview-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.overview-recent-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.overview-recent-item.settlement {
+  background: rgba(74, 222, 128, 0.05);
+}
+
+.overview-recent-item .recent-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.overview-recent-item .recent-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-recent-item .recent-description {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.overview-recent-item .recent-payer {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.overview-recent-item .recent-amount {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.overview-recent-list .no-activity {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  padding: 1rem;
+}
+
+/* Light Mode - Group Overview */
+[data-theme="light"] .overview-card {
+  background: #fff;
+  border-color: #e5e7eb;
+}
+
+[data-theme="light"] .overview-recent-item {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .overview-recent-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .overview-recent-item.settlement {
+  background: rgba(74, 222, 128, 0.08);
+}
+
+/* Mobile - Group Overview */
+@media (max-width: 480px) {
+  .overview-card {
+    padding: 0.875rem;
+    border-radius: 10px;
+  }
+  
+  .overview-stats {
+    gap: 1rem;
+  }
+  
+  .overview-stat .stat-value {
+    font-size: 1.25rem;
+  }
+  
+  .balance-amount {
+    font-size: 1.5rem;
+  }
+  
+  .overview-recent-item {
+    padding: 0.625rem;
+  }
+}

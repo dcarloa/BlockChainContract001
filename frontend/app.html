@@ -1213,6 +1213,10 @@ Simple, fast, and free.</p>
 
                 <!-- Fund Tabs -->
                 <div class="fund-tabs">
+                    <button class="fund-tab-btn" data-tab="overview" style="display: none;">
+                        <span class="tab-icon">📊</span>
+                        <span data-i18n="app.fundDetail.tabs.overview">Overview</span>
+                    </button>
                     <button class="fund-tab-btn active" data-tab="deposit">
                         <span class="tab-icon">💵</span>
                         <span data-i18n="app.fundDetail.tabs.deposit">Deposit</span>
@@ -1253,6 +1257,65 @@ Simple, fast, and free.</p>
 
                 <!-- Tab Content -->
                 <div class="fund-tab-content">
+                    
+                    <!-- Overview Tab (Simple Mode) -->
+                    <div id="overviewTab" class="tab-pane">
+                        <div class="group-overview">
+                            <!-- Monthly Summary Card -->
+                            <div class="overview-card overview-monthly">
+                                <div class="overview-card-header">
+                                    <span class="overview-icon">📅</span>
+                                    <h4 data-i18n="app.groupOverview.thisMonth">This Month</h4>
+                                </div>
+                                <div class="overview-stats">
+                                    <div class="overview-stat">
+                                        <span class="stat-value" id="overviewMonthlyTotal">$0</span>
+                                        <span class="stat-label" data-i18n="app.groupOverview.totalSpent">Total Spent</span>
+                                    </div>
+                                    <div class="overview-stat">
+                                        <span class="stat-value" id="overviewExpenseCount">0</span>
+                                        <span class="stat-label" data-i18n="app.groupOverview.expenses">Expenses</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Balance Summary Card -->
+                            <div class="overview-card overview-balance">
+                                <div class="overview-card-header">
+                                    <span class="overview-icon">⚖️</span>
+                                    <h4 data-i18n="app.groupOverview.yourBalance">Your Balance</h4>
+                                </div>
+                                <div class="overview-balance-display">
+                                    <span class="balance-amount" id="overviewUserBalance">$0</span>
+                                    <span class="balance-status" id="overviewBalanceStatus" data-i18n="app.groupOverview.settled">Settled</span>
+                                </div>
+                                <p class="balance-explanation" id="overviewBalanceExplanation" data-i18n="app.groupOverview.allSettled">All balances are settled!</p>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="overview-actions">
+                                <button id="overviewSettleBtn" class="btn btn-primary btn-block" style="display: none;">
+                                    <span>💸</span>
+                                    <span data-i18n="app.groupOverview.settleUp">Settle Up</span>
+                                </button>
+                                <button id="overviewAddExpenseBtn" class="btn btn-secondary btn-block">
+                                    <span>➕</span>
+                                    <span data-i18n="app.groupOverview.addExpense">Add Expense</span>
+                                </button>
+                            </div>
+
+                            <!-- Recent Activity Preview -->
+                            <div class="overview-card overview-recent">
+                                <div class="overview-card-header">
+                                    <span class="overview-icon">🕐</span>
+                                    <h4 data-i18n="app.groupOverview.recentActivity">Recent Activity</h4>
+                                </div>
+                                <div id="overviewRecentList" class="overview-recent-list">
+                                    <p class="no-activity" data-i18n="app.groupOverview.noActivity">No recent activity</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <!-- Deposit Tab -->
                     <div id="depositTab" class="tab-pane active">
