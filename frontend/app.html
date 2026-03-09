@@ -1249,6 +1249,10 @@ Simple, fast, and free.</p>
                         <span class="tab-icon">🐜</span>
                         <span data-i18n="app.fundDetail.tabs.mascot">Mascot</span>
                     </button>
+                    <button class="fund-tab-btn" data-tab="budget" style="display: none;">
+                        <span class="tab-icon">💰</span>
+                        <span data-i18n="app.fundDetail.tabs.budget">Budget</span>
+                    </button>
                     <button class="fund-tab-btn" data-tab="manage">
                         <span class="tab-icon">⚙️</span>
                         <span data-i18n="app.fundDetail.tabs.manage">Manage</span>
@@ -1743,6 +1747,86 @@ Simple, fast, and free.</p>
                         <div style="text-align: center; padding: 3rem; color: var(--text-tertiary);">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">🐜</div>
                             <p data-i18n="app.fundDetail.mascot.loading">Loading group mascot...</p>
+                        </div>
+                    </div>
+
+                    <!-- Budget Tab (Personal Colony) -->
+                    <div id="budgetTab" class="tab-pane">
+                        <div class="budget-container">
+                            <!-- Budget Header -->
+                            <div class="budget-header">
+                                <div class="budget-header-info">
+                                    <h3 data-i18n="app.budget.title">💰 Monthly Budget</h3>
+                                    <p class="budget-month" id="budgetCurrentMonth">March 2026</p>
+                                </div>
+                                <button id="editBudgetBtn" class="btn btn-secondary btn-sm">
+                                    <span>⚙️</span>
+                                    <span data-i18n="app.budget.edit">Edit</span>
+                                </button>
+                            </div>
+
+                            <!-- Overall Progress -->
+                            <div class="budget-overall-card">
+                                <div class="budget-overall-header">
+                                    <span class="budget-overall-label" data-i18n="app.budget.totalBudget">Total Budget</span>
+                                    <span class="budget-overall-amount" id="budgetTotalAmount">$0 / $0</span>
+                                </div>
+                                <div class="budget-progress-bar">
+                                    <div class="budget-progress-fill" id="budgetTotalProgress" style="width: 0%"></div>
+                                </div>
+                                <div class="budget-overall-stats">
+                                    <span class="budget-remaining" id="budgetRemaining" data-i18n="app.budget.remaining">$0 remaining</span>
+                                    <span class="budget-percentage" id="budgetPercentage">0%</span>
+                                </div>
+                            </div>
+
+                            <!-- Category Budgets -->
+                            <div class="budget-categories">
+                                <h4 data-i18n="app.budget.byCategory">By Category</h4>
+                                <div id="budgetCategoryList" class="budget-category-list">
+                                    <!-- Categories will be loaded dynamically -->
+                                    <div class="budget-empty">
+                                        <span class="empty-icon">📊</span>
+                                        <p data-i18n="app.budget.noBudget">No budget set yet</p>
+                                        <button id="setupBudgetBtn" class="btn btn-primary">
+                                            <span>✨</span>
+                                            <span data-i18n="app.budget.setupBudget">Set Up Budget</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Budget Tips -->
+                            <div class="budget-tips" id="budgetTips" style="display: none;">
+                                <div class="tip-icon">💡</div>
+                                <p class="tip-text" id="budgetTipText" data-i18n="app.budget.tipDefault">Set category limits to track your spending habits.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Budget Setup Modal -->
+                    <div id="budgetSetupModal" class="modal-overlay" style="display: none;">
+                        <div class="modal-content budget-modal">
+                            <div class="modal-header">
+                                <h3 data-i18n="app.budget.setupTitle">✨ Set Your Budget</h3>
+                                <button class="modal-close" onclick="closeBudgetModal()">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="budget-setup-intro" data-i18n="app.budget.setupIntro">Set monthly limits for each category to track your spending.</p>
+                                
+                                <div id="budgetSetupCategories" class="budget-setup-categories">
+                                    <!-- Category inputs will be generated dynamically -->
+                                </div>
+                                
+                                <div class="budget-setup-total">
+                                    <span data-i18n="app.budget.monthlyTotal">Monthly Total:</span>
+                                    <span id="budgetSetupTotal" class="budget-setup-total-amount">$0</span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" onclick="closeBudgetModal()" data-i18n="app.common.cancel">Cancel</button>
+                                <button class="btn btn-primary" onclick="saveBudget()" data-i18n="app.budget.save">Save Budget</button>
+                            </div>
                         </div>
                     </div>
 

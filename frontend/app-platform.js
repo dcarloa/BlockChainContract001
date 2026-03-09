@@ -3068,7 +3068,7 @@ async function loadFundDetailView() {
     }
 }
 
-function switchFundTab(tabName) {
+async function switchFundTab(tabName) {
     // Remove active class from all tabs
     document.querySelectorAll('.fund-tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
@@ -3113,6 +3113,17 @@ function switchFundTab(tabName) {
             window.MascotSystem.loadMascotTab(groupId);
         } else {
             console.error('[Mascot] No groupId available in currentFund:', currentFund);
+        }
+    }
+    
+    // Load budget when budget tab is selected (Personal Colony only)
+    if (tabName === 'budget' && currentFund) {
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        if (groupId && groupId.startsWith('grp_personal_')) {
+            const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+            if (groupData) {
+                await loadPersonalBudget(groupData);
+            }
         }
     }
     
@@ -3257,6 +3268,7 @@ async function loadSimpleModeDetailView() {
         const manageTab = document.querySelector('.fund-tab-btn[data-tab="manage"]');
         const mascotTab = document.querySelector('.fund-tab-btn[data-tab="mascot"]');
         const overviewTab = document.querySelector('.fund-tab-btn[data-tab="overview"]');
+        const budgetTab = document.querySelector('.fund-tab-btn[data-tab="budget"]');
         
         // Detect personal colony
         const isPersonalColony = currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_personal_');
@@ -3275,6 +3287,7 @@ async function loadSimpleModeDetailView() {
             if (balancesTab) balancesTab.style.display = 'none';
             if (manageTab) manageTab.style.display = 'none';
             if (mascotTab) mascotTab.style.display = 'flex'; // Keep mascot
+            if (budgetTab) budgetTab.style.display = 'flex'; // Show budget for personal
             
             // Update header for personal colony
             const currentLang = getCurrentLanguage();
@@ -3286,6 +3299,9 @@ async function loadSimpleModeDetailView() {
             // Hide members stat for personal colony
             const fundMembersStat = document.getElementById('fundMembersStat');
             if (fundMembersStat) fundMembersStat.style.display = 'none';
+            
+            // Load budget data
+            await loadPersonalBudget(groupData);
         } else {
             // Regular group - Show Simple Mode tabs including Overview
             if (overviewTab) overviewTab.style.display = 'flex';
@@ -3297,6 +3313,7 @@ async function loadSimpleModeDetailView() {
             if (balancesTab) balancesTab.style.display = 'flex';
             if (manageTab) manageTab.style.display = 'none'; // Hide for now
             if (mascotTab) mascotTab.style.display = 'flex'; // Show mascot tab in Simple Mode
+            if (budgetTab) budgetTab.style.display = 'none'; // Budget only for personal
             
             // Ensure members stat is visible for regular groups
             const fundMembersStat = document.getElementById('fundMembersStat');
@@ -3642,6 +3659,358 @@ function getCategoryIcon(category) {
         'other': '📦'
     };
     return icons[category?.toLowerCase()] || '💰';
+}
+
+/**
+ * Budget categories with defaults
+ */
+const BUDGET_CATEGORIES = [
+    { id: 'food', icon: '🍔', defaultLimit: 300 },
+    { id: 'transport', icon: '🚗', defaultLimit: 150 },
+    { id: 'housing', icon: '🏠', defaultLimit: 800 },
+    { id: 'utilities', icon: '🔧', defaultLimit: 100 },
+    { id: 'entertainment', icon: '🎬', defaultLimit: 100 },
+    { id: 'shopping', icon: '🛍️', defaultLimit: 200 },
+    { id: 'health', icon: '⚕️', defaultLimit: 100 },
+    { id: 'travel', icon: '✈️', defaultLimit: 0 },
+    { id: 'subscription', icon: '📱', defaultLimit: 50 },
+    { id: 'other', icon: '📦', defaultLimit: 100 }
+];
+
+/**
+ * Load personal budget data and display
+ */
+async function loadPersonalBudget(groupData) {
+    const currentLang = getCurrentLanguage();
+    const now = new Date();
+    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    // Update month display
+    const monthEl = document.getElementById('budgetCurrentMonth');
+    if (monthEl) {
+        const monthNames = currentLang === 'es' 
+            ? ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+            : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        monthEl.textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+    }
+    
+    // Get budget settings
+    const budgetData = groupData.budget || {};
+    const categoryLimits = budgetData.categories || {};
+    const hasBudget = Object.keys(categoryLimits).length > 0;
+    
+    // Calculate spending by category for current month
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    const categorySpending = {};
+    
+    if (groupData.expenses) {
+        Object.values(groupData.expenses).forEach(expense => {
+            const timestamp = expense.recordedAt || expense.timestamp || 0;
+            if (timestamp >= startOfMonth) {
+                const category = (expense.category || 'other').toLowerCase();
+                const amount = Math.abs(parseFloat(expense.amount) || 0);
+                categorySpending[category] = (categorySpending[category] || 0) + amount;
+            }
+        });
+    }
+    
+    // Calculate totals
+    let totalSpent = 0;
+    let totalBudget = 0;
+    
+    Object.keys(categoryLimits).forEach(cat => {
+        totalBudget += categoryLimits[cat] || 0;
+    });
+    
+    Object.keys(categorySpending).forEach(cat => {
+        totalSpent += categorySpending[cat] || 0;
+    });
+    
+    // Update overall progress
+    const totalAmountEl = document.getElementById('budgetTotalAmount');
+    const totalProgressEl = document.getElementById('budgetTotalProgress');
+    const remainingEl = document.getElementById('budgetRemaining');
+    const percentageEl = document.getElementById('budgetPercentage');
+    
+    if (totalAmountEl) {
+        totalAmountEl.textContent = `$${totalSpent.toFixed(0)} / $${totalBudget.toFixed(0)}`;
+    }
+    
+    const percentage = totalBudget > 0 ? Math.min((totalSpent / totalBudget) * 100, 100) : 0;
+    if (totalProgressEl) {
+        totalProgressEl.style.width = `${percentage}%`;
+        totalProgressEl.className = 'budget-progress-fill ' + getBudgetStatusClass(percentage);
+    }
+    
+    const remaining = Math.max(totalBudget - totalSpent, 0);
+    if (remainingEl) {
+        const remainingText = currentLang === 'es' ? `$${remaining.toFixed(0)} restante` : `$${remaining.toFixed(0)} remaining`;
+        remainingEl.textContent = remainingText;
+    }
+    
+    if (percentageEl) {
+        percentageEl.textContent = `${percentage.toFixed(0)}%`;
+        percentageEl.className = 'budget-percentage ' + getBudgetStatusClass(percentage);
+    }
+    
+    // Render category list
+    const categoryListEl = document.getElementById('budgetCategoryList');
+    if (!categoryListEl) return;
+    
+    if (!hasBudget) {
+        // Show empty state with setup button
+        categoryListEl.innerHTML = `
+            <div class="budget-empty">
+                <span class="empty-icon">📊</span>
+                <p>${currentLang === 'es' ? 'Aún no has configurado un presupuesto' : 'No budget set yet'}</p>
+                <button id="setupBudgetBtn" class="btn btn-primary" onclick="openBudgetModal()">
+                    <span>✨</span>
+                    <span>${currentLang === 'es' ? 'Configurar Presupuesto' : 'Set Up Budget'}</span>
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    // Render categories with progress
+    let categoriesHtml = '';
+    BUDGET_CATEGORIES.forEach(cat => {
+        const limit = categoryLimits[cat.id] || 0;
+        if (limit <= 0) return; // Skip categories with no budget
+        
+        const spent = categorySpending[cat.id] || 0;
+        const catPercentage = Math.min((spent / limit) * 100, 100);
+        const statusClass = getBudgetStatusClass(catPercentage);
+        const catName = getCategoryName(cat.id, currentLang);
+        
+        categoriesHtml += `
+            <div class="budget-category-item">
+                <div class="category-header">
+                    <span class="category-icon">${cat.icon}</span>
+                    <span class="category-name">${catName}</span>
+                    <span class="category-amount ${statusClass}">$${spent.toFixed(0)} / $${limit.toFixed(0)}</span>
+                </div>
+                <div class="budget-progress-bar small">
+                    <div class="budget-progress-fill ${statusClass}" style="width: ${catPercentage}%"></div>
+                </div>
+            </div>
+        `;
+    });
+    
+    categoryListEl.innerHTML = categoriesHtml || `
+        <div class="budget-empty">
+            <p>${currentLang === 'es' ? 'Sin límites configurados' : 'No limits set'}</p>
+        </div>
+    `;
+    
+    // Show tips
+    const tipsEl = document.getElementById('budgetTips');
+    const tipTextEl = document.getElementById('budgetTipText');
+    if (tipsEl && tipTextEl) {
+        tipsEl.style.display = 'flex';
+        tipTextEl.textContent = getBudgetTip(percentage, currentLang);
+    }
+    
+    // Setup edit button
+    const editBtn = document.getElementById('editBudgetBtn');
+    if (editBtn) {
+        editBtn.onclick = () => openBudgetModal();
+    }
+}
+
+/**
+ * Get budget status class based on percentage
+ */
+function getBudgetStatusClass(percentage) {
+    if (percentage >= 90) return 'over';
+    if (percentage >= 75) return 'warning';
+    return 'safe';
+}
+
+/**
+ * Get category name with translation
+ */
+function getCategoryName(categoryId, lang) {
+    const names = {
+        en: {
+            food: 'Food & Dining',
+            transport: 'Transport',
+            housing: 'Housing',
+            utilities: 'Utilities',
+            entertainment: 'Entertainment',
+            shopping: 'Shopping',
+            health: 'Health',
+            travel: 'Travel',
+            subscription: 'Subscriptions',
+            other: 'Other'
+        },
+        es: {
+            food: 'Comida',
+            transport: 'Transporte',
+            housing: 'Vivienda',
+            utilities: 'Servicios',
+            entertainment: 'Entretenimiento',
+            shopping: 'Compras',
+            health: 'Salud',
+            travel: 'Viajes',
+            subscription: 'Suscripciones',
+            other: 'Otros'
+        }
+    };
+    return names[lang]?.[categoryId] || names.en[categoryId] || categoryId;
+}
+
+/**
+ * Get budget tip based on spending percentage
+ */
+function getBudgetTip(percentage, lang) {
+    if (percentage >= 90) {
+        return lang === 'es' 
+            ? '⚠️ ¡Cuidado! Estás cerca de tu límite mensual.' 
+            : '⚠️ Watch out! You\'re close to your monthly limit.';
+    }
+    if (percentage >= 75) {
+        return lang === 'es' 
+            ? '📊 Ya usaste el 75% de tu presupuesto. ¡Sigue así!' 
+            : '📊 You\'ve used 75% of your budget. Keep tracking!';
+    }
+    if (percentage >= 50) {
+        return lang === 'es' 
+            ? '👍 Vas bien. Aún tienes margen este mes.' 
+            : '👍 You\'re doing well. Still have room this month.';
+    }
+    return lang === 'es' 
+        ? '🌟 ¡Excelente control! Mantén el ritmo.' 
+        : '🌟 Excellent control! Keep it up.';
+}
+
+/**
+ * Open budget setup modal
+ */
+function openBudgetModal() {
+    const modal = document.getElementById('budgetSetupModal');
+    if (!modal) return;
+    
+    const currentLang = getCurrentLanguage();
+    const categoriesContainer = document.getElementById('budgetSetupCategories');
+    
+    // Get current budget settings
+    const budgetData = currentFund?.budget || {};
+    const categoryLimits = budgetData.categories || {};
+    
+    // Generate category inputs
+    let html = '';
+    BUDGET_CATEGORIES.forEach(cat => {
+        const currentValue = categoryLimits[cat.id] || 0;
+        const catName = getCategoryName(cat.id, currentLang);
+        
+        html += `
+            <div class="budget-setup-item">
+                <div class="budget-setup-label">
+                    <span class="category-icon">${cat.icon}</span>
+                    <span class="category-name">${catName}</span>
+                </div>
+                <div class="budget-setup-input">
+                    <span class="currency-prefix">$</span>
+                    <input type="number" 
+                           id="budget_${cat.id}" 
+                           class="budget-input" 
+                           value="${currentValue}" 
+                           min="0" 
+                           step="10"
+                           placeholder="0"
+                           onchange="updateBudgetTotal()">
+                </div>
+            </div>
+        `;
+    });
+    
+    if (categoriesContainer) {
+        categoriesContainer.innerHTML = html;
+    }
+    
+    // Update total
+    updateBudgetTotal();
+    
+    // Show modal
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+/**
+ * Close budget modal
+ */
+function closeBudgetModal() {
+    const modal = document.getElementById('budgetSetupModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+}
+
+/**
+ * Update budget total in setup modal
+ */
+function updateBudgetTotal() {
+    let total = 0;
+    BUDGET_CATEGORIES.forEach(cat => {
+        const input = document.getElementById(`budget_${cat.id}`);
+        if (input) {
+            total += parseFloat(input.value) || 0;
+        }
+    });
+    
+    const totalEl = document.getElementById('budgetSetupTotal');
+    if (totalEl) {
+        totalEl.textContent = `$${total.toFixed(0)}`;
+    }
+}
+
+/**
+ * Save budget to Firebase
+ */
+async function saveBudget() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        showToast('Please sign in first', 'error');
+        return;
+    }
+    
+    const categories = {};
+    BUDGET_CATEGORIES.forEach(cat => {
+        const input = document.getElementById(`budget_${cat.id}`);
+        if (input) {
+            const value = parseFloat(input.value) || 0;
+            if (value > 0) {
+                categories[cat.id] = value;
+            }
+        }
+    });
+    
+    const personalColonyId = `grp_personal_${user.uid}`;
+    
+    try {
+        await firebase.database().ref(`groups/${personalColonyId}/budget`).update({
+            categories: categories,
+            updatedAt: Date.now()
+        });
+        
+        // Update currentFund
+        if (!currentFund.budget) currentFund.budget = {};
+        currentFund.budget.categories = categories;
+        
+        // Reload budget display
+        const groupData = await window.FirebaseConfig.readDb(`groups/${personalColonyId}`);
+        await loadPersonalBudget(groupData);
+        
+        closeBudgetModal();
+        
+        const currentLang = getCurrentLanguage();
+        showToast(currentLang === 'es' ? '✅ Presupuesto guardado' : '✅ Budget saved', 'success');
+    } catch (error) {
+        console.error('Error saving budget:', error);
+        showToast('Error saving budget', 'error');
+    }
 }
 
 /**

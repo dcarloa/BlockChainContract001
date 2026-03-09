@@ -15891,3 +15891,327 @@ header,
     padding: 0.625rem;
   }
 }
+
+/* =============================================
+   PERSONAL BUDGET STYLES
+   ============================================= */
+
+.budget-container {
+  padding: 0.5rem 0;
+}
+
+.budget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.budget-header-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.budget-month {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Overall Budget Card */
+.budget-overall-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.budget-overall-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.budget-overall-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.budget-overall-amount {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.budget-overall-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.budget-remaining {
+  color: var(--text-secondary);
+}
+
+.budget-percentage {
+  font-weight: 600;
+}
+
+.budget-percentage.safe { color: #4ade80; }
+.budget-percentage.warning { color: #fbbf24; }
+.budget-percentage.over { color: #f87171; }
+
+/* Progress Bar */
+.budget-progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.budget-progress-bar.small {
+  height: 6px;
+}
+
+.budget-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.budget-progress-fill.safe {
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+}
+
+.budget-progress-fill.warning {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+
+.budget-progress-fill.over {
+  background: linear-gradient(90deg, #f87171, #ef4444);
+}
+
+/* Categories */
+.budget-categories h4 {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.budget-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.budget-category-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.category-icon {
+  font-size: 1.1rem;
+}
+
+.category-name {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.category-amount {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.category-amount.safe { color: #4ade80; }
+.category-amount.warning { color: #fbbf24; }
+.category-amount.over { color: #f87171; }
+
+/* Empty State */
+.budget-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.budget-empty .empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.budget-empty p {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+/* Tips */
+.budget-tips {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(102, 126, 234, 0.08);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.budget-tips .tip-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.budget-tips .tip-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Budget Setup Modal */
+.budget-modal {
+  max-width: 400px;
+}
+
+.budget-setup-intro {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.budget-setup-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.budget-setup-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.budget-setup-item:last-child {
+  border-bottom: none;
+}
+
+.budget-setup-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.budget-setup-label .category-icon {
+  font-size: 1.1rem;
+}
+
+.budget-setup-label .category-name {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.budget-setup-input {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.budget-setup-input .currency-prefix {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.budget-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.budget-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.budget-setup-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0 0;
+  margin-top: 0.5rem;
+  border-top: 2px solid var(--primary-color);
+  font-weight: 600;
+}
+
+.budget-setup-total-amount {
+  font-size: 1.25rem;
+  color: var(--primary-color);
+}
+
+/* Light Mode - Budget */
+[data-theme="light"] .budget-overall-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border-color: rgba(102, 126, 234, 0.15);
+}
+
+[data-theme="light"] .budget-progress-bar {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .budget-category-item {
+  background: #fff;
+  border-color: #e5e7eb;
+}
+
+[data-theme="light"] .budget-tips {
+  background: rgba(102, 126, 234, 0.06);
+}
+
+[data-theme="light"] .budget-input {
+  background: #fff;
+  border-color: #e5e7eb;
+}
+
+/* Mobile - Budget */
+@media (max-width: 480px) {
+  .budget-overall-card {
+    padding: 0.875rem;
+    border-radius: 10px;
+  }
+  
+  .budget-category-item {
+    padding: 0.625rem;
+  }
+  
+  .budget-setup-categories {
+    max-height: 280px;
+  }
+  
+  .budget-input {
+    width: 70px;
+  }
+}

@@ -762,6 +762,21 @@ const translations = {
                 recentActivity: "Recent Activity",
                 noActivity: "No recent activity"
             },
+            // Personal Budget
+            budget: {
+                title: "💰 Monthly Budget",
+                edit: "Edit",
+                totalBudget: "Total Budget",
+                remaining: "remaining",
+                byCategory: "By Category",
+                noBudget: "No budget set yet",
+                setupBudget: "Set Up Budget",
+                setupTitle: "✨ Set Your Budget",
+                setupIntro: "Set monthly limits for each category to track your spending.",
+                monthlyTotal: "Monthly Total:",
+                save: "Save Budget",
+                tipDefault: "Set category limits to track your spending habits."
+            },
             createFund: {
                 title: "✨ Create New Group",
                 steps: {
@@ -861,6 +876,7 @@ const translations = {
                     balances: "Balances",
                     members: "Members",
                     mascot: "Mascot",
+                    budget: "Budget",
                     manage: "Manage"
                 },
                 info: {
@@ -2238,6 +2254,21 @@ const translations = {
                 recentActivity: "Actividad Reciente",
                 noActivity: "Sin actividad reciente"
             },
+            // Personal Budget
+            budget: {
+                title: "💰 Presupuesto Mensual",
+                edit: "Editar",
+                totalBudget: "Presupuesto Total",
+                remaining: "restante",
+                byCategory: "Por Categoría",
+                noBudget: "Aún no has configurado un presupuesto",
+                setupBudget: "Configurar Presupuesto",
+                setupTitle: "✨ Configura tu Presupuesto",
+                setupIntro: "Establece límites mensuales por categoría para controlar tus gastos.",
+                monthlyTotal: "Total Mensual:",
+                save: "Guardar Presupuesto",
+                tipDefault: "Configura límites por categoría para rastrear tus hábitos de gasto."
+            },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",
                 steps: {
@@ -2337,6 +2368,7 @@ const translations = {
                     balances: "Balances",
                     members: "Miembros",
                     mascot: "Mascota",
+                    budget: "Presupuesto",
                     manage: "Gestionar"
                 },
                 info: {
