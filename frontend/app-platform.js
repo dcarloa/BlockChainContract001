@@ -7,6 +7,19 @@
 window.COLONY_FEATURE_ENABLED = true; // Set to false to disable Colony system
 
 // ============================================
+// COLONY LIFE MILESTONES (moved to top to avoid TDZ)
+// ============================================
+const COLONY_MILESTONES = [
+    { count: 5, emoji: '🌱', key: 'firstSteps' },
+    { count: 10, emoji: '🐜', key: 'gettingStarted' },
+    { count: 25, emoji: '🎯', key: 'onTrack' },
+    { count: 50, emoji: '⭐', key: 'halfCentury' },
+    { count: 100, emoji: '🏆', key: 'centurion' },
+    { count: 250, emoji: '💎', key: 'diamond' },
+    { count: 500, emoji: '👑', key: 'legendary' }
+];
+
+// ============================================
 // ABI CONTRACTS
 // ============================================
 
@@ -13587,19 +13600,6 @@ window.getGroupHealthBadge = getGroupHealthBadge;
 // COLONY LIFE SYSTEM - Phase 4
 // Milestones, Health Streaks, Smart Nudges
 // ============================================
-
-/**
- * Milestone thresholds and their celebration messages
- */
-const COLONY_MILESTONES = [
-    { count: 5, emoji: '🌱', key: 'firstSteps' },
-    { count: 10, emoji: '🐜', key: 'gettingStarted' },
-    { count: 25, emoji: '🎯', key: 'onTrack' },
-    { count: 50, emoji: '⭐', key: 'halfCentury' },
-    { count: 100, emoji: '🏆', key: 'centurion' },
-    { count: 250, emoji: '💎', key: 'diamond' },
-    { count: 500, emoji: '👑', key: 'legendary' }
-];
 
 /**
  * Check if group hit a milestone and celebrate
