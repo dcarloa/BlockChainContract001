@@ -773,6 +773,7 @@ const translations = {
                 setupBudget: "Set Up Budget",
                 setupTitle: "✨ Set Your Budget",
                 setupIntro: "Set monthly limits for each category to track your spending.",
+                currency: "Currency:",
                 monthlyTotal: "Monthly Total:",
                 save: "Save Budget",
                 tipDefault: "Set category limits to track your spending habits."
@@ -2265,6 +2266,7 @@ const translations = {
                 setupBudget: "Configurar Presupuesto",
                 setupTitle: "✨ Configura tu Presupuesto",
                 setupIntro: "Establece límites mensuales por categoría para controlar tus gastos.",
+                currency: "Moneda:",
                 monthlyTotal: "Total Mensual:",
                 save: "Guardar Presupuesto",
                 tipDefault: "Configura límites por categoría para rastrear tus hábitos de gasto."

@@ -3710,6 +3710,8 @@ async function loadPersonalBudget(groupData) {
     // Get budget settings
     const budgetData = groupData.budget || {};
     const categoryLimits = budgetData.categories || {};
+    const savedCurrency = budgetData.currency || 'USD';
+    const currencySymbol = CURRENCY_SYMBOLS[savedCurrency] || '$';
     const hasBudget = Object.keys(categoryLimits).length > 0;
     
     // Calculate spending by category for current month
@@ -3746,7 +3748,7 @@ async function loadPersonalBudget(groupData) {
     const percentageEl = document.getElementById('budgetPercentage');
     
     if (totalAmountEl) {
-        totalAmountEl.textContent = `$${totalSpent.toFixed(0)} / $${totalBudget.toFixed(0)}`;
+        totalAmountEl.textContent = `${currencySymbol}${totalSpent.toLocaleString()} / ${currencySymbol}${totalBudget.toLocaleString()}`;
     }
     
     const percentage = totalBudget > 0 ? Math.min((totalSpent / totalBudget) * 100, 100) : 0;
@@ -3757,7 +3759,7 @@ async function loadPersonalBudget(groupData) {
     
     const remaining = Math.max(totalBudget - totalSpent, 0);
     if (remainingEl) {
-        const remainingText = currentLang === 'es' ? `$${remaining.toFixed(0)} restante` : `$${remaining.toFixed(0)} remaining`;
+        const remainingText = currentLang === 'es' ? `${currencySymbol}${remaining.toLocaleString()} restante` : `${currencySymbol}${remaining.toLocaleString()} remaining`;
         remainingEl.textContent = remainingText;
     }
     
@@ -3801,7 +3803,7 @@ async function loadPersonalBudget(groupData) {
                 <div class="category-header">
                     <span class="category-icon">${cat.icon}</span>
                     <span class="category-name">${catName}</span>
-                    <span class="category-amount ${statusClass}">$${spent.toFixed(0)} / $${limit.toFixed(0)}</span>
+                    <span class="category-amount ${statusClass}">${currencySymbol}${spent.toLocaleString()} / ${currencySymbol}${limit.toLocaleString()}</span>
                 </div>
                 <div class="budget-progress-bar small">
                     <div class="budget-progress-fill ${statusClass}" style="width: ${catPercentage}%"></div>
@@ -3900,6 +3902,19 @@ function getBudgetTip(percentage, lang) {
 /**
  * Open budget setup modal
  */
+// Currency symbols map
+const CURRENCY_SYMBOLS = {
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    MXN: '$',
+    COP: '$',
+    ARS: '$',
+    BRL: 'R$',
+    CLP: '$',
+    PEN: 'S/'
+};
+
 function openBudgetModal() {
     const modal = document.getElementById('budgetSetupModal');
     if (!modal) return;
@@ -3910,6 +3925,15 @@ function openBudgetModal() {
     // Get current budget settings
     const budgetData = currentFund?.budget || {};
     const categoryLimits = budgetData.categories || {};
+    const savedCurrency = budgetData.currency || 'USD';
+    
+    // Set currency selector
+    const currencySelect = document.getElementById('budgetCurrencySelect');
+    if (currencySelect) {
+        currencySelect.value = savedCurrency;
+    }
+    
+    const currencySymbol = CURRENCY_SYMBOLS[savedCurrency] || '$';
     
     // Generate category inputs
     let html = '';
@@ -3924,7 +3948,7 @@ function openBudgetModal() {
                     <span class="category-name">${catName}</span>
                 </div>
                 <div class="budget-setup-input">
-                    <span class="currency-prefix">$</span>
+                    <span class="currency-prefix">${currencySymbol}</span>
                     <input type="number" 
                            id="budget_${cat.id}" 
                            class="budget-input" 
@@ -3962,6 +3986,23 @@ function closeBudgetModal() {
 }
 
 /**
+ * Update currency symbol when currency changes
+ */
+function updateBudgetCurrency() {
+    const currencySelect = document.getElementById('budgetCurrencySelect');
+    const selectedCurrency = currencySelect?.value || 'USD';
+    const symbol = CURRENCY_SYMBOLS[selectedCurrency] || '$';
+    
+    // Update all currency prefixes
+    document.querySelectorAll('.budget-setup-input .currency-prefix').forEach(el => {
+        el.textContent = symbol;
+    });
+    
+    // Update total
+    updateBudgetTotal();
+}
+
+/**
  * Update budget total in setup modal
  */
 function updateBudgetTotal() {
@@ -3973,9 +4014,13 @@ function updateBudgetTotal() {
         }
     });
     
+    const currencySelect = document.getElementById('budgetCurrencySelect');
+    const selectedCurrency = currencySelect?.value || 'USD';
+    const symbol = CURRENCY_SYMBOLS[selectedCurrency] || '$';
+    
     const totalEl = document.getElementById('budgetSetupTotal');
     if (totalEl) {
-        totalEl.textContent = `$${total.toFixed(0)}`;
+        totalEl.textContent = `${symbol}${total.toLocaleString()}`;
     }
 }
 
@@ -4000,17 +4045,23 @@ async function saveBudget() {
         }
     });
     
+    // Get selected currency
+    const currencySelect = document.getElementById('budgetCurrencySelect');
+    const selectedCurrency = currencySelect?.value || 'USD';
+    
     const personalColonyId = `grp_personal_${user.uid}`;
     
     try {
         await firebase.database().ref(`groups/${personalColonyId}/budget`).update({
             categories: categories,
+            currency: selectedCurrency,
             updatedAt: Date.now()
         });
         
         // Update currentFund
         if (!currentFund.budget) currentFund.budget = {};
         currentFund.budget.categories = categories;
+        currentFund.budget.currency = selectedCurrency;
         
         // Reload budget display
         const groupData = await window.FirebaseConfig.readDb(`groups/${personalColonyId}`);
