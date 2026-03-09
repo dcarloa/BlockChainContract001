@@ -3912,7 +3912,13 @@ const CURRENCY_SYMBOLS = {
     ARS: '$',
     BRL: 'R$',
     CLP: '$',
-    PEN: 'S/'
+    PEN: 'S/',
+    CAD: 'CA$',
+    AUD: 'A$',
+    JPY: '¥',
+    CNY: '¥',
+    INR: '₹',
+    CHF: 'CHF'
 };
 
 function openBudgetModal() {
@@ -7246,21 +7252,6 @@ window.decrementExpenseShare = decrementExpenseShare;
 // ============================================
 // CURRENCY UTILITIES
 // ============================================
-
-const CURRENCY_SYMBOLS = {
-    'USD': '$',
-    'EUR': '€',
-    'GBP': '£',
-    'MXN': '$',
-    'COP': '$',
-    'BRL': 'R$',
-    'CAD': 'CA$',
-    'AUD': 'A$',
-    'JPY': '¥',
-    'CNY': '¥',
-    'INR': '₹',
-    'CHF': 'CHF'
-};
 
 // FALLBACK exchange rates to USD (used if API/Firebase fails)
 // These are approximate rates as of January 2026
