@@ -5037,6 +5037,12 @@ function renderExpenseItem(expense, currentUserId, groupData) {
  */
 async function loadSimpleModeBalances() {
     try {
+        // Check if balancesList element exists (may not in Personal Colony)
+        const balancesList = document.getElementById('balancesList');
+        if (!balancesList) {
+            console.log('[Balances] balancesList element not found - skipping (may be Personal Colony)');
+            return;
+        }
         
         // Set current group ID for mode manager  
         window.modeManager.currentGroupId = currentFund.fundId;
@@ -5046,7 +5052,6 @@ async function loadSimpleModeBalances() {
         const memberBalances = await window.modeManager.calculateSimpleBalances();
         
         
-        const balancesList = document.getElementById('balancesList');
         const noBalances = document.getElementById('noBalances');
         const dashboard = document.getElementById('simpleModeBalanceDashboard');
         const timelineSection = document.getElementById('timelineFilterSection');
@@ -6035,6 +6040,12 @@ function loadSimpleModeMembers() {
     const membersList = document.getElementById('membersList');
     const noMembers = document.getElementById('noMembers');
     
+    // Check if membersList element exists (may not in Personal Colony)
+    if (!membersList) {
+        console.log('[Members] membersList element not found - skipping (may be Personal Colony)');
+        return;
+    }
+    
     if (!currentFund || !currentFund.members) {
         if (membersList) membersList.innerHTML = '';
         if (noMembers) noMembers.style.display = 'flex';
@@ -6058,11 +6069,6 @@ function loadSimpleModeMembers() {
     
     // Update member counter with subscription limits
     updateMemberCounter(members.length, currentFund.creator);
-
-    if (!membersList) {
-        console.warn('membersList element not found');
-        return;
-    }
     
     membersList.innerHTML = members.map(([uid, member]) => {
         const joinDate = member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'N/A';
@@ -8916,16 +8922,22 @@ window.decrementShare = decrementShare;
 
 async function loadMembers() {
     try {
-        const [addresses, nicknames, amounts] = await currentFundContract.getContributorsWithNicknames();
-        
         const membersList = document.getElementById('membersList');
         const noMembers = document.getElementById('noMembers');
         
+        // Check if membersList element exists
+        if (!membersList) {
+            console.log('[Members] membersList element not found - skipping');
+            return;
+        }
+        
+        const [addresses, nicknames, amounts] = await currentFundContract.getContributorsWithNicknames();
+        
         if (addresses.length === 0) {
             membersList.innerHTML = '';
-            noMembers.style.display = 'flex';
+            if (noMembers) noMembers.style.display = 'flex';
         } else {
-            noMembers.style.display = 'none';
+            if (noMembers) noMembers.style.display = 'none';
             
             membersList.innerHTML = addresses.map((address, i) => {
                 const nickname = nicknames[i];
@@ -9322,17 +9334,25 @@ async function loadHistory() {
 
 async function loadBalances() {
     try {
+        // Check if balancesList element exists
+        const balancesList = document.getElementById('balancesList');
+        const noBalances = document.getElementById('noBalances');
+        
+        if (!balancesList) {
+            console.log('[Balances] balancesList element not found - skipping');
+            return;
+        }
         
         // Get all members and their contributions
         const [addresses, nicknames, contributions] = await currentFundContract.getContributorsWithNicknames();
         
         if (addresses.length === 0) {
-            document.getElementById('balancesList').innerHTML = '';
-            document.getElementById('noBalances').style.display = 'flex';
+            balancesList.innerHTML = '';
+            if (noBalances) noBalances.style.display = 'flex';
             return;
         }
         
-        document.getElementById('noBalances').style.display = 'none';
+        if (noBalances) noBalances.style.display = 'none';
         
         // Get all executed proposals (expenses)
         const proposalCount = await currentFundContract.proposalCount();
@@ -9402,9 +9422,7 @@ async function loadBalances() {
         document.getElementById('totalSpent').textContent = `${parseFloat(ethers.formatEther(totalSpent)).toFixed(4)} ETH`;
         document.getElementById('availableBalance').textContent = `${parseFloat(ethers.formatEther(currentBalance)).toFixed(4)} ETH`;
         
-        // Render balances
-        const balancesList = document.getElementById('balancesList');
-        
+        // Render balances (using balancesList variable from top of function)
         if (displayBalances.length === 0) {
             balancesList.innerHTML = `
                 <div class="info-box success-box" style="text-align: center; padding: 2rem;">
@@ -9462,12 +9480,15 @@ async function loadBalances() {
         
     } catch (error) {
         console.error("Error loading balances:", error);
-        document.getElementById('balancesList').innerHTML = `
-            <div class="info-box warning-box">
-                <p><strong>?? Error al calcular balances:</strong></p>
-                <p>${error.message}</p>
-            </div>
-        `;
+        const errorBalancesList = document.getElementById('balancesList');
+        if (errorBalancesList) {
+            errorBalancesList.innerHTML = `
+                <div class="info-box warning-box">
+                    <p><strong>⚠️ Error al calcular balances:</strong></p>
+                    <p>${error.message}</p>
+                </div>
+            `;
+        }
     }
 }
 
