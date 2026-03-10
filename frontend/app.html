@@ -42,7 +42,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=4.8">
+    <link rel="stylesheet" href="styles-platform.css?v=4.9">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.2">
@@ -1813,7 +1813,7 @@ Simple, fast, and free.</p>
                         <div class="modal-content budget-modal">
                             <div class="modal-header">
                                 <h3 data-i18n="app.budget.setupTitle">✨ Set Your Budget</h3>
-                                <button class="modal-close" onclick="closeBudgetModal()">&times;</button>
+                                <button class="modal-close" onclick="closePersonalBudgetModal()">&times;</button>
                             </div>
                             <div class="modal-body">
                                 <p class="budget-setup-intro" data-i18n="app.budget.setupIntro">Set monthly limits for each category to track your spending.</p>
@@ -1844,7 +1844,7 @@ Simple, fast, and free.</p>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-secondary" onclick="closeBudgetModal()" data-i18n="common.cancel">Cancel</button>
+                                <button class="btn btn-secondary" onclick="closePersonalBudgetModal()" data-i18n="common.cancel">Cancel</button>
                                 <button class="btn btn-primary" onclick="saveBudget()" data-i18n="app.budget.save">Save Budget</button>
                             </div>
                         </div>
@@ -2632,7 +2632,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.7"></script>
     <script src="mascot-system.js?v=1.9"></script>
-    <script src="app-platform.js?v=4.8"></script>
+    <script src="app-platform.js?v=4.9"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)

@@ -4015,9 +4015,9 @@ function openBudgetModal() {
 }
 
 /**
- * Close budget modal
+ * Close budget modal (Personal Colony)
  */
-function closeBudgetModal() {
+function closePersonalBudgetModal() {
     const modal = document.getElementById('budgetSetupModal');
     if (modal) {
         modal.style.display = 'none';
@@ -4107,7 +4107,7 @@ async function saveBudget() {
         const groupData = await window.FirebaseConfig.readDb(`groups/${personalColonyId}`);
         await loadPersonalBudget(groupData);
         
-        closeBudgetModal();
+        closePersonalBudgetModal();
         
         const currentLang = getCurrentLanguage();
         showToast(currentLang === 'es' ? '✅ Presupuesto guardado' : '✅ Budget saved', 'success');
