@@ -2,7 +2,7 @@
  * Subscription Manager - Freemium System
  * Manages user subscription tiers and feature access control
  * 
- * @version 1.0.0
+ * @version 1.1.0 - Added Personal Finance tiers (Phase 5-6)
  */
 
 // ============================================================================
@@ -20,28 +20,50 @@ const SUBSCRIPTION_TIERS = {
 
 const TIER_LIMITS = {
     free: {
+        // Group limits
         maxGroups: 3,
-        maxMembersPerGroup: 7, // Reduced from 10
-        maxWeeklyChests: 1, // One chest per week
-        allowedMinigames: 2, // 1 attended + 1 unattended
+        maxMembersPerGroup: 7,
+        maxWeeklyChests: 1,
+        allowedMinigames: 2,
+        
+        // Group features
         analytics: false,
         recurringExpenses: false,
         budget: false,
         advancedCharts: false,
         watermark: true,
-        exportData: false
+        exportData: false,
+        
+        // Personal Finance (Phase 5-6)
+        personalColony: true,              // Access to personal colony
+        personalBudgetCategories: 3,       // food, transport, other
+        personalPortfolioAssets: 3,        // stocks, crypto, cash
+        personalGoals: 1,                  // One active goal
+        personalInsights: false,           // Basic totals only
+        personalExport: false              // No export
     },
     pro: {
-        maxGroups: 100, // Security lock
-        maxMembersPerGroup: 100, // Security lock
-        maxWeeklyChests: 2, // Two chests per week (double rewards!)
-        allowedMinigames: 7, // All minigames
+        // Group limits
+        maxGroups: 100,
+        maxMembersPerGroup: 100,
+        maxWeeklyChests: 2,
+        allowedMinigames: 7,
+        
+        // Group features
         analytics: true,
         recurringExpenses: true,
         budget: true,
         advancedCharts: true,
         watermark: false,
-        exportData: true
+        exportData: true,
+        
+        // Personal Finance (Phase 5-6)
+        personalColony: true,              // Full access
+        personalBudgetCategories: 10,      // All categories
+        personalPortfolioAssets: 8,        // All asset types
+        personalGoals: Infinity,           // Unlimited goals
+        personalInsights: true,            // Full analytics & trends
+        personalExport: true               // PDF/CSV export
     }
 };
 
@@ -49,6 +71,7 @@ const TIER_LIMITS = {
 // FEATURE FLAGS
 // ============================================================================
 const FEATURES = {
+    // Group features
     MULTIPLE_GROUPS: 'multiple_groups',
     UNLIMITED_MEMBERS: 'unlimited_members',
     ANALYTICS: 'analytics',
@@ -58,7 +81,14 @@ const FEATURES = {
     ALL_MINIGAMES: 'all_minigames',
     MULTIPLE_CHESTS: 'multiple_chests',
     EXPORT_DATA: 'export_data',
-    NO_WATERMARK: 'no_watermark'
+    NO_WATERMARK: 'no_watermark',
+    
+    // Personal Finance features (Phase 5-6)
+    PERSONAL_FULL_BUDGET: 'personal_full_budget',
+    PERSONAL_FULL_PORTFOLIO: 'personal_full_portfolio',
+    PERSONAL_UNLIMITED_GOALS: 'personal_unlimited_goals',
+    PERSONAL_INSIGHTS: 'personal_insights',
+    PERSONAL_EXPORT: 'personal_export'
 };
 
 // Minigames configuration
@@ -71,6 +101,21 @@ const MINIGAMES_CONFIG = {
         attended: ['memoryMatch', 'wordScramble', 'mathQuiz', 'colorSwap'],
         unattended: ['treasureHunt', 'luckyWheel', 'scratchCard']
     }
+};
+
+// ============================================================================
+// PERSONAL FINANCE CATEGORIES (Phase 5-6)
+// ============================================================================
+const PERSONAL_BUDGET_CATEGORIES = {
+    free: ['food', 'transport', 'other'],  // 3 basic categories
+    pro: ['food', 'transport', 'housing', 'utilities', 'entertainment', 
+          'shopping', 'health', 'travel', 'subscription', 'other']  // All 10
+};
+
+const PERSONAL_PORTFOLIO_ASSETS = {
+    free: ['stocks', 'crypto', 'cash'],  // 3 popular assets
+    pro: ['stocks', 'crypto', 'real_estate', 'bonds', 'cash', 
+          'retirement', 'commodities', 'other']  // All 8
 };
 
 // ============================================================================
@@ -244,6 +289,7 @@ async function canAccessFeature(userId, feature) {
     const limits = await getTierLimits(userId);
 
     const featureChecks = {
+        // Group features
         [FEATURES.ANALYTICS]: {
             allowed: limits.analytics,
             reason: 'Analytics is a PRO feature. Upgrade to track your spending patterns!'
@@ -275,6 +321,28 @@ async function canAccessFeature(userId, feature) {
         [FEATURES.NO_WATERMARK]: {
             allowed: !limits.watermark,
             reason: 'Remove watermark with PRO subscription!'
+        },
+        
+        // Personal Finance features (Phase 5-6)
+        [FEATURES.PERSONAL_FULL_BUDGET]: {
+            allowed: limits.personalBudgetCategories >= 10,
+            reason: 'Unlock all 10 budget categories with PRO! Free includes Food, Transport & Other.'
+        },
+        [FEATURES.PERSONAL_FULL_PORTFOLIO]: {
+            allowed: limits.personalPortfolioAssets >= 8,
+            reason: 'Track Real Estate, Bonds, Retirement & more with PRO! Free includes Stocks, Crypto & Cash.'
+        },
+        [FEATURES.PERSONAL_UNLIMITED_GOALS]: {
+            allowed: limits.personalGoals === Infinity,
+            reason: 'Create unlimited savings goals with PRO! Free users get 1 active goal.'
+        },
+        [FEATURES.PERSONAL_INSIGHTS]: {
+            allowed: limits.personalInsights,
+            reason: 'Unlock spending trends and financial insights with PRO!'
+        },
+        [FEATURES.PERSONAL_EXPORT]: {
+            allowed: limits.personalExport,
+            reason: 'Export your personal finance data as PDF/CSV with PRO!'
         }
     };
 
@@ -332,6 +400,143 @@ async function canPlayMinigame(userId, gameId) {
 }
 
 // ============================================================================
+// PERSONAL FINANCE VALIDATION (Phase 5-6)
+// ============================================================================
+
+/**
+ * Get allowed budget categories for user's tier
+ */
+async function getPersonalBudgetCategories(userId) {
+    if (LAUNCH_MODE) {
+        return {
+            categories: PERSONAL_BUDGET_CATEGORIES.pro,
+            limit: 10,
+            isPro: true
+        };
+    }
+
+    const tier = await getUserTier(userId);
+    return {
+        categories: PERSONAL_BUDGET_CATEGORIES[tier],
+        limit: TIER_LIMITS[tier].personalBudgetCategories,
+        isPro: tier === SUBSCRIPTION_TIERS.PRO
+    };
+}
+
+/**
+ * Get allowed portfolio assets for user's tier
+ */
+async function getPersonalPortfolioAssets(userId) {
+    if (LAUNCH_MODE) {
+        return {
+            assets: PERSONAL_PORTFOLIO_ASSETS.pro,
+            limit: 8,
+            isPro: true
+        };
+    }
+
+    const tier = await getUserTier(userId);
+    return {
+        assets: PERSONAL_PORTFOLIO_ASSETS[tier],
+        limit: TIER_LIMITS[tier].personalPortfolioAssets,
+        isPro: tier === SUBSCRIPTION_TIERS.PRO
+    };
+}
+
+/**
+ * Check if user can add a budget category
+ */
+async function canAddBudgetCategory(userId, categoryId) {
+    if (LAUNCH_MODE) {
+        return { allowed: true, reason: null };
+    }
+
+    const { categories, limit } = await getPersonalBudgetCategories(userId);
+    
+    if (categories.includes(categoryId)) {
+        return { allowed: true, reason: null };
+    }
+
+    return {
+        allowed: false,
+        reason: `This category is PRO only. Free users can track: ${categories.join(', ')}`,
+        allowedCategories: categories,
+        limit
+    };
+}
+
+/**
+ * Check if user can add a portfolio asset type
+ */
+async function canAddPortfolioAsset(userId, assetType) {
+    if (LAUNCH_MODE) {
+        return { allowed: true, reason: null };
+    }
+
+    const { assets, limit } = await getPersonalPortfolioAssets(userId);
+    
+    if (assets.includes(assetType)) {
+        return { allowed: true, reason: null };
+    }
+
+    return {
+        allowed: false,
+        reason: `This asset type is PRO only. Free users can track: ${assets.join(', ')}`,
+        allowedAssets: assets,
+        limit
+    };
+}
+
+/**
+ * Check if user can add another personal goal
+ */
+async function canAddPersonalGoal(userId) {
+    if (LAUNCH_MODE) {
+        return { allowed: true, reason: null, limit: Infinity };
+    }
+
+    const limits = await getTierLimits(userId);
+    
+    // Count existing goals
+    const snapshot = await firebase.database()
+        .ref(`users/${userId}/personalFinance/goals`)
+        .once('value');
+    
+    const currentGoals = snapshot.numChildren();
+    
+    if (currentGoals >= limits.personalGoals) {
+        return {
+            allowed: false,
+            reason: `You've reached your limit of ${limits.personalGoals} goal(s). Upgrade to PRO for unlimited goals!`,
+            current: currentGoals,
+            limit: limits.personalGoals
+        };
+    }
+
+    return { allowed: true, reason: null, current: currentGoals, limit: limits.personalGoals };
+}
+
+/**
+ * Check if user can access personal insights
+ */
+async function canAccessPersonalInsights(userId) {
+    if (LAUNCH_MODE) {
+        return { allowed: true, reason: null };
+    }
+
+    const limits = await getTierLimits(userId);
+    
+    if (!limits.personalInsights) {
+        return {
+            allowed: false,
+            reason: 'Spending trends and financial insights are PRO features. Upgrade to visualize your finances!'
+        };
+    }
+
+    return { allowed: true, reason: null };
+}
+
+// ============================================================================
 // UI HELPERS
 // ============================================================================
 
@@ -340,6 +545,7 @@ async function canPlayMinigame(userId, gameId) {
  */
 function showUpgradeModal(feature = null) {
     const featureMessages = {
+        // Group features
         [FEATURES.MULTIPLE_GROUPS]: 'Create unlimited groups',
         [FEATURES.UNLIMITED_MEMBERS]: 'Add up to 100 members per group',
         [FEATURES.ANALYTICS]: 'Access detailed analytics',
@@ -349,7 +555,14 @@ function showUpgradeModal(feature = null) {
         [FEATURES.ALL_MINIGAMES]: 'Play all 7 minigames',
         [FEATURES.MULTIPLE_CHESTS]: 'Open multiple weekly chests',
         [FEATURES.EXPORT_DATA]: 'Export your data',
-        [FEATURES.NO_WATERMARK]: 'Remove watermark'
+        [FEATURES.NO_WATERMARK]: 'Remove watermark',
+        
+        // Personal Finance features
+        [FEATURES.PERSONAL_FULL_BUDGET]: 'Track all 10 budget categories',
+        [FEATURES.PERSONAL_FULL_PORTFOLIO]: 'Track all investment types',
+        [FEATURES.PERSONAL_UNLIMITED_GOALS]: 'Create unlimited savings goals',
+        [FEATURES.PERSONAL_INSIGHTS]: 'View spending trends & insights',
+        [FEATURES.PERSONAL_EXPORT]: 'Export personal finance data'
     };
 
     const message = feature && featureMessages[feature] 
@@ -369,16 +582,19 @@ function showUpgradeModal(feature = null) {
                     <div class="upgrade-features">
                         <h3>PRO Benefits:</h3>
                         <ul>
-                            <li>✅ Up to 100 groups</li>
-                            <li>✅ Up to 100 members per group</li>
+                            <li>✅ Up to 100 groups & 100 members</li>
                             <li>✅ Complete Colony system with better rewards</li>
                             <li>✅ Multiple weekly chests</li>
                             <li>✅ All 7 Challenge Games</li>
                             <li>✅ Advanced analytics & charts</li>
                             <li>✅ Recurring expenses automation</li>
-                            <li>✅ Budget tracking</li>
-                            <li>✅ Export data</li>
-                            <li>✅ No watermark</li>
+                            <li>✅ Group budget tracking</li>
+                            <li>🐜 <strong>Personal Finance:</strong></li>
+                            <li>✅ All 10 budget categories</li>
+                            <li>✅ Full portfolio (8 asset types)</li>
+                            <li>✅ Unlimited savings goals</li>
+                            <li>✅ Spending trends & insights</li>
+                            <li>✅ Export data (PDF/CSV)</li>
                         </ul>
                     </div>
                     
@@ -601,6 +817,8 @@ window.SubscriptionManager = {
     SUBSCRIPTION_TIERS,
     TIER_LIMITS,
     FEATURES,
+    PERSONAL_BUDGET_CATEGORIES,
+    PERSONAL_PORTFOLIO_ASSETS,
     
     // Core functions
     isPro,
@@ -609,12 +827,20 @@ window.SubscriptionManager = {
     getSubscriptionData,
     getSubscriptionStatus,
     
-    // Validation functions
+    // Validation functions - Groups
     canCreateGroup,
     canAddMember,
     canAccessFeature,
     canPlayMinigame,
     getAllowedMinigames,
+    
+    // Validation functions - Personal Finance (Phase 5-6)
+    getPersonalBudgetCategories,
+    getPersonalPortfolioAssets,
+    canAddBudgetCategory,
+    canAddPortfolioAsset,
+    canAddPersonalGoal,
+    canAccessPersonalInsights,
     
     // UI functions
     showUpgradeModal,
@@ -627,4 +853,4 @@ window.SubscriptionManager = {
     startTrial
 };
 
-// Subscription Manager loaded
+// Subscription Manager loaded - v1.1.0 (Personal Finance Support)
