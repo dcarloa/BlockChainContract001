@@ -3140,6 +3140,17 @@ async function switchFundTab(tabName) {
         }
     }
     
+    // Load portfolio when portfolio tab is selected (Personal Colony only)
+    if (tabName === 'portfolio' && currentFund) {
+        const groupId = currentFund.fundId || currentFund.fundAddress;
+        if (groupId && groupId.startsWith('grp_personal_')) {
+            const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+            if (groupData) {
+                await loadPersonalPortfolio(groupData);
+            }
+        }
+    }
+    
     // Load kick members list when manage tab is selected
     if (tabName === 'manage') {
         loadKickMembersList();
@@ -3282,6 +3293,7 @@ async function loadSimpleModeDetailView() {
         const mascotTab = document.querySelector('.fund-tab-btn[data-tab="mascot"]');
         const overviewTab = document.querySelector('.fund-tab-btn[data-tab="overview"]');
         const budgetTab = document.querySelector('.fund-tab-btn[data-tab="budget"]');
+        const portfolioTab = document.querySelector('.fund-tab-btn[data-tab="portfolio"]');
         
         // Detect personal colony
         const isPersonalColony = currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_personal_');
@@ -3301,6 +3313,7 @@ async function loadSimpleModeDetailView() {
             if (manageTab) manageTab.style.display = 'none';
             if (mascotTab) mascotTab.style.display = 'flex'; // Keep mascot
             if (budgetTab) budgetTab.style.display = 'flex'; // Show budget for personal
+            if (portfolioTab) portfolioTab.style.display = 'flex'; // Show portfolio for personal
             
             // Update header for personal colony
             const currentLang = getCurrentLanguage();
@@ -3313,8 +3326,9 @@ async function loadSimpleModeDetailView() {
             const fundMembersStat = document.getElementById('fundMembersStat');
             if (fundMembersStat) fundMembersStat.style.display = 'none';
             
-            // Load budget data
+            // Load budget and portfolio data
             await loadPersonalBudget(groupData);
+            await loadPersonalPortfolio(groupData);
         } else {
             // Regular group - Show Simple Mode tabs including Overview
             if (overviewTab) overviewTab.style.display = 'flex';
@@ -3327,6 +3341,7 @@ async function loadSimpleModeDetailView() {
             if (manageTab) manageTab.style.display = 'none'; // Hide for now
             if (mascotTab) mascotTab.style.display = 'flex'; // Show mascot tab in Simple Mode
             if (budgetTab) budgetTab.style.display = 'none'; // Budget only for personal
+            if (portfolioTab) portfolioTab.style.display = 'none'; // Portfolio only for personal
             
             // Ensure members stat is visible for regular groups
             const fundMembersStat = document.getElementById('fundMembersStat');
@@ -4080,6 +4095,475 @@ async function saveBudget() {
     } catch (error) {
         console.error('Error saving budget:', error);
         showToast('Error saving budget', 'error');
+    }
+}
+
+// ============================================
+// PORTFOLIO / INVESTMENT TRACKING
+// ============================================
+
+// Portfolio asset categories
+const PORTFOLIO_CATEGORIES = [
+    { id: 'stocks', icon: '📊', color: '#667eea' },
+    { id: 'crypto', icon: '₿', color: '#f7931a' },
+    { id: 'real_estate', icon: '🏠', color: '#10b981' },
+    { id: 'bonds', icon: '📜', color: '#6366f1' },
+    { id: 'cash', icon: '💵', color: '#22c55e' },
+    { id: 'retirement', icon: '🏦', color: '#8b5cf6' },
+    { id: 'commodities', icon: '🥇', color: '#eab308' },
+    { id: 'other', icon: '📦', color: '#64748b' }
+];
+
+/**
+ * Get portfolio category name with translation
+ */
+function getPortfolioCategoryName(categoryId, lang) {
+    const names = {
+        en: {
+            stocks: 'Stocks & ETFs',
+            crypto: 'Cryptocurrency',
+            real_estate: 'Real Estate',
+            bonds: 'Bonds & Fixed Income',
+            cash: 'Cash & Savings',
+            retirement: 'Retirement Accounts',
+            commodities: 'Commodities',
+            other: 'Other Investments'
+        },
+        es: {
+            stocks: 'Acciones y ETFs',
+            crypto: 'Criptomonedas',
+            real_estate: 'Bienes Raíces',
+            bonds: 'Bonos y Renta Fija',
+            cash: 'Efectivo y Ahorros',
+            retirement: 'Cuentas de Retiro',
+            commodities: 'Commodities',
+            other: 'Otras Inversiones'
+        }
+    };
+    return names[lang]?.[categoryId] || names.en[categoryId] || categoryId;
+}
+
+/**
+ * Load portfolio for Personal Colony
+ */
+async function loadPersonalPortfolio(groupData) {
+    const currentLang = getCurrentLanguage();
+    
+    // Get portfolio data
+    const portfolioData = groupData.portfolio || {};
+    const assets = portfolioData.assets || {};
+    const goals = portfolioData.goals || {};
+    const savedCurrency = portfolioData.currency || 'USD';
+    const currencySymbol = CURRENCY_SYMBOLS[savedCurrency] || '$';
+    
+    const hasAssets = Object.keys(assets).length > 0;
+    
+    // Calculate totals
+    let totalNetWorth = 0;
+    const assetTotals = {};
+    
+    PORTFOLIO_CATEGORIES.forEach(cat => {
+        assetTotals[cat.id] = assets[cat.id] || 0;
+        totalNetWorth += assetTotals[cat.id];
+    });
+    
+    // Update net worth display
+    const netWorthEl = document.getElementById('portfolioNetWorth');
+    if (netWorthEl) {
+        netWorthEl.textContent = `${currencySymbol}${totalNetWorth.toLocaleString()}`;
+    }
+    
+    // Render distribution chart (horizontal bars)
+    const chartEl = document.getElementById('portfolioChart');
+    const legendEl = document.getElementById('portfolioLegend');
+    
+    if (chartEl && legendEl && hasAssets) {
+        let chartHtml = '<div class="portfolio-bars">';
+        let legendHtml = '';
+        
+        PORTFOLIO_CATEGORIES.forEach(cat => {
+            const amount = assetTotals[cat.id] || 0;
+            if (amount <= 0) return;
+            
+            const percentage = totalNetWorth > 0 ? (amount / totalNetWorth) * 100 : 0;
+            const catName = getPortfolioCategoryName(cat.id, currentLang);
+            
+            chartHtml += `
+                <div class="portfolio-bar-item">
+                    <div class="portfolio-bar-header">
+                        <span class="bar-label">${cat.icon} ${catName}</span>
+                        <span class="bar-value">${currencySymbol}${amount.toLocaleString()}</span>
+                    </div>
+                    <div class="portfolio-bar-track">
+                        <div class="portfolio-bar-fill" style="width: ${percentage}%; background: ${cat.color};"></div>
+                    </div>
+                    <span class="bar-percentage">${percentage.toFixed(1)}%</span>
+                </div>
+            `;
+            
+            legendHtml += `
+                <div class="legend-item">
+                    <span class="legend-color" style="background: ${cat.color};"></span>
+                    <span class="legend-label">${cat.icon} ${catName}</span>
+                    <span class="legend-percent">${percentage.toFixed(1)}%</span>
+                </div>
+            `;
+        });
+        
+        chartHtml += '</div>';
+        chartEl.innerHTML = chartHtml;
+        legendEl.innerHTML = legendHtml;
+    } else if (chartEl) {
+        chartEl.innerHTML = '';
+        if (legendEl) legendEl.innerHTML = '';
+    }
+    
+    // Render asset list
+    const assetListEl = document.getElementById('portfolioAssetList');
+    if (assetListEl) {
+        if (!hasAssets) {
+            assetListEl.innerHTML = `
+                <div class="portfolio-empty">
+                    <span class="empty-icon">💼</span>
+                    <p>${currentLang === 'es' ? 'Aún no has agregado activos' : 'No assets added yet'}</p>
+                    <button class="btn btn-primary" onclick="openPortfolioModal()">
+                        <span>✨</span>
+                        <span>${currentLang === 'es' ? 'Agregar Primer Activo' : 'Add Your First Asset'}</span>
+                    </button>
+                </div>
+            `;
+        } else {
+            let assetsHtml = '';
+            PORTFOLIO_CATEGORIES.forEach(cat => {
+                const amount = assetTotals[cat.id] || 0;
+                if (amount <= 0) return;
+                
+                const percentage = totalNetWorth > 0 ? (amount / totalNetWorth) * 100 : 0;
+                const catName = getPortfolioCategoryName(cat.id, currentLang);
+                
+                assetsHtml += `
+                    <div class="portfolio-asset-item" style="border-left: 3px solid ${cat.color};">
+                        <div class="asset-icon">${cat.icon}</div>
+                        <div class="asset-info">
+                            <span class="asset-name">${catName}</span>
+                            <span class="asset-percent">${percentage.toFixed(1)}% ${currentLang === 'es' ? 'del portafolio' : 'of portfolio'}</span>
+                        </div>
+                        <span class="asset-amount">${currencySymbol}${amount.toLocaleString()}</span>
+                    </div>
+                `;
+            });
+            assetListEl.innerHTML = assetsHtml;
+        }
+    }
+    
+    // Render goals
+    const goalsEl = document.getElementById('portfolioGoals');
+    if (goalsEl) {
+        const goalsArray = Object.values(goals);
+        if (goalsArray.length === 0) {
+            goalsEl.innerHTML = `
+                <div class="portfolio-goals-empty">
+                    <span>${currentLang === 'es' ? 'Sin metas definidas' : 'No goals set'}</span>
+                </div>
+            `;
+        } else {
+            let goalsHtml = '';
+            goalsArray.forEach(goal => {
+                const progress = totalNetWorth > 0 && goal.target > 0 
+                    ? Math.min((totalNetWorth / goal.target) * 100, 100) 
+                    : 0;
+                const statusClass = progress >= 100 ? 'completed' : progress >= 50 ? 'progress' : 'starting';
+                
+                goalsHtml += `
+                    <div class="portfolio-goal-item ${statusClass}">
+                        <div class="goal-header">
+                            <span class="goal-icon">🎯</span>
+                            <span class="goal-name">${escapeHtml(goal.name)}</span>
+                            <span class="goal-status">${progress.toFixed(0)}%</span>
+                        </div>
+                        <div class="goal-progress-bar">
+                            <div class="goal-progress-fill" style="width: ${progress}%;"></div>
+                        </div>
+                        <div class="goal-footer">
+                            <span class="goal-current">${currencySymbol}${totalNetWorth.toLocaleString()}</span>
+                            <span class="goal-target">${currentLang === 'es' ? 'de' : 'of'} ${currencySymbol}${goal.target.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            goalsEl.innerHTML = goalsHtml;
+        }
+    }
+    
+    // Show tips
+    const tipsEl = document.getElementById('portfolioTips');
+    const tipTextEl = document.getElementById('portfolioTipText');
+    if (tipsEl && tipTextEl) {
+        tipsEl.style.display = 'flex';
+        tipTextEl.textContent = getPortfolioTip(assetTotals, totalNetWorth, currentLang);
+    }
+}
+
+/**
+ * Get portfolio diversification tip
+ */
+function getPortfolioTip(assetTotals, totalNetWorth, lang) {
+    if (totalNetWorth === 0) {
+        return lang === 'es' 
+            ? '💡 Comienza agregando tus activos para rastrear tu patrimonio.' 
+            : '💡 Start by adding your assets to track your wealth.';
+    }
+    
+    // Check diversification
+    const nonZeroCategories = Object.values(assetTotals).filter(v => v > 0).length;
+    
+    if (nonZeroCategories === 1) {
+        return lang === 'es' 
+            ? '⚠️ Considera diversificar tus inversiones en múltiples categorías.' 
+            : '⚠️ Consider diversifying your investments across multiple categories.';
+    }
+    
+    if (nonZeroCategories >= 4) {
+        return lang === 'es' 
+            ? '🌟 ¡Excelente diversificación! Tienes un portafolio bien balanceado.' 
+            : '🌟 Excellent diversification! You have a well-balanced portfolio.';
+    }
+    
+    return lang === 'es' 
+        ? '📊 Tu portafolio está tomando forma. Sigue diversificando.' 
+        : '📊 Your portfolio is taking shape. Keep diversifying.';
+}
+
+/**
+ * Open portfolio setup modal
+ */
+function openPortfolioModal() {
+    const modal = document.getElementById('portfolioSetupModal');
+    if (!modal) return;
+    
+    const currentLang = getCurrentLanguage();
+    const assetsContainer = document.getElementById('portfolioSetupAssets');
+    
+    // Get current portfolio settings
+    const portfolioData = currentFund?.portfolio || {};
+    const assets = portfolioData.assets || {};
+    const savedCurrency = portfolioData.currency || 'USD';
+    
+    // Set currency selector
+    const currencySelect = document.getElementById('portfolioCurrencySelect');
+    if (currencySelect) {
+        currencySelect.value = savedCurrency;
+    }
+    
+    const currencySymbol = CURRENCY_SYMBOLS[savedCurrency] || '$';
+    
+    // Generate asset inputs
+    let html = '';
+    PORTFOLIO_CATEGORIES.forEach(cat => {
+        const currentValue = assets[cat.id] || 0;
+        const catName = getPortfolioCategoryName(cat.id, currentLang);
+        
+        html += `
+            <div class="portfolio-setup-item" style="border-left: 3px solid ${cat.color};">
+                <div class="portfolio-setup-label">
+                    <span class="category-icon">${cat.icon}</span>
+                    <span class="category-name">${catName}</span>
+                </div>
+                <div class="portfolio-setup-input">
+                    <span class="currency-prefix">${currencySymbol}</span>
+                    <input type="number" 
+                           id="portfolio_${cat.id}" 
+                           class="portfolio-input" 
+                           value="${currentValue}" 
+                           min="0" 
+                           step="100"
+                           placeholder="0"
+                           onchange="updatePortfolioTotal()">
+                </div>
+            </div>
+        `;
+    });
+    
+    if (assetsContainer) {
+        assetsContainer.innerHTML = html;
+    }
+    
+    // Update total
+    updatePortfolioTotal();
+    
+    // Show modal
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+/**
+ * Close portfolio modal
+ */
+function closePortfolioModal() {
+    const modal = document.getElementById('portfolioSetupModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+}
+
+/**
+ * Update portfolio total in setup modal
+ */
+function updatePortfolioTotal() {
+    let total = 0;
+    PORTFOLIO_CATEGORIES.forEach(cat => {
+        const input = document.getElementById(`portfolio_${cat.id}`);
+        if (input) {
+            total += parseFloat(input.value) || 0;
+        }
+    });
+    
+    const currencySelect = document.getElementById('portfolioCurrencySelect');
+    const selectedCurrency = currencySelect?.value || 'USD';
+    const symbol = CURRENCY_SYMBOLS[selectedCurrency] || '$';
+    
+    const totalEl = document.getElementById('portfolioSetupTotal');
+    if (totalEl) {
+        totalEl.textContent = `${symbol}${total.toLocaleString()}`;
+    }
+}
+
+/**
+ * Save portfolio to Firebase
+ */
+async function savePortfolio() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        showToast('Please sign in first', 'error');
+        return;
+    }
+    
+    const assets = {};
+    PORTFOLIO_CATEGORIES.forEach(cat => {
+        const input = document.getElementById(`portfolio_${cat.id}`);
+        if (input) {
+            const value = parseFloat(input.value) || 0;
+            if (value > 0) {
+                assets[cat.id] = value;
+            }
+        }
+    });
+    
+    // Get selected currency
+    const currencySelect = document.getElementById('portfolioCurrencySelect');
+    const selectedCurrency = currencySelect?.value || 'USD';
+    
+    const personalColonyId = `grp_personal_${user.uid}`;
+    
+    try {
+        await firebase.database().ref(`groups/${personalColonyId}/portfolio`).update({
+            assets: assets,
+            currency: selectedCurrency,
+            updatedAt: Date.now()
+        });
+        
+        // Update currentFund
+        if (!currentFund.portfolio) currentFund.portfolio = {};
+        currentFund.portfolio.assets = assets;
+        currentFund.portfolio.currency = selectedCurrency;
+        
+        // Reload portfolio display
+        const groupData = await window.FirebaseConfig.readDb(`groups/${personalColonyId}`);
+        await loadPersonalPortfolio(groupData);
+        
+        closePortfolioModal();
+        
+        const currentLang = getCurrentLanguage();
+        showToast(currentLang === 'es' ? '✅ Portafolio guardado' : '✅ Portfolio saved', 'success');
+    } catch (error) {
+        console.error('Error saving portfolio:', error);
+        showToast('Error saving portfolio', 'error');
+    }
+}
+
+/**
+ * Open goal modal
+ */
+function openGoalModal() {
+    const modal = document.getElementById('goalSetupModal');
+    if (!modal) return;
+    
+    // Clear inputs
+    const nameInput = document.getElementById('goalNameInput');
+    const amountInput = document.getElementById('goalAmountInput');
+    const dateInput = document.getElementById('goalDateInput');
+    
+    if (nameInput) nameInput.value = '';
+    if (amountInput) amountInput.value = '';
+    if (dateInput) {
+        // Default to 1 year from now
+        const nextYear = new Date();
+        nextYear.setFullYear(nextYear.getFullYear() + 1);
+        dateInput.value = nextYear.toISOString().split('T')[0];
+    }
+    
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+/**
+ * Close goal modal
+ */
+function closeGoalModal() {
+    const modal = document.getElementById('goalSetupModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+}
+
+/**
+ * Save financial goal
+ */
+async function saveGoal() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        showToast('Please sign in first', 'error');
+        return;
+    }
+    
+    const nameInput = document.getElementById('goalNameInput');
+    const amountInput = document.getElementById('goalAmountInput');
+    const dateInput = document.getElementById('goalDateInput');
+    
+    const name = nameInput?.value?.trim() || '';
+    const target = parseFloat(amountInput?.value) || 0;
+    const targetDate = dateInput?.value || '';
+    
+    if (!name || target <= 0) {
+        const lang = getCurrentLanguage();
+        showToast(lang === 'es' ? 'Completa nombre y monto' : 'Complete name and amount', 'error');
+        return;
+    }
+    
+    const personalColonyId = `grp_personal_${user.uid}`;
+    const goalId = `goal_${Date.now()}`;
+    
+    try {
+        await firebase.database().ref(`groups/${personalColonyId}/portfolio/goals/${goalId}`).set({
+            name: name,
+            target: target,
+            targetDate: targetDate,
+            createdAt: Date.now()
+        });
+        
+        // Reload portfolio display
+        const groupData = await window.FirebaseConfig.readDb(`groups/${personalColonyId}`);
+        await loadPersonalPortfolio(groupData);
+        
+        closeGoalModal();
+        
+        const currentLang = getCurrentLanguage();
+        showToast(currentLang === 'es' ? '✅ Meta guardada' : '✅ Goal saved', 'success');
+    } catch (error) {
+        console.error('Error saving goal:', error);
+        showToast('Error saving goal', 'error');
     }
 }
 

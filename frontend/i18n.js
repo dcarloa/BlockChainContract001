@@ -778,6 +778,31 @@ const translations = {
                 save: "Save Budget",
                 tipDefault: "Set category limits to track your spending habits."
             },
+            // Investment Portfolio
+            portfolio: {
+                title: "📈 Investment Portfolio",
+                subtitle: "Track and plan your investments",
+                edit: "Edit",
+                netWorth: "Total Net Worth",
+                trackProgress: "Track your wealth over time",
+                distribution: "Asset Distribution",
+                yourAssets: "Your Assets",
+                noAssets: "No assets added yet",
+                addFirst: "Add Your First Asset",
+                goals: "Financial Goals",
+                addGoal: "Add Goal",
+                tipDefault: "Diversify your investments to reduce risk.",
+                setupTitle: "💼 Manage Assets",
+                setupIntro: "Add your investments to track your portfolio.",
+                currency: "Currency:",
+                totalAssets: "Total Assets:",
+                save: "Save Portfolio",
+                goalTitle: "🎯 Set Financial Goal",
+                goalName: "Goal Name",
+                targetAmount: "Target Amount",
+                targetDate: "Target Date",
+                saveGoal: "Save Goal"
+            },
             createFund: {
                 title: "✨ Create New Group",
                 steps: {
@@ -878,6 +903,7 @@ const translations = {
                     members: "Members",
                     mascot: "Mascot",
                     budget: "Budget",
+                    portfolio: "Portfolio",
                     manage: "Manage"
                 },
                 info: {
@@ -2271,6 +2297,31 @@ const translations = {
                 save: "Guardar Presupuesto",
                 tipDefault: "Configura límites por categoría para rastrear tus hábitos de gasto."
             },
+            // Investment Portfolio
+            portfolio: {
+                title: "📈 Portafolio de Inversiones",
+                subtitle: "Rastrea y planifica tus inversiones",
+                edit: "Editar",
+                netWorth: "Patrimonio Total",
+                trackProgress: "Rastrea tu patrimonio a lo largo del tiempo",
+                distribution: "Distribución de Activos",
+                yourAssets: "Tus Activos",
+                noAssets: "Aún no has agregado activos",
+                addFirst: "Agregar Primer Activo",
+                goals: "Metas Financieras",
+                addGoal: "Agregar Meta",
+                tipDefault: "Diversifica tus inversiones para reducir el riesgo.",
+                setupTitle: "💼 Gestionar Activos",
+                setupIntro: "Agrega tus inversiones para rastrear tu portafolio.",
+                currency: "Moneda:",
+                totalAssets: "Activos Totales:",
+                save: "Guardar Portafolio",
+                goalTitle: "🎯 Establecer Meta Financiera",
+                goalName: "Nombre de la Meta",
+                targetAmount: "Monto Objetivo",
+                targetDate: "Fecha Objetivo",
+                saveGoal: "Guardar Meta"
+            },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",
                 steps: {
@@ -2371,6 +2422,7 @@ const translations = {
                     members: "Miembros",
                     mascot: "Mascota",
                     budget: "Presupuesto",
+                    portfolio: "Portafolio",
                     manage: "Gestionar"
                 },
                 info: {
