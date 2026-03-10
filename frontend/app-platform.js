@@ -1776,6 +1776,19 @@ async function renderPersonalColonyCard(fund, container) {
     const balance = fund.balance || 0;
     const expenses = fund.proposals || 0;
     
+    // Interactive onboarding content
+    const onboardingSteps = currentLang === 'es' ? [
+        { icon: '🐜', title: 'Tu Colonia Personal', desc: 'Un espacio privado donde solo tú gestionas tus finanzas' },
+        { icon: '💰', title: 'Registra Gastos', desc: 'Añade tus gastos diarios y categorízalos automáticamente' },
+        { icon: '📊', title: 'Presupuestos', desc: 'Crea límites por categoría y recibe alertas si te pasas' },
+        { icon: '📈', title: 'Portfolio', desc: 'Registra tus inversiones y ve crecer tu patrimonio' }
+    ] : [
+        { icon: '🐜', title: 'Your Personal Colony', desc: 'A private space where only you manage your finances' },
+        { icon: '💰', title: 'Track Expenses', desc: 'Add daily expenses and auto-categorize them' },
+        { icon: '📊', title: 'Budgets', desc: 'Set limits per category and get alerts when exceeded' },
+        { icon: '📈', title: 'Portfolio', desc: 'Track investments and watch your wealth grow' }
+    ];
+    
     container.innerHTML = `
         <div class="personal-colony-hero" onclick="openFund('${fund.fundAddress}')">
             <div class="personal-colony-bg">
@@ -1786,6 +1799,11 @@ async function renderPersonalColonyCard(fund, container) {
                     <span class="particle">✨</span>
                 </div>
             </div>
+            
+            <!-- Help button -->
+            <button class="colony-help-btn" onclick="event.stopPropagation(); toggleColonyOnboarding();" title="${currentLang === 'es' ? '¿Cómo funciona?' : 'How it works?'}">
+                <span class="help-icon">?</span>
+            </button>
             
             <div class="personal-colony-content">
                 <div class="colony-mascot-container">
@@ -1825,7 +1843,59 @@ async function renderPersonalColonyCard(fund, container) {
                 </div>
             </div>
         </div>
+        
+        <!-- Interactive Onboarding Section -->
+        <div id="colonyOnboarding" class="colony-onboarding" style="display: none;">
+            <div class="onboarding-header">
+                <div class="onboarding-ants">
+                    <span class="walking-ant" style="--delay: 0s;">🐜</span>
+                    <span class="walking-ant" style="--delay: 0.3s;">🐜</span>
+                    <span class="walking-ant" style="--delay: 0.6s;">🐜</span>
+                </div>
+                <h3>${currentLang === 'es' ? '¿Cómo funciona tu Colonia?' : 'How does your Colony work?'}</h3>
+                <button class="onboarding-close" onclick="toggleColonyOnboarding()">✕</button>
+            </div>
+            
+            <div class="onboarding-steps">
+                ${onboardingSteps.map((step, idx) => `
+                    <div class="onboarding-step" style="--step-delay: ${idx * 0.1}s;">
+                        <div class="step-icon">${step.icon}</div>
+                        <div class="step-content">
+                            <h4>${step.title}</h4>
+                            <p>${step.desc}</p>
+                        </div>
+                        <div class="step-ant">🐜</div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="onboarding-footer">
+                <div class="ant-trail">
+                    ${Array(8).fill(0).map((_, i) => `<span class="trail-ant" style="--i: ${i};">🐜</span>`).join('')}
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="toggleColonyOnboarding(); openFund('${fund.fundAddress}');">
+                    ${currentLang === 'es' ? '¡Empezar ahora!' : "Let's start!"}
+                </button>
+            </div>
+        </div>
     `;
+}
+
+/**
+ * Toggle colony onboarding section
+ */
+function toggleColonyOnboarding() {
+    const onboarding = document.getElementById('colonyOnboarding');
+    if (onboarding) {
+        const isVisible = onboarding.style.display !== 'none';
+        onboarding.style.display = isVisible ? 'none' : 'block';
+        
+        // Animate in if showing
+        if (!isVisible) {
+            onboarding.classList.add('onboarding-animate-in');
+            setTimeout(() => onboarding.classList.remove('onboarding-animate-in'), 500);
+        }
+    }
 }
 
 function createFundCard(fund) {
