@@ -16379,6 +16379,42 @@ header,
   margin-bottom: 1.25rem;
 }
 
+.distribution-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.distribution-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.distribution-total {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.currency-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.5rem;
+  background: rgba(102, 126, 234, 0.15);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  letter-spacing: 0.02em;
+}
+
 .portfolio-distribution h4 {
   margin: 0 0 1rem 0;
   font-size: 0.95rem;
@@ -16851,6 +16887,11 @@ header,
 [data-theme="light"] .portfolio-distribution {
   background: #fff;
   border-color: #e5e7eb;
+}
+
+[data-theme="light"] .currency-badge {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.25);
 }
 
 [data-theme="light"] .portfolio-bar-track {

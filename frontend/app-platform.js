@@ -4176,6 +4176,16 @@ async function loadPersonalPortfolio(groupData) {
     // Render distribution chart (horizontal bars)
     const chartEl = document.getElementById('portfolioChart');
     const legendEl = document.getElementById('portfolioLegend');
+    const distributionTotalEl = document.getElementById('distributionTotal');
+    
+    // Show currency and total in distribution header
+    if (distributionTotalEl) {
+        if (hasAssets) {
+            distributionTotalEl.innerHTML = `<span class="currency-badge">${savedCurrency}</span> ${currencySymbol}${totalNetWorth.toLocaleString()}`;
+        } else {
+            distributionTotalEl.textContent = '';
+        }
+    }
     
     if (chartEl && legendEl && hasAssets) {
         let chartHtml = '<div class="portfolio-bars">';
