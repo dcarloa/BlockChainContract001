@@ -16311,7 +16311,7 @@ header,
    ============================================ */
 
 .portfolio-section {
-  padding: 0;
+  padding: 1.25rem;
 }
 
 .portfolio-header {
@@ -16919,6 +16919,10 @@ header,
 
 /* Mobile - Portfolio */
 @media (max-width: 480px) {
+  .portfolio-section {
+    padding: 1rem;
+  }
+  
   .portfolio-title-row {
     flex-direction: row;
     align-items: center;
