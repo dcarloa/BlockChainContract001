@@ -16919,6 +16919,21 @@ header,
 
 /* Mobile - Portfolio */
 @media (max-width: 480px) {
+  .portfolio-title-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .portfolio-title-row h3 {
+    font-size: 1rem;
+  }
+  
+  .portfolio-title-row .btn-sm {
+    padding: 0.25rem 0.625rem;
+    font-size: 0.8rem;
+  }
+  
   .networth-amount {
     font-size: 1.75rem;
   }
@@ -16928,15 +16943,97 @@ header,
     border-radius: 12px;
   }
   
+  .portfolio-distribution {
+    padding: 0.875rem;
+  }
+  
+  .portfolio-distribution h4 {
+    font-size: 0.9rem;
+  }
+  
+  .portfolio-legend {
+    gap: 0.5rem;
+  }
+  
+  .legend-item {
+    font-size: 0.75rem;
+  }
+  
   .portfolio-asset-item {
     padding: 0.625rem;
+  }
+  
+  .asset-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+  
+  .asset-name {
+    font-size: 0.85rem;
+  }
+  
+  .asset-amount {
+    font-size: 0.9rem;
+  }
+  
+  .portfolio-goals h4 {
+    font-size: 0.9rem;
+  }
+  
+  .portfolio-goals .btn-sm {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .portfolio-goal-item {
+    padding: 0.75rem;
+  }
+  
+  .goal-name {
+    font-size: 0.85rem;
+  }
+  
+  .portfolio-tips {
+    padding: 0.75rem;
+  }
+  
+  .portfolio-tips .tip-text {
+    font-size: 0.8rem;
+  }
+  
+  .portfolio-empty {
+    padding: 1.5rem 1rem;
+  }
+  
+  .portfolio-empty .empty-icon {
+    font-size: 2rem;
   }
   
   .portfolio-setup-assets {
     max-height: 260px;
   }
   
+  .portfolio-setup-item {
+    padding: 0.625rem 0.75rem;
+  }
+  
+  .portfolio-setup-label .category-name {
+    font-size: 0.85rem;
+  }
+  
   .portfolio-input {
     width: 85px;
+    font-size: 0.9rem;
+  }
+  
+  .portfolio-modal {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .goal-modal {
+    max-width: 100%;
   }
 }
