@@ -42,7 +42,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=5.1">
+    <link rel="stylesheet" href="styles-platform.css?v=5.2">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.2">
@@ -2223,6 +2223,21 @@ Simple, fast, and free.</p>
                                 <small class="field-hint">Helps with analytics and expense tracking</small>
                             </div>
 
+                            <!-- Track in Budget Toggle (Personal Colony only) -->
+                            <div id="trackInBudgetField" class="form-field budget-toggle-field" style="display: none;">
+                                <label class="toggle-switch-row">
+                                    <span class="toggle-label">
+                                        <span class="toggle-icon">📊</span>
+                                        <span class="toggle-text" data-i18n="app.modals.addExpense.trackInBudget">Track in Budget</span>
+                                    </span>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="trackInBudget" name="trackInBudget" checked>
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                </label>
+                                <small class="field-hint toggle-hint" data-i18n="app.modals.addExpense.trackInBudgetHint">This expense will count towards your monthly budget limit</small>
+                            </div>
+
                             <div class="form-field">
                                 <label class="form-label" data-i18n="app.modals.addExpense.splitBetweenLabel">Split between *</label>
                                 <div class="info-box" style="margin-bottom: 0.75rem; background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); padding: 0.75rem;">
@@ -2637,7 +2652,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.7"></script>
     <script src="mascot-system.js?v=1.9"></script>
-    <script src="app-platform.js?v=5.1"></script>
+    <script src="app-platform.js?v=5.2"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)

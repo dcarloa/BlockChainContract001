@@ -3812,6 +3812,9 @@ async function loadPersonalBudget(groupData) {
     
     if (groupData.expenses) {
         Object.values(groupData.expenses).forEach(expense => {
+            // Skip expenses marked as not tracking in budget
+            if (expense.trackInBudget === false) return;
+            
             const timestamp = expense.recordedAt || expense.timestamp || 0;
             if (timestamp >= startOfMonth) {
                 const category = (expense.category || 'other').toLowerCase();
@@ -7649,6 +7652,15 @@ function showAddExpenseModal() {
             formTitle.textContent = currentLang === 'es' ? 'Gasto Personal' : 'Personal Expense';
         }
         
+        // Show "Track in Budget" toggle for personal colony
+        const trackInBudgetField = document.getElementById('trackInBudgetField');
+        if (trackInBudgetField) {
+            trackInBudgetField.style.display = 'block';
+            // Reset toggle to checked by default
+            const toggleInput = document.getElementById('trackInBudget');
+            if (toggleInput) toggleInput.checked = true;
+        }
+        
         modal.classList.add('personal-colony-mode');
     } else {
         // Show fields for regular groups
@@ -7656,6 +7668,12 @@ function showAddExpenseModal() {
         if (splitBetweenField) splitBetweenField.style.display = '';
         if (categoryField) {
             categoryField.classList.remove('personal-colony-category');
+        }
+        
+        // Hide "Track in Budget" toggle for regular groups
+        const trackInBudgetField = document.getElementById('trackInBudgetField');
+        if (trackInBudgetField) {
+            trackInBudgetField.style.display = 'none';
         }
         
         // Reset modal title
@@ -8163,6 +8181,13 @@ async function handleExpenseSubmission(event) {
         // Get category from form
         const categoryElement = document.getElementById('expenseCategory');
         const category = categoryElement ? categoryElement.value : 'other';
+        
+        // Check if expense should be tracked in budget (Personal Colony only)
+        let trackInBudget = true; // Default to true
+        if (isPersonalColony) {
+            const trackInBudgetCheckbox = document.getElementById('trackInBudget');
+            trackInBudget = trackInBudgetCheckbox ? trackInBudgetCheckbox.checked : true;
+        }
 
         // Create expense object
         const expenseInfo = {
@@ -8176,7 +8201,8 @@ async function handleExpenseSubmission(event) {
             paidBy,
             paidByName,
             currency: currency || 'USD',
-            isPersonalExpense: isPersonalColony // Flag for personal expenses
+            isPersonalExpense: isPersonalColony, // Flag for personal expenses
+            trackInBudget: trackInBudget // Whether to count in budget
         };
 
         // Set current group ID for mode manager

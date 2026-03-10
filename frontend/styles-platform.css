@@ -6536,6 +6536,50 @@ header,
   border-color: rgba(139, 92, 246, 0.15);
 }
 
+/* Budget Toggle Field */
+.budget-toggle-field {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.1) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 1rem !important;
+  margin-bottom: 1rem;
+}
+
+.toggle-switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggle-icon {
+  font-size: 1.25rem;
+}
+
+.toggle-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.toggle-hint {
+  display: block;
+  margin-top: 0.5rem;
+  padding-left: 2rem;
+  color: rgba(16, 185, 129, 0.8);
+}
+
+[data-theme="light"] .budget-toggle-field {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(52, 211, 153, 0.08) 100%);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
 .sign-in-content {
   padding: var(--spacing-md);
 }
