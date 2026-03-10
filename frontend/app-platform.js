@@ -1633,19 +1633,23 @@ function displayFunds() {
 function filterAndSortGroups() {
     let filteredFunds = [...allUserGroups];
     
+    // Separate personal colony from regular groups
+    const personalColony = filteredFunds.find(f => f.fundAddress && f.fundAddress.startsWith('grp_personal_'));
+    let regularFunds = filteredFunds.filter(f => !f.fundAddress || !f.fundAddress.startsWith('grp_personal_'));
+    
     // Apply category filter
     switch(currentFilter) {
         case 'created':
-            filteredFunds = filteredFunds.filter(f => f.isCreator);
+            regularFunds = regularFunds.filter(f => f.isCreator);
             break;
         case 'participating':
-            filteredFunds = filteredFunds.filter(f => f.isParticipant);
+            regularFunds = regularFunds.filter(f => f.isParticipant);
             break;
         case 'simple':
-            filteredFunds = filteredFunds.filter(f => f.mode === 'simple');
+            regularFunds = regularFunds.filter(f => f.mode === 'simple');
             break;
         case 'blockchain':
-            filteredFunds = filteredFunds.filter(f => f.mode === 'blockchain');
+            regularFunds = regularFunds.filter(f => f.mode === 'blockchain');
             break;
     }
     
@@ -1653,7 +1657,7 @@ function filterAndSortGroups() {
     const searchInput = document.getElementById('groupSearchInput');
     if (searchInput && searchInput.value.trim()) {
         const searchTerm = searchInput.value.trim().toLowerCase();
-        filteredFunds = filteredFunds.filter(fund => 
+        regularFunds = regularFunds.filter(fund => 
             fund.fundName.toLowerCase().includes(searchTerm) ||
             (fund.description && fund.description.toLowerCase().includes(searchTerm))
         );
@@ -1665,32 +1669,43 @@ function filterAndSortGroups() {
     
     switch(sortOrder) {
         case 'recent':
-            filteredFunds.sort((a, b) => {
+            regularFunds.sort((a, b) => {
                 const aTime = Number(a.createdAt || 0);
                 const bTime = Number(b.createdAt || 0);
                 return bTime - aTime;
             });
             break;
         case 'oldest':
-            filteredFunds.sort((a, b) => {
+            regularFunds.sort((a, b) => {
                 const aTime = Number(a.createdAt || 0);
                 const bTime = Number(b.createdAt || 0);
                 return aTime - bTime;
             });
             break;
         case 'name-asc':
-            filteredFunds.sort((a, b) => a.fundName.localeCompare(b.fundName));
+            regularFunds.sort((a, b) => a.fundName.localeCompare(b.fundName));
             break;
         case 'name-desc':
-            filteredFunds.sort((a, b) => b.fundName.localeCompare(a.fundName));
+            regularFunds.sort((a, b) => b.fundName.localeCompare(a.fundName));
             break;
+    }
+    
+    // Render Personal Colony in dedicated section
+    const personalColonySection = document.getElementById('personalColonySection');
+    if (personalColonySection) {
+        if (personalColony) {
+            personalColonySection.style.display = 'block';
+            renderPersonalColonyCard(personalColony, personalColonySection);
+        } else {
+            personalColonySection.style.display = 'none';
+        }
     }
     
     const groupsGrid = document.getElementById('groupsGrid');
     const emptyState = document.getElementById('emptyState');
     
     
-    if (filteredFunds.length === 0) {
+    if (regularFunds.length === 0 && !personalColony) {
         if (groupsGrid) {
             groupsGrid.innerHTML = '';
             groupsGrid.style.display = 'none';
@@ -1704,7 +1719,7 @@ function filterAndSortGroups() {
         // Filter out hidden funds from localStorage
         const hiddenFunds = JSON.parse(localStorage.getItem('hiddenFunds') || '[]');
         
-        const visibleFunds = filteredFunds.filter(fund => {
+        const visibleFunds = regularFunds.filter(fund => {
             const isHidden = hiddenFunds.includes(fund.fundAddress.toLowerCase());
             if (isHidden) {
             }
@@ -1717,7 +1732,8 @@ function filterAndSortGroups() {
                 groupsGrid.innerHTML = '';
                 groupsGrid.style.display = 'none';
             }
-            if (emptyState) emptyState.style.display = 'flex';
+            // Only show empty state if no personal colony either
+            if (!personalColony && emptyState) emptyState.style.display = 'flex';
         } else {
             if (groupsGrid) {
                 groupsGrid.style.display = 'grid';
@@ -1737,6 +1753,81 @@ function filterFunds() {
     filterAndSortGroups();
 }
 
+/**
+ * Render Personal Colony in dedicated hero section with mascot
+ */
+async function renderPersonalColonyCard(fund, container) {
+    const currentLang = getCurrentLanguage();
+    
+    // Get mascot data for the personal colony
+    let mascotHtml = '<div class="colony-mascot-default">🐜</div>';
+    
+    try {
+        if (typeof getMascotData === 'function') {
+            const mascotData = await getMascotData(fund.fundAddress);
+            if (mascotData && typeof renderMascotPreview === 'function') {
+                mascotHtml = renderMascotPreview(mascotData, 'small');
+            }
+        }
+    } catch (e) {
+        console.log('Mascot not available for personal colony');
+    }
+    
+    const balance = fund.balance || 0;
+    const expenses = fund.proposals || 0;
+    
+    container.innerHTML = `
+        <div class="personal-colony-hero" onclick="openFund('${fund.fundAddress}')">
+            <div class="personal-colony-bg">
+                <div class="colony-gradient"></div>
+                <div class="colony-particles">
+                    <span class="particle">✨</span>
+                    <span class="particle">⭐</span>
+                    <span class="particle">✨</span>
+                </div>
+            </div>
+            
+            <div class="personal-colony-content">
+                <div class="colony-mascot-container">
+                    ${mascotHtml}
+                </div>
+                
+                <div class="colony-info">
+                    <div class="colony-badge">
+                        <span class="badge-icon">🏠</span>
+                        <span class="badge-text">${currentLang === 'es' ? 'Personal' : 'Personal'}</span>
+                    </div>
+                    <h2 class="colony-title">${currentLang === 'es' ? 'Mi Colonia' : 'My Colony'}</h2>
+                    <p class="colony-subtitle">${currentLang === 'es' ? 'Finanzas personales y presupuesto' : 'Personal finances & budget'}</p>
+                </div>
+                
+                <div class="colony-stats-row">
+                    <div class="colony-stat-item">
+                        <span class="colony-stat-value">$${balance.toLocaleString()}</span>
+                        <span class="colony-stat-label">${currentLang === 'es' ? 'Este mes' : 'This month'}</span>
+                    </div>
+                    <div class="colony-stat-divider"></div>
+                    <div class="colony-stat-item">
+                        <span class="colony-stat-value">${expenses}</span>
+                        <span class="colony-stat-label">${currentLang === 'es' ? 'Gastos' : 'Expenses'}</span>
+                    </div>
+                </div>
+                
+                <div class="colony-features">
+                    <span class="feature-tag">📊 ${currentLang === 'es' ? 'Presupuesto' : 'Budget'}</span>
+                    <span class="feature-tag">📈 ${currentLang === 'es' ? 'Portfolio' : 'Portfolio'}</span>
+                    <span class="feature-tag">🎯 ${currentLang === 'es' ? 'Metas' : 'Goals'}</span>
+                </div>
+                
+                <div class="colony-cta">
+                    <span class="cta-text">${currentLang === 'es' ? 'Gestionar mis finanzas' : 'Manage my finances'}</span>
+                    <span class="cta-arrow">→</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 function createFundCard(fund) {
     const currentLang = getCurrentLanguage();
     const t = translations[currentLang];
@@ -1753,42 +1844,9 @@ function createFundCard(fund) {
     const typeName = t.app.fundDetail.badges[typeKey];
     const isInactive = !fund.isActive;
     
-    // Personal colony gets special card
+    // Personal colony is now rendered in dedicated section - skip here
     if (isPersonalColony) {
-        return `
-            <div class="fund-card personal-colony-card" onclick="openFund('${fund.fundAddress}')">
-                <div class="personal-colony-glow"></div>
-                <div class="fund-card-content">
-                    <div class="personal-colony-header">
-                        <div class="personal-colony-icon">
-                            <span class="colony-ant">🐜</span>
-                            <span class="colony-sparkle">✨</span>
-                        </div>
-                        <div class="personal-colony-title">
-                            <h3>${currentLang === 'es' ? 'Mi Colonia Personal' : 'My Personal Colony'}</h3>
-                            <span class="personal-colony-subtitle">${currentLang === 'es' ? 'Gastos solo para ti' : 'Expenses just for you'}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="personal-colony-stats">
-                        <div class="personal-colony-stat">
-                            <span class="stat-value">$${fund.balance || 0}</span>
-                            <span class="stat-label">${currentLang === 'es' ? 'Este Mes' : 'This Month'}</span>
-                        </div>
-                        <div class="personal-colony-divider"></div>
-                        <div class="personal-colony-stat">
-                            <span class="stat-value">${fund.proposals || 0}</span>
-                            <span class="stat-label">${currentLang === 'es' ? 'Gastos' : 'Expenses'}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="personal-colony-cta">
-                        <span class="cta-icon">→</span>
-                        <span class="cta-text">${currentLang === 'es' ? 'Gestionar mis gastos' : 'Manage my expenses'}</span>
-                    </div>
-                </div>
-            </div>
-        `;
+        return '';
     }
     
     return `
