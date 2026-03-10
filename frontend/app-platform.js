@@ -20,6 +20,25 @@ const COLONY_MILESTONES = [
 ];
 
 // ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+/**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(text) {
+    if (!text) return '';
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return String(text).replace(/[&<>"']/g, char => map[char]);
+}
+
+// ============================================
 // ABI CONTRACTS
 // ============================================
 
