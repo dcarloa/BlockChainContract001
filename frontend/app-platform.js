@@ -7619,9 +7619,62 @@ function showAddExpenseModal() {
         console.error('Modal not found');
         return;
     }
-
-    // Populate members
-    populateExpenseMembers();
+    
+    // Detect if this is a Personal Colony
+    const isPersonalColony = currentFund && currentFund.fundId && currentFund.fundId.startsWith('grp_personal_');
+    
+    // Get form field containers
+    const paidByField = document.getElementById('expensePaidBy')?.closest('.form-field');
+    const splitBetweenField = document.getElementById('expenseSplitBetween')?.closest('.form-field');
+    const categoryField = document.getElementById('expenseCategory')?.closest('.form-field');
+    const currentLang = getCurrentLanguage();
+    
+    if (isPersonalColony) {
+        // Hide Paid By and Split Between for personal colony
+        if (paidByField) paidByField.style.display = 'none';
+        if (splitBetweenField) splitBetweenField.style.display = 'none';
+        
+        // Make category field more prominent for personal expenses
+        if (categoryField) {
+            categoryField.classList.add('personal-colony-category');
+        }
+        
+        // Update modal title
+        const modalTitle = modal.querySelector('.modal-header h2');
+        const formTitle = modal.querySelector('.form-header-clean h3');
+        if (modalTitle) {
+            modalTitle.innerHTML = currentLang === 'es' ? '💰 Agregar Gasto Personal' : '💰 Add Personal Expense';
+        }
+        if (formTitle) {
+            formTitle.textContent = currentLang === 'es' ? 'Gasto Personal' : 'Personal Expense';
+        }
+        
+        modal.classList.add('personal-colony-mode');
+    } else {
+        // Show fields for regular groups
+        if (paidByField) paidByField.style.display = '';
+        if (splitBetweenField) splitBetweenField.style.display = '';
+        if (categoryField) {
+            categoryField.classList.remove('personal-colony-category');
+        }
+        
+        // Reset modal title
+        const modalTitle = modal.querySelector('.modal-header h2');
+        const formTitle = modal.querySelector('.form-header-clean h3');
+        if (modalTitle) {
+            modalTitle.setAttribute('data-i18n', 'app.modals.addExpense.titleIcon');
+            modalTitle.innerHTML = '➕ Add Expense';
+        }
+        if (formTitle) {
+            formTitle.setAttribute('data-i18n', 'app.modals.addExpense.title');
+            formTitle.textContent = 'Add Expense';
+        }
+        
+        modal.classList.remove('personal-colony-mode');
+        
+        // Populate members (only for regular groups)
+        populateExpenseMembers();
+    }
 
     // Set default date to today
     const dateInput = document.querySelector('#addExpenseForm input[type="date"]');
@@ -8030,6 +8083,8 @@ async function handleExpenseSubmission(event) {
     const form = event.target;
     const formData = new FormData(form);
 
+    // Detect if this is a Personal Colony
+    const isPersonalColony = currentFund && currentFund.fundId && currentFund.fundId.startsWith('grp_personal_');
 
     try {
         // Get form values
@@ -8040,29 +8095,56 @@ async function handleExpenseSubmission(event) {
         const notes = formData.get('notes') || '';
         const currency = formData.get('currency') || 'USD';
 
-
-        // Get selected members who paid (can be multiple)
-        const paidBy = Array.from(form.querySelectorAll('input[name="paidBy"]:checked'))
-            .map(cb => cb.value);
-
-        // Get selected members for split with share multipliers
-        const splitItems = document.querySelectorAll('.member-share-item');
-        const splitBetween = [];
-        splitItems.forEach(item => {
-            const checkbox = item.querySelector('input[type="checkbox"]');
-            if (checkbox && checkbox.checked) {
-                const uid = checkbox.value;
-                const shares = parseInt(item.dataset.shares) || 1;
-                // Add the member multiple times based on shares
-                for (let i = 0; i < shares; i++) {
-                    splitBetween.push(uid);
-                }
+        let paidBy, splitBetween, paidByName;
+        
+        if (isPersonalColony) {
+            // For Personal Colony: user is both payer and sole participant
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                showToast('You must be signed in to add expenses', 'error');
+                return;
             }
-        });
+            paidBy = [user.uid];
+            splitBetween = [user.uid];
+            paidByName = user.displayName || user.email || 'You';
+        } else {
+            // For regular groups: get from form
+            // Get selected members who paid (can be multiple)
+            paidBy = Array.from(form.querySelectorAll('input[name="paidBy"]:checked'))
+                .map(cb => cb.value);
+
+            // Get selected members for split with share multipliers
+            const splitItems = document.querySelectorAll('.member-share-item');
+            splitBetween = [];
+            splitItems.forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    const uid = checkbox.value;
+                    const shares = parseInt(item.dataset.shares) || 1;
+                    // Add the member multiple times based on shares
+                    for (let i = 0; i < shares; i++) {
+                        splitBetween.push(uid);
+                    }
+                }
+            });
+            
+            // Get paid by names (can be multiple)
+            const paidByNames = paidBy.map(uid => {
+                const member = currentFund.members[uid];
+                return member?.name || member?.email || uid;
+            });
+            paidByName = paidByNames.join(' & ');
+        }
 
         // Validate
-        if (!description || !amount || paidBy.length === 0 || splitBetween.length === 0) {
-            showToast('Please fill all required fields', 'error');
+        if (!description || !amount) {
+            showToast('Please fill description and amount', 'error');
+            return;
+        }
+        
+        // Only validate paidBy/splitBetween for regular groups
+        if (!isPersonalColony && (paidBy.length === 0 || splitBetween.length === 0)) {
+            showToast('Please select who paid and who to split with', 'error');
             return;
         }
 
@@ -8077,13 +8159,6 @@ async function handleExpenseSubmission(event) {
             showToast('You must be signed in to add expenses', 'error');
             return;
         }
-
-        // Get paid by names (can be multiple)
-        const paidByNames = paidBy.map(uid => {
-            const member = currentFund.members[uid];
-            return member?.name || member?.email || uid;
-        });
-        const paidByName = paidByNames.join(' & ');
 
         // Get category from form
         const categoryElement = document.getElementById('expenseCategory');
@@ -8100,7 +8175,8 @@ async function handleExpenseSubmission(event) {
             date: date || new Date().toISOString().split('T')[0], // Include date
             paidBy,
             paidByName,
-            currency: currency || 'USD'
+            currency: currency || 'USD',
+            isPersonalExpense: isPersonalColony // Flag for personal expenses
         };
 
         // Set current group ID for mode manager
@@ -8119,6 +8195,14 @@ async function handleExpenseSubmission(event) {
         // Refresh expense list and balances
         await loadSimpleModeExpenses();
         await loadSimpleModeBalances();
+        
+        // For personal colony, also refresh budget view
+        if (isPersonalColony) {
+            const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundId}`);
+            if (groupData) {
+                await loadPersonalBudget(groupData);
+            }
+        }
         
         // Refresh group info to update total balance
         await loadSimpleModeDetailView();
