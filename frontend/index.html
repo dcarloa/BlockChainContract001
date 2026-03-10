@@ -937,6 +937,72 @@
         </div>
     </section>
 
+    <!-- Personal Finance Section (NEW) -->
+    <section id="personal-finance" class="personal-finance-section" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 5rem 0;">
+        <div class="container">
+            <div class="section-header" style="text-align: center; color: white; margin-bottom: 3rem;">
+                <span style="background: rgba(255,255,255,0.2); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; display: inline-block; margin-bottom: 1rem;" data-i18n="landing.personal.badge">✨ NEW: Personal Finance</span>
+                <h2 class="section-title" style="color: white; font-size: 2.5rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.title">Your Personal Colony</h2>
+                <p class="section-subtitle" style="color: rgba(255,255,255,0.9); font-size: 1.2rem; max-width: 600px; margin: 0 auto;" data-i18n="landing.personal.subtitle">Track your own expenses, set budgets, and plan your investments — all in one place.</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1100px; margin: 0 auto;">
+                <!-- Personal Expenses -->
+                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">🐜</div>
+                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.expenses.title">Personal Colony</h3>
+                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.expenses.desc">Track your daily expenses in a private space. Categories, dates, and notes. Just for you.</p>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🍔 Food</span>
+                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🚗 Transport</span>
+                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🏠 Housing</span>
+                    </div>
+                </div>
+                
+                <!-- Monthly Budgets -->
+                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">💰</div>
+                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.budget.title">Monthly Budgets</h3>
+                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.budget.desc">Set limits by category. Visual progress bars. Alerts when you're close to the limit.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <div style="background: #e5e7eb; border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 0.5rem;">
+                            <div style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: 65%; border-radius: 8px;"></div>
+                        </div>
+                        <span style="font-size: 0.85rem; color: #059669; font-weight: 600;">65% of budget used</span>
+                    </div>
+                </div>
+                
+                <!-- Investment Portfolio -->
+                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">📈</div>
+                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.portfolio.title">Investment Portfolio</h3>
+                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.portfolio.desc">Track stocks, crypto, real estate, and more. Set financial goals and watch your progress.</p>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                        <span style="background: #eff6ff; color: #3b82f6; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">📊 Stocks</span>
+                        <span style="background: #fef3c7; color: #d97706; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">₿ Crypto</span>
+                        <span style="background: #ecfdf5; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🏠 Real Estate</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="app.html" class="btn btn-large" onclick="trackCTA('personal_finance', 'start_personal')" style="background: white; color: #059669; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <span data-i18n="landing.personal.cta">Start Your Personal Colony →</span>
+                </a>
+                <p style="margin-top: 0.75rem; font-size: 0.9rem; color: rgba(255,255,255,0.9);" data-i18n="landing.personal.ctaSub">Automatically created when you sign up</p>
+            </div>
+        </div>
+    </section>
+    
+    <style>
+        @media (max-width: 768px) {
+            #personal-finance > div > div:nth-child(2) {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+        }
+    </style>
+
     <!-- Benefits Section -->
     <section id="benefits" class="benefits-redesign" style="background: var(--bg-primary); padding: 5rem 0;">
         <div class="container">

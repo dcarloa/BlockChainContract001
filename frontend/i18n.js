@@ -287,6 +287,26 @@ const translations = {
                     desc: "Subtle haptic feedback on mobile devices, smooth animations, and satisfying micro-interactions. Every tap feels intentional and rewarding."
                 }
             },
+            // Personal Finance Section (NEW)
+            personal: {
+                badge: "✨ NEW: Personal Finance",
+                title: "Your Personal Colony",
+                subtitle: "Track your own expenses, set budgets, and plan your investments — all in one place.",
+                expenses: {
+                    title: "Personal Colony",
+                    desc: "Track your daily expenses in a private space. Categories, dates, and notes. Just for you."
+                },
+                budget: {
+                    title: "Monthly Budgets",
+                    desc: "Set limits by category. Visual progress bars. Alerts when you're close to the limit."
+                },
+                portfolio: {
+                    title: "Investment Portfolio",
+                    desc: "Track stocks, crypto, real estate, and more. Set financial goals and watch your progress."
+                },
+                cta: "Start Your Personal Colony →",
+                ctaSub: "Automatically created when you sign up"
+            },
             benefits: {
                 title: "🐜 Why Colonies Choose Ant Pool",
                 subtitle: "Built different. Built better. Built for your colony.",
@@ -1805,6 +1825,26 @@ const translations = {
                     badge: "¡Siéntelo!",
                     desc: "Retroalimentación háptica sutil en dispositivos móviles, animaciones fluidas y micro-interacciones satisfactorias. Cada toque se siente intencional y gratificante."
                 }
+            },
+            // Sección de Finanzas Personales (NUEVO)
+            personal: {
+                badge: "✨ NUEVO: Finanzas Personales",
+                title: "Tu Colonia Personal",
+                subtitle: "Rastrea tus gastos, establece presupuestos y planifica tus inversiones — todo en un solo lugar.",
+                expenses: {
+                    title: "Colonia Personal",
+                    desc: "Rastrea tus gastos diarios en un espacio privado. Categorías, fechas y notas. Solo para ti."
+                },
+                budget: {
+                    title: "Presupuestos Mensuales",
+                    desc: "Establece límites por categoría. Barras de progreso visuales. Alertas cuando estés cerca del límite."
+                },
+                portfolio: {
+                    title: "Portafolio de Inversiones",
+                    desc: "Rastrea acciones, cripto, bienes raíces y más. Establece metas financieras y observa tu progreso."
+                },
+                cta: "Inicia Tu Colonia Personal →",
+                ctaSub: "Se crea automáticamente cuando te registras"
             },
             benefits: {
                 title: "🐜 Por Qué las Colonias Eligen Ant Pool",
