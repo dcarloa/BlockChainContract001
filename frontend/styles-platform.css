@@ -9123,6 +9123,10 @@ header,
   background: white;
   color: #667eea;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .pwa-install-actions .btn-primary:hover {
@@ -9243,6 +9247,10 @@ header,
     background: white !important;
     color: #667eea !important;
     border: 3px solid white !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
   }
   
   .pwa-install-actions .btn-ghost {
