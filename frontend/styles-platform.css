@@ -9138,6 +9138,10 @@ header,
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .pwa-install-actions .btn-ghost:hover {
@@ -9247,6 +9251,10 @@ header,
     color: white !important;
     border: 3px solid rgba(255, 255, 255, 0.6) !important;
     font-weight: 700 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
   }
 
   .offline-ready-indicator {
