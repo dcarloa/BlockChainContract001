@@ -16449,64 +16449,126 @@ header,
    ============================================= */
 
 .group-overview {
-  padding: 0.5rem 0;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .overview-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  background: linear-gradient(135deg, 
+    rgba(30, 30, 45, 0.8) 0%, 
+    rgba(20, 20, 35, 0.9) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.overview-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), #a78bfa);
+  opacity: 0.6;
+}
+
+.overview-card:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
 }
 
 .overview-card-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .overview-card-header h4 {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
+  letter-spacing: 0.01em;
 }
 
 .overview-icon {
   font-size: 1.25rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
-/* Monthly Stats */
+/* Monthly Stats - This Month Card */
+.overview-monthly {
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.12) 0%, 
+    rgba(118, 75, 162, 0.12) 100%);
+  border-color: rgba(102, 126, 234, 0.25);
+}
+
+.overview-monthly::before {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
 .overview-stats {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
 
 .overview-stat {
   display: flex;
   flex-direction: column;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  text-align: center;
 }
 
 .overview-stat .stat-value {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--primary-color);
+  text-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .overview-stat .stat-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
-  margin-top: 0.125rem;
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
 }
 
-/* Balance Card */
+/* Balance Card - Your Balance */
+.overview-balance {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.1) 0%, 
+    rgba(102, 126, 234, 0.1) 100%);
+  border-color: rgba(139, 92, 246, 0.25);
+}
+
+.overview-balance::before {
+  background: linear-gradient(90deg, #8b5cf6, #667eea);
+}
+
 .overview-balance-display {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
 .balance-amount {
@@ -16516,10 +16578,12 @@ header,
 
 .balance-amount.positive {
   color: #4ade80;
+  text-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
 }
 
 .balance-amount.negative {
   color: #f87171;
+  text-shadow: 0 2px 8px rgba(248, 113, 113, 0.3);
 }
 
 .balance-amount.settled {
@@ -16527,31 +16591,50 @@ header,
 }
 
 .balance-status {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.625rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .balance-status.positive {
-  background: rgba(74, 222, 128, 0.15);
+  background: rgba(74, 222, 128, 0.2);
   color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
 }
 
 .balance-status.negative {
-  background: rgba(248, 113, 113, 0.15);
+  background: rgba(248, 113, 113, 0.2);
   color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
 }
 
 .balance-status.settled {
   background: rgba(156, 163, 175, 0.15);
   color: var(--text-secondary);
+  border: 1px solid rgba(156, 163, 175, 0.2);
 }
 
 .balance-explanation {
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin: 0;
+  padding-left: 0.75rem;
+  font-style: italic;
+}
+
+/* Recent Activity Card */
+.overview-recent {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.08) 0%, 
+    rgba(99, 102, 241, 0.08) 100%);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.overview-recent::before {
+  background: linear-gradient(90deg, #3b82f6, #6366f1);
 }
 
 /* Actions */
@@ -16636,8 +16719,49 @@ header,
 
 /* Light Mode - Group Overview */
 [data-theme="light"] .overview-card {
-  background: #fff;
-  border-color: #e5e7eb;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(249, 250, 251, 0.98) 100%);
+  border-color: rgba(139, 92, 246, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .overview-card::before {
+  opacity: 0.8;
+}
+
+[data-theme="light"] .overview-card:hover {
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.12);
+}
+
+[data-theme="light"] .overview-monthly {
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.08) 0%, 
+    rgba(118, 75, 162, 0.06) 100%);
+}
+
+[data-theme="light"] .overview-balance {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.06) 0%, 
+    rgba(102, 126, 234, 0.05) 100%);
+}
+
+[data-theme="light"] .overview-recent {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.05) 0%, 
+    rgba(99, 102, 241, 0.04) 100%);
+}
+
+[data-theme="light"] .overview-card-header {
+  border-bottom-color: rgba(139, 92, 246, 0.1);
+}
+
+[data-theme="light"] .overview-stat {
+  background: rgba(139, 92, 246, 0.05);
+}
+
+[data-theme="light"] .overview-balance-display {
+  background: rgba(139, 92, 246, 0.05);
 }
 
 [data-theme="light"] .overview-recent-item {
@@ -16654,21 +16778,43 @@ header,
 
 /* Mobile - Group Overview */
 @media (max-width: 480px) {
+  .group-overview {
+    gap: 0.875rem;
+  }
+  
   .overview-card {
-    padding: 0.875rem;
-    border-radius: 10px;
+    padding: 1rem;
+    border-radius: 14px;
+  }
+  
+  .overview-card:hover {
+    transform: none;
+  }
+  
+  .overview-card-header {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.625rem;
   }
   
   .overview-stats {
     gap: 1rem;
   }
   
+  .overview-stat {
+    padding: 0.625rem;
+  }
+  
   .overview-stat .stat-value {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+  }
+  
+  .overview-balance-display {
+    padding: 0.625rem;
   }
   
   .balance-amount {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
   
   .overview-recent-item {
@@ -17865,4 +18011,15 @@ header,
   .goal-modal {
     max-width: 100%;
   }
+}
+
+/* ============================================
+   DARK MODE: Create Button Text Fix
+   ============================================ */
+[data-theme="dark"] #createFundBtn,
+[data-theme="dark"] #createFundBtn *,
+[data-theme="dark"] .action-bar .btn,
+[data-theme="dark"] .action-bar .btn * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }

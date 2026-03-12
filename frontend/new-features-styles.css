@@ -831,13 +831,14 @@
 .amount-input-wrapper {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
+    justify-content: flex-start;
+    gap: 0.5rem;
     background: var(--bg-secondary);
     border: 2px solid var(--border-color);
     border-radius: 16px;
     padding: 0.75rem 1rem;
     transition: all 0.3s ease;
+    width: 100%;
 }
 
 .amount-input-wrapper:focus-within {
@@ -850,11 +851,15 @@
     font-size: 1.75rem;
     font-weight: 700;
     color: #10b981;
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-width: fit-content;
 }
 
 .amount-input-wrapper .amount-input {
     width: 100%;
-    max-width: 150px;
+    min-width: 80px;
+    max-width: 100%;
     border: none;
     background: transparent;
     font-size: 2rem;
@@ -862,6 +867,7 @@
     color: var(--text-primary);
     text-align: left;
     outline: none;
+    flex: 1;
 }
 
 .amount-input-wrapper .amount-input::placeholder {

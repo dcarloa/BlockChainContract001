@@ -31,12 +31,42 @@ let firebaseAuth = null;
 let firebaseDatabase = null;
 let currentUser = null;
 
+// Auth state resolution tracking - prevents demo mode activation before Firebase confirms state
+let authStateResolved = false;
+let authStateResolveCallback = null;
+const authStateReady = new Promise((resolve) => {
+    authStateResolveCallback = resolve;
+});
+
+/**
+ * Check if Firebase auth state has been resolved (first auth event received)
+ * @returns {boolean}
+ */
+function isAuthStateResolved() {
+    return authStateResolved;
+}
+
+/**
+ * Wait for auth state to be resolved
+ * @returns {Promise<Object|null>} User object or null
+ */
+async function waitForAuthState() {
+    return authStateReady;
+}
+
 /**
  * Initialize Firebase services
  * @returns {Promise<boolean>} Success status
  */
 async function initializeFirebase() {
     try {
+        // Skip Firebase initialization if demo mode is requested
+        if (window.__DEMO_MODE_REQUESTED__) {
+            console.log('🎮 Demo mode detected - skipping Firebase initialization');
+            authStateResolved = true; // Mark as resolved since we're not using Firebase
+            if (authStateResolveCallback) authStateResolveCallback(null);
+            return false; // Return false to indicate Firebase is not available
+        }
         
         // Check if Firebase SDK is loaded
         if (typeof firebase === 'undefined') {
@@ -60,6 +90,16 @@ async function initializeFirebase() {
         // Setup auth state listener
         firebaseAuth.onAuthStateChanged((user) => {
             currentUser = user;
+            
+            // Mark auth state as resolved on FIRST callback
+            if (!authStateResolved) {
+                authStateResolved = true;
+                console.log('🔐 Auth state resolved:', user ? user.email : 'no user');
+                if (authStateResolveCallback) {
+                    authStateResolveCallback(user);
+                }
+            }
+            
             if (user) {
                 onFirebaseUserChange(user);
             } else {
@@ -183,6 +223,9 @@ function isAuthenticated() {
     return currentUser !== null;
 }
 
+// Track pending auth state for race condition fix
+let pendingAuthUser = undefined; // undefined = not yet received, null = no user, object = user
+
 /**
  * Callback for auth state changes (to be implemented in app)
  * @param {Object|null} user Current user
@@ -191,6 +234,21 @@ function onFirebaseUserChange(user) {
     // Call the external callback if set
     if (typeof window.FirebaseConfig.onAuthStateChanged === 'function') {
         window.FirebaseConfig.onAuthStateChanged(user);
+    } else {
+        // Callback not ready yet - store for later
+        pendingAuthUser = user;
+        console.log('🔐 Auth state received before callback ready, storing:', user ? user.email : 'null');
+    }
+}
+
+/**
+ * Flush pending auth state to callback (called after callback is set)
+ */
+function flushPendingAuthState() {
+    if (pendingAuthUser !== undefined && typeof window.FirebaseConfig.onAuthStateChanged === 'function') {
+        console.log('🔐 Flushing pending auth state:', pendingAuthUser ? pendingAuthUser.email : 'null');
+        window.FirebaseConfig.onAuthStateChanged(pendingAuthUser);
+        pendingAuthUser = undefined;
     }
 }
 
@@ -322,8 +380,20 @@ async function ensurePersonalColony(user) {
         
         if (existingColony) {
             console.log('🐜 Personal colony already exists:', personalColonyId);
-            // Update user reference
+            // Ensure user references are correct (fix for users who had broken references)
             await updateDb(`users/${user.uid}`, { personalColony: personalColonyId });
+            
+            // Also ensure the group is in user's groups list
+            const userGroupRef = await readDb(`users/${user.uid}/groups/${personalColonyId}`);
+            if (!userGroupRef) {
+                await updateDb(`users/${user.uid}/groups/${personalColonyId}`, {
+                    name: existingColony.name || 'My Colony',
+                    role: 'creator',
+                    joinedAt: existingColony.createdAt || Date.now(),
+                    isPersonal: true
+                });
+                console.log('🔧 Fixed missing user group reference');
+            }
             return personalColonyId;
         }
         
@@ -398,15 +468,13 @@ async function createPersonalColony(user, colonyId) {
     // Write colony to database
     await writeDb(`groups/${colonyId}`, colonyData);
     
-    // Add reference to user's data
-    await updateDb(`users/${user.uid}`, {
-        personalColony: colonyId,
-        [`groups/${colonyId}`]: {
-            name: colonyName,
-            role: 'creator',
-            joinedAt: timestamp,
-            isPersonal: true
-        }
+    // Add reference to user's groups list (separate update for nested path)
+    await updateDb(`users/${user.uid}`, { personalColony: colonyId });
+    await updateDb(`users/${user.uid}/groups/${colonyId}`, {
+        name: colonyName,
+        role: 'creator',
+        joinedAt: timestamp,
+        isPersonal: true
     });
     
     console.log('✅ Personal colony created successfully:', colonyId);
@@ -475,7 +543,10 @@ window.FirebaseConfig = {
     signOut,
     getCurrentUser,
     isAuthenticated,
+    isAuthStateResolved,  // Check if auth state has been resolved
+    waitForAuthState,     // Wait for auth state to be resolved (Promise)
     onAuthStateChanged: null, // Will be set by app
+    flushPendingAuthState, // Call after setting onAuthStateChanged
     getDbRef,
     writeDb,
     updateDb,

@@ -4,9 +4,23 @@
  */
 
 // ============================================
+// IMMEDIATE DEMO MODE DETECTION
+// Must run synchronously before any other scripts
+// ============================================
+(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('demo') === 'true') {
+        // Set global flag immediately
+        window.__DEMO_MODE_REQUESTED__ = true;
+        console.log('🎮 Demo mode requested via URL');
+    }
+})();
+
+// ============================================
 // DEMO MODE STATE
 // ============================================
-let isDemoMode = false;
+let isDemoMode = window.__DEMO_MODE_REQUESTED__ || false;
+let originalTabsHTML = null; // Store original tabs to restore when switching views
 
 // ============================================
 // DEMO DATA - Sample Simple Mode group (NOT blockchain)
@@ -130,6 +144,180 @@ const DEMO_CURRENT_USER = {
 };
 
 // ============================================
+// DEMO PERSONAL COLONY DATA
+// Shows personal finance features to new users
+// ============================================
+const DEMO_PERSONAL_COLONY_DATA = {
+    fundAddress: 'demo-personal-colony',
+    fundName: 'Your Finances',
+    name: 'Personal Colony',
+    description: 'Track your personal budget, investments and goals',
+    icon: '🏠',
+    mode: 'personal',
+    currency: 'USD',
+    primaryCurrency: 'USD',
+    isActive: true,
+    isPersonalColony: true,
+    memberCount: 1,
+    
+    // Demo budget data for current month
+    budget: {
+        'food': {
+            id: 'food',
+            name: 'Food & Dining',
+            emoji: '🍔',
+            limit: 500,
+            spent: 342.50,
+            color: '#f97316'
+        },
+        'transport': {
+            id: 'transport',
+            name: 'Transportation',
+            emoji: '🚗',
+            limit: 200,
+            spent: 85.00,
+            color: '#3b82f6'
+        },
+        'entertainment': {
+            id: 'entertainment',
+            name: 'Entertainment',
+            emoji: '🎬',
+            limit: 150,
+            spent: 127.99,
+            color: '#a855f7'
+        },
+        'shopping': {
+            id: 'shopping',
+            name: 'Shopping',
+            emoji: '🛍️',
+            limit: 300,
+            spent: 189.00,
+            color: '#ec4899'
+        },
+        'bills': {
+            id: 'bills',
+            name: 'Bills & Utilities',
+            emoji: '💡',
+            limit: 400,
+            spent: 380.00,
+            color: '#14b8a6'
+        }
+    },
+    
+    // Demo portfolio data
+    portfolio: {
+        'stocks': {
+            id: 'stocks',
+            name: 'Stocks',
+            emoji: '📈',
+            value: 12500,
+            invested: 10000,
+            change: 25.00,
+            changePercent: 25.00
+        },
+        'crypto': {
+            id: 'crypto',
+            name: 'Cryptocurrency',
+            emoji: '₿',
+            value: 3200,
+            invested: 2500,
+            change: 700,
+            changePercent: 28.00
+        },
+        'savings': {
+            id: 'savings',
+            name: 'Savings',
+            emoji: '🏦',
+            value: 8500,
+            invested: 8500,
+            change: 0,
+            changePercent: 0
+        },
+        'bonds': {
+            id: 'bonds',
+            name: 'Bonds',
+            emoji: '📜',
+            value: 5150,
+            invested: 5000,
+            change: 150,
+            changePercent: 3.00
+        }
+    },
+    
+    // Demo financial goals
+    goals: [
+        {
+            id: 'vacation',
+            name: 'Summer Vacation',
+            emoji: '🏖️',
+            target: 3000,
+            saved: 1850,
+            deadline: '2026-07-01'
+        },
+        {
+            id: 'emergency',
+            name: 'Emergency Fund',
+            emoji: '🆘',
+            target: 10000,
+            saved: 6500,
+            deadline: null
+        },
+        {
+            id: 'laptop',
+            name: 'New Laptop',
+            emoji: '💻',
+            target: 1500,
+            saved: 900,
+            deadline: '2026-05-01'
+        }
+    ],
+    
+    // Demo recent transactions for personal expenses
+    expenses: {
+        'personal-1': {
+            id: 'personal-1',
+            description: 'Grocery shopping',
+            amount: 85.50,
+            currency: 'USD',
+            category: 'food',
+            createdAt: Date.now() - (1 * 24 * 60 * 60 * 1000)
+        },
+        'personal-2': {
+            id: 'personal-2',
+            description: 'Netflix subscription',
+            amount: 15.99,
+            currency: 'USD',
+            category: 'entertainment',
+            createdAt: Date.now() - (2 * 24 * 60 * 60 * 1000)
+        },
+        'personal-3': {
+            id: 'personal-3',
+            description: 'Gas station',
+            amount: 45.00,
+            currency: 'USD',
+            category: 'transport',
+            createdAt: Date.now() - (3 * 24 * 60 * 60 * 1000)
+        },
+        'personal-4': {
+            id: 'personal-4',
+            description: 'Electric bill',
+            amount: 120.00,
+            currency: 'USD',
+            category: 'bills',
+            createdAt: Date.now() - (5 * 24 * 60 * 60 * 1000)
+        },
+        'personal-5': {
+            id: 'personal-5',
+            description: 'New shoes',
+            amount: 89.00,
+            currency: 'USD',
+            category: 'shopping',
+            createdAt: Date.now() - (7 * 24 * 60 * 60 * 1000)
+        }
+    }
+};
+
+// ============================================
 // DEMO MODE FUNCTIONS
 // ============================================
 
@@ -146,10 +334,30 @@ function isInDemoMode() {
 function enterDemoMode() {
     // CRITICAL: Don't enter demo mode if user is already authenticated
     if (window.FirebaseConfig && window.FirebaseConfig.isAuthenticated()) {
+        console.log('🚫 Demo mode blocked - user is authenticated');
         return;
     }
     
+    // CRITICAL: Don't enter demo mode if auth state hasn't been resolved yet
+    // This prevents the race condition where Firebase hasn't confirmed the user yet
+    if (window.FirebaseConfig && typeof window.FirebaseConfig.isAuthStateResolved === 'function') {
+        if (!window.FirebaseConfig.isAuthStateResolved()) {
+            console.log('🚫 Demo mode blocked - auth state not yet resolved');
+            return;
+        }
+    }
+    
     isDemoMode = true;
+    console.log('🎮 Demo mode activated');
+    
+    // Close beta modal if it's open - it interferes with the tutorial
+    const betaModal = document.getElementById('betaLaunchModal');
+    if (betaModal && (betaModal.style.display === 'flex' || betaModal.classList.contains('active'))) {
+        console.log('🎮 Closing beta modal for demo mode');
+        betaModal.classList.remove('active');
+        betaModal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
     
     // Track demo mode start
     if (typeof gtag === 'function') {
@@ -177,16 +385,25 @@ function exitDemoMode() {
     hideDemoSignupCTA();
     closeDemoActionModal();
     
-    // Remove demo group card from grid
-    const demoCard = document.querySelector('.fund-card[data-demo-group="true"]');
-    if (demoCard) {
-        demoCard.remove();
+    // Restore original tabs if they were saved
+    if (originalTabsHTML) {
+        const tabsContainer = document.querySelector('.fund-tabs');
+        if (tabsContainer) {
+            tabsContainer.innerHTML = originalTabsHTML;
+        }
+        originalTabsHTML = null; // Reset for next demo session
     }
+    
+    // Remove ALL demo group cards from grid (shared group + personal colony)
+    document.querySelectorAll('.fund-card[data-demo-group]').forEach(card => {
+        card.remove();
+    });
     
     // Clear ALL demo content from group view containers
     // This is critical - otherwise real groups will show demo data
     const containersToClean = [
         'historyList',      // Expense history
+        'historyTab',       // History tab (used by Personal Colony demo)
         'membersTab',       // Members list  
         'balancesTab',      // Balances
         'inviteTab',        // Invite section
@@ -203,6 +420,20 @@ function exitDemoMode() {
     // Also clear any demo items by class
     document.querySelectorAll('.demo-item, .demo-expense-card, .demo-member-item').forEach(el => {
         el.remove();
+    });
+    
+    // Remove demo Personal Colony tabs and restore original tabs
+    document.querySelectorAll('.fund-tab-btn[data-demo-tab]').forEach(btn => {
+        btn.remove();
+    });
+    
+    // Show all original tabs (they were hidden for Personal Colony demo)
+    document.querySelectorAll('.fund-tab-btn[data-tab]').forEach(btn => {
+        // Don't show blockchain tabs by default
+        const tabName = btn.getAttribute('data-tab');
+        if (!['deposit', 'propose', 'vote', 'manage'].includes(tabName)) {
+            btn.style.display = '';
+        }
     });
     
     // If we're viewing the demo group, go back to dashboard
@@ -236,14 +467,20 @@ function exitDemoMode() {
 function showDemoBanner() {
     let banner = document.getElementById('demoBanner');
     
+    // Get translated text
+    const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
+    const bannerText = lang === 'es' 
+        ? '🎭 Modo Demo - Explora gastos compartidos y finanzas personales'
+        : '🎭 Demo Mode - Explore shared expenses & personal finances';
+    
     if (!banner) {
         banner = document.createElement('div');
         banner.id = 'demoBanner';
         banner.className = 'demo-banner';
         banner.innerHTML = `
             <div class="demo-banner-content">
-                <span class="demo-banner-icon">🎭</span>
-                <span class="demo-banner-text" data-i18n="app.demo.bannerText">Demo Mode - Exploring how Ant Pool works</span>
+                <span class="demo-banner-icon">🐜</span>
+                <span class="demo-banner-text">${bannerText}</span>
             </div>
         `;
         
@@ -260,6 +497,12 @@ function showDemoBanner() {
                 // Last resort: append to body
                 document.body.appendChild(banner);
             }
+        }
+    } else {
+        // Update text if banner already exists
+        const textSpan = banner.querySelector('.demo-banner-text');
+        if (textSpan) {
+            textSpan.textContent = bannerText;
         }
     }
     
@@ -291,14 +534,31 @@ function showDemoSignupCTA() {
         cta = document.createElement('div');
         cta.id = 'demoSignupCTA';
         cta.className = 'demo-signup-cta';
+        
+        // Get language-specific text
+        const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
+        const ctaTexts = {
+            en: {
+                title: 'Ready to take control?',
+                subtitle: 'Track expenses & grow your wealth',
+                button: 'Start Free →'
+            },
+            es: {
+                title: '¿Listo para tomar control?',
+                subtitle: 'Rastrea gastos y haz crecer tu patrimonio',
+                button: 'Empezar Gratis →'
+            }
+        };
+        const t = ctaTexts[lang] || ctaTexts.en;
+        
         cta.innerHTML = `
             <div class="demo-cta-content">
                 <div class="demo-cta-text">
-                    <strong data-i18n="app.demo.ctaTitle">Like what you see?</strong>
-                    <span data-i18n="app.demo.ctaSubtitle">Create your real group in 30 seconds</span>
+                    <strong>${t.title}</strong>
+                    <span>${t.subtitle}</span>
                 </div>
                 <button class="btn btn-primary demo-cta-button" onclick="window.promptDemoSignup('floating_cta')">
-                    <span data-i18n="app.demo.ctaButton">Create My Group →</span>
+                    <span>${t.button}</span>
                 </button>
             </div>
             <button class="demo-cta-close" onclick="window.minimizeDemoSignupCTA()" title="Minimize">−</button>
@@ -348,25 +608,47 @@ function showDemoActionModal(actionType) {
         });
     }
     
+    // Check if this is a personal finance action
+    const personalFinanceActions = ['edit_budget', 'add_category', 'edit_asset', 'add_asset', 'edit_goal', 'add_goal'];
+    const isPersonalFinance = personalFinanceActions.includes(actionType);
+    
     // Get translated strings
     const translations = {
         en: {
+            // Group-related
             title: '🐜 Ready to take action?',
             subtitle: 'Sign in to create your own group and start tracking real expenses with your friends.',
             benefit1: '✓ Create unlimited groups',
             benefit2: '✓ Invite friends by email',
             benefit3: '✓ Track expenses in real-time',
             benefit4: '✓ Get smart settlement suggestions',
+            // Personal finance-related
+            personalTitle: '🐜 Take control of your finances!',
+            personalSubtitle: 'Sign in to start tracking your personal budget, investments, and financial goals.',
+            personalBenefit1: '✓ Create custom budget categories',
+            personalBenefit2: '✓ Track your investment portfolio',
+            personalBenefit3: '✓ Set and achieve financial goals',
+            personalBenefit4: '✓ Get personalized insights',
+            // Common
             button: 'Sign In to Continue',
             later: 'Keep Exploring Demo'
         },
         es: {
+            // Group-related
             title: '🐜 ¿Listo para actuar?',
             subtitle: 'Inicia sesión para crear tu propio grupo y empezar a rastrear gastos reales con tus amigos.',
             benefit1: '✓ Crea grupos ilimitados',
             benefit2: '✓ Invita amigos por email',
             benefit3: '✓ Rastrea gastos en tiempo real',
             benefit4: '✓ Obtén sugerencias inteligentes de liquidación',
+            // Personal finance-related
+            personalTitle: '🐜 ¡Toma control de tus finanzas!',
+            personalSubtitle: 'Inicia sesión para rastrear tu presupuesto personal, inversiones y metas financieras.',
+            personalBenefit1: '✓ Crea categorías de presupuesto personalizadas',
+            personalBenefit2: '✓ Rastrea tu portafolio de inversiones',
+            personalBenefit3: '✓ Establece y alcanza metas financieras',
+            personalBenefit4: '✓ Obtén insights personalizados',
+            // Common
             button: 'Inicia Sesión para Continuar',
             later: 'Seguir Explorando Demo'
         }
@@ -374,6 +656,13 @@ function showDemoActionModal(actionType) {
     
     const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
     const t = translations[lang] || translations.en;
+    
+    // Choose appropriate content based on action type
+    const modalTitle = isPersonalFinance ? t.personalTitle : t.title;
+    const modalSubtitle = isPersonalFinance ? t.personalSubtitle : t.subtitle;
+    const benefits = isPersonalFinance 
+        ? [t.personalBenefit1, t.personalBenefit2, t.personalBenefit3, t.personalBenefit4]
+        : [t.benefit1, t.benefit2, t.benefit3, t.benefit4];
     
     // Create modal
     let modal = document.getElementById('demoActionModal');
@@ -408,6 +697,12 @@ function showDemoActionModal(actionType) {
         document.body.appendChild(modal);
     }
     
+    // Icon varies by action type
+    const icon = isPersonalFinance ? '🏠' : '🐜';
+    const buttonGradient = isPersonalFinance 
+        ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    
     modal.innerHTML = `
         <div class="demo-action-modal" style="
             position: relative;
@@ -438,20 +733,20 @@ function showDemoActionModal(actionType) {
                 justify-content: center;
             ">&times;</button>
             
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🐜</div>
-            <h2 style="color: white; margin-bottom: 0.5rem; font-size: 1.5rem;">${t.title}</h2>
-            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; line-height: 1.5;">${t.subtitle}</p>
+            <div style="font-size: 3rem; margin-bottom: 1rem;">${icon}</div>
+            <h2 style="color: white; margin-bottom: 0.5rem; font-size: 1.5rem;">${modalTitle}</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; line-height: 1.5;">${modalSubtitle}</p>
             
             <div style="text-align: left; margin-bottom: 1.5rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                <div style="color: #4ade80; margin-bottom: 0.5rem;">${t.benefit1}</div>
-                <div style="color: #4ade80; margin-bottom: 0.5rem;">${t.benefit2}</div>
-                <div style="color: #4ade80; margin-bottom: 0.5rem;">${t.benefit3}</div>
-                <div style="color: #4ade80;">${t.benefit4}</div>
+                <div style="color: #4ade80; margin-bottom: 0.5rem;">${benefits[0]}</div>
+                <div style="color: #4ade80; margin-bottom: 0.5rem;">${benefits[1]}</div>
+                <div style="color: #4ade80; margin-bottom: 0.5rem;">${benefits[2]}</div>
+                <div style="color: #4ade80;">${benefits[3]}</div>
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <button onclick="window.promptDemoSignup('action_modal')" style="
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: ${buttonGradient};
                     color: white;
                     border: none;
                     padding: 1rem 2rem;
@@ -527,6 +822,8 @@ function promptDemoSignup(source) {
  * Load demo data into the app
  */
 function loadDemoData() {
+    console.log('[Demo] loadDemoData() called');
+    
     // CRITICAL: Clear real user data to prevent showing real groups
     if (typeof window.clearAllUserGroups === 'function') {
         window.clearAllUserGroups();
@@ -552,25 +849,48 @@ function loadDemoData() {
     // Show the demo group in the dashboard
     displayDemoGroups();
     
-    // Show the floating CTA after a short delay
+    // Verify demo groups are displayed
+    const groupsGrid = document.getElementById('groupsGrid');
+    console.log('[Demo] Groups grid HTML length:', groupsGrid ? groupsGrid.innerHTML.length : 0);
+    
+    // Start the guided tutorial after a short delay (gives time for DOM to render)
     setTimeout(() => {
-        showDemoSignupCTA();
-    }, 3000);
+        // Re-ensure demo groups are visible before tutorial
+        const demoCards = document.querySelectorAll('.demo-fund-card');
+        console.log('[Demo] Demo cards found before tutorial:', demoCards.length);
+        if (demoCards.length === 0) {
+            console.log('[Demo] No demo cards found, re-displaying...');
+            displayDemoGroups();
+        }
+        startDemoTutorial();
+    }, 500);
+    
+    // Show the floating CTA after tutorial completes or is skipped
+    // (moved to after tutorial completion)
 }
 
 /**
  * Display demo groups in the dashboard
- * Uses the same card format as createFundCard() in app-platform.js
+ * Shows both shared group AND Personal Colony to showcase all features
  */
 function displayDemoGroups() {
+    console.log('[Demo] displayDemoGroups() called');
+    
     const groupsGrid = document.getElementById('groupsGrid');
     const emptyState = document.getElementById('emptyState');
     const loadingGroups = document.getElementById('loadingGroups');
     
+    // Hide loading and empty states
     if (loadingGroups) loadingGroups.style.display = 'none';
-    if (emptyState) emptyState.style.display = 'none';
+    if (emptyState) {
+        emptyState.style.display = 'none';
+        console.log('[Demo] Empty state hidden');
+    }
     
-    if (!groupsGrid) return;
+    if (!groupsGrid) {
+        console.error('[Demo] groupsGrid not found!');
+        return;
+    }
     
     // Calculate demo group stats
     const totalExpenses = Object.values(DEMO_GROUP_DATA.expenses)
@@ -580,14 +900,85 @@ function displayDemoGroups() {
     const memberCount = Object.keys(DEMO_GROUP_DATA.members).length;
     const expenseCount = Object.keys(DEMO_GROUP_DATA.expenses).length;
     
+    // Calculate Personal Colony stats
+    const totalBudgetSpent = Object.values(DEMO_PERSONAL_COLONY_DATA.budget)
+        .reduce((sum, cat) => sum + cat.spent, 0);
+    const totalBudgetLimit = Object.values(DEMO_PERSONAL_COLONY_DATA.budget)
+        .reduce((sum, cat) => sum + cat.limit, 0);
+    const portfolioValue = Object.values(DEMO_PERSONAL_COLONY_DATA.portfolio)
+        .reduce((sum, asset) => sum + asset.value, 0);
+    
     // Get translations
     const currentLang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
-    const membersText = currentLang === 'es' ? 'miembros' : 'members';
-    const balanceText = currentLang === 'es' ? 'Total gastado' : 'Total spent';
-    const tapText = currentLang === 'es' ? 'Toca para explorar →' : 'Tap to explore →';
+    const texts = {
+        en: {
+            members: 'members',
+            totalSpent: 'Total spent',
+            tapToExplore: 'Tap to explore →',
+            personalTitle: 'Personal Finances',
+            budgetUsed: 'Budget used',
+            portfolioValue: 'Portfolio',
+            goals: 'Goals',
+            tapPersonal: 'Explore your finances →',
+            new: 'NEW'
+        },
+        es: {
+            members: 'miembros',
+            totalSpent: 'Total gastado',
+            tapToExplore: 'Toca para explorar →',
+            personalTitle: 'Finanzas Personales',
+            budgetUsed: 'Presupuesto usado',
+            portfolioValue: 'Portafolio',
+            goals: 'Metas',
+            tapPersonal: 'Explora tus finanzas →',
+            new: 'NUEVO'
+        }
+    };
+    const t = texts[currentLang] || texts.en;
     
-    // Render demo group card using the SAME format as createFundCard()
+    // Render BOTH demo cards - Personal Colony FIRST (more important for retention)
     groupsGrid.innerHTML = `
+        <!-- Personal Colony Demo Card - Featured prominently -->
+        <div class="fund-card demo-fund-card demo-personal-colony-card" data-demo-group="personal" onclick="window.openDemoPersonalColony()">
+            <div class="fund-card-content">
+                <div class="demo-badge-corner demo-badge-new">${t.new} ✨</div>
+                
+                <div class="fund-card-header">
+                    <div class="fund-icon" style="font-size: 2rem;">🏠</div>
+                    <div class="fund-card-title">
+                        <h3>${t.personalTitle}</h3>
+                        <div class="fund-badges">
+                            <span class="badge badge-mode mode-personal" style="background: linear-gradient(135deg, #667eea, #764ba2);">🐜 Personal Colony</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fund-stats" style="grid-template-columns: 1fr 1fr;">
+                    <div class="fund-stat">
+                        <span class="fund-stat-label">📊 ${t.budgetUsed}</span>
+                        <span class="fund-stat-value">$${totalBudgetSpent.toFixed(0)}/${totalBudgetLimit.toFixed(0)}</span>
+                    </div>
+                    <div class="fund-stat">
+                        <span class="fund-stat-label">📈 ${t.portfolioValue}</span>
+                        <span class="fund-stat-value" style="color: #22c55e;">$${(portfolioValue/1000).toFixed(1)}K</span>
+                    </div>
+                </div>
+                
+                <div class="fund-meta">
+                    <span>🎯 ${DEMO_PERSONAL_COLONY_DATA.goals.length} ${t.goals}</span>
+                    <span>💡 5 ${currentLang === 'es' ? 'Categorías' : 'Categories'}</span>
+                </div>
+                
+                <div class="demo-tap-hint" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-radius: 8px; padding: 0.5rem; margin-top: 0.5rem; border-top: none;">
+                    <span style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span class="demo-walking-ant">🐜</span>
+                        ${t.tapPersonal}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Shared Group Demo Card -->
         <div class="fund-card demo-fund-card" data-demo-group="true" onclick="window.openDemoGroup()">
             <div class="fund-card-content">
                 <div class="demo-badge-corner">DEMO</div>
@@ -604,18 +995,18 @@ function displayDemoGroups() {
                 
                 <div class="fund-stats">
                     <div class="fund-stat">
-                        <span class="fund-stat-label">${balanceText}</span>
+                        <span class="fund-stat-label">${t.totalSpent}</span>
                         <span class="fund-stat-value">$${totalExpenses.toFixed(2)} ${DEMO_GROUP_DATA.currency}</span>
                     </div>
                 </div>
                 
                 <div class="fund-meta">
-                    <span>👥 ${memberCount} ${membersText}</span>
+                    <span>👥 ${memberCount} ${t.members}</span>
                     <span>💰 ${expenseCount} expenses</span>
                 </div>
                 
                 <div class="demo-tap-hint">
-                    <span>${tapText}</span>
+                    <span>${t.tapToExplore}</span>
                 </div>
             </div>
         </div>
@@ -631,12 +1022,529 @@ function displayDemoGroups() {
     const countCreated = document.getElementById('countCreated');
     const countParticipating = document.getElementById('countParticipating');
     
-    if (totalGroupsCreated) totalGroupsCreated.textContent = '1';
-    if (totalGroupsParticipating) totalGroupsParticipating.textContent = '1';
-    if (totalGroupsJoined) totalGroupsJoined.textContent = '1';
-    if (countAll) countAll.textContent = '1';
-    if (countCreated) countCreated.textContent = '1';
-    if (countParticipating) countParticipating.textContent = '1';
+    if (totalGroupsCreated) totalGroupsCreated.textContent = '2';
+    if (totalGroupsParticipating) totalGroupsParticipating.textContent = '2';
+    if (totalGroupsJoined) totalGroupsJoined.textContent = '2';
+    if (countAll) countAll.textContent = '2';
+    if (countCreated) countCreated.textContent = '2';
+    if (countParticipating) countParticipating.textContent = '2';
+    
+    console.log('[Demo] Demo groups displayed. Cards:', document.querySelectorAll('.demo-fund-card').length);
+}
+
+/**
+ * Open the demo Personal Colony view
+ */
+function openDemoPersonalColony() {
+    // Track interaction
+    if (typeof gtag === 'function') {
+        gtag('event', 'demo_interaction', {
+            'event_category': 'engagement',
+            'event_label': 'open_personal_colony'
+        });
+    }
+    
+    // Show fund detail section, hide dashboard
+    const dashboardSection = document.getElementById('dashboardSection');
+    const fundDetailSection = document.getElementById('fundDetailSection');
+    
+    if (dashboardSection) {
+        dashboardSection.classList.remove('active');
+        dashboardSection.style.display = 'none';
+    }
+    if (fundDetailSection) {
+        fundDetailSection.classList.add('active');
+        fundDetailSection.style.display = 'block';
+    }
+    
+    // Populate with Personal Colony demo data
+    populateDemoPersonalColonyDetail();
+}
+
+/**
+ * Populate the Personal Colony demo detail view
+ */
+function populateDemoPersonalColonyDetail() {
+    const colony = DEMO_PERSONAL_COLONY_DATA;
+    const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
+    
+    // Text translations
+    const t = {
+        en: {
+            headerTitle: 'Personal Finances',
+            headerDesc: 'Track your budget, investments and financial goals',
+            budgetTab: 'Budget',
+            portfolioTab: 'Portfolio',
+            goalsTab: 'Goals',
+            thisMonth: 'This Month',
+            totalBudget: 'Total Budget',
+            remaining: 'Remaining',
+            spent: 'Spent',
+            ofBudget: 'of budget',
+            onTrack: 'On track',
+            overBudget: 'Over budget',
+            portfolioValue: 'Portfolio Value',
+            totalGain: 'Total Gain',
+            invested: 'Invested',
+            yourGoals: 'Your Goals',
+            saved: 'saved',
+            deadline: 'Target',
+            noDeadline: 'No deadline',
+            signInCTA: 'Sign in to track your real finances!',
+            signInBudget: 'Sign in to create your budget',
+            signInPortfolio: 'Sign in to track your investments',
+            signInGoals: 'Sign in to set your goals'
+        },
+        es: {
+            headerTitle: 'Finanzas Personales',
+            headerDesc: 'Rastrea tu presupuesto, inversiones y metas financieras',
+            budgetTab: 'Presupuesto',
+            portfolioTab: 'Portafolio',
+            goalsTab: 'Metas',
+            thisMonth: 'Este Mes',
+            totalBudget: 'Presupuesto Total',
+            remaining: 'Restante',
+            spent: 'Gastado',
+            ofBudget: 'del presupuesto',
+            onTrack: 'En línea',
+            overBudget: 'Excedido',
+            portfolioValue: 'Valor del Portafolio',
+            totalGain: 'Ganancia Total',
+            invested: 'Invertido',
+            yourGoals: 'Tus Metas',
+            saved: 'ahorrado',
+            deadline: 'Fecha objetivo',
+            noDeadline: 'Sin fecha límite',
+            signInCTA: '¡Inicia sesión para rastrear tus finanzas reales!',
+            signInBudget: 'Inicia sesión para crear tu presupuesto',
+            signInPortfolio: 'Inicia sesión para rastrear tus inversiones',
+            signInGoals: 'Inicia sesión para establecer tus metas'
+        }
+    };
+    const tr = t[lang] || t.en;
+    
+    // Header
+    const fundDetailName = document.getElementById('fundDetailName');
+    const fundDetailDescription = document.getElementById('fundDetailDescription');
+    const fundHeaderIcon = document.getElementById('fundHeaderIcon');
+    
+    if (fundDetailName) fundDetailName.textContent = tr.headerTitle;
+    if (fundDetailDescription) fundDetailDescription.textContent = tr.headerDesc;
+    if (fundHeaderIcon) fundHeaderIcon.textContent = '🏠';
+    
+    // Update badges
+    const typeBadge = document.getElementById('fundTypeBadge');
+    const statusBadge = document.getElementById('fundStatusBadge');
+    
+    if (typeBadge) typeBadge.textContent = '🐜 Personal Colony';
+    if (statusBadge) statusBadge.textContent = '✅ Active';
+    
+    // Hide ALL standard tabs
+    document.querySelectorAll('.fund-tab-btn').forEach(btn => {
+        btn.style.display = 'none';
+    });
+    
+    // Hide all tab panes
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('active');
+    });
+    
+    // Create custom Personal Colony tabs
+    const tabsContainer = document.querySelector('.fund-tabs');
+    if (tabsContainer) {
+        // IMPORTANT: Save original tabs HTML before replacing (only once)
+        if (!originalTabsHTML) {
+            originalTabsHTML = tabsContainer.innerHTML;
+        }
+        
+        // Replace with Personal Colony specific tabs
+        tabsContainer.innerHTML = `
+            <button class="fund-tab-btn active" data-demo-tab="budget" onclick="window.switchDemoPersonalTab('budget')">
+                📊 ${tr.budgetTab}
+            </button>
+            <button class="fund-tab-btn" data-demo-tab="portfolio" onclick="window.switchDemoPersonalTab('portfolio')">
+                📈 ${tr.portfolioTab}
+            </button>
+            <button class="fund-tab-btn" data-demo-tab="goals" onclick="window.switchDemoPersonalTab('goals')">
+                🎯 ${tr.goalsTab}
+            </button>
+        `;
+    }
+    
+    // Use historyTab container for our demo content (it's always present)
+    const contentContainer = document.getElementById('historyTab') || document.querySelector('.tab-pane');
+    if (contentContainer) {
+        contentContainer.classList.add('active');
+        contentContainer.id = 'historyTab'; // Ensure it has the ID
+    }
+    
+    // Render Budget tab (default)
+    renderDemoBudgetTab(tr);
+}
+
+/**
+ * Switch between Personal Colony demo tabs
+ */
+function switchDemoPersonalTab(tabName) {
+    const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
+    
+    const t = {
+        en: {
+            thisMonth: 'This Month',
+            totalBudget: 'Total Budget',
+            remaining: 'Remaining',
+            spent: 'Spent',
+            ofBudget: 'of budget',
+            onTrack: 'On track',
+            overBudget: 'Over budget',
+            portfolioValue: 'Portfolio Value',
+            totalGain: 'Total Gain',
+            invested: 'Invested',
+            yourGoals: 'Your Goals',
+            saved: 'saved',
+            deadline: 'Target',
+            noDeadline: 'No deadline',
+            signInCTA: 'Sign in to track your real finances!',
+            signInBudget: 'Sign in to create your budget',
+            signInPortfolio: 'Sign in to track your investments',
+            signInGoals: 'Sign in to set your goals',
+            addCategory: 'Add Category',
+            addAsset: 'Add Asset',
+            addGoal: 'Add Goal'
+        },
+        es: {
+            thisMonth: 'Este Mes',
+            totalBudget: 'Presupuesto Total',
+            remaining: 'Restante',
+            spent: 'Gastado',
+            ofBudget: 'del presupuesto',
+            onTrack: 'En línea',
+            overBudget: 'Excedido',
+            portfolioValue: 'Valor del Portafolio',
+            totalGain: 'Ganancia Total',
+            invested: 'Invertido',
+            yourGoals: 'Tus Metas',
+            saved: 'ahorrado',
+            deadline: 'Fecha objetivo',
+            noDeadline: 'Sin fecha límite',
+            signInCTA: '¡Inicia sesión para rastrear tus finanzas reales!',
+            signInBudget: 'Inicia sesión para crear tu presupuesto',
+            signInPortfolio: 'Inicia sesión para rastrear tus inversiones',
+            signInGoals: 'Inicia sesión para establecer tus metas',
+            addCategory: 'Añadir Categoría',
+            addAsset: 'Añadir Activo',
+            addGoal: 'Añadir Meta'
+        }
+    };
+    const tr = t[lang] || t.en;
+    
+    // Update tab button states
+    document.querySelectorAll('.fund-tab-btn[data-demo-tab]').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-demo-tab') === tabName) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Render the selected tab
+    switch(tabName) {
+        case 'budget':
+            renderDemoBudgetTab(tr);
+            break;
+        case 'portfolio':
+            renderDemoPortfolioTab(tr);
+            break;
+        case 'goals':
+            renderDemoGoalsTab(tr);
+            break;
+    }
+}
+
+/**
+ * Render Budget tab content
+ */
+function renderDemoBudgetTab(tr) {
+    const container = document.getElementById('historyTab');
+    if (!container) return;
+    
+    const budget = DEMO_PERSONAL_COLONY_DATA.budget;
+    const totalSpent = Object.values(budget).reduce((sum, cat) => sum + cat.spent, 0);
+    const totalLimit = Object.values(budget).reduce((sum, cat) => sum + cat.limit, 0);
+    const remaining = totalLimit - totalSpent;
+    const percentUsed = (totalSpent / totalLimit * 100).toFixed(0);
+    
+    let categoriesHtml = '';
+    Object.values(budget).forEach(cat => {
+        const percent = (cat.spent / cat.limit * 100).toFixed(0);
+        const isOver = cat.spent > cat.limit;
+        const barColor = isOver ? '#ef4444' : cat.color;
+        
+        categoriesHtml += `
+            <div class="demo-budget-category" style="
+                background: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onclick="window.showDemoActionModal('edit_budget')">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem;">${cat.emoji}</span>
+                        <span style="font-weight: 600; color: var(--text-primary);">${cat.name}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-weight: 700; color: ${isOver ? '#ef4444' : 'var(--text-primary)'};">$${cat.spent.toFixed(0)}</span>
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">/ $${cat.limit}</span>
+                    </div>
+                </div>
+                <div style="background: rgba(0,0,0,0.2); border-radius: 6px; height: 8px; overflow: hidden;">
+                    <div style="width: ${Math.min(percent, 100)}%; height: 100%; background: ${barColor}; border-radius: 6px; transition: width 0.5s ease;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-secondary);">
+                    <span>${percent}% ${tr.ofBudget}</span>
+                    <span style="color: ${isOver ? '#ef4444' : '#22c55e'};">${isOver ? tr.overBudget : tr.onTrack}</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = `
+        <div style="padding: 0.5rem 0;">
+            <!-- Summary Cards -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+                <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border: 1px solid rgba(102, 126, 234, 0.2); border-radius: 16px; padding: 1rem; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">$${totalLimit.toFixed(0)}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">${tr.totalBudget}</div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(234, 88, 12, 0.15)); border: 1px solid rgba(251, 146, 60, 0.2); border-radius: 16px; padding: 1rem; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #fb923c;">$${totalSpent.toFixed(0)}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">${tr.spent}</div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(22, 163, 74, 0.15)); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 16px; padding: 1rem; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #22c55e;">$${remaining.toFixed(0)}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">${tr.remaining}</div>
+                </div>
+            </div>
+            
+            <!-- Progress Ring -->
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
+                    <svg viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(102,126,234,0.2)" stroke-width="3"/>
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="url(#gradient)" stroke-width="3" stroke-dasharray="${percentUsed}, 100" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#667eea"/>
+                                <stop offset="100%" style="stop-color:#764ba2"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">${percentUsed}%</div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">${tr.ofBudget}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Categories -->
+            <h4 style="margin: 0 0 1rem 0; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center;">
+                <span>📊 ${tr.thisMonth}</span>
+                <button onclick="window.showDemoActionModal('add_category')" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem; cursor: pointer;">
+                    + ${tr.addCategory || 'Add'}
+                </button>
+            </h4>
+            ${categoriesHtml}
+            
+            <!-- CTA -->
+            <div style="text-align: center; padding: 1.5rem; margin-top: 1rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-radius: 16px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🐜📊</div>
+                <button onclick="window.promptDemoSignup('budget_cta')" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                    ${tr.signInBudget}
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Render Portfolio tab content
+ */
+function renderDemoPortfolioTab(tr) {
+    const container = document.getElementById('historyTab');
+    if (!container) return;
+    
+    const portfolio = DEMO_PERSONAL_COLONY_DATA.portfolio;
+    const totalValue = Object.values(portfolio).reduce((sum, a) => sum + a.value, 0);
+    const totalInvested = Object.values(portfolio).reduce((sum, a) => sum + a.invested, 0);
+    const totalGain = totalValue - totalInvested;
+    const totalGainPercent = ((totalGain / totalInvested) * 100).toFixed(1);
+    
+    let assetsHtml = '';
+    Object.values(portfolio).forEach(asset => {
+        const isPositive = asset.change >= 0;
+        
+        assetsHtml += `
+            <div style="
+                background: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+                cursor: pointer;
+                transition: transform 0.2s;
+            " onclick="window.showDemoActionModal('edit_asset')">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 2rem;">${asset.emoji}</span>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary);">${asset.name}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.invested}: $${asset.invested.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">$${asset.value.toLocaleString()}</div>
+                        <div style="font-size: 0.85rem; color: ${isPositive ? '#22c55e' : '#ef4444'};">
+                            ${isPositive ? '↑' : '↓'} ${isPositive ? '+' : ''}${asset.changePercent.toFixed(1)}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = `
+        <div style="padding: 0.5rem 0;">
+            <!-- Portfolio Summary -->
+            <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.15)); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${tr.portfolioValue}</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">$${totalValue.toLocaleString()}</div>
+                <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: ${totalGain >= 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 20px;">
+                    <span style="color: ${totalGain >= 0 ? '#22c55e' : '#ef4444'}; font-weight: 600;">
+                        ${totalGain >= 0 ? '↑' : '↓'} $${Math.abs(totalGain).toLocaleString()} (${totalGain >= 0 ? '+' : ''}${totalGainPercent}%)
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Investment Stats -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; text-align: center;">
+                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">$${totalInvested.toLocaleString()}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.invested}</div>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; text-align: center;">
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #22c55e;">+$${totalGain.toLocaleString()}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">${tr.totalGain}</div>
+                </div>
+            </div>
+            
+            <!-- Assets List -->
+            <h4 style="margin: 0 0 1rem 0; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center;">
+                <span>📈 Assets</span>
+                <button onclick="window.showDemoActionModal('add_asset')" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem; cursor: pointer;">
+                    + ${tr.addAsset || 'Add'}
+                </button>
+            </h4>
+            ${assetsHtml}
+            
+            <!-- CTA -->
+            <div style="text-align: center; padding: 1.5rem; margin-top: 1rem; background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.1)); border-radius: 16px; border: 1px solid rgba(34, 197, 94, 0.2);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🐜📈</div>
+                <button onclick="window.promptDemoSignup('portfolio_cta')" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);">
+                    ${tr.signInPortfolio}
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Render Goals tab content
+ */
+function renderDemoGoalsTab(tr) {
+    const container = document.getElementById('historyTab');
+    if (!container) return;
+    
+    const goals = DEMO_PERSONAL_COLONY_DATA.goals;
+    const totalSaved = goals.reduce((sum, g) => sum + g.saved, 0);
+    const totalTarget = goals.reduce((sum, g) => sum + g.target, 0);
+    
+    let goalsHtml = '';
+    goals.forEach(goal => {
+        const percent = (goal.saved / goal.target * 100).toFixed(0);
+        const remaining = goal.target - goal.saved;
+        const deadlineStr = goal.deadline 
+            ? new Date(goal.deadline).toLocaleDateString()
+            : tr.noDeadline;
+        
+        goalsHtml += `
+            <div style="
+                background: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+                border-radius: 16px;
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+                cursor: pointer;
+                transition: transform 0.2s;
+            " onclick="window.showDemoActionModal('edit_goal')">
+                <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="font-size: 2.5rem;">${goal.emoji}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.25rem;">${goal.name}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            🎯 ${tr.deadline}: ${deadlineStr}
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">${percent}%</div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(0,0,0,0.2); border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 0.75rem;">
+                    <div style="width: ${percent}%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 8px; transition: width 0.5s;"></div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span style="color: #22c55e; font-weight: 600;">$${goal.saved.toLocaleString()} ${tr.saved}</span>
+                    <span style="color: var(--text-secondary);">$${remaining.toLocaleString()} ${tr.remaining || 'remaining'}</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = `
+        <div style="padding: 0.5rem 0;">
+            <!-- Goals Summary -->
+            <div style="background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(234, 88, 12, 0.15)); border: 1px solid rgba(251, 146, 60, 0.2); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎯</div>
+                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${tr.yourGoals}</div>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary);">
+                    ${goals.length} ${goals.length === 1 ? 'Goal' : 'Goals'}
+                </div>
+                <div style="font-size: 1rem; color: #22c55e; margin-top: 0.5rem;">
+                    $${totalSaved.toLocaleString()} / $${totalTarget.toLocaleString()} ${tr.saved}
+                </div>
+            </div>
+            
+            <!-- Goals List -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h4 style="margin: 0; color: var(--text-primary);">🎯 ${tr.yourGoals}</h4>
+                <button onclick="window.showDemoActionModal('add_goal')" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem; cursor: pointer;">
+                    + ${tr.addGoal || 'Add Goal'}
+                </button>
+            </div>
+            ${goalsHtml}
+            
+            <!-- CTA -->
+            <div style="text-align: center; padding: 1.5rem; margin-top: 1rem; background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(234, 88, 12, 0.1)); border-radius: 16px; border: 1px solid rgba(251, 146, 60, 0.2);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🐜🎯</div>
+                <button onclick="window.promptDemoSignup('goals_cta')" style="background: linear-gradient(135deg, #fb923c, #ea580c); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(251, 146, 60, 0.4);">
+                    ${tr.signInGoals}
+                </button>
+            </div>
+        </div>
+    `;
 }
 
 /**
@@ -674,6 +1582,14 @@ function openDemoGroup() {
 function populateDemoGroupDetail() {
     const group = DEMO_GROUP_DATA;
     
+    // ========== RESTORE ORIGINAL TABS IF NEEDED ==========
+    // This is critical when switching from Personal Colony view back to shared group
+    const tabsContainer = document.querySelector('.fund-tabs');
+    if (tabsContainer && originalTabsHTML) {
+        tabsContainer.innerHTML = originalTabsHTML;
+        console.log('🔄 Restored original tabs for shared group view');
+    }
+    
     // Header
     const fundDetailName = document.getElementById('fundDetailName');
     const fundDetailDescription = document.getElementById('fundDetailDescription');
@@ -690,32 +1606,40 @@ function populateDemoGroupDetail() {
     const voteTab = document.querySelector('.fund-tab-btn[data-tab="vote"]');
     const manageTab = document.querySelector('.fund-tab-btn[data-tab="manage"]');
     
+    // Hide Personal Colony tabs (not for shared groups)
+    const budgetTab = document.querySelector('.fund-tab-btn[data-tab="budget"]');
+    const portfolioTab = document.querySelector('.fund-tab-btn[data-tab="portfolio"]');
+    
     if (depositTab) depositTab.style.display = 'none';
     if (proposeTab) proposeTab.style.display = 'none';
     if (voteTab) voteTab.style.display = 'none';
     if (manageTab) manageTab.style.display = 'none';
+    if (budgetTab) budgetTab.style.display = 'none';
+    if (portfolioTab) portfolioTab.style.display = 'none';
     
-    // Show Simple Mode tabs
+    // Show Simple Mode tabs (shared group view)
+    const overviewTab = document.querySelector('.fund-tab-btn[data-tab="overview"]');
     const inviteTab = document.querySelector('.fund-tab-btn[data-tab="invite"]');
     const historyTab = document.querySelector('.fund-tab-btn[data-tab="history"]');
     const balancesTab = document.querySelector('.fund-tab-btn[data-tab="balances"]');
     const membersTab = document.querySelector('.fund-tab-btn[data-tab="members"]');
     const mascotTab = document.querySelector('.fund-tab-btn[data-tab="mascot"]');
     
+    if (overviewTab) overviewTab.style.display = 'flex';
     if (inviteTab) inviteTab.style.display = 'flex';
     if (historyTab) historyTab.style.display = 'flex';
     if (balancesTab) balancesTab.style.display = 'flex';
     if (membersTab) membersTab.style.display = 'flex';
     if (mascotTab) mascotTab.style.display = 'flex';
     
-    // Set history tab as active by default (it shows expenses)
+    // Set overview tab as active by default
     document.querySelectorAll('.fund-tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (historyTab) historyTab.classList.add('active');
+    if (overviewTab) overviewTab.classList.add('active');
     
-    // Show history tab content, hide others
+    // Show overview tab content, hide others
     document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
-    const historyPane = document.getElementById('historyTab');
-    if (historyPane) historyPane.classList.add('active');
+    const overviewPane = document.getElementById('overviewTab');
+    if (overviewPane) overviewPane.classList.add('active');
     
     // Update badges for Simple Mode
     const typeBadge = document.getElementById('fundTypeBadge');
@@ -1385,6 +2309,52 @@ function injectDemoStyles() {
             font-weight: 600;
         }
         
+        /* Personal Colony Demo Card */
+        .demo-personal-colony-card {
+            border: 2px solid rgba(102, 126, 234, 0.4) !important;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%) !important;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-personal-colony-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .demo-badge-new {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+        }
+        
+        .demo-walking-ant {
+            display: inline-block;
+            animation: walkAnt 1s ease-in-out infinite;
+        }
+        
+        @keyframes walkAnt {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(3px) rotate(5deg); }
+            75% { transform: translateX(-3px) rotate(-5deg); }
+        }
+        
+        /* Demo Budget Category Hover */
+        .demo-budget-category:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
         /* Demo Action Modal */
         .demo-action-modal {
             max-width: 420px;
@@ -1496,6 +2466,1087 @@ function injectDemoStyles() {
 // Inject styles on load
 injectDemoStyles();
 
+// ============================================
+// GUIDED TUTORIAL SYSTEM (Spotlight)
+// ============================================
+
+// Tutorial state
+let tutorialActive = false;
+let tutorialStep = 0;
+
+// Tutorial steps configuration
+const TUTORIAL_STEPS = [
+    {
+        id: 'welcome',
+        target: null, // Full screen welcome
+        position: 'center'
+    },
+    {
+        id: 'personal-finances',
+        target: '.demo-personal-colony-card',
+        position: 'auto' // Will calculate best position
+    },
+    {
+        id: 'shared-group',
+        target: '.fund-card[data-demo-group="true"]',
+        position: 'auto' // Will calculate best position
+    },
+    {
+        id: 'final',
+        target: null, // Full screen CTA
+        position: 'center'
+    }
+];
+
+// Tutorial translations
+const TUTORIAL_TRANSLATIONS = {
+    en: {
+        steps: [
+            {
+                title: '👋 Welcome to Ant Pool!',
+                subtitle: 'Your personal finance companion',
+                description: 'In just 30 seconds, discover how our ants help you take control of your money.',
+                buttonText: 'Start Tour →'
+            },
+            {
+                title: '🏠 Your Personal Colony',
+                subtitle: 'Track YOUR finances',
+                description: 'Create budgets, track investments, and set savings goals. All in one place, just for you.',
+                features: [
+                    '📊 Smart budget tracking',
+                    '📈 Investment portfolio',
+                    '🎯 Financial goals'
+                ],
+                buttonText: 'Next →'
+            },
+            {
+                title: '👥 Shared Groups',
+                subtitle: 'Split expenses easily',
+                description: 'Create groups with roommates, friends, or travel buddies. No more awkward "who owes who" conversations.',
+                features: [
+                    '💸 Auto-calculate splits',
+                    '⚖️ Smart settlements',
+                    '🔔 Payment reminders'
+                ],
+                buttonText: 'Next →'
+            },
+            {
+                title: '🐜 Ready to start?',
+                subtitle: 'Your colony awaits!',
+                description: 'Sign up for free and start tracking your finances today. Your ants are ready to work!',
+                buttonText: 'Get Started Free',
+                secondaryButton: 'Explore Demo First'
+            }
+        ],
+        skipText: 'Skip tour',
+        stepOf: 'of'
+    },
+    es: {
+        steps: [
+            {
+                title: '👋 ¡Bienvenido a Ant Pool!',
+                subtitle: 'Tu compañero de finanzas personales',
+                description: 'En solo 30 segundos, descubre cómo nuestras hormigas te ayudan a controlar tu dinero.',
+                buttonText: 'Iniciar Tour →'
+            },
+            {
+                title: '🏠 Tu Colonia Personal',
+                subtitle: 'Controla TUS finanzas',
+                description: 'Crea presupuestos, rastrea inversiones y establece metas de ahorro. Todo en un solo lugar, solo para ti.',
+                features: [
+                    '📊 Seguimiento inteligente de presupuesto',
+                    '📈 Portafolio de inversiones',
+                    '🎯 Metas financieras'
+                ],
+                buttonText: 'Siguiente →'
+            },
+            {
+                title: '👥 Grupos Compartidos',
+                subtitle: 'Divide gastos fácilmente',
+                description: 'Crea grupos con roommates, amigos o compañeros de viaje. No más conversaciones incómodas de "quién debe a quién".',
+                features: [
+                    '💸 Cálculo automático de divisiones',
+                    '⚖️ Liquidaciones inteligentes',
+                    '🔔 Recordatorios de pago'
+                ],
+                buttonText: 'Siguiente →'
+            },
+            {
+                title: '🐜 ¿Listo para empezar?',
+                subtitle: '¡Tu colonia te espera!',
+                description: 'Regístrate gratis y empieza a controlar tus finanzas hoy. ¡Tus hormigas están listas para trabajar!',
+                buttonText: 'Empezar Gratis',
+                secondaryButton: 'Explorar Demo Primero'
+            }
+        ],
+        skipText: 'Saltar tour',
+        stepOf: 'de'
+    }
+};
+
+/**
+ * Start the guided tutorial
+ */
+function startDemoTutorial() {
+    // Check if user already saw the tutorial
+    const tutorialSeen = localStorage.getItem('antpool_demo_tutorial_seen');
+    if (tutorialSeen) {
+        return; // Don't show again
+    }
+    
+    // Close any modal that might interfere (beta modal, etc.)
+    const betaModal = document.getElementById('betaLaunchModal');
+    if (betaModal && (betaModal.style.display === 'flex' || betaModal.classList.contains('active'))) {
+        console.log('🎮 Closing beta modal for tutorial');
+        betaModal.classList.remove('active');
+        betaModal.style.display = 'none';
+    }
+    
+    // Close any other open modals
+    document.querySelectorAll('.modal-overlay.active, .modal-overlay[style*="display: flex"]').forEach(modal => {
+        if (modal.id !== 'tutorialOverlay') {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
+    });
+    
+    tutorialActive = true;
+    tutorialStep = 0;
+    
+    // Track tutorial start
+    if (typeof gtag === 'function') {
+        gtag('event', 'tutorial_start', {
+            'event_category': 'engagement',
+            'event_label': 'demo_tutorial'
+        });
+    }
+    
+    renderTutorialOverlay();
+}
+
+/**
+ * Skip the tutorial
+ */
+function skipDemoTutorial() {
+    tutorialActive = false;
+    tutorialStep = 0;
+    
+    // Mark as seen
+    localStorage.setItem('antpool_demo_tutorial_seen', 'skipped');
+    
+    // Track skip
+    if (typeof gtag === 'function') {
+        gtag('event', 'tutorial_skip', {
+            'event_category': 'engagement',
+            'event_label': 'demo_tutorial',
+            'value': tutorialStep
+        });
+    }
+    
+    removeTutorialOverlay();
+    
+    // IMPORTANT: Re-display demo groups to ensure they're visible after skipping
+    console.log('[Tutorial] Tutorial skipped, ensuring demo groups visible');
+    setTimeout(() => {
+        displayDemoGroups();
+        showDemoSignupCTA();
+    }, 500);
+}
+
+/**
+ * Go to next tutorial step
+ */
+function nextTutorialStep() {
+    console.log('[Tutorial] nextTutorialStep called, current step:', tutorialStep);
+    tutorialStep++;
+    
+    if (tutorialStep >= TUTORIAL_STEPS.length) {
+        completeTutorial();
+        return;
+    }
+    
+    console.log('[Tutorial] Rendering step:', tutorialStep);
+    renderTutorialOverlay();
+}
+
+/**
+ * Go to previous tutorial step
+ */
+function prevTutorialStep() {
+    if (tutorialStep > 0) {
+        tutorialStep--;
+        renderTutorialOverlay();
+    }
+}
+
+/**
+ * Complete the tutorial
+ */
+function completeTutorial() {
+    tutorialActive = false;
+    
+    // Mark as seen
+    localStorage.setItem('antpool_demo_tutorial_seen', 'completed');
+    
+    // Track completion
+    if (typeof gtag === 'function') {
+        gtag('event', 'tutorial_complete', {
+            'event_category': 'engagement',
+            'event_label': 'demo_tutorial'
+        });
+    }
+    
+    removeTutorialOverlay();
+    
+    // IMPORTANT: Re-display demo groups to ensure they're visible after tutorial
+    console.log('[Tutorial] Tutorial completed, ensuring demo groups visible');
+    setTimeout(() => {
+        displayDemoGroups();
+        
+        // Show floating CTA after completing (unless user clicks sign up)
+        if (isDemoMode) {
+            showDemoSignupCTA();
+        }
+    }, 500);
+}
+
+/**
+ * Render the tutorial overlay with current step
+ */
+function renderTutorialOverlay() {
+    const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en') || 'en';
+    const t = TUTORIAL_TRANSLATIONS[lang] || TUTORIAL_TRANSLATIONS.en;
+    const stepData = t.steps[tutorialStep];
+    const stepConfig = TUTORIAL_STEPS[tutorialStep];
+    
+    // CRITICAL: Ensure demo groups are visible BEFORE rendering tutorial
+    // This fixes the issue where empty state appears during tutorial
+    const emptyState = document.getElementById('emptyState');
+    const groupsGrid = document.getElementById('groupsGrid');
+    if (emptyState && emptyState.style.display !== 'none') {
+        console.log('[Tutorial] Hiding empty state that appeared during tutorial');
+        emptyState.style.display = 'none';
+    }
+    if (groupsGrid && !groupsGrid.querySelector('.demo-fund-card')) {
+        console.log('[Tutorial] Demo cards missing, re-displaying');
+        displayDemoGroups();
+    }
+    
+    // Scroll target element into view if it exists
+    if (stepConfig.target) {
+        const targetEl = document.querySelector(stepConfig.target);
+        if (targetEl) {
+            // Scroll element into view smoothly
+            targetEl.scrollIntoView({ behavior: 'instant', block: 'center' });
+        }
+    }
+    
+    // Ensure beta modal and other modals are closed
+    const betaModal = document.getElementById('betaLaunchModal');
+    if (betaModal) {
+        betaModal.classList.remove('active');
+        betaModal.style.display = 'none';
+    }
+    
+    // Remove existing overlay immediately for step transitions
+    removeTutorialOverlay(true);
+    
+    // Create overlay container
+    const overlay = document.createElement('div');
+    overlay.id = 'tutorialOverlay';
+    overlay.className = 'tutorial-overlay';
+    
+    // Find target element for spotlight
+    let tooltipPositionStyle = '';
+    let tooltipPositionClass = stepConfig.position || 'center';
+    
+    if (stepConfig.target && stepConfig.position === 'auto') {
+        const targetEl = document.querySelector(stepConfig.target);
+        if (targetEl) {
+            const rect = targetEl.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const tooltipHeight = 380; // Approximate tooltip height
+            const tooltipMargin = 30; // Space between spotlight and tooltip
+            
+            console.log('[Tutorial] Viewport:', viewportWidth, 'x', viewportHeight, 'Target rect:', rect.top, '-', rect.bottom);
+            
+            // Determine if element is in upper or lower half of screen
+            const elementCenter = rect.top + rect.height / 2;
+            const viewportCenter = viewportHeight / 2;
+            
+            // Calculate available space above and below the element
+            const spaceAbove = rect.top;
+            const spaceBelow = viewportHeight - rect.bottom;
+            
+            console.log('[Tutorial] Space above:', spaceAbove, 'Space below:', spaceBelow);
+            
+            if (spaceBelow >= tooltipHeight + tooltipMargin) {
+                // Enough space below - position tooltip below the element
+                tooltipPositionClass = 'positioned';
+                tooltipPositionStyle = `top: ${rect.bottom + tooltipMargin}px;`;
+                console.log('[Tutorial] Positioning below element');
+            } else if (spaceAbove >= tooltipHeight + tooltipMargin) {
+                // Enough space above - position tooltip above the element
+                tooltipPositionClass = 'positioned';
+                tooltipPositionStyle = `top: ${rect.top - tooltipHeight - tooltipMargin}px;`;
+                console.log('[Tutorial] Positioning above element');
+            } else {
+                // Not enough space either way - use fixed bottom position
+                tooltipPositionClass = 'bottom-fixed';
+                tooltipPositionStyle = '';
+                console.log('[Tutorial] Using bottom-fixed position');
+            }
+        }
+    }
+    
+    // Build features list if available
+    let featuresHtml = '';
+    if (stepData.features && stepData.features.length > 0) {
+        featuresHtml = `
+            <div class="tutorial-features">
+                ${stepData.features.map(f => `<div class="tutorial-feature">${f}</div>`).join('')}
+            </div>
+        `;
+    }
+    
+    // Build secondary button if available
+    let secondaryButtonHtml = '';
+    if (stepData.secondaryButton) {
+        secondaryButtonHtml = `
+            <button class="tutorial-btn-secondary" id="tutorialSecondaryBtn">
+                ${stepData.secondaryButton}
+            </button>
+        `;
+    }
+    
+    // Progress dots
+    const progressDots = TUTORIAL_STEPS.map((_, i) => 
+        `<span class="tutorial-dot ${i === tutorialStep ? 'active' : ''} ${i < tutorialStep ? 'completed' : ''}"></span>`
+    ).join('');
+    
+    // Is this the final step?
+    const isFinalStep = tutorialStep === TUTORIAL_STEPS.length - 1;
+    const isFirstStep = tutorialStep === 0;
+    
+    // Create spotlight ring HTML if we have a target
+    let spotlightRingHtml = '';
+    if (stepConfig.target) {
+        const targetEl = document.querySelector(stepConfig.target);
+        if (targetEl) {
+            const rect = targetEl.getBoundingClientRect();
+            const padding = 12;
+            
+            // Only create spotlight if element is visible and has reasonable dimensions
+            const isVisible = rect.width > 50 && rect.height > 50 && 
+                              rect.top >= -100 && rect.left >= -100 &&
+                              rect.bottom <= window.innerHeight + 100;
+            
+            if (isVisible) {
+                spotlightRingHtml = `
+                    <div class="tutorial-spotlight-ring" style="
+                        top: ${rect.top - padding}px;
+                        left: ${rect.left - padding}px;
+                        width: ${rect.width + padding * 2}px;
+                        height: ${rect.height + padding * 2}px;
+                    "></div>
+                `;
+                console.log('[Tutorial] Spotlight for', stepConfig.target, 'at', rect.top, rect.left);
+            } else {
+                console.log('[Tutorial] Skipping spotlight - element not visible:', stepConfig.target, rect);
+            }
+        } else {
+            console.log('[Tutorial] Target element not found:', stepConfig.target);
+        }
+    }
+    
+    overlay.innerHTML = `
+        <div class="tutorial-backdrop"></div>
+        ${spotlightRingHtml}
+        
+        <!-- Emergency exit button - always visible -->
+        <button class="tutorial-emergency-exit" onclick="window.skipDemoTutorial()" title="Exit Tutorial (ESC)">
+            ✕ Exit
+        </button>
+        
+        <div class="tutorial-tooltip ${tooltipPositionClass}" style="${tooltipPositionStyle}">
+            <div class="tutorial-tooltip-header">
+                ${!isFirstStep ? `
+                    <button class="tutorial-back-btn" onclick="window.prevTutorialStep()">
+                        ← 
+                    </button>
+                ` : `
+                    <button class="tutorial-close-btn" onclick="window.skipDemoTutorial()">
+                        ✕
+                    </button>
+                `}
+                <div class="tutorial-progress">
+                    ${progressDots}
+                </div>
+                <button class="tutorial-skip-btn" onclick="window.skipDemoTutorial()">
+                    ${t.skipText}
+                </button>
+            </div>
+            
+            <div class="tutorial-tooltip-content">
+                <div class="tutorial-ant-icon">
+                    <span class="tutorial-ant">🐜</span>
+                </div>
+                
+                <h2 class="tutorial-title">${stepData.title}</h2>
+                <p class="tutorial-subtitle">${stepData.subtitle}</p>
+                <p class="tutorial-description">${stepData.description}</p>
+                
+                ${featuresHtml}
+            </div>
+            
+            <div class="tutorial-tooltip-footer">
+                ${isFinalStep ? `
+                    <button class="tutorial-btn-primary pulse" id="tutorialPrimaryBtn" data-action="signup">
+                        ${stepData.buttonText}
+                    </button>
+                    ${secondaryButtonHtml}
+                ` : `
+                    <button class="tutorial-btn-primary" id="tutorialPrimaryBtn" data-action="next">
+                        ${stepData.buttonText}
+                    </button>
+                `}
+                
+                <div class="tutorial-step-counter">
+                    ${tutorialStep + 1} ${t.stepOf} ${TUTORIAL_STEPS.length}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Simple scroll lock - just prevent scrolling
+    document.body.style.overflow = 'hidden';
+    
+    // Click on dark area = skip tutorial (but NOT on tooltip)
+    overlay.addEventListener('click', (e) => {
+        // Only close if clicking directly on overlay, backdrop, or spotlight ring
+        // NOT if clicking inside the tooltip
+        if (e.target === overlay || 
+            e.target.classList.contains('tutorial-backdrop') || 
+            e.target.classList.contains('tutorial-spotlight-ring')) {
+            skipDemoTutorial();
+        }
+    });
+    
+    // ESC key to close tutorial
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            document.removeEventListener('keydown', escHandler);
+            skipDemoTutorial();
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+    
+    // Emergency exit: triple tap anywhere closes tutorial
+    let tapCount = 0;
+    let tapTimer = null;
+    overlay.addEventListener('touchstart', () => {
+        tapCount++;
+        if (tapCount >= 3) {
+            skipDemoTutorial();
+            return;
+        }
+        if (tapTimer) clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => { tapCount = 0; }, 500);
+    });
+    
+    // Prevent clicks inside tooltip from bubbling up
+    const tooltip = overlay.querySelector('.tutorial-tooltip');
+    if (tooltip) {
+        tooltip.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+    
+    // Attach click handler to primary button using ID
+    const primaryBtn = overlay.querySelector('#tutorialPrimaryBtn');
+    if (primaryBtn) {
+        primaryBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const action = primaryBtn.dataset.action;
+            console.log('[Tutorial] Primary button clicked, action:', action);
+            
+            if (action === 'next') {
+                nextTutorialStep();
+            } else if (action === 'signup') {
+                // Complete tutorial first, then open signup
+                completeTutorial();
+                if (typeof window.promptDemoSignup === 'function') {
+                    window.promptDemoSignup('tutorial_complete');
+                }
+            }
+        });
+    }
+    
+    // Attach click handler to secondary button (Explore Demo First)
+    const secondaryBtn = overlay.querySelector('#tutorialSecondaryBtn');
+    if (secondaryBtn) {
+        secondaryBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('[Tutorial] Secondary button clicked - explore demo');
+            completeTutorial();
+        });
+    }
+    
+    // Animate in
+    requestAnimationFrame(() => {
+        overlay.classList.add('visible');
+    });
+}
+
+/**
+ * Remove tutorial overlay
+ */
+function removeTutorialOverlay(immediate = false) {
+    const overlay = document.getElementById('tutorialOverlay');
+    if (overlay) {
+        if (immediate) {
+            // Remove immediately for step transitions
+            overlay.remove();
+        } else {
+            // Animate out for closing tutorial
+            overlay.classList.remove('visible');
+            setTimeout(() => overlay.remove(), 300);
+        }
+    }
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+}
+
+/**
+ * Inject tutorial styles
+ */
+function injectTutorialStyles() {
+    if (document.getElementById('tutorialStyles')) return;
+    
+    const styles = document.createElement('style');
+    styles.id = 'tutorialStyles';
+    styles.textContent = `
+        /* Tutorial Overlay Base */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 100000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+        }
+        
+        .tutorial-overlay.visible {
+            opacity: 1;
+        }
+        
+        /* Emergency exit button - always visible in corner */
+        .tutorial-emergency-exit {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 100010;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            pointer-events: auto !important;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .tutorial-emergency-exit:hover {
+            background: rgba(239, 68, 68, 1);
+        }
+        
+        /* Semi-transparent backdrop - darker to hide content better */
+        .tutorial-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.92);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        
+        [data-theme="light"] .tutorial-backdrop {
+            background: rgba(0, 0, 0, 0.88);
+        }
+        
+        /* Spotlight ring with box-shadow cutout - darker for better contrast */
+        .tutorial-spotlight-ring {
+            position: fixed;
+            border-radius: 16px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.92);
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.4s ease;
+            border: 2px solid rgba(102, 126, 234, 0.6);
+        }
+        
+        [data-theme="light"] .tutorial-spotlight-ring {
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.88);
+        }
+        
+        /* Tutorial Tooltip */
+        .tutorial-tooltip {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 420px;
+            background: linear-gradient(145deg, #1e1e2f 0%, #151525 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 
+                        0 0 40px rgba(102, 126, 234, 0.15);
+            z-index: 100001;
+            animation: tooltipSlideIn 0.4s ease;
+            pointer-events: auto;
+            touch-action: auto;
+        }
+        
+        .tutorial-tooltip button {
+            pointer-events: auto;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        @keyframes tooltipSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        .tutorial-tooltip.center {
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .tutorial-tooltip.center {
+            animation: tooltipFadeIn 0.4s ease;
+        }
+        
+        @keyframes tooltipFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        /* Bottom-safe positioning - forces tooltip to bottom of viewport */
+        .tutorial-tooltip.bottom-safe {
+            top: auto !important;
+            bottom: 20px !important;
+            transform: translateX(-50%);
+        }
+        
+        /* Fixed bottom positioning for small viewports */
+        .tutorial-tooltip.bottom-fixed {
+            top: auto !important;
+            bottom: 100px !important;
+            transform: translateX(-50%);
+        }
+        
+        /* Positioned class - uses inline top style */
+        .tutorial-tooltip.positioned {
+            transform: translateX(-50%);
+        }
+        
+        .tutorial-tooltip.bottom {
+            transform: translateX(-50%);
+        }
+        
+        /* Light mode tooltip */
+        [data-theme="light"] .tutorial-tooltip {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
+                        0 0 40px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Header */
+        .tutorial-tooltip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        [data-theme="light"] .tutorial-tooltip-header {
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .tutorial-back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .tutorial-back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+        
+        [data-theme="light"] .tutorial-back-btn {
+            background: rgba(0, 0, 0, 0.05);
+            color: rgba(0, 0, 0, 0.6);
+        }
+        
+        [data-theme="light"] .tutorial-back-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .tutorial-skip-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.2s;
+        }
+        
+        .tutorial-skip-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        [data-theme="light"] .tutorial-skip-btn {
+            color: rgba(0, 0, 0, 0.4);
+        }
+        
+        [data-theme="light"] .tutorial-skip-btn:hover {
+            color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .tutorial-close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+        
+        .tutorial-close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        [data-theme="light"] .tutorial-close-btn {
+            background: rgba(0, 0, 0, 0.05);
+            color: rgba(0, 0, 0, 0.6);
+        }
+        
+        [data-theme="light"] .tutorial-close-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: rgba(0, 0, 0, 0.9);
+        }
+        
+        /* Progress dots */
+        .tutorial-progress {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .tutorial-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .tutorial-dot.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            width: 24px;
+            border-radius: 4px;
+        }
+        
+        .tutorial-dot.completed {
+            background: #22c55e;
+        }
+        
+        [data-theme="light"] .tutorial-dot {
+            background: rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Content */
+        .tutorial-tooltip-content {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tutorial-ant-icon {
+            margin-bottom: 1rem;
+        }
+        
+        .tutorial-ant {
+            font-size: 3rem;
+            display: inline-block;
+            animation: antBounce 1s ease infinite;
+        }
+        
+        @keyframes antBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(-5deg); }
+            75% { transform: translateY(-5px) rotate(5deg); }
+        }
+        
+        .tutorial-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 0.25rem 0;
+            background: linear-gradient(135deg, #667eea, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        [data-theme="light"] .tutorial-title {
+            background: linear-gradient(135deg, #5b4ed4, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tutorial-subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0 0 0.75rem 0;
+            font-weight: 500;
+        }
+        
+        [data-theme="light"] .tutorial-subtitle {
+            color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .tutorial-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        [data-theme="light"] .tutorial-description {
+            color: rgba(0, 0, 0, 0.6);
+        }
+        
+        /* Features list */
+        .tutorial-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .tutorial-feature {
+            color: #4ade80;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+        
+        [data-theme="light"] .tutorial-features {
+            background: rgba(102, 126, 234, 0.08);
+        }
+        
+        /* Footer */
+        .tutorial-tooltip-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .tutorial-btn-primary {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            z-index: 20;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .tutorial-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .tutorial-btn-primary.pulse {
+            animation: btnPulse 2s ease infinite;
+        }
+        
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.3); }
+        }
+        
+        .tutorial-btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tutorial-btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white;
+        }
+        
+        [data-theme="light"] .tutorial-btn-secondary {
+            border-color: rgba(0, 0, 0, 0.15);
+            color: rgba(0, 0, 0, 0.6);
+        }
+        
+        [data-theme="light"] .tutorial-btn-secondary:hover {
+            border-color: rgba(0, 0, 0, 0.3);
+            color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .tutorial-step-counter {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        [data-theme="light"] .tutorial-step-counter {
+            color: rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Ensure tooltip is always visible within viewport */
+        @media (max-height: 700px) {
+            .tutorial-tooltip {
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
+                padding: 1rem;
+            }
+            
+            .tutorial-tooltip.bottom,
+            .tutorial-tooltip.bottom-safe {
+                top: auto !important;
+                bottom: 10px !important;
+            }
+            
+            .tutorial-features {
+                padding: 0.5rem !important;
+            }
+            
+            .tutorial-title {
+                font-size: 1.1rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+            
+            .tutorial-ant-icon {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .tutorial-ant {
+                font-size: 2rem !important;
+            }
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .tutorial-tooltip {
+                width: calc(100% - 2rem);
+                max-width: none;
+                margin: 1rem;
+                padding: 1.25rem;
+            }
+            
+            .tutorial-tooltip.bottom {
+                top: auto !important;
+                bottom: 1rem;
+            }
+            
+            .tutorial-title {
+                font-size: 1.25rem;
+            }
+            
+            .tutorial-ant {
+                font-size: 2.5rem;
+            }
+        }
+    `;
+    
+    document.head.appendChild(styles);
+}
+
+// Inject tutorial styles
+injectTutorialStyles();
+
+// Export tutorial functions
+window.startDemoTutorial = startDemoTutorial;
+window.skipDemoTutorial = skipDemoTutorial;
+window.nextTutorialStep = nextTutorialStep;
+window.prevTutorialStep = prevTutorialStep;
+window.completeDemoTutorial = completeTutorial;
+
+// EMERGENCY: Force exit tutorial if stuck (can be called from console)
+window.emergencyExitTutorial = function() {
+    console.log('🚨 Emergency exit tutorial triggered');
+    tutorialActive = false;
+    tutorialStep = 0;
+    const overlay = document.getElementById('tutorialOverlay');
+    if (overlay) overlay.remove();
+    document.body.style.overflow = '';
+    document.body.style.pointerEvents = '';
+    console.log('✅ Tutorial forcefully closed');
+};
+
 // Export functions for use in app-platform.js
 window.DemoMode = {
     isActive: isInDemoMode,
@@ -1505,11 +3556,15 @@ window.DemoMode = {
     promptSignup: promptDemoSignup,
     getDemoGroup: () => DEMO_GROUP_DATA,
     getDemoUser: () => DEMO_CURRENT_USER,
-    displayDemoGroups: displayDemoGroups
+    getDemoPersonalColony: () => DEMO_PERSONAL_COLONY_DATA,
+    displayDemoGroups: displayDemoGroups,
+    startTutorial: startDemoTutorial
 };
 
 // Expose functions globally for onclick handlers in HTML
 window.openDemoGroup = openDemoGroup;
+window.openDemoPersonalColony = openDemoPersonalColony;
+window.switchDemoPersonalTab = switchDemoPersonalTab;
 window.showDemoActionModal = showDemoActionModal;
 window.closeDemoActionModal = closeDemoActionModal;
 window.promptDemoSignup = promptDemoSignup;

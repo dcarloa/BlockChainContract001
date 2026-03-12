@@ -667,10 +667,11 @@
   font-weight: 600;
   color: #9ca3af;
   pointer-events: none;
+  white-space: nowrap;
 }
 
 .amount-input {
-  padding-left: 2.5rem;
+  padding-left: 4rem;
   font-weight: 600;
   text-align: left;
 }
@@ -1035,7 +1036,7 @@
   }
   
   .amount-input {
-    padding-left: 2.25rem !important;
+    padding-left: 3.5rem !important;
     font-size: 1rem !important;
   }
   

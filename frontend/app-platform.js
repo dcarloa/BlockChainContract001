@@ -176,26 +176,65 @@ window.addEventListener('DOMContentLoaded', async () => {
         firebaseInitialized = await window.FirebaseConfig.initialize();
         
         if (firebaseInitialized) {
-            // Check if user is ALREADY authenticated before setting up listener
-            const existingUser = window.FirebaseConfig.getCurrentUser();
-            if (existingUser) {
-                // Force exit demo mode immediately if user is already logged in
+            // CRITICAL: Wait for auth state to be resolved BEFORE deciding on demo mode
+            // This prevents the race condition where Firebase fires null briefly before the real user
+            console.log('⏳ Waiting for auth state to resolve...');
+            const initialUser = await window.FirebaseConfig.waitForAuthState();
+            console.log('✅ Auth state resolved:', initialUser ? initialUser.email : 'no user');
+            
+            // Now we KNOW the real auth state - decide on demo mode
+            if (!initialUser && !userAddress) {
+                // No user confirmed - enter demo mode
+                if (window.DemoMode && typeof window.DemoMode.enter === 'function' && !window.DemoMode.isActive()) {
+                    console.log('🎮 No user detected after auth resolution - entering demo mode');
+                    window.DemoMode.enter();
+                }
+            } else if (initialUser) {
+                // User is authenticated - make sure demo mode is off
                 if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
                     window.DemoMode.exit();
                 }
+                
+                // Initialize user data
+                updateUIForFirebaseUser(initialUser);
+                
+                // Ensure user has a personal colony (auto-create if needed)
+                window.FirebaseConfig.ensurePersonalColony(initialUser).then(personalColonyId => {
+                    if (personalColonyId) {
+                        window.personalColonyId = personalColonyId;
+                        console.log('🐜 Personal colony ready:', personalColonyId);
+                    }
+                }).catch(err => {
+                    console.error('Error ensuring personal colony:', err);
+                });
+                
+                // Load user funds
+                loadUserFunds();
+                
+                // Initialize Firebase Messaging
+                if (typeof initializeMessaging === 'function') {
+                    initializeMessaging().then(() => {
+                        const pushEnabled = localStorage.getItem('pushNotificationsEnabled');
+                        if (pushEnabled === 'true') {
+                            requestNotificationPermission().catch(err => {
+                                console.error('Error auto-requesting notification permission:', err);
+                            });
+                        }
+                    });
+                }
             }
             
-            // Setup Firebase auth state listener
+            // Setup Firebase auth state listener for FUTURE changes (login/logout during session)
             window.FirebaseConfig.onAuthStateChanged = (user) => {
                 updateUIForFirebaseUser(user);
                 
-                // If no user and no wallet, enter Demo Mode
+                // Handle logout during session
                 if (!user && !userAddress) {
-                    if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
-                        // Check one more time that user is really not auth'd
-                        if (!window.FirebaseConfig.isAuthenticated()) {
-                            // No delay needed since auth state is already confirmed
+                    // Only enter demo mode if auth state was already resolved (not initial load)
+                    if (window.FirebaseConfig.isAuthStateResolved()) {
+                        if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
                             if (!window.DemoMode.isActive()) {
+                                console.log('🎮 User logged out - entering demo mode');
                                 window.DemoMode.enter();
                             }
                         }
@@ -203,6 +242,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 } else if (user) {
                     // User logged in - exit demo mode if active
                     if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+                        console.log('👤 User logged in - exiting demo mode');
                         window.DemoMode.exit();
                     }
                     
@@ -218,12 +258,26 @@ window.addEventListener('DOMContentLoaded', async () => {
                     
                     // Always reload user funds when user is confirmed
                     loadUserFunds();
+                    
+                    // Update UI components
+                    if (typeof updateFabVisibility === 'function') {
+                        updateFabVisibility();
+                    }
+                    
+                    // Load personal dashboard and insights with delay
+                    setTimeout(() => {
+                        if (typeof loadPersonalDashboard === 'function') {
+                            loadPersonalDashboard();
+                        }
+                        if (typeof loadColonyInsights === 'function') {
+                            loadColonyInsights();
+                        }
+                    }, 500);
                 }
                 
                 // Initialize Firebase Messaging when user logs in
                 if (user && typeof initializeMessaging === 'function') {
                     initializeMessaging().then(() => {
-                        // Auto-request push notification permission if previously enabled
                         const pushEnabled = localStorage.getItem('pushNotificationsEnabled');
                         if (pushEnabled === 'true') {
                             requestNotificationPermission().catch(err => {
@@ -234,8 +288,16 @@ window.addEventListener('DOMContentLoaded', async () => {
                 }
             };
         } else {
-            console.error("Firebase initialization failed");
-            showToast("Firebase initialization failed. Some features may not work.", "error");
+            // Firebase initialization returned false - could be demo mode
+            if (window.__DEMO_MODE_REQUESTED__ && window.DemoMode && typeof window.DemoMode.enter === 'function') {
+                console.log('🎮 Entering demo mode (Firebase skipped)');
+                window.DemoMode.enter();
+                // Clean up URL without reloading
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                console.error("Firebase initialization failed");
+                showToast("Firebase initialization failed. Some features may not work.", "error");
+            }
         }
     } else {
         console.error("FirebaseConfig not available");
@@ -277,7 +339,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     showDashboard();
     
     // Load user funds (both Simple and Blockchain modes)
-    await loadUserFunds();
+    // ONLY if not in demo mode - demo mode handles its own data
+    if (!window.DemoMode || !window.DemoMode.isActive || !window.DemoMode.isActive()) {
+        await loadUserFunds();
+    } else {
+        console.log('[Init] Skipping loadUserFunds - demo mode is active');
+    }
     
     // CRITICAL: Force hide ALL modals after initialization
     // This prevents any modal (especially Smart Settlements) from appearing on startup
@@ -1073,6 +1140,25 @@ function toggleUserMenu() {
     const dropdown = document.getElementById('userMenuDropdown');
     const btn = document.getElementById('userMenuBtn');
     
+    // If user is not authenticated at all, go directly to sign in
+    const firebaseUser = window.FirebaseConfig?.getCurrentUser();
+    const hasWallet = !!userAddress;
+    
+    if (!firebaseUser && !hasWallet) {
+        // Check if in demo mode - prompt signup
+        if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+            if (typeof window.promptDemoSignup === 'function') {
+                window.promptDemoSignup('user_menu_click');
+            } else {
+                showSignInModal();
+            }
+            return;
+        }
+        // Not logged in - open sign in modal directly (better UX on mobile)
+        showSignInModal();
+        return;
+    }
+    
     if (dropdown.style.display === 'none' || !dropdown.style.display) {
         dropdown.style.display = 'block';
         btn.classList.add('active');
@@ -1627,10 +1713,21 @@ function updateStats() {
 }
 
 function displayFunds() {
+    // Skip if Demo Mode is active - demo data is handled by demo-mode.js
+    if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+        console.log('[displayFunds] Skipped - demo mode active');
+        return;
+    }
     filterAndSortGroups();
 }
 
 function filterAndSortGroups() {
+    // Skip if Demo Mode is active - demo data is handled by demo-mode.js
+    if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+        console.log('[filterAndSortGroups] Skipped - demo mode active');
+        return;
+    }
+    
     let filteredFunds = [...allUserGroups];
     
     // Separate personal colony from regular groups
@@ -1704,8 +1801,10 @@ function filterAndSortGroups() {
     const groupsGrid = document.getElementById('groupsGrid');
     const emptyState = document.getElementById('emptyState');
     
+    // Never show empty state in demo mode
+    const inDemoMode = window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive();
     
-    if (regularFunds.length === 0 && !personalColony) {
+    if (regularFunds.length === 0 && !personalColony && !inDemoMode) {
         if (groupsGrid) {
             groupsGrid.innerHTML = '';
             groupsGrid.style.display = 'none';
@@ -3024,23 +3123,19 @@ async function signOutFromFirebase() {
         }
         
         showLoading(t('app.loading.signingOut'));
-        await window.FirebaseConfig.signOut();
-        showToast("Signed out successfully", "success");
         
-        // Clear current user data
+        // Clear current fund/group to prevent permission errors during cleanup
+        currentFundId = null;
         allUserGroups = [];
+        
+        await window.FirebaseConfig.signOut();
         
         hideLoading();
         
-        // If no wallet connected, enter Demo Mode
-        if (!userAddress) {
-            if (window.DemoMode && typeof window.DemoMode.enter === 'function') {
-                window.DemoMode.enter();
-            }
-        } else {
-            // Wallet still connected, reload user funds (blockchain only)
-            await loadUserFunds();
-        }
+        // Reload the page to ensure clean state
+        // This prevents permission errors from lingering listeners
+        location.reload();
+        
     } catch (error) {
         hideLoading();
         console.error("Sign out error:", error);
@@ -3237,9 +3332,12 @@ async function switchFundTab(tabName) {
     document.querySelector(`.fund-tab-btn[data-tab="${tabName}"]`).classList.add('active');
     document.getElementById(`${tabName}Tab`).classList.add('active');
     
+    // Determine if this is a Simple Mode group (grp_ prefix or mode === 'simple')
+    const isSimpleModeGroup = currentFund && (currentFund.mode === 'simple' || (currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_')));
+    
     // Load history when history tab is selected
     if (tabName === 'history') {
-        if (currentFund && currentFund.isSimpleMode) {
+        if (isSimpleModeGroup) {
             loadSimpleModeExpenses();
         } else {
             loadHistory();
@@ -3248,7 +3346,7 @@ async function switchFundTab(tabName) {
     
     // Load balances when balances tab is selected
     if (tabName === 'balances') {
-        if (currentFund && currentFund.isSimpleMode) {
+        if (isSimpleModeGroup) {
             loadSimpleModeBalances();
         } else {
             loadBalances();
@@ -3257,7 +3355,7 @@ async function switchFundTab(tabName) {
     
     // Load members when members tab is selected
     if (tabName === 'members') {
-        if (currentFund && currentFund.isSimpleMode) {
+        if (isSimpleModeGroup) {
             loadSimpleModeMembers();
         } else {
             loadMembers();
@@ -3441,6 +3539,7 @@ async function loadSimpleModeDetailView() {
         const overviewTab = document.querySelector('.fund-tab-btn[data-tab="overview"]');
         const budgetTab = document.querySelector('.fund-tab-btn[data-tab="budget"]');
         const portfolioTab = document.querySelector('.fund-tab-btn[data-tab="portfolio"]');
+        const historyTab = document.querySelector('.fund-tab-btn[data-tab="history"]');
         
         // Detect personal colony
         const isPersonalColony = currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_personal_');
@@ -3458,6 +3557,7 @@ async function loadSimpleModeDetailView() {
             if (membersTab) membersTab.style.display = 'none';
             if (balancesTab) balancesTab.style.display = 'none';
             if (manageTab) manageTab.style.display = 'none';
+            if (historyTab) historyTab.style.display = 'flex'; // Show history tab for personal expenses
             if (mascotTab) mascotTab.style.display = 'flex'; // Keep mascot
             if (budgetTab) budgetTab.style.display = 'flex'; // Show budget for personal
             if (portfolioTab) portfolioTab.style.display = 'flex'; // Show portfolio for personal
@@ -3483,6 +3583,7 @@ async function loadSimpleModeDetailView() {
                 inviteTab.style.display = 'flex';
                 inviteTab.innerHTML = '<span class="tab-icon">🎫</span><span>Invite</span>';
             }
+            if (historyTab) historyTab.style.display = 'flex'; // Show history tab
             if (membersTab) membersTab.style.display = 'flex';
             if (balancesTab) balancesTab.style.display = 'flex';
             if (manageTab) manageTab.style.display = 'none'; // Hide for now
@@ -7997,6 +8098,13 @@ let EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
  * @returns {Promise<Object>} Updated rates or null if failed
  */
 async function fetchAndCacheExchangeRates() {
+    // Skip in demo mode - no Firebase access needed
+    if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+        console.log('[ExchangeRates] Using fallback rates in demo mode');
+        EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
+        return EXCHANGE_RATES_TO_USD_FALLBACK;
+    }
+    
     try {
         // Checking for exchange rate updates
         const cached = await window.FirebaseConfig.readDb('system/exchangeRates');
@@ -8066,6 +8174,11 @@ window.convertToUSD = convertToUSD;
 // This runs after DOMContentLoaded when Firebase auth is initialized
 if (typeof window.initExchangeRates === 'undefined') {
     window.initExchangeRates = async function() {
+        // Skip in demo mode - no Firebase access needed
+        if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+            console.log('[ExchangeRates] Skipped in demo mode');
+            return;
+        }
         try {
             await fetchAndCacheExchangeRates();
         } catch (error) {
@@ -13089,11 +13202,12 @@ async function exportUserData() {
 /**
  * Confirm sign out
  */
+/**
+ * Confirm sign out - used from profile panel
+ */
 function confirmSignOut() {
-    if (confirm('Are you sure you want to sign out?')) {
-        signOutFromFirebase();
-        closeProfilePanel();
-    }
+    closeProfilePanel();
+    signOutFromFirebase(); // signOutFromFirebase already has its own confirmation dialog
 }
 
 /**
@@ -13783,9 +13897,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Update FAB visibility when auth state changes
-firebase.auth().onAuthStateChanged((user) => {
-    updateFabVisibility();
-});
+// Note: This is handled by the main onAuthStateChanged in DOMContentLoaded
+// Adding a separate listener here would cause duplicate calls
 
 // Make FAB functions globally available
 window.toggleQuickAdd = toggleQuickAdd;
@@ -13977,8 +14090,8 @@ function viewPersonalColony() {
     const personalColonyId = `grp_personal_${user.uid}`;
     
     // Navigate to the personal colony fund view
-    if (typeof loadFund === 'function') {
-        loadFund(personalColonyId);
+    if (typeof openFund === 'function') {
+        openFund(personalColonyId);
     }
 }
 
@@ -14002,16 +14115,7 @@ function openPersonalBudgetModal() {
     }
 }
 
-// Update personal dashboard when auth state changes
-firebase.auth().onAuthStateChanged(async (user) => {
-    if (user) {
-        // Delay to let other auth handlers complete
-        setTimeout(() => {
-            loadPersonalDashboard();
-            loadColonyInsights();
-        }, 500);
-    }
-});
+// Personal dashboard is updated by the main onAuthStateChanged handler
 
 // Make personal dashboard functions globally available
 window.loadPersonalDashboard = loadPersonalDashboard;
