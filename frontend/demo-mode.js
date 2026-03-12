@@ -2766,37 +2766,31 @@ function renderTutorialOverlay() {
             const rect = targetEl.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
             const viewportWidth = window.innerWidth;
-            const tooltipHeight = 380; // Approximate tooltip height
-            const tooltipMargin = 30; // Space between spotlight and tooltip
+            const tooltipMargin = 20; // Space between spotlight and tooltip
             
             console.log('[Tutorial] Viewport:', viewportWidth, 'x', viewportHeight, 'Target rect:', rect.top, '-', rect.bottom);
             
-            // Determine if element is in upper or lower half of screen
+            // Simple rule: if element is in upper half, tooltip goes to bottom; otherwise top
             const elementCenter = rect.top + rect.height / 2;
             const viewportCenter = viewportHeight / 2;
             
-            // Calculate available space above and below the element
-            const spaceAbove = rect.top;
-            const spaceBelow = viewportHeight - rect.bottom;
+            console.log('[Tutorial] Element center:', elementCenter, 'Viewport center:', viewportCenter);
             
-            console.log('[Tutorial] Space above:', spaceAbove, 'Space below:', spaceBelow);
-            
-            if (spaceBelow >= tooltipHeight + tooltipMargin) {
-                // Enough space below - position tooltip below the element
-                tooltipPositionClass = 'positioned';
-                tooltipPositionStyle = `top: ${rect.bottom + tooltipMargin}px;`;
-                console.log('[Tutorial] Positioning below element');
-            } else if (spaceAbove >= tooltipHeight + tooltipMargin) {
-                // Enough space above - position tooltip above the element
-                tooltipPositionClass = 'positioned';
-                tooltipPositionStyle = `top: ${rect.top - tooltipHeight - tooltipMargin}px;`;
-                console.log('[Tutorial] Positioning above element');
-            } else {
-                // Not enough space either way - use fixed bottom position
+            if (elementCenter < viewportCenter) {
+                // Element is in upper half - position tooltip at bottom of screen
                 tooltipPositionClass = 'bottom-fixed';
                 tooltipPositionStyle = '';
-                console.log('[Tutorial] Using bottom-fixed position');
+                console.log('[Tutorial] Element in upper half, tooltip at bottom');
+            } else {
+                // Element is in lower half - position tooltip at top of screen
+                tooltipPositionClass = 'top-fixed';
+                tooltipPositionStyle = '';
+                console.log('[Tutorial] Element in lower half, tooltip at top');
             }
+        } else {
+            // Target not found - center the tooltip
+            tooltipPositionClass = 'center';
+            console.log('[Tutorial] Target not found, centering tooltip');
         }
     }
     
@@ -3171,6 +3165,13 @@ function injectTutorialStyles() {
         .tutorial-tooltip.bottom-fixed {
             top: auto !important;
             bottom: 100px !important;
+            transform: translateX(-50%);
+        }
+        
+        /* Fixed top positioning when element is in lower half */
+        .tutorial-tooltip.top-fixed {
+            top: 80px !important;
+            bottom: auto !important;
             transform: translateX(-50%);
         }
         
