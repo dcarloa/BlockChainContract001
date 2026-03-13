@@ -18336,7 +18336,13 @@ header,
 
 /* Event Modal */
 .event-modal {
-  max-width: 420px;
+  max-width: 500px;
+  width: 95%;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
   transform: scale(0.9);
   transition: transform 0.2s ease;
 }
@@ -18345,37 +18351,66 @@ header,
   transform: scale(1);
 }
 
-.event-icon-selector {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.5rem;
+.event-modal .modal-header {
+  position: sticky;
+  top: 0;
   background: var(--bg-secondary);
+  z-index: 1;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.event-modal .modal-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.event-modal .modal-footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-secondary);
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.event-icon-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
   border-radius: 12px;
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 .icon-option {
-  width: 44px;
-  height: 44px;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   border: 2px solid transparent;
   border-radius: 10px;
   background: var(--card-bg);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .icon-option:hover {
   border-color: var(--primary-color);
-  transform: scale(1.1);
+  transform: scale(1.08);
+  background: rgba(102, 126, 234, 0.1);
 }
 
 .icon-option.selected {
   border-color: var(--primary-color);
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(102, 126, 234, 0.15);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
 /* Delete Button in Edit Mode */
@@ -18469,7 +18504,23 @@ header,
 
   .event-modal {
     max-width: 100%;
+    width: 100%;
     margin: 0;
-    border-radius: 16px 16px 0 0;
+    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .event-icon-selector {
+    grid-template-columns: repeat(6, 1fr);
+    max-height: 140px;
+  }
+
+  .icon-option {
+    max-width: none;
+    font-size: 1.25rem;
   }
 }
