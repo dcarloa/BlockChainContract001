@@ -15280,10 +15280,11 @@ async function saveEvent() {
             });
         } else {
             // Create new event
+            const currentUser = window.FirebaseConfig.getCurrentUser();
             const newEventRef = await window.FirebaseConfig.pushDb(`itineraries/${groupId}/events`, {
                 ...eventData,
                 createdAt: Date.now(),
-                createdBy: window.FirebaseConfig.getCurrentUserId()
+                createdBy: currentUser?.uid || 'unknown'
             });
         }
         
