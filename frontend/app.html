@@ -2329,6 +2329,19 @@ Simple, fast, and free.</p>
                                 >
                             </div>
 
+                            <!-- Link to Itinerary Event (Optional) -->
+                            <div id="linkEventField" class="form-field link-event-field" style="display: none;">
+                                <label for="linkedEventId" class="form-label">
+                                    <span data-i18n="app.modals.addExpense.linkEventLabel">📍 Link to Event</span>
+                                    <span class="optional-badge" data-i18n="app.modals.addExpense.notesOptional">Optional</span>
+                                </label>
+                                <select id="linkedEventId" name="linkedEventId" class="form-input form-select">
+                                    <option value="" data-i18n="app.modals.addExpense.noEventLink">— No event link —</option>
+                                    <!-- Will be populated dynamically with itinerary events -->
+                                </select>
+                                <small class="field-hint" data-i18n="app.modals.addExpense.linkEventHint">Link this expense to an itinerary event</small>
+                            </div>
+
                             <div class="form-field">
                                 <label for="expenseCategory" class="form-label" data-i18n="app.modals.addExpense.categoryLabel">Category</label>
                                 <select id="expenseCategory" name="category" class="form-input form-select">

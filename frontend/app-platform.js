@@ -7786,7 +7786,92 @@ document.addEventListener('click', function(event) {
     }
 });
 
-function showAddExpenseModal() {
+/**
+ * Populate the event link selector with itinerary events
+ */
+async function populateEventLinkSelector() {
+    const linkEventField = document.getElementById('linkEventField');
+    const linkedEventSelect = document.getElementById('linkedEventId');
+    
+    if (!linkEventField || !linkedEventSelect) return;
+    
+    // Only show for groups (not personal colonies)
+    const isPersonalColony = currentFund && currentFund.fundId && currentFund.fundId.startsWith('grp_personal_');
+    if (isPersonalColony) {
+        linkEventField.style.display = 'none';
+        return;
+    }
+    
+    try {
+        // Load itinerary events for current group
+        const groupId = currentFund?.fundId;
+        if (!groupId) {
+            linkEventField.style.display = 'none';
+            return;
+        }
+        
+        const eventsData = await window.FirebaseConfig.readDb(`itineraries/${groupId}/events`);
+        
+        if (!eventsData || Object.keys(eventsData).length === 0) {
+            linkEventField.style.display = 'none';
+            return;
+        }
+        
+        // Convert to array and sort by date
+        const events = Object.entries(eventsData).map(([id, event]) => ({
+            id,
+            ...event
+        })).sort((a, b) => {
+            const dateCompare = (a.date || '').localeCompare(b.date || '');
+            if (dateCompare !== 0) return dateCompare;
+            return (a.time || '').localeCompare(b.time || '');
+        });
+        
+        // Get current language for translations
+        const currentLang = getCurrentLanguage();
+        const noLinkText = currentLang === 'es' ? '— Sin vincular a evento —' : '— No event link —';
+        
+        // Build options HTML
+        linkedEventSelect.innerHTML = `<option value="">${noLinkText}</option>`;
+        
+        events.forEach(event => {
+            const icon = event.icon || '📍';
+            const title = event.title || 'Untitled';
+            const dateStr = event.date || '';
+            const timeStr = event.time ? ` ${event.time}` : '';
+            const displayText = `${icon} ${title} (${formatEventDateShort(dateStr)}${timeStr})`;
+            
+            const option = document.createElement('option');
+            option.value = event.id;
+            option.textContent = displayText;
+            linkedEventSelect.appendChild(option);
+        });
+        
+        // Show the field
+        linkEventField.style.display = 'block';
+        
+    } catch (error) {
+        console.error('[Expense] Error loading itinerary events:', error);
+        linkEventField.style.display = 'none';
+    }
+}
+
+/**
+ * Format event date for display in expense selector
+ */
+function formatEventDateShort(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const date = new Date(dateStr + 'T00:00:00');
+        const day = date.getDate();
+        const month = date.toLocaleDateString(getCurrentLanguage() === 'es' ? 'es-ES' : 'en-US', { month: 'short' });
+        return `${day} ${month}`;
+    } catch (e) {
+        return dateStr;
+    }
+}
+
+async function showAddExpenseModal() {
     
     // Check if group is paused
     if (currentFund && !currentFund.isActive) {
@@ -7896,6 +7981,9 @@ function showAddExpenseModal() {
             }
         }
     }
+
+    // Populate itinerary events for linking (if available)
+    await populateEventLinkSelector();
 
     // Show modal
     modal.style.display = 'flex';
@@ -8385,6 +8473,10 @@ async function handleExpenseSubmission(event) {
             const trackInBudgetCheckbox = document.getElementById('trackInBudget');
             trackInBudget = trackInBudgetCheckbox ? trackInBudgetCheckbox.checked : true;
         }
+        
+        // Get linked event (optional)
+        const linkedEventElement = document.getElementById('linkedEventId');
+        const linkedEventId = linkedEventElement ? linkedEventElement.value : '';
 
         // Create expense object
         const expenseInfo = {
@@ -8399,7 +8491,8 @@ async function handleExpenseSubmission(event) {
             paidByName,
             currency: currency || 'USD',
             isPersonalExpense: isPersonalColony, // Flag for personal expenses
-            trackInBudget: trackInBudget // Whether to count in budget
+            trackInBudget: trackInBudget, // Whether to count in budget
+            linkedEventId: linkedEventId || null // Optional link to itinerary event
         };
 
         // Set current group ID for mode manager
@@ -14937,6 +15030,8 @@ function formatLocalDate(date) {
 /**
  * Load itinerary events for current group
  */
+let itineraryLinkedExpenses = []; // Store expenses linked to itinerary events
+
 async function loadItinerary() {
     if (!currentFund) return;
     
@@ -14946,6 +15041,7 @@ async function loadItinerary() {
     console.log('[Itinerary] Loading events for group:', groupId);
     
     try {
+        // Load events
         const eventsData = await window.FirebaseConfig.readDb(`itineraries/${groupId}/events`);
         itineraryEvents = eventsData ? Object.entries(eventsData).map(([id, event]) => ({
             id,
@@ -14959,11 +15055,18 @@ async function loadItinerary() {
             return dateA - dateB;
         });
         
-        console.log('[Itinerary] Loaded events:', itineraryEvents.length);
+        // Load expenses to find linked ones
+        const expensesData = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses`);
+        itineraryLinkedExpenses = expensesData ? Object.entries(expensesData)
+            .map(([id, exp]) => ({ id, ...exp }))
+            .filter(exp => exp.linkedEventId) : [];
+        
+        console.log('[Itinerary] Loaded events:', itineraryEvents.length, 'Linked expenses:', itineraryLinkedExpenses.length);
         renderItinerary();
     } catch (error) {
         console.error('[Itinerary] Error loading events:', error);
         itineraryEvents = [];
+        itineraryLinkedExpenses = [];
         renderItinerary();
     }
 }
@@ -15035,18 +15138,30 @@ function renderItinerary() {
                     ${isToday ? `<div class="itinerary-today-badge">${todayLabel}</div>` : ''}
                 </div>
                 <div class="itinerary-day-events">
-                    ${dayEvents.map(event => `
+                    ${dayEvents.map(event => {
+                        // Calculate linked expenses for this event
+                        const eventExpenses = itineraryLinkedExpenses.filter(exp => exp.linkedEventId === event.id);
+                        const expenseTotal = eventExpenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+                        const expenseCount = eventExpenses.length;
+                        const currency = eventExpenses.length > 0 ? (eventExpenses[0].currency || 'USD') : 'USD';
+                        
+                        return `
                         <div class="itinerary-event" onclick="editEvent('${event.id}')">
                             ${event.time ? `<div class="itinerary-event-time">${formatEventTime(event.time)}</div>` : ''}
                             <div class="itinerary-event-content">
                                 <span class="itinerary-event-icon">${event.icon || '📍'}</span>
-                                <div>
+                                <div class="itinerary-event-info">
                                     <div class="itinerary-event-title">${escapeHtml(event.title)}</div>
                                     ${event.note ? `<div class="itinerary-event-note">${escapeHtml(event.note)}</div>` : ''}
+                                    ${expenseCount > 0 ? `
+                                        <div class="itinerary-event-expenses" title="${expenseCount} expense${expenseCount > 1 ? 's' : ''} linked">
+                                            <span class="expense-badge">💸 ${formatCurrency(expenseTotal, currency)}</span>
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>
-                    `).join('')}
+                    `;}).join('')}
                     <button class="itinerary-add-event-mini" onclick="openAddEventModal('${dateStr}')">
                         <span>+</span>
                     </button>
