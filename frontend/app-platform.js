@@ -6943,6 +6943,42 @@ async function showExpenseDetailsModal(expenseId) {
             `;
         });
         
+        // Check for linked event
+        let linkedEventHtml = '';
+        if (expense.linkedEventId) {
+            try {
+                const linkedEvent = await window.FirebaseConfig.readDb(`itineraries/${groupId}/events/${expense.linkedEventId}`);
+                if (linkedEvent) {
+                    const eventDate = linkedEvent.date ? new Date(linkedEvent.date).toLocaleDateString() : '';
+                    const eventTime = linkedEvent.time || '';
+                    linkedEventHtml = `
+                        <div class="expense-detail-section linked-event-section">
+                            <h5>🗓️ Linked Event</h5>
+                            <div class="linked-event-badge" style="
+                                display: flex;
+                                align-items: center;
+                                gap: 0.75rem;
+                                padding: 0.75rem 1rem;
+                                background: rgba(102, 126, 234, 0.1);
+                                border: 1px solid rgba(102, 126, 234, 0.3);
+                                border-radius: 10px;
+                            ">
+                                <span style="font-size: 1.5rem;">${linkedEvent.icon || '📍'}</span>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--text-primary);">${linkedEvent.title}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                                        ${eventDate}${eventTime ? ' · ' + eventTime : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                console.log('Could not fetch linked event:', e);
+            }
+        }
+        
         // Interactions summary
         const likesCount = expense.likes ? Object.keys(expense.likes).length : 0;
         const commentsCount = expense.comments ? Object.keys(expense.comments).length : 0;
@@ -6996,6 +7032,8 @@ async function showExpenseDetailsModal(expenseId) {
                                 <p>${expense.category}</p>
                             </div>
                         ` : ''}
+                        
+                        ${linkedEventHtml}
                     </div>
                     <div class="modal-actions">
                         <button class="btn btn-secondary" onclick="closeExpenseDetailsModal()">Close</button>
