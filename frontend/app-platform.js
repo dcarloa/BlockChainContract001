@@ -15610,7 +15610,7 @@ function editEvent(eventId) {
         btn.classList.toggle('selected', btn.dataset.icon === selectedEventIcon);
     });
     
-    // Add delete button if not exists
+    // Add delete button if not exists, or update its onclick
     const footer = modal.querySelector('.modal-footer');
     let deleteBtn = modal.querySelector('.event-delete-btn');
     if (!deleteBtn && footer) {
@@ -15618,8 +15618,11 @@ function editEvent(eventId) {
         deleteBtn.type = 'button';
         deleteBtn.className = 'event-delete-btn';
         deleteBtn.textContent = t.delete || '🗑️ Delete';
-        deleteBtn.onclick = () => deleteEvent(eventId);
         footer.insertBefore(deleteBtn, footer.firstChild);
+    }
+    // Always update the onclick to point to the current event
+    if (deleteBtn) {
+        deleteBtn.onclick = () => deleteEvent(eventId);
     }
     
     // Show modal
