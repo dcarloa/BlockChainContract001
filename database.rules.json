@@ -217,8 +217,8 @@
     
     "itineraries": {
       "$groupId": {
-        ".read": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
-        ".write": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
+        ".read": "auth != null && (root.child('groups').child($groupId).child('members').child(auth.uid).exists() || root.child('groups').child($groupId).child('createdBy').val() === auth.uid)",
+        ".write": "auth != null && (root.child('groups').child($groupId).child('members').child(auth.uid).exists() || root.child('groups').child($groupId).child('createdBy').val() === auth.uid)",
         
         "events": {
           "$eventId": {
