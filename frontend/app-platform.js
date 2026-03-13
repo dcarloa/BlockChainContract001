@@ -15694,10 +15694,12 @@ async function saveEvent() {
         };
         
         if (eventId) {
-            // Update existing event
+            // Update existing event - preserve createdAt and createdBy
+            const existingEvent = itineraryEvents.find(e => e.id === eventId);
             await window.FirebaseConfig.writeDb(`itineraries/${groupId}/events/${eventId}`, {
                 ...eventData,
-                createdAt: itineraryEvents.find(e => e.id === eventId)?.createdAt || Date.now()
+                createdAt: existingEvent?.createdAt || Date.now(),
+                createdBy: existingEvent?.createdBy || window.FirebaseConfig.getCurrentUser()?.uid || 'unknown'
             });
         } else {
             // Create new event
