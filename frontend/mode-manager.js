@@ -306,7 +306,10 @@ class ModeManager {
                 // Metadata
                 category: validatedInfo.category || 'other',
                 receipt: expenseInfo.receipt || null,
-                notes: validatedInfo.notes || ''
+                notes: validatedInfo.notes || '',
+                
+                // Optional link to itinerary event
+                linkedEventId: expenseInfo.linkedEventId || null
             };
             
             // Write expense to Firebase
