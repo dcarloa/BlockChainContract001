@@ -1920,6 +1920,33 @@ Simple, fast, and free.</p>
                                     <label for="eventNote" data-i18n="app.itinerary.modal.note">Note (optional)</label>
                                     <textarea id="eventNote" class="form-control" rows="2" placeholder="Terminal 2, Gate 15"></textarea>
                                 </div>
+
+                                <!-- Useful Links Section -->
+                                <div class="form-group event-links-section">
+                                    <label data-i18n="app.itinerary.modal.links">🔗 Useful Links</label>
+                                    <div id="eventLinksContainer" class="event-links-container">
+                                        <!-- Links will be added here dynamically -->
+                                    </div>
+                                    <div class="add-link-row">
+                                        <input type="text" id="newLinkTitle" class="form-control" placeholder="Link title (e.g., Tickets)">
+                                        <input type="url" id="newLinkUrl" class="form-control" placeholder="https://...">
+                                        <button type="button" class="btn btn-sm btn-secondary" onclick="addEventLink()">+</button>
+                                    </div>
+                                    <small class="form-hint" data-i18n="app.itinerary.modal.linksHint">Add reservation links, tickets, or other useful URLs</small>
+                                </div>
+
+                                <!-- Link Existing Expenses -->
+                                <div class="form-group event-expenses-section">
+                                    <label data-i18n="app.itinerary.modal.linkExpenses">💸 Link Expenses</label>
+                                    <div id="eventLinkedExpenses" class="event-linked-expenses">
+                                        <!-- Linked expenses will show here -->
+                                    </div>
+                                    <select id="linkExpenseSelect" class="form-control" onchange="linkExpenseToEvent()">
+                                        <option value="" data-i18n="app.itinerary.modal.selectExpense">— Select an expense to link —</option>
+                                        <!-- Expenses will be populated here -->
+                                    </select>
+                                    <small class="form-hint" data-i18n="app.itinerary.modal.expensesHint">Link existing group expenses to this event</small>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" onclick="closeEventModal()" data-i18n="common.cancel">Cancel</button>

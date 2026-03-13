@@ -244,6 +244,18 @@
               ".validate": "!newData.exists() || newData.isString()"
             },
             
+            "links": {
+              "$linkIndex": {
+                ".validate": "newData.hasChildren(['title', 'url'])",
+                "title": {
+                  ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
+                },
+                "url": {
+                  ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 500"
+                }
+              }
+            },
+            
             "createdAt": {
               ".validate": "newData.isNumber()"
             },

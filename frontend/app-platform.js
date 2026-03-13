@@ -15531,6 +15531,10 @@ window.updateCalendarView = updateCalendarView;
 window.goToCalendarToday = goToCalendarToday;
 window.selectCalendarDay = selectCalendarDay;
 
+// Event links and linked expenses state
+let currentEventLinks = [];
+let currentLinkedExpenseIds = [];
+
 /**
  * Open add event modal
  */
@@ -15557,6 +15561,13 @@ function openAddEventModal(prefillDate = null) {
     document.getElementById('eventNote').value = '';
     document.getElementById('eventIcon').value = '📍';
     selectedEventIcon = '📍';
+    
+    // Reset links and expenses
+    currentEventLinks = [];
+    currentLinkedExpenseIds = [];
+    renderEventLinks();
+    renderLinkedExpenses();
+    populateExpenseSelector();
     
     // Update title
     const t = translations[getCurrentLanguage()]?.app?.itinerary?.modal || {};
@@ -15600,6 +15611,17 @@ function editEvent(eventId) {
     document.getElementById('eventNote').value = event.note || '';
     document.getElementById('eventIcon').value = event.icon || '📍';
     selectedEventIcon = event.icon || '📍';
+    
+    // Load existing links
+    currentEventLinks = event.links ? [...event.links] : [];
+    renderEventLinks();
+    
+    // Find expenses linked to this event
+    currentLinkedExpenseIds = itineraryLinkedExpenses
+        .filter(exp => exp.linkedEventId === eventId)
+        .map(exp => exp.id);
+    renderLinkedExpenses();
+    populateExpenseSelector();
     
     // Update title
     const t = translations[getCurrentLanguage()]?.app?.itinerary?.modal || {};
@@ -15647,6 +15669,194 @@ function setupIconSelector() {
     });
 }
 
+// ============================================
+// EVENT LINKS MANAGEMENT
+// ============================================
+
+/**
+ * Add a new link to the event
+ */
+function addEventLink() {
+    const titleInput = document.getElementById('newLinkTitle');
+    const urlInput = document.getElementById('newLinkUrl');
+    
+    const title = titleInput?.value.trim();
+    const url = urlInput?.value.trim();
+    
+    if (!title || !url) {
+        showToast('Please enter both title and URL', 'warning');
+        return;
+    }
+    
+    // Basic URL validation
+    if (!url.match(/^https?:\/\/.+/i)) {
+        showToast('Please enter a valid URL (starting with http:// or https://)', 'warning');
+        return;
+    }
+    
+    currentEventLinks.push({ title, url });
+    renderEventLinks();
+    
+    // Clear inputs
+    titleInput.value = '';
+    urlInput.value = '';
+}
+
+/**
+ * Remove a link from the event
+ */
+function removeEventLink(index) {
+    currentEventLinks.splice(index, 1);
+    renderEventLinks();
+}
+
+/**
+ * Render the event links list
+ */
+function renderEventLinks() {
+    const container = document.getElementById('eventLinksContainer');
+    if (!container) return;
+    
+    if (currentEventLinks.length === 0) {
+        container.innerHTML = '<div class="no-links-msg">No links added yet</div>';
+        return;
+    }
+    
+    container.innerHTML = currentEventLinks.map((link, index) => `
+        <div class="event-link-item">
+            <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener" class="event-link-content">
+                <span class="link-icon">🔗</span>
+                <span class="link-title">${escapeHtml(link.title)}</span>
+            </a>
+            <button type="button" class="remove-link-btn" onclick="removeEventLink(${index})">✕</button>
+        </div>
+    `).join('');
+}
+
+// ============================================
+// EXPENSE LINKING TO EVENTS
+// ============================================
+
+/**
+ * Populate the expense selector with available expenses
+ */
+async function populateExpenseSelector() {
+    const selector = document.getElementById('linkExpenseSelect');
+    if (!selector || !currentFund) return;
+    
+    const groupId = currentFund.fundId;
+    const currentLang = getCurrentLanguage();
+    const noExpenseText = currentLang === 'es' ? '— Selecciona un gasto para vincular —' : '— Select an expense to link —';
+    
+    try {
+        // Load all expenses for the group
+        const expensesData = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses`);
+        
+        if (!expensesData) {
+            selector.innerHTML = `<option value="">${noExpenseText}</option>`;
+            return;
+        }
+        
+        // Convert to array and filter out already linked expenses
+        const allExpenses = Object.entries(expensesData).map(([id, exp]) => ({ id, ...exp }));
+        const availableExpenses = allExpenses.filter(exp => !currentLinkedExpenseIds.includes(exp.id));
+        
+        // Sort by date descending
+        availableExpenses.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        
+        selector.innerHTML = `<option value="">${noExpenseText}</option>`;
+        
+        availableExpenses.forEach(exp => {
+            const date = exp.date || (exp.timestamp ? new Date(exp.timestamp).toLocaleDateString() : '');
+            const amount = formatCurrency(exp.amount || 0, exp.currency || 'USD');
+            const option = document.createElement('option');
+            option.value = exp.id;
+            option.textContent = `${exp.description || 'Expense'} - ${amount} (${date})`;
+            selector.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error('[Itinerary] Error loading expenses for linking:', error);
+        selector.innerHTML = `<option value="">${noExpenseText}</option>`;
+    }
+}
+
+/**
+ * Link selected expense to the event
+ */
+function linkExpenseToEvent() {
+    const selector = document.getElementById('linkExpenseSelect');
+    const expenseId = selector?.value;
+    
+    if (!expenseId) return;
+    
+    // Add to linked expenses
+    if (!currentLinkedExpenseIds.includes(expenseId)) {
+        currentLinkedExpenseIds.push(expenseId);
+        renderLinkedExpenses();
+        populateExpenseSelector(); // Refresh to remove from dropdown
+    }
+    
+    // Reset selector
+    selector.value = '';
+}
+
+/**
+ * Unlink an expense from the event
+ */
+function unlinkExpense(expenseId) {
+    currentLinkedExpenseIds = currentLinkedExpenseIds.filter(id => id !== expenseId);
+    renderLinkedExpenses();
+    populateExpenseSelector(); // Refresh to add back to dropdown
+}
+
+/**
+ * Render linked expenses list
+ */
+async function renderLinkedExpenses() {
+    const container = document.getElementById('eventLinkedExpenses');
+    if (!container || !currentFund) return;
+    
+    if (currentLinkedExpenseIds.length === 0) {
+        container.innerHTML = '<div class="no-expenses-msg">No expenses linked</div>';
+        return;
+    }
+    
+    const groupId = currentFund.fundId;
+    
+    try {
+        // Load expense details
+        const expensesHtml = await Promise.all(currentLinkedExpenseIds.map(async (expId) => {
+            const exp = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses/${expId}`);
+            if (!exp) return '';
+            
+            const amount = formatCurrency(exp.amount || 0, exp.currency || 'USD');
+            return `
+                <div class="linked-expense-item">
+                    <div class="linked-expense-info">
+                        <span class="expense-icon">💸</span>
+                        <span class="expense-desc">${escapeHtml(exp.description || 'Expense')}</span>
+                        <span class="expense-amount">${amount}</span>
+                    </div>
+                    <button type="button" class="unlink-expense-btn" onclick="unlinkExpense('${expId}')">✕</button>
+                </div>
+            `;
+        }));
+        
+        container.innerHTML = expensesHtml.filter(h => h).join('');
+        
+    } catch (error) {
+        console.error('[Itinerary] Error rendering linked expenses:', error);
+        container.innerHTML = '<div class="no-expenses-msg">Error loading expenses</div>';
+    }
+}
+
+// Expose new functions
+window.addEventLink = addEventLink;
+window.removeEventLink = removeEventLink;
+window.linkExpenseToEvent = linkExpenseToEvent;
+window.unlinkExpense = unlinkExpense;
+
 /**
  * Close event modal
  */
@@ -15693,8 +15903,11 @@ async function saveEvent() {
             time: time || null,
             note: note || null,
             icon,
+            links: currentEventLinks.length > 0 ? currentEventLinks : null,
             updatedAt: Date.now()
         };
+        
+        let finalEventId = eventId;
         
         if (eventId) {
             // Update existing event - preserve createdAt and createdBy
@@ -15712,7 +15925,11 @@ async function saveEvent() {
                 createdAt: Date.now(),
                 createdBy: currentUser?.uid || 'unknown'
             });
+            finalEventId = newEventRef.key;
         }
+        
+        // Update expense links
+        await updateExpenseLinks(groupId, finalEventId, eventId);
         
         showToast(t.saveSuccess || 'Event saved', 'success');
         closeEventModal();
@@ -15720,6 +15937,45 @@ async function saveEvent() {
     } catch (error) {
         console.error('[Itinerary] Error saving event:', error);
         showToast('Error saving event', 'error');
+    }
+}
+
+/**
+ * Update expense linkedEventId for linked/unlinked expenses
+ */
+async function updateExpenseLinks(groupId, eventId, oldEventId) {
+    try {
+        // Get all expenses
+        const expensesData = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses`);
+        if (!expensesData) return;
+        
+        // Find expenses that were linked to this event before
+        const previouslyLinked = Object.entries(expensesData)
+            .filter(([id, exp]) => exp.linkedEventId === (oldEventId || eventId))
+            .map(([id]) => id);
+        
+        // Unlink expenses that are no longer linked
+        for (const expId of previouslyLinked) {
+            if (!currentLinkedExpenseIds.includes(expId)) {
+                await window.FirebaseConfig.writeDb(
+                    `groups/${groupId}/expenses/${expId}/linkedEventId`,
+                    null
+                );
+            }
+        }
+        
+        // Link new expenses
+        for (const expId of currentLinkedExpenseIds) {
+            const exp = expensesData[expId];
+            if (exp && exp.linkedEventId !== eventId) {
+                await window.FirebaseConfig.writeDb(
+                    `groups/${groupId}/expenses/${expId}/linkedEventId`,
+                    eventId
+                );
+            }
+        }
+    } catch (error) {
+        console.error('[Itinerary] Error updating expense links:', error);
     }
 }
 

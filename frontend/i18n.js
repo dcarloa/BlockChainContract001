@@ -846,7 +846,17 @@ const translations = {
                     time: "Time (optional)",
                     note: "Note (optional)",
                     save: "Save Event",
-                    delete: "Delete"
+                    delete: "Delete",
+                    links: "🔗 Useful Links",
+                    linksHint: "Save tickets, reservations, or external links",
+                    linkTitle: "Title",
+                    linkUrl: "URL",
+                    addLink: "Add",
+                    noLinks: "No links added",
+                    linkedExpenses: "💰 Linked Expenses",
+                    expensesHint: "Associate group expenses with this event",
+                    selectExpense: "Select expense...",
+                    noLinkedExpenses: "No linked expenses"
                 },
                 days: {
                     mon: "Mon",
@@ -2463,7 +2473,17 @@ const translations = {
                     time: "Hora (opcional)",
                     note: "Nota (opcional)",
                     save: "Guardar Evento",
-                    delete: "Eliminar"
+                    delete: "Eliminar",
+                    links: "🔗 Enlaces Útiles",
+                    linksHint: "Guarda boletos, reservaciones o enlaces externos",
+                    linkTitle: "Título",
+                    linkUrl: "URL",
+                    addLink: "Agregar",
+                    noLinks: "Sin enlaces agregados",
+                    linkedExpenses: "💰 Gastos Vinculados",
+                    expensesHint: "Asocia gastos del grupo a este evento",
+                    selectExpense: "Seleccionar gasto...",
+                    noLinkedExpenses: "Sin gastos vinculados"
                 },
                 days: {
                     mon: "Lun",

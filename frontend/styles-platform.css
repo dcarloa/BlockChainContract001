@@ -18484,6 +18484,180 @@ body.light-mode .itinerary-event-expenses .expense-badge {
 }
 
 /* ============================================
+   EVENT LINKS SECTION
+   ============================================ */
+.event-links-section,
+.event-expenses-section {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.event-links-container,
+.event-linked-expenses {
+  margin-bottom: 0.75rem;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.no-links-msg,
+.no-expenses-msg {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  padding: 0.75rem;
+}
+
+/* Link Item */
+.event-link-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.event-link-item:last-child {
+  margin-bottom: 0;
+}
+
+.event-link-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+.event-link-content:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+.link-icon {
+  flex-shrink: 0;
+}
+
+.link-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.remove-link-btn,
+.unlink-expense-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.remove-link-btn:hover,
+.unlink-expense-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Add Link Row */
+.add-link-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.add-link-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.add-link-row input:first-child {
+  flex: 0.8;
+}
+
+.add-link-row button {
+  flex-shrink: 0;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Linked Expense Item */
+.linked-expense-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.linked-expense-item:last-child {
+  margin-bottom: 0;
+}
+
+.linked-expense-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.expense-icon {
+  flex-shrink: 0;
+}
+
+.expense-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.expense-amount {
+  flex-shrink: 0;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #22c55e;
+}
+
+.form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-top: 0.35rem;
+}
+
+/* Light Mode */
+body.light-mode .event-links-section,
+body.light-mode .event-expenses-section,
+[data-theme="light"] .event-links-section,
+[data-theme="light"] .event-expenses-section {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+body.light-mode .event-link-item,
+[data-theme="light"] .event-link-item {
+  background: #ffffff;
+}
+
+/* ============================================
    ITINERARY LIGHT MODE
    ============================================ */
 [data-theme="light"] .itinerary-day {
