@@ -3396,6 +3396,11 @@ async function switchFundTab(tabName) {
         }
     }
     
+    // Load itinerary when itinerary tab is selected
+    if (tabName === 'itinerary') {
+        loadItinerary();
+    }
+    
     // Load kick members list when manage tab is selected
     if (tabName === 'manage') {
         loadKickMembersList();
@@ -3540,6 +3545,7 @@ async function loadSimpleModeDetailView() {
         const budgetTab = document.querySelector('.fund-tab-btn[data-tab="budget"]');
         const portfolioTab = document.querySelector('.fund-tab-btn[data-tab="portfolio"]');
         const historyTab = document.querySelector('.fund-tab-btn[data-tab="history"]');
+        const itineraryTab = document.querySelector('.fund-tab-btn[data-tab="itinerary"]');
         
         // Detect personal colony
         const isPersonalColony = currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_personal_');
@@ -3557,6 +3563,7 @@ async function loadSimpleModeDetailView() {
             if (membersTab) membersTab.style.display = 'none';
             if (balancesTab) balancesTab.style.display = 'none';
             if (manageTab) manageTab.style.display = 'none';
+            if (itineraryTab) itineraryTab.style.display = 'none'; // No itinerary for personal
             if (historyTab) historyTab.style.display = 'flex'; // Show history tab for personal expenses
             if (mascotTab) mascotTab.style.display = 'flex'; // Keep mascot
             if (budgetTab) budgetTab.style.display = 'flex'; // Show budget for personal
@@ -3588,6 +3595,7 @@ async function loadSimpleModeDetailView() {
             if (balancesTab) balancesTab.style.display = 'flex';
             if (manageTab) manageTab.style.display = 'none'; // Hide for now
             if (mascotTab) mascotTab.style.display = 'flex'; // Show mascot tab in Simple Mode
+            if (itineraryTab) itineraryTab.style.display = 'flex'; // Show itinerary for shared groups
             if (budgetTab) budgetTab.style.display = 'none'; // Budget only for personal
             if (portfolioTab) portfolioTab.style.display = 'none'; // Portfolio only for personal
             
@@ -14907,4 +14915,406 @@ window.showColonyLifeInfoCard = showColonyLifeInfoCard;
 window.toggleColonyLifeInfo = toggleColonyLifeInfo;
 window.dismissColonyLifeInfo = dismissColonyLifeInfo;
 window.initColonyLifeInfoCard = initColonyLifeInfoCard;
+
+// ============================================
+// ITINERARY SYSTEM
+// ============================================
+
+let itineraryEvents = [];
+let selectedEventIcon = '📍';
+
+/**
+ * Load itinerary events for current group
+ */
+async function loadItinerary() {
+    if (!currentFund) return;
+    
+    const groupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
+    if (!groupId) return;
+    
+    console.log('[Itinerary] Loading events for group:', groupId);
+    
+    try {
+        const eventsData = await window.FirebaseConfig.readDb(`itineraries/${groupId}/events`);
+        itineraryEvents = eventsData ? Object.entries(eventsData).map(([id, event]) => ({
+            id,
+            ...event
+        })) : [];
+        
+        // Sort by date and time
+        itineraryEvents.sort((a, b) => {
+            const dateA = new Date(a.date + (a.time ? 'T' + a.time : ''));
+            const dateB = new Date(b.date + (b.time ? 'T' + b.time : ''));
+            return dateA - dateB;
+        });
+        
+        console.log('[Itinerary] Loaded events:', itineraryEvents.length);
+        renderItinerary();
+    } catch (error) {
+        console.error('[Itinerary] Error loading events:', error);
+        itineraryEvents = [];
+        renderItinerary();
+    }
+}
+
+/**
+ * Render the itinerary timeline
+ */
+function renderItinerary() {
+    const timeline = document.getElementById('itineraryTimeline');
+    const emptyState = document.getElementById('itineraryEmpty');
+    
+    if (!timeline) return;
+    
+    // Get date range
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let startDate = new Date(today);
+    let endDate = new Date(today);
+    
+    // If we have events, expand range to include them
+    if (itineraryEvents.length > 0) {
+        const eventDates = itineraryEvents.map(e => new Date(e.date));
+        const minDate = new Date(Math.min(...eventDates));
+        const maxDate = new Date(Math.max(...eventDates));
+        
+        // Start 3 days before first event or today (whichever is earlier)
+        startDate = new Date(Math.min(minDate.getTime(), today.getTime()));
+        startDate.setDate(startDate.getDate() - 3);
+        
+        // End 3 days after last event or today (whichever is later)
+        endDate = new Date(Math.max(maxDate.getTime(), today.getTime()));
+        endDate.setDate(endDate.getDate() + 3);
+    } else {
+        // No events - show 7 days from today
+        startDate.setDate(startDate.getDate() - 2);
+        endDate.setDate(endDate.getDate() + 4);
+    }
+    
+    // Generate days
+    const days = [];
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+        days.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    // Get translations
+    const t = translations[getCurrentLanguage()]?.app?.itinerary || {};
+    const dayNames = t.days || { sun: 'Sun', mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat' };
+    const monthNames = t.months || { jan: 'Jan', feb: 'Feb', mar: 'Mar', apr: 'Apr', may: 'May', jun: 'Jun', jul: 'Jul', aug: 'Aug', sep: 'Sep', oct: 'Oct', nov: 'Nov', dec: 'Dec' };
+    
+    const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    
+    // Render days
+    timeline.innerHTML = days.map(day => {
+        const dateStr = day.toISOString().split('T')[0];
+        const isToday = day.toDateString() === new Date().toDateString();
+        const dayEvents = itineraryEvents.filter(e => e.date === dateStr);
+        const todayLabel = t.today || 'Today';
+        
+        return `
+            <div class="itinerary-day ${isToday ? 'today' : ''}" data-date="${dateStr}">
+                <div class="itinerary-day-header">
+                    <div class="itinerary-day-weekday">${dayNames[dayKeys[day.getDay()]]}</div>
+                    <div class="itinerary-day-date">${day.getDate()}</div>
+                    <div class="itinerary-day-month">${monthNames[monthKeys[day.getMonth()]]}</div>
+                    ${isToday ? `<div class="itinerary-today-badge">${todayLabel}</div>` : ''}
+                </div>
+                <div class="itinerary-day-events">
+                    ${dayEvents.map(event => `
+                        <div class="itinerary-event" onclick="editEvent('${event.id}')">
+                            ${event.time ? `<div class="itinerary-event-time">${formatEventTime(event.time)}</div>` : ''}
+                            <div class="itinerary-event-content">
+                                <span class="itinerary-event-icon">${event.icon || '📍'}</span>
+                                <div>
+                                    <div class="itinerary-event-title">${escapeHtml(event.title)}</div>
+                                    ${event.note ? `<div class="itinerary-event-note">${escapeHtml(event.note)}</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    <button class="itinerary-add-event-mini" onclick="openAddEventModal('${dateStr}')">
+                        <span>+</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    // Show/hide empty state
+    if (emptyState) {
+        emptyState.style.display = itineraryEvents.length === 0 ? 'block' : 'none';
+    }
+    
+    // Scroll to today after a short delay
+    setTimeout(() => scrollTimelineToday(), 100);
+}
+
+/**
+ * Format event time for display
+ */
+function formatEventTime(time) {
+    if (!time) return '';
+    const [hours, minutes] = time.split(':');
+    const h = parseInt(hours);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${minutes} ${ampm}`;
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+/**
+ * Scroll timeline to today
+ */
+function scrollTimelineToday() {
+    const wrapper = document.querySelector('.itinerary-timeline-wrapper');
+    const todayCard = document.querySelector('.itinerary-day.today');
+    
+    if (wrapper && todayCard) {
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const cardRect = todayCard.getBoundingClientRect();
+        const scrollLeft = todayCard.offsetLeft - (wrapperRect.width / 2) + (cardRect.width / 2);
+        wrapper.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+    }
+}
+
+/**
+ * Scroll timeline left
+ */
+function scrollTimelinePrev() {
+    const wrapper = document.querySelector('.itinerary-timeline-wrapper');
+    if (wrapper) {
+        wrapper.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+}
+
+/**
+ * Scroll timeline right
+ */
+function scrollTimelineNext() {
+    const wrapper = document.querySelector('.itinerary-timeline-wrapper');
+    if (wrapper) {
+        wrapper.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+}
+
+/**
+ * Open add event modal
+ */
+function openAddEventModal(prefillDate = null) {
+    const modal = document.getElementById('eventModal');
+    const titleEl = document.getElementById('eventModalTitle');
+    const saveBtn = document.getElementById('saveEventBtn');
+    
+    if (!modal) return;
+    
+    // Reset form
+    document.getElementById('eventId').value = '';
+    document.getElementById('eventTitle').value = '';
+    document.getElementById('eventDate').value = prefillDate || new Date().toISOString().split('T')[0];
+    document.getElementById('eventTime').value = '';
+    document.getElementById('eventNote').value = '';
+    document.getElementById('eventIcon').value = '📍';
+    selectedEventIcon = '📍';
+    
+    // Update title
+    const t = translations[getCurrentLanguage()]?.app?.itinerary?.modal || {};
+    if (titleEl) titleEl.textContent = t.addTitle || '➕ Add Event';
+    
+    // Reset icon selection
+    document.querySelectorAll('.icon-option').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.icon === '📍');
+    });
+    
+    // Remove delete button if exists
+    const existingDelete = modal.querySelector('.event-delete-btn');
+    if (existingDelete) existingDelete.remove();
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+    // Setup icon selector
+    setupIconSelector();
+}
+
+/**
+ * Edit an existing event
+ */
+function editEvent(eventId) {
+    const event = itineraryEvents.find(e => e.id === eventId);
+    if (!event) return;
+    
+    const modal = document.getElementById('eventModal');
+    const titleEl = document.getElementById('eventModalTitle');
+    
+    if (!modal) return;
+    
+    // Fill form
+    document.getElementById('eventId').value = eventId;
+    document.getElementById('eventTitle').value = event.title || '';
+    document.getElementById('eventDate').value = event.date || '';
+    document.getElementById('eventTime').value = event.time || '';
+    document.getElementById('eventNote').value = event.note || '';
+    document.getElementById('eventIcon').value = event.icon || '📍';
+    selectedEventIcon = event.icon || '📍';
+    
+    // Update title
+    const t = translations[getCurrentLanguage()]?.app?.itinerary?.modal || {};
+    if (titleEl) titleEl.textContent = t.editTitle || '✏️ Edit Event';
+    
+    // Update icon selection
+    document.querySelectorAll('.icon-option').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.icon === selectedEventIcon);
+    });
+    
+    // Add delete button if not exists
+    const footer = modal.querySelector('.modal-footer');
+    let deleteBtn = modal.querySelector('.event-delete-btn');
+    if (!deleteBtn && footer) {
+        deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'event-delete-btn';
+        deleteBtn.textContent = t.delete || '🗑️ Delete';
+        deleteBtn.onclick = () => deleteEvent(eventId);
+        footer.insertBefore(deleteBtn, footer.firstChild);
+    }
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+    // Setup icon selector
+    setupIconSelector();
+}
+
+/**
+ * Setup icon selector click handlers
+ */
+function setupIconSelector() {
+    document.querySelectorAll('.icon-option').forEach(btn => {
+        btn.onclick = () => {
+            selectedEventIcon = btn.dataset.icon;
+            document.getElementById('eventIcon').value = selectedEventIcon;
+            document.querySelectorAll('.icon-option').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        };
+    });
+}
+
+/**
+ * Close event modal
+ */
+function closeEventModal() {
+    const modal = document.getElementById('eventModal');
+    if (modal) modal.style.display = 'none';
+}
+
+/**
+ * Save event (create or update)
+ */
+async function saveEvent() {
+    if (!currentFund) return;
+    
+    const groupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
+    if (!groupId) return;
+    
+    const eventId = document.getElementById('eventId').value;
+    const title = document.getElementById('eventTitle').value.trim();
+    const date = document.getElementById('eventDate').value;
+    const time = document.getElementById('eventTime').value;
+    const note = document.getElementById('eventNote').value.trim();
+    const icon = selectedEventIcon;
+    
+    // Validation
+    if (!title) {
+        showToast('Please enter a title', 'error');
+        return;
+    }
+    if (!date) {
+        showToast('Please select a date', 'error');
+        return;
+    }
+    
+    const t = translations[getCurrentLanguage()]?.app?.itinerary || {};
+    
+    try {
+        const eventData = {
+            title,
+            date,
+            time: time || null,
+            note: note || null,
+            icon,
+            updatedAt: Date.now()
+        };
+        
+        if (eventId) {
+            // Update existing event
+            await window.FirebaseConfig.writeDb(`itineraries/${groupId}/events/${eventId}`, {
+                ...eventData,
+                createdAt: itineraryEvents.find(e => e.id === eventId)?.createdAt || Date.now()
+            });
+        } else {
+            // Create new event
+            const newEventRef = await window.FirebaseConfig.pushDb(`itineraries/${groupId}/events`, {
+                ...eventData,
+                createdAt: Date.now(),
+                createdBy: window.FirebaseConfig.getCurrentUserId()
+            });
+        }
+        
+        showToast(t.saveSuccess || 'Event saved', 'success');
+        closeEventModal();
+        await loadItinerary();
+    } catch (error) {
+        console.error('[Itinerary] Error saving event:', error);
+        showToast('Error saving event', 'error');
+    }
+}
+
+/**
+ * Delete an event
+ */
+async function deleteEvent(eventId) {
+    if (!currentFund) return;
+    
+    const groupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
+    if (!groupId) return;
+    
+    const t = translations[getCurrentLanguage()]?.app?.itinerary || {};
+    
+    if (!confirm(t.deleteConfirm || 'Delete this event?')) return;
+    
+    try {
+        await window.FirebaseConfig.writeDb(`itineraries/${groupId}/events/${eventId}`, null);
+        showToast(t.deleteSuccess || 'Event deleted', 'success');
+        closeEventModal();
+        await loadItinerary();
+    } catch (error) {
+        console.error('[Itinerary] Error deleting event:', error);
+        showToast('Error deleting event', 'error');
+    }
+}
+
+// Make itinerary functions globally available
+window.loadItinerary = loadItinerary;
+window.renderItinerary = renderItinerary;
+window.scrollTimelineToday = scrollTimelineToday;
+window.scrollTimelinePrev = scrollTimelinePrev;
+window.scrollTimelineNext = scrollTimelineNext;
+window.openAddEventModal = openAddEventModal;
+window.editEvent = editEvent;
+window.closeEventModal = closeEventModal;
+window.saveEvent = saveEvent;
+window.deleteEvent = deleteEvent;
 

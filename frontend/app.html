@@ -1250,6 +1250,10 @@ Simple, fast, and free.</p>
                         <span class="tab-icon">👥</span>
                         <span data-i18n="app.fundDetail.tabs.members">Members</span>
                     </button>
+                    <button class="fund-tab-btn" data-tab="itinerary">
+                        <span class="tab-icon">🗓️</span>
+                        <span data-i18n="app.fundDetail.tabs.itinerary">Itinerary</span>
+                    </button>
                     <button class="fund-tab-btn" data-tab="mascot" style="display: none;">
                         <span class="tab-icon">🐜</span>
                         <span data-i18n="app.fundDetail.tabs.mascot">Mascot</span>
@@ -1747,6 +1751,125 @@ Simple, fast, and free.</p>
                         <div id="noMembers" class="empty-state" style="display: none;">
                             <div class="empty-icon">👤</div>
                             <h4 data-i18n="app.fundDetail.members.empty">No members yet</h4>
+                        </div>
+                    </div>
+
+                    <!-- Itinerary Tab -->
+                    <div id="itineraryTab" class="tab-pane">
+                        <div class="itinerary-container">
+                            <!-- Itinerary Header -->
+                            <div class="itinerary-header">
+                                <div class="itinerary-header-info">
+                                    <h3 data-i18n="app.itinerary.title">🗓️ Trip Itinerary</h3>
+                                    <p class="itinerary-subtitle" data-i18n="app.itinerary.subtitle">Plan and organize your group activities</p>
+                                </div>
+                                <button id="addEventBtn" class="btn btn-primary btn-sm" onclick="openAddEventModal()">
+                                    <span>+</span>
+                                    <span data-i18n="app.itinerary.addEvent">Add Event</span>
+                                </button>
+                            </div>
+
+                            <!-- Timeline Navigation -->
+                            <div class="itinerary-timeline-nav">
+                                <button class="timeline-nav-btn" id="timelinePrevBtn" onclick="scrollTimelinePrev()">
+                                    <span>◀</span>
+                                </button>
+                                <button class="timeline-today-btn" id="timelineTodayBtn" onclick="scrollTimelineToday()">
+                                    <span data-i18n="app.itinerary.today">Today</span>
+                                </button>
+                                <button class="timeline-nav-btn" id="timelineNextBtn" onclick="scrollTimelineNext()">
+                                    <span>▶</span>
+                                </button>
+                            </div>
+
+                            <!-- Horizontal Timeline -->
+                            <div class="itinerary-timeline-wrapper">
+                                <div class="itinerary-timeline" id="itineraryTimeline">
+                                    <!-- Days will be rendered here dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div id="itineraryEmpty" class="itinerary-empty" style="display: none;">
+                                <div class="empty-illustration">✈️</div>
+                                <h4 data-i18n="app.itinerary.emptyTitle">No events yet</h4>
+                                <p data-i18n="app.itinerary.emptySubtitle">Start planning your trip by adding events</p>
+                                <button class="btn btn-primary" onclick="openAddEventModal()">
+                                    <span>+</span>
+                                    <span data-i18n="app.itinerary.addFirstEvent">Add First Event</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add/Edit Event Modal -->
+                    <div id="eventModal" class="modal-overlay" style="display: none;">
+                        <div class="modal-content event-modal">
+                            <div class="modal-header">
+                                <h3 id="eventModalTitle" data-i18n="app.itinerary.modal.addTitle">➕ Add Event</h3>
+                                <button class="modal-close" onclick="closeEventModal()">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" id="eventId" value="">
+                                
+                                <!-- Icon Selector -->
+                                <div class="form-group">
+                                    <label data-i18n="app.itinerary.modal.icon">Icon</label>
+                                    <div class="event-icon-selector" id="eventIconSelector">
+                                        <button type="button" class="icon-option" data-icon="✈️">✈️</button>
+                                        <button type="button" class="icon-option" data-icon="🍽️">🍽️</button>
+                                        <button type="button" class="icon-option" data-icon="🏨">🏨</button>
+                                        <button type="button" class="icon-option" data-icon="🚗">🚗</button>
+                                        <button type="button" class="icon-option" data-icon="🚌">🚌</button>
+                                        <button type="button" class="icon-option" data-icon="🚂">🚂</button>
+                                        <button type="button" class="icon-option" data-icon="⛱️">⛱️</button>
+                                        <button type="button" class="icon-option" data-icon="🏖️">🏖️</button>
+                                        <button type="button" class="icon-option" data-icon="🎭">🎭</button>
+                                        <button type="button" class="icon-option" data-icon="🎵">🎵</button>
+                                        <button type="button" class="icon-option" data-icon="🍹">🍹</button>
+                                        <button type="button" class="icon-option" data-icon="☕">☕</button>
+                                        <button type="button" class="icon-option" data-icon="🛍️">🛍️</button>
+                                        <button type="button" class="icon-option" data-icon="🏛️">🏛️</button>
+                                        <button type="button" class="icon-option" data-icon="⛰️">⛰️</button>
+                                        <button type="button" class="icon-option" data-icon="🎿">🎿</button>
+                                        <button type="button" class="icon-option" data-icon="🏊">🏊</button>
+                                        <button type="button" class="icon-option" data-icon="📸">📸</button>
+                                        <button type="button" class="icon-option" data-icon="🎉">🎉</button>
+                                        <button type="button" class="icon-option" data-icon="📍">📍</button>
+                                    </div>
+                                    <input type="hidden" id="eventIcon" value="📍">
+                                </div>
+
+                                <!-- Title -->
+                                <div class="form-group">
+                                    <label for="eventTitle" data-i18n="app.itinerary.modal.title">Title *</label>
+                                    <input type="text" id="eventTitle" class="form-control" placeholder="Flight to Cancun" required>
+                                </div>
+
+                                <!-- Date -->
+                                <div class="form-group">
+                                    <label for="eventDate" data-i18n="app.itinerary.modal.date">Date *</label>
+                                    <input type="date" id="eventDate" class="form-control" required>
+                                </div>
+
+                                <!-- Time (Optional) -->
+                                <div class="form-group">
+                                    <label for="eventTime" data-i18n="app.itinerary.modal.time">Time (optional)</label>
+                                    <input type="time" id="eventTime" class="form-control">
+                                </div>
+
+                                <!-- Note (Optional) -->
+                                <div class="form-group">
+                                    <label for="eventNote" data-i18n="app.itinerary.modal.note">Note (optional)</label>
+                                    <textarea id="eventNote" class="form-control" rows="2" placeholder="Terminal 2, Gate 15"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="closeEventModal()" data-i18n="common.cancel">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="saveEventBtn" onclick="saveEvent()">
+                                    <span data-i18n="app.itinerary.modal.save">Save Event</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 

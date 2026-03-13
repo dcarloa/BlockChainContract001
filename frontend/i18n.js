@@ -823,6 +823,54 @@ const translations = {
                 targetDate: "Target Date",
                 saveGoal: "Save Goal"
             },
+            // Group Itinerary
+            itinerary: {
+                title: "🗓️ Trip Itinerary",
+                subtitle: "Plan and organize your group activities",
+                addEvent: "Add Event",
+                today: "Today",
+                emptyTitle: "No events yet",
+                emptySubtitle: "Start planning your trip by adding events",
+                addFirstEvent: "Add First Event",
+                allDay: "All Day",
+                deleteConfirm: "Delete this event?",
+                deleteSuccess: "Event deleted",
+                saveSuccess: "Event saved",
+                modal: {
+                    addTitle: "➕ Add Event",
+                    editTitle: "✏️ Edit Event",
+                    icon: "Icon",
+                    title: "Title *",
+                    date: "Date *",
+                    time: "Time (optional)",
+                    note: "Note (optional)",
+                    save: "Save Event",
+                    delete: "Delete"
+                },
+                days: {
+                    mon: "Mon",
+                    tue: "Tue",
+                    wed: "Wed",
+                    thu: "Thu",
+                    fri: "Fri",
+                    sat: "Sat",
+                    sun: "Sun"
+                },
+                months: {
+                    jan: "Jan",
+                    feb: "Feb",
+                    mar: "Mar",
+                    apr: "Apr",
+                    may: "May",
+                    jun: "Jun",
+                    jul: "Jul",
+                    aug: "Aug",
+                    sep: "Sep",
+                    oct: "Oct",
+                    nov: "Nov",
+                    dec: "Dec"
+                }
+            },
             createFund: {
                 title: "✨ Create New Group",
                 steps: {
@@ -921,6 +969,7 @@ const translations = {
                     history: "History",
                     balances: "Balances",
                     members: "Members",
+                    itinerary: "Itinerary",
                     mascot: "Mascot",
                     budget: "Budget",
                     portfolio: "Portfolio",
@@ -2364,6 +2413,54 @@ const translations = {
                 targetDate: "Fecha Objetivo",
                 saveGoal: "Guardar Meta"
             },
+            // Group Itinerary
+            itinerary: {
+                title: "🗓️ Itinerario del Viaje",
+                subtitle: "Planifica y organiza las actividades del grupo",
+                addEvent: "Agregar Evento",
+                today: "Hoy",
+                emptyTitle: "Sin eventos aún",
+                emptySubtitle: "Comienza a planificar tu viaje agregando eventos",
+                addFirstEvent: "Agregar Primer Evento",
+                allDay: "Todo el Día",
+                deleteConfirm: "¿Eliminar este evento?",
+                deleteSuccess: "Evento eliminado",
+                saveSuccess: "Evento guardado",
+                modal: {
+                    addTitle: "➕ Agregar Evento",
+                    editTitle: "✏️ Editar Evento",
+                    icon: "Ícono",
+                    title: "Título *",
+                    date: "Fecha *",
+                    time: "Hora (opcional)",
+                    note: "Nota (opcional)",
+                    save: "Guardar Evento",
+                    delete: "Eliminar"
+                },
+                days: {
+                    mon: "Lun",
+                    tue: "Mar",
+                    wed: "Mié",
+                    thu: "Jue",
+                    fri: "Vie",
+                    sat: "Sáb",
+                    sun: "Dom"
+                },
+                months: {
+                    jan: "Ene",
+                    feb: "Feb",
+                    mar: "Mar",
+                    apr: "Abr",
+                    may: "May",
+                    jun: "Jun",
+                    jul: "Jul",
+                    aug: "Ago",
+                    sep: "Sep",
+                    oct: "Oct",
+                    nov: "Nov",
+                    dec: "Dic"
+                }
+            },
             createFund: {
                 title: "✨ Crear Nuevo Grupo",
                 steps: {
@@ -2462,6 +2559,7 @@ const translations = {
                     history: "Historial",
                     balances: "Balances",
                     members: "Miembros",
+                    itinerary: "Itinerario",
                     mascot: "Mascota",
                     budget: "Presupuesto",
                     portfolio: "Portafolio",
