@@ -15143,7 +15143,7 @@ function openAddEventModal(prefillDate = null) {
     if (existingDelete) existingDelete.remove();
     
     // Show modal
-    modal.style.display = 'flex';
+    modal.classList.add('active');
     
     // Setup icon selector
     setupIconSelector();
@@ -15192,7 +15192,7 @@ function editEvent(eventId) {
     }
     
     // Show modal
-    modal.style.display = 'flex';
+    modal.classList.add('active');
     
     // Setup icon selector
     setupIconSelector();
@@ -15217,7 +15217,7 @@ function setupIconSelector() {
  */
 function closeEventModal() {
     const modal = document.getElementById('eventModal');
-    if (modal) modal.style.display = 'none';
+    if (modal) modal.classList.remove('active');
 }
 
 /**

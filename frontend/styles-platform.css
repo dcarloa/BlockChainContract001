@@ -18337,6 +18337,12 @@ header,
 /* Event Modal */
 .event-modal {
   max-width: 420px;
+  transform: scale(0.9);
+  transition: transform 0.2s ease;
+}
+
+.modal-overlay.active .event-modal {
+  transform: scale(1);
 }
 
 .event-icon-selector {
