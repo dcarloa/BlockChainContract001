@@ -213,6 +213,51 @@
           ".validate": "newData.isBoolean()"
         }
       }
+    },
+    
+    "itineraries": {
+      "$groupId": {
+        ".read": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
+        ".write": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
+        
+        "events": {
+          "$eventId": {
+            ".validate": "newData.hasChildren(['title', 'date', 'createdAt', 'createdBy'])",
+            
+            "title": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 200"
+            },
+            
+            "date": {
+              ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)"
+            },
+            
+            "time": {
+              ".validate": "!newData.exists() || (newData.isString() && newData.val().matches(/^[0-9]{2}:[0-9]{2}$/))"
+            },
+            
+            "note": {
+              ".validate": "!newData.exists() || (newData.isString() && newData.val().length <= 500)"
+            },
+            
+            "icon": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            
+            "createdAt": {
+              ".validate": "newData.isNumber()"
+            },
+            
+            "updatedAt": {
+              ".validate": "!newData.exists() || newData.isNumber()"
+            },
+            
+            "createdBy": {
+              ".validate": "newData.isString()"
+            }
+          }
+        }
+      }
     }
   }
 }
