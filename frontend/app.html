@@ -1763,29 +1763,86 @@ Simple, fast, and free.</p>
                                     <h3 data-i18n="app.itinerary.title">🗓️ Trip Itinerary</h3>
                                     <p class="itinerary-subtitle" data-i18n="app.itinerary.subtitle">Plan and organize your group activities</p>
                                 </div>
-                                <button id="addEventBtn" class="btn btn-primary btn-sm" onclick="openAddEventModal()">
-                                    <span>+</span>
-                                    <span data-i18n="app.itinerary.addEvent">Add Event</span>
-                                </button>
+                                <div class="itinerary-header-actions">
+                                    <!-- View Toggle -->
+                                    <div class="view-toggle">
+                                        <button class="view-toggle-btn active" id="viewTimelineBtn" onclick="setItineraryView('timeline')" title="Timeline View">
+                                            <span>📅</span>
+                                        </button>
+                                        <button class="view-toggle-btn" id="viewCalendarBtn" onclick="setItineraryView('calendar')" title="Calendar View">
+                                            <span>📆</span>
+                                        </button>
+                                    </div>
+                                    <button id="addEventBtn" class="btn btn-primary btn-sm" onclick="openAddEventModal()">
+                                        <span>+</span>
+                                        <span data-i18n="app.itinerary.addEvent">Add Event</span>
+                                    </button>
+                                </div>
                             </div>
 
-                            <!-- Timeline Navigation -->
-                            <div class="itinerary-timeline-nav">
-                                <button class="timeline-nav-btn" id="timelinePrevBtn" onclick="scrollTimelinePrev()">
-                                    <span>◀</span>
-                                </button>
-                                <button class="timeline-today-btn" id="timelineTodayBtn" onclick="scrollTimelineToday()">
-                                    <span data-i18n="app.itinerary.today">Today</span>
-                                </button>
-                                <button class="timeline-nav-btn" id="timelineNextBtn" onclick="scrollTimelineNext()">
-                                    <span>▶</span>
-                                </button>
+                            <!-- Timeline View -->
+                            <div id="itineraryTimelineView" class="itinerary-view active">
+                                <!-- Timeline Navigation -->
+                                <div class="itinerary-timeline-nav">
+                                    <button class="timeline-nav-btn" id="timelinePrevBtn" onclick="scrollTimelinePrev()">
+                                        <span>◀</span>
+                                    </button>
+                                    <button class="timeline-today-btn" id="timelineTodayBtn" onclick="scrollTimelineToday()">
+                                        <span data-i18n="app.itinerary.today">Today</span>
+                                    </button>
+                                    <button class="timeline-nav-btn" id="timelineNextBtn" onclick="scrollTimelineNext()">
+                                        <span>▶</span>
+                                    </button>
+                                </div>
+
+                                <!-- Horizontal Timeline -->
+                                <div class="itinerary-timeline-wrapper">
+                                    <div class="itinerary-timeline" id="itineraryTimeline">
+                                        <!-- Days will be rendered here dynamically -->
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Horizontal Timeline -->
-                            <div class="itinerary-timeline-wrapper">
-                                <div class="itinerary-timeline" id="itineraryTimeline">
-                                    <!-- Days will be rendered here dynamically -->
+                            <!-- Calendar View -->
+                            <div id="itineraryCalendarView" class="itinerary-view">
+                                <!-- Month Navigation -->
+                                <div class="calendar-month-nav">
+                                    <button class="calendar-nav-btn" onclick="navigateCalendarMonth(-1)">
+                                        <span>◀</span>
+                                    </button>
+                                    <div class="calendar-month-selector">
+                                        <select id="calendarMonthSelect" onchange="updateCalendarView()"></select>
+                                        <select id="calendarYearSelect" onchange="updateCalendarView()"></select>
+                                    </div>
+                                    <button class="calendar-nav-btn" onclick="navigateCalendarMonth(1)">
+                                        <span>▶</span>
+                                    </button>
+                                    <button class="calendar-today-btn" onclick="goToCalendarToday()">
+                                        <span data-i18n="app.itinerary.today">Today</span>
+                                    </button>
+                                </div>
+
+                                <!-- Calendar Grid -->
+                                <div class="calendar-grid-container">
+                                    <div class="calendar-weekdays" id="calendarWeekdays">
+                                        <!-- Sun Mon Tue Wed Thu Fri Sat -->
+                                    </div>
+                                    <div class="calendar-days" id="calendarDays">
+                                        <!-- Calendar days grid will be rendered here -->
+                                    </div>
+                                </div>
+
+                                <!-- Events List for Selected Day -->
+                                <div class="calendar-day-events" id="calendarDayEvents" style="display: none;">
+                                    <div class="calendar-day-events-header">
+                                        <h4 id="calendarSelectedDayTitle"></h4>
+                                        <button class="btn btn-sm btn-primary" onclick="openAddEventModal(window.selectedCalendarDate)">
+                                            <span>+</span> <span data-i18n="app.itinerary.addEvent">Add Event</span>
+                                        </button>
+                                    </div>
+                                    <div class="calendar-day-events-list" id="calendarDayEventsList">
+                                        <!-- Events for selected day -->
+                                    </div>
                                 </div>
                             </div>
 

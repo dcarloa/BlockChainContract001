@@ -836,6 +836,7 @@ const translations = {
                 deleteConfirm: "Delete this event?",
                 deleteSuccess: "Event deleted",
                 saveSuccess: "Event saved",
+                noEventsThisDay: "No events on this day",
                 modal: {
                     addTitle: "➕ Add Event",
                     editTitle: "✏️ Edit Event",
@@ -856,6 +857,15 @@ const translations = {
                     sat: "Sat",
                     sun: "Sun"
                 },
+                daysFull: {
+                    mon: "Monday",
+                    tue: "Tuesday",
+                    wed: "Wednesday",
+                    thu: "Thursday",
+                    fri: "Friday",
+                    sat: "Saturday",
+                    sun: "Sunday"
+                },
                 months: {
                     jan: "Jan",
                     feb: "Feb",
@@ -869,6 +879,20 @@ const translations = {
                     oct: "Oct",
                     nov: "Nov",
                     dec: "Dec"
+                },
+                monthsFull: {
+                    jan: "January",
+                    feb: "February",
+                    mar: "March",
+                    apr: "April",
+                    may: "May",
+                    jun: "June",
+                    jul: "July",
+                    aug: "August",
+                    sep: "September",
+                    oct: "October",
+                    nov: "November",
+                    dec: "December"
                 }
             },
             createFund: {
@@ -2429,6 +2453,7 @@ const translations = {
                 deleteConfirm: "¿Eliminar este evento?",
                 deleteSuccess: "Evento eliminado",
                 saveSuccess: "Evento guardado",
+                noEventsThisDay: "Sin eventos este día",
                 modal: {
                     addTitle: "➕ Agregar Evento",
                     editTitle: "✏️ Editar Evento",
@@ -2449,6 +2474,15 @@ const translations = {
                     sat: "Sáb",
                     sun: "Dom"
                 },
+                daysFull: {
+                    mon: "Lunes",
+                    tue: "Martes",
+                    wed: "Miércoles",
+                    thu: "Jueves",
+                    fri: "Viernes",
+                    sat: "Sábado",
+                    sun: "Domingo"
+                },
                 months: {
                     jan: "Ene",
                     feb: "Feb",
@@ -2462,6 +2496,20 @@ const translations = {
                     oct: "Oct",
                     nov: "Nov",
                     dec: "Dic"
+                },
+                monthsFull: {
+                    jan: "Enero",
+                    feb: "Febrero",
+                    mar: "Marzo",
+                    apr: "Abril",
+                    may: "Mayo",
+                    jun: "Junio",
+                    jul: "Julio",
+                    aug: "Agosto",
+                    sep: "Septiembre",
+                    oct: "Octubre",
+                    nov: "Noviembre",
+                    dec: "Diciembre"
                 }
             },
             createFund: {

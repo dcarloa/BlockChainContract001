@@ -15236,6 +15236,301 @@ function scrollTimelineNext() {
     }
 }
 
+// ============================================
+// CALENDAR VIEW FUNCTIONS
+// ============================================
+
+let currentCalendarMonth = new Date().getMonth();
+let currentCalendarYear = new Date().getFullYear();
+window.selectedCalendarDate = null;
+
+/**
+ * Set itinerary view (timeline or calendar)
+ */
+function setItineraryView(view) {
+    const timelineView = document.getElementById('itineraryTimelineView');
+    const calendarView = document.getElementById('itineraryCalendarView');
+    const timelineBtn = document.getElementById('viewTimelineBtn');
+    const calendarBtn = document.getElementById('viewCalendarBtn');
+    
+    if (view === 'calendar') {
+        timelineView?.classList.remove('active');
+        calendarView?.classList.add('active');
+        timelineBtn?.classList.remove('active');
+        calendarBtn?.classList.add('active');
+        initCalendarView();
+    } else {
+        calendarView?.classList.remove('active');
+        timelineView?.classList.add('active');
+        calendarBtn?.classList.remove('active');
+        timelineBtn?.classList.add('active');
+        renderItinerary();
+    }
+}
+
+/**
+ * Initialize calendar view with month/year selectors
+ */
+function initCalendarView() {
+    const monthSelect = document.getElementById('calendarMonthSelect');
+    const yearSelect = document.getElementById('calendarYearSelect');
+    
+    if (!monthSelect || !yearSelect) return;
+    
+    // Get translations
+    const t = translations[getCurrentLanguage()]?.app?.itinerary || {};
+    const monthNames = t.monthsFull || {
+        jan: 'January', feb: 'February', mar: 'March', apr: 'April',
+        may: 'May', jun: 'June', jul: 'July', aug: 'August',
+        sep: 'September', oct: 'October', nov: 'November', dec: 'December'
+    };
+    const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    
+    // Populate months
+    monthSelect.innerHTML = monthKeys.map((key, i) => 
+        `<option value="${i}" ${i === currentCalendarMonth ? 'selected' : ''}>${monthNames[key]}</option>`
+    ).join('');
+    
+    // Populate years (5 years back, 5 years forward)
+    const currentYear = new Date().getFullYear();
+    yearSelect.innerHTML = '';
+    for (let y = currentYear - 5; y <= currentYear + 5; y++) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y;
+        if (y === currentCalendarYear) option.selected = true;
+        yearSelect.appendChild(option);
+    }
+    
+    // Populate weekday headers
+    populateCalendarWeekdays();
+    
+    // Render calendar
+    renderCalendarView();
+}
+
+/**
+ * Populate weekday headers
+ */
+function populateCalendarWeekdays() {
+    const weekdaysEl = document.getElementById('calendarWeekdays');
+    if (!weekdaysEl) return;
+    
+    const t = translations[getCurrentLanguage()]?.app?.itinerary || {};
+    const dayNames = t.days || { sun: 'Sun', mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat' };
+    const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    
+    weekdaysEl.innerHTML = dayKeys.map(key => 
+        `<div class="calendar-weekday">${dayNames[key]}</div>`
+    ).join('');
+}
+
+/**
+ * Navigate calendar by months
+ */
+function navigateCalendarMonth(delta) {
+    currentCalendarMonth += delta;
+    if (currentCalendarMonth > 11) {
+        currentCalendarMonth = 0;
+        currentCalendarYear++;
+    } else if (currentCalendarMonth < 0) {
+        currentCalendarMonth = 11;
+        currentCalendarYear--;
+    }
+    
+    // Update selectors
+    const monthSelect = document.getElementById('calendarMonthSelect');
+    const yearSelect = document.getElementById('calendarYearSelect');
+    if (monthSelect) monthSelect.value = currentCalendarMonth;
+    if (yearSelect) yearSelect.value = currentCalendarYear;
+    
+    renderCalendarView();
+}
+
+/**
+ * Update calendar view when selectors change
+ */
+function updateCalendarView() {
+    const monthSelect = document.getElementById('calendarMonthSelect');
+    const yearSelect = document.getElementById('calendarYearSelect');
+    
+    if (monthSelect) currentCalendarMonth = parseInt(monthSelect.value);
+    if (yearSelect) currentCalendarYear = parseInt(yearSelect.value);
+    
+    renderCalendarView();
+}
+
+/**
+ * Go to current month
+ */
+function goToCalendarToday() {
+    const today = new Date();
+    currentCalendarMonth = today.getMonth();
+    currentCalendarYear = today.getFullYear();
+    
+    const monthSelect = document.getElementById('calendarMonthSelect');
+    const yearSelect = document.getElementById('calendarYearSelect');
+    if (monthSelect) monthSelect.value = currentCalendarMonth;
+    if (yearSelect) yearSelect.value = currentCalendarYear;
+    
+    renderCalendarView();
+    
+    // Also select today
+    selectCalendarDay(formatLocalDate(today));
+}
+
+/**
+ * Render the calendar grid
+ */
+function renderCalendarView() {
+    const daysContainer = document.getElementById('calendarDays');
+    if (!daysContainer) return;
+    
+    const today = new Date();
+    const todayStr = formatLocalDate(today);
+    
+    // First day of the month
+    const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
+    const startingDay = firstDay.getDay(); // 0 = Sunday
+    
+    // Days in month
+    const daysInMonth = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
+    
+    // Days in previous month
+    const daysInPrevMonth = new Date(currentCalendarYear, currentCalendarMonth, 0).getDate();
+    
+    // Build event map for quick lookup
+    const eventMap = {};
+    itineraryEvents.forEach(event => {
+        if (!eventMap[event.date]) eventMap[event.date] = [];
+        eventMap[event.date].push(event);
+    });
+    
+    let html = '';
+    
+    // Previous month days (grayed out)
+    for (let i = startingDay - 1; i >= 0; i--) {
+        const dayNum = daysInPrevMonth - i;
+        const prevMonth = currentCalendarMonth === 0 ? 11 : currentCalendarMonth - 1;
+        const prevYear = currentCalendarMonth === 0 ? currentCalendarYear - 1 : currentCalendarYear;
+        const dateStr = formatLocalDate(new Date(prevYear, prevMonth, dayNum));
+        const dayEvents = eventMap[dateStr] || [];
+        
+        html += `
+            <div class="calendar-day other-month" data-date="${dateStr}" onclick="selectCalendarDay('${dateStr}')">
+                <span class="calendar-day-number">${dayNum}</span>
+                ${dayEvents.length > 0 ? `<div class="calendar-day-dots">${dayEvents.slice(0, 3).map(e => `<span class="event-dot" title="${escapeHtml(e.title)}">${e.icon || '📍'}</span>`).join('')}${dayEvents.length > 3 ? `<span class="event-more">+${dayEvents.length - 3}</span>` : ''}</div>` : ''}
+            </div>
+        `;
+    }
+    
+    // Current month days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = formatLocalDate(new Date(currentCalendarYear, currentCalendarMonth, day));
+        const isToday = dateStr === todayStr;
+        const isSelected = dateStr === window.selectedCalendarDate;
+        const dayEvents = eventMap[dateStr] || [];
+        
+        html += `
+            <div class="calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${dayEvents.length > 0 ? 'has-events' : ''}" data-date="${dateStr}" onclick="selectCalendarDay('${dateStr}')">
+                <span class="calendar-day-number">${day}</span>
+                ${dayEvents.length > 0 ? `<div class="calendar-day-dots">${dayEvents.slice(0, 3).map(e => `<span class="event-dot" title="${escapeHtml(e.title)}">${e.icon || '📍'}</span>`).join('')}${dayEvents.length > 3 ? `<span class="event-more">+${dayEvents.length - 3}</span>` : ''}</div>` : ''}
+            </div>
+        `;
+    }
+    
+    // Next month days (fill remaining cells to complete the grid)
+    const totalCells = startingDay + daysInMonth;
+    const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+    
+    for (let day = 1; day <= remainingCells; day++) {
+        const nextMonth = currentCalendarMonth === 11 ? 0 : currentCalendarMonth + 1;
+        const nextYear = currentCalendarMonth === 11 ? currentCalendarYear + 1 : currentCalendarYear;
+        const dateStr = formatLocalDate(new Date(nextYear, nextMonth, day));
+        const dayEvents = eventMap[dateStr] || [];
+        
+        html += `
+            <div class="calendar-day other-month" data-date="${dateStr}" onclick="selectCalendarDay('${dateStr}')">
+                <span class="calendar-day-number">${day}</span>
+                ${dayEvents.length > 0 ? `<div class="calendar-day-dots">${dayEvents.slice(0, 3).map(e => `<span class="event-dot" title="${escapeHtml(e.title)}">${e.icon || '📍'}</span>`).join('')}${dayEvents.length > 3 ? `<span class="event-more">+${dayEvents.length - 3}</span>` : ''}</div>` : ''}
+            </div>
+        `;
+    }
+    
+    daysContainer.innerHTML = html;
+}
+
+/**
+ * Select a calendar day and show its events
+ */
+function selectCalendarDay(dateStr) {
+    window.selectedCalendarDate = dateStr;
+    
+    // Update visual selection
+    document.querySelectorAll('.calendar-day').forEach(el => {
+        el.classList.toggle('selected', el.dataset.date === dateStr);
+    });
+    
+    // Show events for this day
+    const eventsContainer = document.getElementById('calendarDayEvents');
+    const eventsList = document.getElementById('calendarDayEventsList');
+    const titleEl = document.getElementById('calendarSelectedDayTitle');
+    
+    if (!eventsContainer || !eventsList) return;
+    
+    const dayEvents = itineraryEvents.filter(e => e.date === dateStr);
+    
+    // Format date for display
+    const date = new Date(dateStr + 'T00:00:00');
+    const t = translations[getCurrentLanguage()]?.app?.itinerary || {};
+    const dayNames = t.daysFull || { sun: 'Sunday', mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday' };
+    const monthNames = t.monthsFull || { jan: 'January', feb: 'February', mar: 'March', apr: 'April', may: 'May', jun: 'June', jul: 'July', aug: 'August', sep: 'September', oct: 'October', nov: 'November', dec: 'December' };
+    const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    
+    const dayName = dayNames[dayKeys[date.getDay()]];
+    const monthName = monthNames[monthKeys[date.getMonth()]];
+    
+    if (titleEl) {
+        titleEl.textContent = `${dayName}, ${monthName} ${date.getDate()}, ${date.getFullYear()}`;
+    }
+    
+    if (dayEvents.length === 0) {
+        const noEventsText = t.noEventsThisDay || 'No events on this day';
+        eventsList.innerHTML = `<div class="calendar-no-events">${noEventsText}</div>`;
+    } else {
+        // Get linked expenses for events on this day
+        const linkedExpenses = itineraryLinkedExpenses || [];
+        
+        eventsList.innerHTML = dayEvents.map(event => {
+            const eventExpenses = linkedExpenses.filter(exp => exp.linkedEventId === event.id);
+            const expenseTotal = eventExpenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+            const currency = eventExpenses.length > 0 ? (eventExpenses[0].currency || 'USD') : 'USD';
+            
+            return `
+                <div class="calendar-event-item" onclick="editEvent('${event.id}')">
+                    <div class="calendar-event-icon">${event.icon || '📍'}</div>
+                    <div class="calendar-event-details">
+                        <div class="calendar-event-title">${escapeHtml(event.title)}</div>
+                        ${event.time ? `<div class="calendar-event-time">🕐 ${formatEventTime(event.time)}</div>` : ''}
+                        ${event.note ? `<div class="calendar-event-note">${escapeHtml(event.note)}</div>` : ''}
+                        ${eventExpenses.length > 0 ? `<div class="calendar-event-expense">💸 ${formatCurrency(expenseTotal, currency)}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    eventsContainer.style.display = 'block';
+}
+
+// Expose calendar functions to window
+window.setItineraryView = setItineraryView;
+window.navigateCalendarMonth = navigateCalendarMonth;
+window.updateCalendarView = updateCalendarView;
+window.goToCalendarToday = goToCalendarToday;
+window.selectCalendarDay = selectCalendarDay;
+
 /**
  * Open add event modal
  */
