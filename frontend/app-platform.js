@@ -15114,11 +15114,19 @@ function scrollTimelineNext() {
  * Open add event modal
  */
 function openAddEventModal(prefillDate = null) {
+    console.log('[Itinerary] openAddEventModal called with prefillDate:', prefillDate);
+    
     const modal = document.getElementById('eventModal');
     const titleEl = document.getElementById('eventModalTitle');
     const saveBtn = document.getElementById('saveEventBtn');
     
-    if (!modal) return;
+    console.log('[Itinerary] Modal element:', modal);
+    console.log('[Itinerary] Modal exists:', !!modal);
+    
+    if (!modal) {
+        console.error('[Itinerary] ERROR: eventModal not found in DOM!');
+        return;
+    }
     
     // Reset form
     document.getElementById('eventId').value = '';
@@ -15143,7 +15151,9 @@ function openAddEventModal(prefillDate = null) {
     if (existingDelete) existingDelete.remove();
     
     // Show modal
+    console.log('[Itinerary] Adding active class to modal');
     modal.classList.add('active');
+    console.log('[Itinerary] Modal classes after:', modal.className);
     
     // Setup icon selector
     setupIconSelector();
@@ -15317,4 +15327,5 @@ window.editEvent = editEvent;
 window.closeEventModal = closeEventModal;
 window.saveEvent = saveEvent;
 window.deleteEvent = deleteEvent;
+console.log('[Itinerary] Functions registered globally. openAddEventModal:', typeof window.openAddEventModal);
 
