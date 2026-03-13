@@ -14924,6 +14924,17 @@ let itineraryEvents = [];
 let selectedEventIcon = '📍';
 
 /**
+ * Format date to local YYYY-MM-DD string (avoids timezone issues)
+ */
+function formatLocalDate(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
  * Load itinerary events for current group
  */
 async function loadItinerary() {
@@ -15010,7 +15021,7 @@ function renderItinerary() {
     
     // Render days
     timeline.innerHTML = days.map(day => {
-        const dateStr = day.toISOString().split('T')[0];
+        const dateStr = formatLocalDate(day);
         const isToday = day.toDateString() === new Date().toDateString();
         const dayEvents = itineraryEvents.filter(e => e.date === dateStr);
         const todayLabel = t.today || 'Today';
@@ -15131,7 +15142,7 @@ function openAddEventModal(prefillDate = null) {
     // Reset form
     document.getElementById('eventId').value = '';
     document.getElementById('eventTitle').value = '';
-    document.getElementById('eventDate').value = prefillDate || new Date().toISOString().split('T')[0];
+    document.getElementById('eventDate').value = prefillDate || formatLocalDate(new Date());
     document.getElementById('eventTime').value = '';
     document.getElementById('eventNote').value = '';
     document.getElementById('eventIcon').value = '📍';
