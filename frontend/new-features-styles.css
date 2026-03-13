@@ -168,7 +168,8 @@
 .modal-large {
     max-width: 900px;
     width: 90%;
-    max-height: 90vh;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
     overflow-y: auto;
 }
 
@@ -212,8 +213,9 @@
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .modal-large {
-        width: 95%;
-        max-height: 85vh;
+        width: calc(100% - 1rem);
+        max-height: calc(100vh - 1rem);
+        max-height: calc(100dvh - 1rem);
     }
     
     .stats-grid {
@@ -327,14 +329,16 @@
 /* Modal Medium Size */
 .modal-medium {
     max-width: 600px;
-    max-height: 90vh;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
     display: flex;
     flex-direction: column;
 }
 
 /* Recurring Expense Modal Specific Styles */
 #recurringExpenseModal .modal-content {
-    max-height: 90vh;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
     display: flex;
     flex-direction: column;
 }
@@ -376,7 +380,8 @@
 
 /* Budget Modal - Similar Fix */
 #budgetModal .modal-content {
-    max-height: 90vh;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
     display: flex;
     flex-direction: column;
 }
@@ -393,7 +398,8 @@
 
 /* Analytics Modal - Already large, ensure it works */
 #analyticsModal .modal-content {
-    max-height: 90vh;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
     display: flex;
     flex-direction: column;
 }

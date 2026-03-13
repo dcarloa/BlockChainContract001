@@ -3104,17 +3104,21 @@ function injectTutorialStyles() {
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
-            max-width: 420px;
+            max-width: 400px;
+            max-height: calc(100vh - 80px);
+            max-height: calc(100dvh - 80px);
+            overflow-y: auto;
             background: linear-gradient(145deg, #1e1e2f 0%, #151525 100%);
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 20px;
-            padding: 1.5rem;
+            padding: 1.25rem;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 
                         0 0 40px rgba(102, 126, 234, 0.15);
             z-index: 100001;
             animation: tooltipSlideIn 0.4s ease;
             pointer-events: auto;
             touch-action: auto;
+            box-sizing: border-box;
         }
         
         .tutorial-tooltip button {
@@ -3137,6 +3141,18 @@ function injectTutorialStyles() {
         .tutorial-tooltip.center {
             top: 50%;
             transform: translate(-50%, -50%);
+            max-height: calc(100vh - 40px);
+            max-height: calc(100dvh - 40px);
+        }
+        
+        /* Safe positioning for small screens */
+        @media (max-height: 650px) {
+            .tutorial-tooltip.center {
+                top: 20px;
+                transform: translateX(-50%);
+                max-height: calc(100vh - 40px);
+                max-height: calc(100dvh - 40px);
+            }
         }
         
         .tutorial-tooltip.center {
@@ -3470,9 +3486,15 @@ function injectTutorialStyles() {
         /* Ensure tooltip is always visible within viewport */
         @media (max-height: 700px) {
             .tutorial-tooltip {
-                max-height: calc(100vh - 100px);
+                max-height: calc(100vh - 60px);
+                max-height: calc(100dvh - 60px);
                 overflow-y: auto;
                 padding: 1rem;
+            }
+            
+            .tutorial-tooltip.center {
+                top: 30px !important;
+                transform: translateX(-50%) !important;
             }
             
             .tutorial-tooltip.bottom,
@@ -3497,15 +3519,31 @@ function injectTutorialStyles() {
             .tutorial-ant {
                 font-size: 2rem !important;
             }
+            
+            .tutorial-tooltip-content {
+                margin-bottom: 1rem !important;
+            }
+            
+            .tutorial-btn-primary {
+                padding: 0.75rem 1.5rem !important;
+            }
         }
         
         /* Mobile adjustments */
         @media (max-width: 600px) {
             .tutorial-tooltip {
-                width: calc(100% - 2rem);
+                width: calc(100% - 1.5rem);
                 max-width: none;
-                margin: 1rem;
-                padding: 1.25rem;
+                left: 50%;
+                right: auto;
+                margin: 0;
+                padding: 1rem;
+                border-radius: 16px;
+            }
+            
+            .tutorial-tooltip.center {
+                max-height: calc(100vh - 40px);
+                max-height: calc(100dvh - 40px);
             }
             
             .tutorial-tooltip.bottom {
@@ -3514,11 +3552,60 @@ function injectTutorialStyles() {
             }
             
             .tutorial-title {
-                font-size: 1.25rem;
+                font-size: 1.2rem;
+            }
+            
+            .tutorial-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .tutorial-description {
+                font-size: 0.85rem;
             }
             
             .tutorial-ant {
                 font-size: 2.5rem;
+            }
+            
+            .tutorial-btn-primary {
+                padding: 0.875rem 1.5rem;
+                font-size: 0.95rem;
+            }
+            
+            .tutorial-btn-secondary {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Very small screens (short height) */
+        @media (max-height: 550px) {
+            .tutorial-tooltip {
+                padding: 0.75rem;
+            }
+            
+            .tutorial-tooltip.center {
+                top: 10px !important;
+                transform: translateX(-50%) !important;
+                max-height: calc(100vh - 20px);
+                max-height: calc(100dvh - 20px);
+            }
+            
+            .tutorial-ant-icon {
+                display: none !important;
+            }
+            
+            .tutorial-tooltip-header {
+                margin-bottom: 0.75rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+            
+            .tutorial-tooltip-content {
+                margin-bottom: 0.75rem !important;
+            }
+            
+            .tutorial-features {
+                margin-top: 0.5rem !important;
             }
         }
     `;
