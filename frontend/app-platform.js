@@ -15150,10 +15150,10 @@ function openAddEventModal(prefillDate = null) {
     const existingDelete = modal.querySelector('.event-delete-btn');
     if (existingDelete) existingDelete.remove();
     
-    // Show modal
-    console.log('[Itinerary] Adding active class to modal');
+    // Show modal - remove any inline display style and add active class
+    modal.style.display = '';
     modal.classList.add('active');
-    console.log('[Itinerary] Modal classes after:', modal.className);
+    console.log('[Itinerary] Modal opened, display:', modal.style.display, 'classes:', modal.className);
     
     // Setup icon selector
     setupIconSelector();
@@ -15202,6 +15202,7 @@ function editEvent(eventId) {
     }
     
     // Show modal
+    modal.style.display = '';
     modal.classList.add('active');
     
     // Setup icon selector
@@ -15227,7 +15228,10 @@ function setupIconSelector() {
  */
 function closeEventModal() {
     const modal = document.getElementById('eventModal');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+    }
 }
 
 /**
