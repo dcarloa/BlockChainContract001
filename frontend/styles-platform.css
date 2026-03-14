@@ -89,6 +89,68 @@
   --transition-slow: 500ms ease;
 }
 
+/* === GLOBAL SCROLLBAR STYLES === */
+/* Modern scrollbar for all elements - Dark Theme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(102, 126, 234, 0.4) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.5) 0%, rgba(118, 75, 162, 0.5) 100%);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.7) 0%, rgba(118, 75, 162, 0.7) 100%);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Light Theme Scrollbar */
+[data-theme="light"] * {
+  scrollbar-color: rgba(102, 126, 234, 0.3) rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] *::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%);
+  background-clip: padding-box;
+}
+
+[data-theme="light"] *::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.6) 0%, rgba(118, 75, 162, 0.6) 100%);
+  background-clip: padding-box;
+}
+
+[data-theme="light"] *::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+  background-clip: padding-box;
+}
+
 /* === GLOBAL RESET === */
 * {
   margin: 0;
