@@ -8124,14 +8124,14 @@ function populateExpenseMembers() {
                 </div>
             </label>
             <div class="member-share-controls" id="split-share-controls-${memberIndex}">
-                <button type="button" class="share-btn share-btn-minus" onclick="decrementExpenseShare(${memberIndex})" title="Quitar una porci�n">
+                <button type="button" class="share-btn share-btn-minus" onclick="decrementExpenseShare(${memberIndex})" title="Quitar una porción">
                     -
                 </button>
                 <div class="share-counter" id="split-share-count-${memberIndex}">
                     <span class="share-number">1</span>
                     <span class="share-label">person</span>
                 </div>
-                <button type="button" class="share-btn share-btn-plus" onclick="incrementExpenseShare(${memberIndex})" title="Agregar una porci�n">
+                <button type="button" class="share-btn share-btn-plus" onclick="incrementExpenseShare(${memberIndex})" title="Agregar una porción">
                     +
                 </button>
             </div>
@@ -8140,11 +8140,71 @@ function populateExpenseMembers() {
         memberIndex++;
     });
 
+    // Update toggle all button state
+    updateToggleAllButton();
 }
 
 // ============================================
 // EXPENSE SHARE MANAGEMENT FUNCTIONS
 // ============================================
+
+// Toggle all split members selection
+function toggleAllSplitMembers() {
+    const checkboxes = document.querySelectorAll('#expenseSplitBetween input[name="splitBetween"]');
+    const toggleBtn = document.getElementById('toggleAllSplit');
+    
+    if (!checkboxes.length) return;
+    
+    // Check if all are currently selected
+    const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+    
+    // Toggle all checkboxes
+    checkboxes.forEach((checkbox, index) => {
+        if (allSelected) {
+            // Unselect all
+            checkbox.checked = false;
+        } else {
+            // Select all
+            checkbox.checked = true;
+        }
+        // Trigger the change handler
+        toggleExpenseShare(checkbox, index);
+    });
+    
+    // Update button state
+    updateToggleAllButton();
+}
+
+// Update the toggle all button appearance
+function updateToggleAllButton() {
+    const checkboxes = document.querySelectorAll('#expenseSplitBetween input[name="splitBetween"]');
+    const toggleBtn = document.getElementById('toggleAllSplit');
+    
+    if (!toggleBtn || !checkboxes.length) return;
+    
+    const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+    
+    const icon = toggleBtn.querySelector('.toggle-icon');
+    const text = toggleBtn.querySelector('.toggle-text');
+    
+    // Get translations
+    const lang = getCurrentLanguage();
+    const t = translations[lang]?.app?.modals?.addExpense || {};
+    
+    if (allSelected) {
+        toggleBtn.classList.add('all-selected');
+        if (icon) icon.textContent = '☑';
+        if (text) {
+            text.textContent = t.unselectAll || text.dataset.unselectText || 'Unselect All';
+        }
+    } else {
+        toggleBtn.classList.remove('all-selected');
+        if (icon) icon.textContent = '☐';
+        if (text) {
+            text.textContent = t.selectAll || text.dataset.selectText || 'Select All';
+        }
+    }
+}
 
 // Toggle expense share selection
 function toggleExpenseShare(checkbox, index) {
@@ -8161,6 +8221,9 @@ function toggleExpenseShare(checkbox, index) {
         if (controls) controls.style.display = 'none';
         item.dataset.shares = '0';
     }
+    
+    // Update toggle all button state
+    updateToggleAllButton();
 }
 
 // Increment share count for expense
@@ -8209,6 +8272,8 @@ function updateExpenseShareDisplay(index, shares) {
 window.toggleExpenseShare = toggleExpenseShare;
 window.incrementExpenseShare = incrementExpenseShare;
 window.decrementExpenseShare = decrementExpenseShare;
+window.toggleAllSplitMembers = toggleAllSplitMembers;
+window.updateToggleAllButton = updateToggleAllButton;
 
 // ============================================
 // CURRENCY UTILITIES
