@@ -13186,6 +13186,102 @@ function loadProfileOverview() {
     // Last login
     const lastLoginDate = new Date(user.metadata.lastSignInTime);
     document.getElementById('profileInfoLastLogin').textContent = getTimeAgo(lastLoginDate.getTime());
+    
+    // Load recent activity
+    loadProfileRecentActivity();
+}
+
+/**
+ * Load recent user activity across all groups
+ */
+async function loadProfileRecentActivity() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    
+    const activityList = document.getElementById('profileRecentActivity');
+    if (!activityList) return;
+    
+    try {
+        const activities = [];
+        
+        // Get user's groups
+        const userGroupsData = await window.FirebaseConfig.readDb(`users/${user.uid}/groups`);
+        if (!userGroupsData) {
+            activityList.innerHTML = '<p class="empty-state-text">No recent activity</p>';
+            return;
+        }
+        
+        // Collect recent expenses and settlements from each group
+        for (const groupId of Object.keys(userGroupsData)) {
+            const groupData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+            if (!groupData) continue;
+            
+            const groupName = groupData.name || groupData.fundName || 'Group';
+            
+            // Get expenses
+            if (groupData.expenses) {
+                for (const [expId, expense] of Object.entries(groupData.expenses)) {
+                    if (expense.paidByUid === user.uid || expense.paidBy === user.email) {
+                        activities.push({
+                            type: 'expense',
+                            icon: '💳',
+                            description: expense.description || 'Expense',
+                            amount: expense.amount,
+                            currency: expense.currency || groupData.primaryCurrency || 'USD',
+                            groupName: groupName,
+                            timestamp: expense.createdAt || expense.date || 0
+                        });
+                    }
+                }
+            }
+            
+            // Get settlements
+            if (groupData.settlements) {
+                for (const [setId, settlement] of Object.entries(groupData.settlements)) {
+                    if (settlement.fromUid === user.uid || settlement.from === user.email ||
+                        settlement.toUid === user.uid || settlement.to === user.email) {
+                        const isPayer = settlement.fromUid === user.uid || settlement.from === user.email;
+                        activities.push({
+                            type: 'settlement',
+                            icon: isPayer ? '💸' : '💰',
+                            description: isPayer ? 'Payment sent' : 'Payment received',
+                            amount: settlement.amount,
+                            currency: settlement.currency || groupData.primaryCurrency || 'USD',
+                            groupName: groupName,
+                            timestamp: settlement.createdAt || settlement.date || 0
+                        });
+                    }
+                }
+            }
+        }
+        
+        // Sort by timestamp (most recent first) and take top 5
+        activities.sort((a, b) => b.timestamp - a.timestamp);
+        const recentActivities = activities.slice(0, 5);
+        
+        if (recentActivities.length === 0) {
+            activityList.innerHTML = '<p class="empty-state-text">No recent activity</p>';
+            return;
+        }
+        
+        // Render activities
+        activityList.innerHTML = recentActivities.map(activity => `
+            <div class="profile-activity-item">
+                <span class="activity-icon">${activity.icon}</span>
+                <div class="activity-details">
+                    <span class="activity-description">${activity.description}</span>
+                    <span class="activity-meta">${activity.groupName} • ${getTimeAgo(activity.timestamp)}</span>
+                </div>
+                <span class="activity-amount ${activity.type === 'settlement' ? 'settlement' : ''}">
+                    $${activity.amount.toFixed(2)} ${activity.currency}
+                </span>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Error loading recent activity:', error);
+        activityList.innerHTML = '<p class="empty-state-text">Error loading activity</p>';
+    }
 }
 
 /**
