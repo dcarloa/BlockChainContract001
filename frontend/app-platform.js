@@ -15411,11 +15411,10 @@ function renderItinerary() {
                 </div>
                 <div class="itinerary-day-events">
                     ${dayEvents.map(event => {
-                        // Calculate linked expenses for this event
+                        // Calculate linked expenses for this event (handles mixed currencies)
                         const eventExpenses = itineraryLinkedExpenses.filter(exp => exp.linkedEventId === event.id);
-                        const expenseTotal = eventExpenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
                         const expenseCount = eventExpenses.length;
-                        const currency = eventExpenses.length > 0 ? (eventExpenses[0].currency || 'USD') : 'USD';
+                        const { total: expenseTotal, currency } = calculateEventExpenseTotal(eventExpenses);
                         
                         return `
                         <div class="itinerary-event" onclick="editEvent('${event.id}')">
@@ -15461,6 +15460,36 @@ function formatEventTime(time) {
     const ampm = h >= 12 ? 'PM' : 'AM';
     const h12 = h % 12 || 12;
     return `${h12}:${minutes} ${ampm}`;
+}
+
+/**
+ * Calculate total expenses for an event, handling multiple currencies
+ * If all expenses are same currency, return that currency
+ * If mixed currencies, convert to USD
+ * @param {Array} expenses - Array of expense objects
+ * @returns {{total: number, currency: string, isMixed: boolean}}
+ */
+function calculateEventExpenseTotal(expenses) {
+    if (!expenses || expenses.length === 0) {
+        return { total: 0, currency: 'USD', isMixed: false };
+    }
+    
+    // Get unique currencies
+    const currencies = [...new Set(expenses.map(exp => exp.currency || 'USD'))];
+    
+    if (currencies.length === 1) {
+        // Single currency - just sum the amounts
+        const total = expenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+        return { total, currency: currencies[0], isMixed: false };
+    } else {
+        // Multiple currencies - convert all to USD
+        const total = expenses.reduce((sum, exp) => {
+            const amount = parseFloat(exp.amount) || 0;
+            const currency = exp.currency || 'USD';
+            return sum + convertToUSD(amount, currency);
+        }, 0);
+        return { total, currency: 'USD', isMixed: true };
+    }
 }
 
 /**
@@ -15776,8 +15805,8 @@ function selectCalendarDay(dateStr) {
         
         eventsList.innerHTML = dayEvents.map(event => {
             const eventExpenses = linkedExpenses.filter(exp => exp.linkedEventId === event.id);
-            const expenseTotal = eventExpenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
-            const currency = eventExpenses.length > 0 ? (eventExpenses[0].currency || 'USD') : 'USD';
+            // Calculate total with proper currency handling (converts to USD if mixed)
+            const { total: expenseTotal, currency } = calculateEventExpenseTotal(eventExpenses);
             
             return `
                 <div class="calendar-event-item" onclick="editEvent('${event.id}')">
