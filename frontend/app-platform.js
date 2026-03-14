@@ -3598,7 +3598,15 @@ async function loadSimpleModeDetailView() {
             if (balancesTab) balancesTab.style.display = 'flex';
             if (manageTab) manageTab.style.display = 'none'; // Hide for now
             if (mascotTab) mascotTab.style.display = 'flex'; // Show mascot tab in Simple Mode
-            if (itineraryTab) itineraryTab.style.display = 'flex'; // Show itinerary for shared groups
+            
+            // Robustly show itinerary tab - re-query if not found initially
+            let itinTab = itineraryTab || document.querySelector('.fund-tab-btn[data-tab="itinerary"]');
+            if (itinTab) {
+                itinTab.style.display = 'flex'; // Show itinerary for shared groups
+            } else {
+                console.warn('[Tabs] Itinerary tab not found in DOM');
+            }
+            
             if (budgetTab) budgetTab.style.display = 'none'; // Budget only for personal
             if (portfolioTab) portfolioTab.style.display = 'none'; // Portfolio only for personal
             
