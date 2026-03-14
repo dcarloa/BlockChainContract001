@@ -264,15 +264,9 @@ window.addEventListener('DOMContentLoaded', async () => {
                         updateFabVisibility();
                     }
                     
-                    // Load personal dashboard and insights with delay
-                    setTimeout(() => {
-                        if (typeof loadPersonalDashboard === 'function') {
-                            loadPersonalDashboard();
-                        }
-                        if (typeof loadColonyInsights === 'function') {
-                            loadColonyInsights();
-                        }
-                    }, 500);
+                    // NOTE: Personal dashboard and colony insights are now only shown 
+                    // inside the personal colony view, not on the main dashboard
+                    // They were cluttering the main dashboard on mobile devices
                 }
                 
                 // Initialize Firebase Messaging when user logs in
@@ -1072,6 +1066,16 @@ function showDashboard() {
     
     const addExpenseCard = document.getElementById('simpleAddExpenseCard');
     if (addExpenseCard) addExpenseCard.style.display = 'none';
+    
+    // Hide personal colony widgets - they should only show inside personal colony view
+    const personalDashboard = document.getElementById('personalDashboard');
+    if (personalDashboard) personalDashboard.style.display = 'none';
+    
+    const weeklyDigest = document.getElementById('weeklyDigest');
+    if (weeklyDigest) weeklyDigest.style.display = 'none';
+    
+    const balanceGlance = document.getElementById('balanceGlance');
+    if (balanceGlance) balanceGlance.style.display = 'none';
     
     // Make sure dashboard section is visible (use inline styles to override any Demo Mode inline styles)
     const dashboardSection = document.getElementById('dashboardSection');
@@ -14137,11 +14141,30 @@ async function loadPersonalDashboard() {
                 'other': '📦'
             };
             
+            // Category name fallbacks
+            const categoryNames = {
+                'food': 'Food',
+                'transport': 'Transport',
+                'entertainment': 'Entertainment',
+                'shopping': 'Shopping',
+                'bills': 'Bills',
+                'health': 'Health',
+                'travel': 'Travel',
+                'other': 'Other'
+            };
+            
             const topCatIconEl = document.getElementById('personalTopCategoryIcon');
             const topCatNameEl = document.getElementById('personalTopCategoryName');
             
-            if (topCatIconEl) topCatIconEl.textContent = categoryIcons[topCategory[0]] || '📦';
-            if (topCatNameEl) topCatNameEl.textContent = t(`app.categories.${topCategory[0]}`) || topCategory[0];
+            const catKey = topCategory[0];
+            if (topCatIconEl) topCatIconEl.textContent = categoryIcons[catKey] || '📦';
+            if (topCatNameEl) {
+                const translated = t(`app.categories.${catKey}`);
+                // Only use translation if it doesn't look like a translation key
+                topCatNameEl.textContent = (translated && !translated.startsWith('app.')) 
+                    ? translated 
+                    : (categoryNames[catKey] || catKey.charAt(0).toUpperCase() + catKey.slice(1));
+            }
         }
         
         // Load budget status
