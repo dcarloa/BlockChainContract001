@@ -4658,6 +4658,65 @@ header,
     padding-left: 1rem;
     line-height: 1.4;
   }
+  
+  /* Balance Cards - Mobile Responsive Layout */
+  .balance-card-simple {
+    padding: var(--spacing-sm);
+  }
+  
+  .balance-card-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-sm);
+  }
+  
+  .balance-info {
+    gap: var(--spacing-sm);
+    width: 100%;
+  }
+  
+  .balance-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 1rem;
+  }
+  
+  .balance-details {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+  }
+  
+  .balance-name {
+    font-size: 0.95rem;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .balance-description {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .balance-amount-display {
+    width: 100%;
+    text-align: center;
+    font-size: 1.25rem;
+    padding: 0.625rem 0.875rem;
+    margin-top: var(--spacing-xs);
+  }
+  
+  .balance-card-simple .btn-record-payment {
+    width: 100%;
+    justify-content: center;
+    margin-top: var(--spacing-xs);
+  }
 }
 
 /* Balance Card Simple (used in Simple Mode) */
