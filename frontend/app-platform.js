@@ -15949,11 +15949,14 @@ function linkExpenseToEvent() {
     const selector = document.getElementById('linkExpenseSelect');
     const expenseId = selector?.value;
     
+    console.log('[Itinerary] linkExpenseToEvent called, expenseId:', expenseId);
+    
     if (!expenseId) return;
     
     // Add to linked expenses
     if (!currentLinkedExpenseIds.includes(expenseId)) {
         currentLinkedExpenseIds.push(expenseId);
+        console.log('[Itinerary] Added expense to currentLinkedExpenseIds:', currentLinkedExpenseIds);
         renderLinkedExpenses();
         populateExpenseSelector(); // Refresh to remove from dropdown
     }
@@ -16090,7 +16093,9 @@ async function saveEvent() {
         }
         
         // Update expense links
+        console.log('[Itinerary] Before updateExpenseLinks - currentLinkedExpenseIds:', currentLinkedExpenseIds, 'finalEventId:', finalEventId);
         await updateExpenseLinks(groupId, finalEventId, eventId);
+        console.log('[Itinerary] After updateExpenseLinks completed');
         
         showToast(t.saveSuccess || 'Event saved', 'success');
         closeEventModal();
@@ -16105,9 +16110,11 @@ async function saveEvent() {
  * Update expense linkedEventId for linked/unlinked expenses
  */
 async function updateExpenseLinks(groupId, eventId, oldEventId) {
+    console.log('[Itinerary] updateExpenseLinks called with:', { groupId, eventId, oldEventId, currentLinkedExpenseIds });
     try {
         // Get all expenses
         const expensesData = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses`);
+        console.log('[Itinerary] Loaded expenses count:', expensesData ? Object.keys(expensesData).length : 0);
         if (!expensesData) return;
         
         // Find expenses that were linked to this event before
@@ -16126,13 +16133,17 @@ async function updateExpenseLinks(groupId, eventId, oldEventId) {
         }
         
         // Link new expenses
+        console.log('[Itinerary] Linking expenses:', currentLinkedExpenseIds);
         for (const expId of currentLinkedExpenseIds) {
             const exp = expensesData[expId];
+            console.log('[Itinerary] Processing expense:', expId, 'exists:', !!exp, 'currentLinkedEventId:', exp?.linkedEventId);
             if (exp && exp.linkedEventId !== eventId) {
+                console.log('[Itinerary] Writing linkedEventId', eventId, 'to expense', expId);
                 await window.FirebaseConfig.writeDb(
                     `groups/${groupId}/expenses/${expId}/linkedEventId`,
                     eventId
                 );
+                console.log('[Itinerary] Successfully linked expense', expId);
             }
         }
     } catch (error) {
