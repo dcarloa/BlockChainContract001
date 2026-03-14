@@ -2025,23 +2025,6 @@ function createFundCard(fund) {
     return `
         <div class="fund-card ${isInactive ? 'fund-inactive' : ''}" onclick="openFund('${fund.fundAddress}')">
             <div class="fund-card-content">
-                ${fund.isCreator ? `
-                <div class="fund-actions">
-                    ${fund.isActive ? `
-                    <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Pausar grupo">
-                        ⏸️
-                    </button>
-                    ` : `
-                    <button class="fund-action-btn fund-resume-btn" onclick="event.stopPropagation(); reactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Reactivar grupo">
-                        ▶️
-                    </button>
-                    `}
-                    <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${fund.fundName}')" title="Eliminar grupo">
-                        🗑️
-                    </button>
-                </div>
-                ` : ''}
-                
                 <div class="fund-card-header">
                     <div class="fund-icon">${icon}</div>
                     <div class="fund-card-title">
@@ -2054,6 +2037,22 @@ function createFundCard(fund) {
                             ${fund.mode === 'simple' && fund.healthStreak?.weeks >= 2 ? getHealthStreakBadge(fund.healthStreak.weeks) : ''}
                         </div>
                     </div>
+                    ${fund.isCreator ? `
+                    <div class="fund-actions">
+                        ${fund.isActive ? `
+                        <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Pausar grupo">
+                            ⏸️
+                        </button>
+                        ` : `
+                        <button class="fund-action-btn fund-resume-btn" onclick="event.stopPropagation(); reactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Reactivar grupo">
+                            ▶️
+                        </button>
+                        `}
+                        <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${fund.fundName}')" title="Eliminar grupo">
+                            🗑️
+                        </button>
+                    </div>
+                    ` : ''}
                 </div>
                 
                 <div class="fund-stats">
