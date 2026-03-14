@@ -15417,7 +15417,7 @@ function renderItinerary() {
                         const { total: expenseTotal, currency } = calculateEventExpenseTotal(eventExpenses);
                         
                         return `
-                        <div class="itinerary-event" onclick="editEvent('${event.id}')">
+                        <div class="itinerary-event" onclick="viewEvent('${event.id}')">
                             ${event.time ? `<div class="itinerary-event-time">${formatEventTime(event.time)}</div>` : ''}
                             <div class="itinerary-event-content">
                                 <span class="itinerary-event-icon">${event.icon || '📍'}</span>
@@ -15809,7 +15809,7 @@ function selectCalendarDay(dateStr) {
             const { total: expenseTotal, currency } = calculateEventExpenseTotal(eventExpenses);
             
             return `
-                <div class="calendar-event-item" onclick="editEvent('${event.id}')">
+                <div class="calendar-event-item" onclick="viewEvent('${event.id}')">
                     <div class="calendar-event-icon">${event.icon || '📍'}</div>
                     <div class="calendar-event-details">
                         <div class="calendar-event-title">${escapeHtml(event.title)}</div>
@@ -16340,6 +16340,152 @@ async function deleteEvent(eventId) {
     }
 }
 
+// ============================================
+// EVENT VIEW MODAL (Read-only visualization)
+// ============================================
+
+let currentViewEventId = null;
+
+/**
+ * View an event in read-only modal
+ */
+async function viewEvent(eventId) {
+    const event = itineraryEvents.find(e => e.id === eventId);
+    if (!event) return;
+    
+    currentViewEventId = eventId;
+    
+    const modal = document.getElementById('eventViewModal');
+    if (!modal) return;
+    
+    const currentLang = getCurrentLanguage();
+    const t = translations[currentLang]?.app?.itinerary || {};
+    const monthNames = t.monthsFull || { 
+        jan: 'January', feb: 'February', mar: 'March', apr: 'April', 
+        may: 'May', jun: 'June', jul: 'July', aug: 'August', 
+        sep: 'September', oct: 'October', nov: 'November', dec: 'December' 
+    };
+    const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    
+    // Set icon and title
+    document.getElementById('eventViewIcon').textContent = event.icon || '📍';
+    document.getElementById('eventViewTitle').textContent = event.title || 'Event';
+    
+    // Format and set date
+    if (event.date) {
+        const dateObj = new Date(event.date + 'T00:00:00');
+        const monthName = monthNames[monthKeys[dateObj.getMonth()]];
+        const formattedDate = `📅 ${monthName} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+        document.getElementById('eventViewDate').textContent = formattedDate;
+        document.getElementById('eventViewDate').style.display = '';
+    } else {
+        document.getElementById('eventViewDate').style.display = 'none';
+    }
+    
+    // Format and set time
+    if (event.time) {
+        const formattedTime = `🕐 ${formatEventTime(event.time)}`;
+        document.getElementById('eventViewTime').textContent = formattedTime;
+        document.getElementById('eventViewTime').style.display = '';
+    } else {
+        document.getElementById('eventViewTime').style.display = 'none';
+    }
+    
+    // Note section
+    const noteSection = document.getElementById('eventViewNoteSection');
+    const noteEl = document.getElementById('eventViewNote');
+    if (event.note && event.note.trim()) {
+        noteEl.textContent = event.note;
+        noteSection.style.display = 'block';
+    } else {
+        noteSection.style.display = 'none';
+    }
+    
+    // Links section
+    const linksSection = document.getElementById('eventViewLinksSection');
+    const linksContainer = document.getElementById('eventViewLinks');
+    if (event.links && event.links.length > 0) {
+        linksContainer.innerHTML = event.links.map(link => `
+            <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" class="event-view-link">
+                <span class="link-icon">🔗</span>
+                <span class="link-title">${escapeHtml(link.title || link.url)}</span>
+                <span class="link-external">↗</span>
+            </a>
+        `).join('');
+        linksSection.style.display = 'block';
+    } else {
+        linksSection.style.display = 'none';
+    }
+    
+    // Expenses section
+    const expensesSection = document.getElementById('eventViewExpensesSection');
+    const expensesContainer = document.getElementById('eventViewExpenses');
+    const totalEl = document.getElementById('eventViewTotal');
+    const eventExpenses = itineraryLinkedExpenses.filter(exp => exp.linkedEventId === eventId);
+    
+    if (eventExpenses.length > 0) {
+        // Render each expense
+        expensesContainer.innerHTML = eventExpenses.map(exp => {
+            const amount = formatCurrency(exp.amount || 0, exp.currency || 'USD');
+            const date = exp.date || (exp.timestamp ? new Date(exp.timestamp).toLocaleDateString() : '');
+            const paidBy = exp.paidByName || 'Unknown';
+            
+            return `
+                <div class="event-view-expense">
+                    <div class="expense-main">
+                        <span class="expense-desc">${escapeHtml(exp.description || 'Expense')}</span>
+                        <span class="expense-amount">${amount}</span>
+                    </div>
+                    <div class="expense-meta">
+                        <span class="expense-payer">👤 ${escapeHtml(paidBy)}</span>
+                        ${date ? `<span class="expense-date">📅 ${date}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        // Calculate and show total
+        const { total, currency, isMixed } = calculateEventExpenseTotal(eventExpenses);
+        const totalLabel = currentLang === 'es' ? 'Total' : 'Total';
+        totalEl.innerHTML = `<strong>${totalLabel}:</strong> ${formatCurrency(total, currency)}${isMixed ? ' (USD)' : ''}`;
+        totalEl.style.display = 'block';
+        
+        expensesSection.style.display = 'block';
+    } else {
+        expensesSection.style.display = 'none';
+    }
+    
+    // Show/hide empty state
+    const emptyState = document.getElementById('eventViewEmpty');
+    const hasContent = (event.note && event.note.trim()) || 
+                       (event.links && event.links.length > 0) || 
+                       eventExpenses.length > 0;
+    emptyState.style.display = hasContent ? 'none' : 'block';
+    
+    // Show modal
+    modal.classList.add('active');
+}
+
+/**
+ * Close event view modal
+ */
+function closeEventViewModal() {
+    const modal = document.getElementById('eventViewModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+    currentViewEventId = null;
+}
+
+/**
+ * Edit event from view modal (opens edit modal)
+ */
+function editEventFromView() {
+    if (!currentViewEventId) return;
+    closeEventViewModal();
+    editEvent(currentViewEventId);
+}
+
 // Make itinerary functions globally available
 window.loadItinerary = loadItinerary;
 window.renderItinerary = renderItinerary;
@@ -16351,5 +16497,8 @@ window.editEvent = editEvent;
 window.closeEventModal = closeEventModal;
 window.saveEvent = saveEvent;
 window.deleteEvent = deleteEvent;
+window.viewEvent = viewEvent;
+window.closeEventViewModal = closeEventViewModal;
+window.editEventFromView = editEventFromView;
 console.log('[Itinerary] Functions registered globally. openAddEventModal:', typeof window.openAddEventModal);
 

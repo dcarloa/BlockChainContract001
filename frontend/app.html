@@ -42,7 +42,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=5.23">
+    <link rel="stylesheet" href="styles-platform.css?v=5.24">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.3">
@@ -1859,6 +1859,57 @@ Simple, fast, and free.</p>
                         </div>
                     </div>
 
+                    <!-- Event View Modal (Read-only) -->
+                    <div id="eventViewModal" class="modal-overlay">
+                        <div class="modal-content event-view-modal">
+                            <div class="event-view-header">
+                                <div class="event-view-icon" id="eventViewIcon">📍</div>
+                                <div class="event-view-title-section">
+                                    <h2 id="eventViewTitle">Event Title</h2>
+                                    <div class="event-view-datetime" id="eventViewDateTime">
+                                        <span class="event-view-date" id="eventViewDate">📅 March 15, 2026</span>
+                                        <span class="event-view-time" id="eventViewTime">🕐 2:30 PM</span>
+                                    </div>
+                                </div>
+                                <button class="modal-close" onclick="closeEventViewModal()">&times;</button>
+                            </div>
+                            <div class="event-view-body">
+                                <!-- Note Section -->
+                                <div class="event-view-section" id="eventViewNoteSection" style="display: none;">
+                                    <h4>📝 <span data-i18n="app.itinerary.view.note">Note</span></h4>
+                                    <p id="eventViewNote" class="event-view-note"></p>
+                                </div>
+
+                                <!-- Links Section -->
+                                <div class="event-view-section" id="eventViewLinksSection" style="display: none;">
+                                    <h4>🔗 <span data-i18n="app.itinerary.view.links">Useful Links</span></h4>
+                                    <div id="eventViewLinks" class="event-view-links"></div>
+                                </div>
+
+                                <!-- Expenses Section -->
+                                <div class="event-view-section" id="eventViewExpensesSection" style="display: none;">
+                                    <h4>💸 <span data-i18n="app.itinerary.view.expenses">Linked Expenses</span></h4>
+                                    <div id="eventViewExpenses" class="event-view-expenses"></div>
+                                    <div class="event-view-total" id="eventViewTotal"></div>
+                                </div>
+
+                                <!-- Empty State -->
+                                <div class="event-view-empty" id="eventViewEmpty">
+                                    <span class="event-view-empty-icon">📋</span>
+                                    <p data-i18n="app.itinerary.view.noDetails">No additional details for this event</p>
+                                </div>
+                            </div>
+                            <div class="event-view-footer">
+                                <button type="button" class="btn btn-secondary" onclick="closeEventViewModal()">
+                                    <span data-i18n="common.close">Close</span>
+                                </button>
+                                <button type="button" class="btn btn-primary" id="eventViewEditBtn" onclick="editEventFromView()">
+                                    <span>✏️</span> <span data-i18n="app.itinerary.view.edit">Edit Event</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Add/Edit Event Modal -->
                     <div id="eventModal" class="modal-overlay">
                         <div class="modal-content event-modal">
@@ -2882,7 +2933,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.7"></script>
     <script src="mascot-system.js?v=1.9"></script>
-    <script src="app-platform.js?v=5.22"></script>
+    <script src="app-platform.js?v=5.23"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)
