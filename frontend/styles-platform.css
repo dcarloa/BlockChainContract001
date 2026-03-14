@@ -17134,8 +17134,24 @@ body.light-mode .link-event-field {
 .overview-recent-item .recent-info {
   flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
+}
+
+.overview-recent-item .recent-info .recent-title {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.overview-recent-item .recent-info .recent-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.overview-recent-item .recent-amount {
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
 .overview-recent-item .recent-description {
