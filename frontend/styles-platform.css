@@ -3159,6 +3159,9 @@ header,
   }
   
   .fund-actions {
+    gap: 0.5rem;
+  }
+  
   .fund-action-btn {
     width: 26px;
     height: 26px;
