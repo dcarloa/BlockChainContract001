@@ -16183,12 +16183,13 @@ async function saveEvent() {
         } else {
             // Create new event
             const currentUser = window.FirebaseConfig.getCurrentUser();
-            const newEventRef = await window.FirebaseConfig.pushDb(`itineraries/${groupId}/events`, {
+            // pushDb returns the key directly as a string, not an object with .key
+            finalEventId = await window.FirebaseConfig.pushDb(`itineraries/${groupId}/events`, {
                 ...eventData,
                 createdAt: Date.now(),
                 createdBy: currentUser?.uid || 'unknown'
             });
-            finalEventId = newEventRef.key;
+            console.log('[Itinerary] New event created with ID:', finalEventId);
         }
         
         // Update expense links
