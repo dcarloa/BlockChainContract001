@@ -5411,7 +5411,12 @@ function renderBalanceChart(memberBalances, currency = 'USD') {
     memberBalances.forEach(member => {
         const memberData = currentFund.members[member.memberId];
         const memberName = memberData?.name || memberData?.email || member.memberId;
-        const shortName = memberName.split(' ')[0]; // First name only
+        // Get display name: first name, or truncated email if no space found
+        let shortName = memberName.split(' ')[0];
+        // If name is still long (like an email), truncate it
+        if (shortName.length > 15) {
+            shortName = shortName.substring(0, 12) + '...';
+        }
         const initial = (memberName || 'U').charAt(0).toUpperCase();
         
         const percentage = (Math.abs(member.balance) / maxBalance) * 100;
