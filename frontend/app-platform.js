@@ -2200,6 +2200,19 @@ function backToDashboard() {
         dashboardSection.style.display = 'block'; // Set inline style
     }
     
+    // Clear itinerary state to prevent showing old events in new group
+    if (typeof itineraryEvents !== 'undefined') {
+        itineraryEvents = [];
+    }
+    if (typeof itineraryLinkedExpenses !== 'undefined') {
+        itineraryLinkedExpenses = [];
+    }
+    // Clear calendar visual state
+    const calendarGrid = document.getElementById('calendarGrid');
+    if (calendarGrid) calendarGrid.innerHTML = '';
+    const timeline = document.getElementById('itineraryTimeline');
+    if (timeline) timeline.innerHTML = '';
+    
     currentFund = null;
     currentFundContract = null;
     
@@ -15292,6 +15305,10 @@ async function loadItinerary() {
     
     const groupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
     if (!groupId) return;
+    
+    // Clear previous data first to prevent residual display
+    itineraryEvents = [];
+    itineraryLinkedExpenses = [];
     
     console.log('[Itinerary] Loading events for group:', groupId);
     
