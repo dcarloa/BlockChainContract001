@@ -4335,7 +4335,13 @@ async function loadGroupOverview(groupData) {
     // Add expense button
     const addExpenseBtn = document.getElementById('overviewAddExpenseBtn');
     if (addExpenseBtn) {
-        addExpenseBtn.onclick = () => showAddExpenseModal();
+        addExpenseBtn.onclick = () => {
+            if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+                window.DemoMode.showActionModal('add_expense');
+                return;
+            }
+            showAddExpenseModal();
+        };
     }
     
     // Recent activity
