@@ -12174,8 +12174,17 @@ function showEditGroupModal() {
     }
     
     // Load current values
-    document.getElementById('editGroupIcon').value = currentFund.icon || '📦';
-    document.getElementById('editGroupIconPreview').textContent = currentFund.icon || '📦';
+    const iconSelect = document.getElementById('editGroupIcon');
+    const currentIcon = currentFund.icon || '📦';
+    // If current icon isn't in the select options, add it dynamically
+    if (iconSelect && !Array.from(iconSelect.options).some(opt => opt.value === currentIcon)) {
+        const newOption = document.createElement('option');
+        newOption.value = currentIcon;
+        newOption.textContent = currentIcon;
+        iconSelect.insertBefore(newOption, iconSelect.firstChild);
+    }
+    iconSelect.value = currentIcon;
+    document.getElementById('editGroupIconPreview').textContent = currentIcon;
     document.getElementById('editGroupName').value = currentFund.fundName || currentFund.name || '';
     document.getElementById('editGroupDescription').value = currentFund.description || '';
     
