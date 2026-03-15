@@ -1268,6 +1268,22 @@ function updateMobileGreeting() {
  * Show colony view from bottom nav
  */
 function showColonyView() {
+    // In demo mode, open the demo personal colony instead
+    if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+        if (typeof window.openDemoPersonalColony === 'function') {
+            window.openDemoPersonalColony();
+            // Update bottom nav active state
+            updateBottomNavActive('colony');
+            // Hide back button when coming from bottom nav
+            setTimeout(() => {
+                const fundDetailSection = document.getElementById('fundDetailSection');
+                if (fundDetailSection) {
+                    fundDetailSection.classList.add('hide-back-button');
+                }
+            }, 100);
+            return;
+        }
+    }
     viewPersonalColony();
     // Hide back button when coming from bottom nav
     setTimeout(() => {
@@ -1334,6 +1350,13 @@ function populateGroupsSection() {
     // Clone groups
     if (sourceGrid && targetGrid) {
         targetGrid.innerHTML = sourceGrid.innerHTML;
+        
+        // In mobile nav mode, hide Personal Colony cards (has its own tab)
+        if (isMobileNavMode()) {
+            targetGrid.querySelectorAll('[data-demo-group="personal"], .personal-colony-card').forEach(card => {
+                card.style.display = 'none';
+            });
+        }
     }
     
     // Clone personal colony card - hide in mobile nav (has its own tab)

@@ -1076,10 +1076,14 @@ function openDemoPersonalColony() {
     // Show fund detail section, hide dashboard
     const dashboardSection = document.getElementById('dashboardSection');
     const fundDetailSection = document.getElementById('fundDetailSection');
+    const groupsSection = document.getElementById('groupsSection');
     
     if (dashboardSection) {
         dashboardSection.classList.remove('active');
         dashboardSection.style.display = 'none';
+    }
+    if (groupsSection) {
+        groupsSection.style.display = 'none';
     }
     if (fundDetailSection) {
         fundDetailSection.classList.add('active');
@@ -1591,10 +1595,14 @@ function openDemoGroup() {
     // Show fund detail section, hide dashboard
     const dashboardSection = document.getElementById('dashboardSection');
     const fundDetailSection = document.getElementById('fundDetailSection');
+    const groupsSection = document.getElementById('groupsSection');
     
     if (dashboardSection) {
         dashboardSection.classList.remove('active');
         dashboardSection.style.display = 'none'; // Force hide (override inline styles)
+    }
+    if (groupsSection) {
+        groupsSection.style.display = 'none';
     }
     if (fundDetailSection) {
         fundDetailSection.classList.add('active');
