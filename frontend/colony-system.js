@@ -129,11 +129,19 @@ async function openWeeklyChest(groupId, weekId) {
         
         // Mark chest as opened
         const openedAt = Date.now();
-        await db.ref(`weeklyChests/${groupId}/${weekId}`).update({
+        const updateData = {
             isOpened: true,
             openedBy: user.uid,
             openedAt: openedAt
-        });
+        };
+        
+        // Save the claimed item if available (set by openChestModal)
+        if (openWeeklyChest._lastClaimedItem) {
+            updateData.content = { item: openWeeklyChest._lastClaimedItem };
+            openWeeklyChest._lastClaimedItem = null;
+        }
+        
+        await db.ref(`weeklyChests/${groupId}/${weekId}`).update(updateData);
         
         // Also save lastChestClaimed in colony data for cooldown calculation
         await db.ref(`groups/${groupId}/colony`).update({
@@ -269,6 +277,12 @@ async function openChestModal(groupId, weekId) {
         return;
     }
     
+    // Prevent re-opening an already opened chest
+    if (chest.isOpened === true || chest.isOpened === 'true') {
+        console.warn('[Colony] Chest already opened');
+        return;
+    }
+    
     // Validate colonyState - must be one of the valid states
     const validStates = ['forming', 'active', 'stable', 'consolidated'];
     let colonyState = chest.state || 'active';
@@ -370,6 +384,10 @@ async function openChestModal(groupId, weekId) {
         };
     }
     
+    // Pass the claimed item ID for storage
+    if (rewardItem?.itemId) {
+        openWeeklyChest._lastClaimedItem = rewardItem.itemId;
+    }
     // Mark as opened
     await openWeeklyChest(groupId, weekId);
     // console.log('[Colony] Chest marked as opened');

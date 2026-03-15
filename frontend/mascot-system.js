@@ -167,7 +167,7 @@ const WARDROBE_ITEMS = {
 const ITEM_LEVELS = {
     basic: { name: 'Básico', stars: '⭐', copies: 1, color: '#9ca3af', effect: '' },
     silver: { name: 'Plata', stars: '⭐⭐✨', copies: 5, color: '#c0c0c0', effect: 'silver-shine' },
-    gold: { name: 'Oro', stars: '⭐⭐⭐✨✨', copies: 15, color: '#ffd700', effect: 'gold-shine' }
+    gold: { name: 'Oro', stars: '⭐⭐⭐✨✨', copies: 10, color: '#ffd700', effect: 'gold-shine' }
 };
 
 // ============================================

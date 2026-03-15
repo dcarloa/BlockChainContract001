@@ -119,6 +119,9 @@
             "head": {
               ".validate": "!newData.exists() || newData.isString()"
             },
+            "outfit": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
             "accessory": {
               ".validate": "!newData.exists() || newData.isString()"
             }
@@ -165,6 +168,12 @@
           
           "openedAt": {
             ".validate": "!newData.exists() || newData.isNumber()"
+          },
+          
+          "content": {
+            "item": {
+              ".validate": "newData.isString() && newData.val().length <= 100"
+            }
           }
         }
       }
