@@ -344,6 +344,10 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     } else {
         console.log('[Init] Skipping loadUserFunds - demo mode is active');
+        // Still need to handle mobile nav UI for demo mode
+        if (isMobileNavMode()) {
+            updateMobileGreeting();
+        }
     }
     
     // CRITICAL: Force hide ALL modals after initialization
@@ -1243,9 +1247,13 @@ function updateMobileGreeting() {
     
     // User display name
     const user = firebase.auth().currentUser;
-    if (user && greetingName) {
-        const displayName = userNickname || user.displayName || user.email?.split('@')[0] || '';
-        greetingName.textContent = displayName;
+    if (greetingName) {
+        if (user) {
+            const displayName = userNickname || user.displayName || user.email?.split('@')[0] || '';
+            greetingName.textContent = displayName;
+        } else if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
+            greetingName.textContent = '';
+        }
     }
     
     // Date
@@ -14901,7 +14909,6 @@ window.openPersonalBudgetModal = openPersonalBudgetModal;
  */
 async function loadFinancialSummary() {
     const user = firebase.auth().currentUser;
-    if (!user) return;
     
     const totalOwedToYou = document.getElementById('totalOwedToYou');
     const totalYouOwe = document.getElementById('totalYouOwe');
@@ -14913,6 +14920,13 @@ async function loadFinancialSummary() {
     const content = document.getElementById('financialSummaryContent');
     
     if (!totalOwedToYou || !totalYouOwe) return;
+    
+    // In demo mode, just hide skeleton and show content (demo-mode.js populates values)
+    if (!user) {
+        if (skeleton) skeleton.style.display = 'none';
+        if (content) content.style.display = 'block';
+        return;
+    }
     
     // Show skeleton while loading
     if (skeleton) skeleton.style.display = 'block';
