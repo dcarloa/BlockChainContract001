@@ -1207,6 +1207,20 @@ function showMobileHomeView() {
         dashboardSection.style.display = 'block';
         dashboardSection.classList.add('mobile-home-view');
         dashboardSection.classList.add('active');
+        
+        // Explicitly hide groups-related elements (CSS does this too but belt-and-suspenders)
+        const actionBar = dashboardSection.querySelector('.action-bar');
+        const fundFilters = dashboardSection.querySelector('.fund-filters');
+        const searchSortBar = dashboardSection.querySelector('.search-sort-bar');
+        const groupsGrid = document.getElementById('groupsGrid');
+        const personalColonySection = document.getElementById('personalColonySection');
+        const emptyState = document.getElementById('emptyState');
+        if (actionBar) actionBar.style.display = 'none';
+        if (fundFilters) fundFilters.style.display = 'none';
+        if (searchSortBar) searchSortBar.style.display = 'none';
+        if (groupsGrid) groupsGrid.style.display = 'none';
+        if (personalColonySection) personalColonySection.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'none';
     }
     
     // Hide FAB button on home view

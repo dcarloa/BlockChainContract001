@@ -851,6 +851,16 @@ function loadDemoData() {
         if (dashboardSection) {
             dashboardSection.classList.add('mobile-home-view');
         }
+        // Explicitly hide groups elements on Home (belt-and-suspenders with CSS)
+        const actionBar = dashboardSection ? dashboardSection.querySelector('.action-bar') : null;
+        const fundFilters = dashboardSection ? dashboardSection.querySelector('.fund-filters') : null;
+        const searchSortBar = dashboardSection ? dashboardSection.querySelector('.search-sort-bar') : null;
+        if (actionBar) actionBar.style.display = 'none';
+        if (fundFilters) fundFilters.style.display = 'none';
+        if (searchSortBar) searchSortBar.style.display = 'none';
+        // Ensure groupsSection is hidden (home should be active on first load)
+        const groupsSectionEl = document.getElementById('groupsSection');
+        if (groupsSectionEl) groupsSectionEl.style.display = 'none';
         // Hide Financial Summary skeleton and show content with demo data
         const skeleton = document.getElementById('financialSummarySkeleton');
         const content = document.getElementById('financialSummaryContent');
