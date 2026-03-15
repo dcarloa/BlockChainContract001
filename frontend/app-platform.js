@@ -336,6 +336,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     // ONLY if not in demo mode - demo mode handles its own data
     if (!window.DemoMode || !window.DemoMode.isActive || !window.DemoMode.isActive()) {
         await loadUserFunds();
+        // Load financial summary (needed for mobile Home view)
+        await loadFinancialSummary();
+        if (isMobileNavMode()) {
+            updateMobileGreeting();
+            checkHomeEmptyState();
+        }
     } else {
         console.log('[Init] Skipping loadUserFunds - demo mode is active');
     }
@@ -843,7 +849,13 @@ async function loadDashboard() {
         const t = translations[getCurrentLanguage()];
         showLoading(t.app.loading.loadingFunds);
         
-        document.getElementById('dashboardSection').classList.add('active');
+        const dashboardSection = document.getElementById('dashboardSection');
+        dashboardSection.classList.add('active');
+        
+        // Apply mobile home view BEFORE loading to prevent flash of content
+        if (isMobileNavMode()) {
+            dashboardSection.classList.add('mobile-home-view');
+        }
         
         // Cargar fondos del usuario
         await loadUserFunds();
@@ -855,6 +867,11 @@ async function loadDashboard() {
         await loadFinancialSummary();
         
         hideLoading();
+        
+        // Check empty state after loading
+        if (isMobileNavMode()) {
+            checkHomeEmptyState();
+        }
         
     } catch (error) {
         hideLoading();
@@ -1084,10 +1101,25 @@ function showDashboard() {
     const dashboardSection = document.getElementById('dashboardSection');
     const fundDetailSection = document.getElementById('fundDetailSection');
     
+    // Hide mobile nav sections
+    const groupsSection = document.getElementById('groupsSection');
+    if (groupsSection) groupsSection.style.display = 'none';
+    closeProfileFullscreen();
+    
+    // Remove home empty state if present
+    const homeEmptyState = document.getElementById('homeEmptyState');
+    if (homeEmptyState) homeEmptyState.remove();
     
     if (dashboardSection) {
         dashboardSection.classList.add('active');
         dashboardSection.style.display = 'block';
+        
+        // In mobile mode, keep/apply mobile-home-view
+        if (isMobileNavMode()) {
+            dashboardSection.classList.add('mobile-home-view');
+        } else {
+            dashboardSection.classList.remove('mobile-home-view');
+        }
     }
     if (fundDetailSection) {
         fundDetailSection.classList.remove('active');
@@ -1099,6 +1131,321 @@ function showDashboard() {
     if (createBtn) {
         createBtn.disabled = false;
         createBtn.style.display = 'flex';
+    }
+    
+    // Update bottom nav active state
+    updateBottomNavActive('home');
+}
+
+// Track current mobile navigation state
+let currentMobileNavSection = 'home';
+
+/**
+ * Check if we're in mobile/PWA mode
+ */
+function isMobileNavMode() {
+    const bottomNav = document.getElementById('mobileBottomNav');
+    if (!bottomNav) return false;
+    return window.getComputedStyle(bottomNav).display !== 'none';
+}
+
+/**
+ * Navigate using mobile bottom navigation
+ * @param {string} section - 'home' | 'colony' | 'groups' | 'profile'
+ */
+function navigateBottomNav(section) {
+    currentMobileNavSection = section;
+    
+    // Update active state
+    updateBottomNavActive(section);
+    
+    // Hide all sections first
+    const dashboardSection = document.getElementById('dashboardSection');
+    const groupsSection = document.getElementById('groupsSection');
+    const fundDetailSection = document.getElementById('fundDetailSection');
+    
+    if (dashboardSection) {
+        dashboardSection.style.display = 'none';
+        dashboardSection.classList.remove('mobile-home-view');
+    }
+    if (groupsSection) groupsSection.style.display = 'none';
+    closeProfileFullscreen();
+    if (fundDetailSection) {
+        fundDetailSection.style.display = 'none';
+        fundDetailSection.classList.remove('hide-back-button');
+    }
+    
+    switch(section) {
+        case 'home':
+            showMobileHomeView();
+            break;
+            
+        case 'colony':
+            showColonyView();
+            break;
+            
+        case 'groups':
+            showGroupsSection();
+            break;
+            
+        case 'profile':
+            showProfileSection();
+            break;
+    }
+}
+
+/**
+ * Show mobile home view (only Financial Summary)
+ */
+function showMobileHomeView() {
+    const dashboardSection = document.getElementById('dashboardSection');
+    if (dashboardSection) {
+        dashboardSection.style.display = 'block';
+        dashboardSection.classList.add('mobile-home-view');
+        dashboardSection.classList.add('active');
+    }
+    
+    // Hide FAB button on home view
+    const fabBtn = document.getElementById('addExpenseBtn');
+    if (fabBtn) fabBtn.style.display = 'none';
+    
+    // Update greeting
+    updateMobileGreeting();
+    
+    // Re-load financial summary to get fresh data
+    loadFinancialSummary().then(() => {
+        checkHomeEmptyState();
+    });
+}
+
+/**
+ * Update mobile greeting header with user name and time-based greeting
+ */
+function updateMobileGreeting() {
+    const greetingHello = document.getElementById('greetingHello');
+    const greetingName = document.getElementById('greetingName');
+    const greetingDate = document.getElementById('greetingDate');
+    if (!greetingHello) return;
+    
+    const hour = new Date().getHours();
+    const lang = getCurrentLanguage();
+    
+    let greeting;
+    if (hour < 12) {
+        greeting = lang === 'es' ? 'Buenos días' : 'Good morning';
+    } else if (hour < 18) {
+        greeting = lang === 'es' ? 'Buenas tardes' : 'Good afternoon';
+    } else {
+        greeting = lang === 'es' ? 'Buenas noches' : 'Good evening';
+    }
+    
+    greetingHello.textContent = greeting;
+    
+    // User display name
+    const user = firebase.auth().currentUser;
+    if (user && greetingName) {
+        const displayName = userNickname || user.displayName || user.email?.split('@')[0] || '';
+        greetingName.textContent = displayName;
+    }
+    
+    // Date
+    if (greetingDate) {
+        const now = new Date();
+        const options = { weekday: 'long', day: 'numeric', month: 'short' };
+        greetingDate.textContent = now.toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', options);
+    }
+}
+
+/**
+ * Show colony view from bottom nav
+ */
+function showColonyView() {
+    viewPersonalColony();
+    // Hide back button when coming from bottom nav
+    setTimeout(() => {
+        const fundDetailSection = document.getElementById('fundDetailSection');
+        if (fundDetailSection) {
+            fundDetailSection.classList.add('hide-back-button');
+        }
+    }, 100);
+}
+
+/**
+ * Check if home should show empty state invitation
+ */
+function checkHomeEmptyState() {
+    const financialSummary = document.querySelector('.financial-summary');
+    
+    // Check if user has ANY groups (not just balance)
+    const groupsGrid = document.getElementById('groupsGrid');
+    const hasGroups = groupsGrid && groupsGrid.children.length > 0;
+    
+    // Remove existing empty state if any
+    const existingEmptyState = document.getElementById('homeEmptyState');
+    if (existingEmptyState) existingEmptyState.remove();
+    
+    if (!hasGroups && financialSummary) {
+        // Only show empty state if user truly has NO groups at all
+        const emptyStateHTML = `
+            <div id="homeEmptyState" class="home-empty-state">
+                <div class="empty-icon">🐜</div>
+                <h3 data-i18n="app.home.empty.title">Welcome to Ant Pool!</h3>
+                <p data-i18n="app.home.empty.subtitle">Create your first group to start tracking shared expenses with friends and family. It's quick and easy!</p>
+                <button class="btn btn-primary" onclick="navigateBottomNav('groups');">
+                    <span class="btn-icon">✨</span>
+                    <span data-i18n="app.home.empty.button">Create My First Group</span>
+                </button>
+            </div>
+        `;
+        financialSummary.insertAdjacentHTML('afterend', emptyStateHTML);
+    }
+}
+
+/**
+ * Show groups section (mobile nav)
+ */
+function showGroupsSection() {
+    const groupsSection = document.getElementById('groupsSection');
+    if (groupsSection) {
+        groupsSection.style.display = 'block';
+        
+        // Populate groups from the main groups grid
+        populateGroupsSection();
+    }
+}
+
+/**
+ * Populate the groups section with current groups
+ */
+function populateGroupsSection() {
+    const sourceGrid = document.getElementById('groupsGrid');
+    const targetGrid = document.getElementById('groupsSectionGrid');
+    const sourcePersonalColony = document.getElementById('personalColonySection');
+    const targetPersonalColony = document.getElementById('groupsSectionPersonalColony');
+    
+    // Clone groups
+    if (sourceGrid && targetGrid) {
+        targetGrid.innerHTML = sourceGrid.innerHTML;
+    }
+    
+    // Clone personal colony card - hide in mobile nav (has its own tab)
+    if (targetPersonalColony) {
+        if (isMobileNavMode()) {
+            targetPersonalColony.style.display = 'none';
+        } else if (sourcePersonalColony) {
+            targetPersonalColony.innerHTML = sourcePersonalColony.innerHTML;
+            targetPersonalColony.style.display = sourcePersonalColony.style.display;
+        }
+    }
+    
+    // Update filter counts
+    const countAll = document.getElementById('countAll');
+    const countCreated = document.getElementById('countCreated');
+    const countParticipating = document.getElementById('countParticipating');
+    
+    const countAllGroups = document.getElementById('countAllGroups');
+    const countCreatedGroups = document.getElementById('countCreatedGroups');
+    const countParticipatingGroups = document.getElementById('countParticipatingGroups');
+    
+    if (countAll && countAllGroups) countAllGroups.textContent = countAll.textContent;
+    if (countCreated && countCreatedGroups) countCreatedGroups.textContent = countCreated.textContent;
+    if (countParticipating && countParticipatingGroups) countParticipatingGroups.textContent = countParticipating.textContent;
+    
+    // Update header count
+    const groupsSectionCount = document.getElementById('groupsSectionCount');
+    if (groupsSectionCount && countAll) {
+        const total = countAll.textContent || '0';
+        const lang = getCurrentLanguage();
+        groupsSectionCount.textContent = lang === 'es' ? `${total} grupos` : `${total} groups`;
+    }
+    
+    // Check empty state
+    const hasGroups = targetGrid && targetGrid.children.length > 0;
+    const emptyState = document.getElementById('groupsSectionEmptyState');
+    if (emptyState) {
+        emptyState.style.display = hasGroups ? 'none' : 'flex';
+    }
+}
+
+/**
+ * Filter groups in groups section
+ */
+function filterGroupsSection() {
+    // Re-populate with filtered content
+    setTimeout(populateGroupsSection, 50);
+}
+
+/**
+ * Apply filter in groups section
+ */
+function applyGroupsFilter(filter) {
+    // Update filter button states
+    const filterBtns = document.querySelectorAll('#groupsSectionFilters .groups-filter-chip');
+    filterBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-filter') === filter);
+    });
+    
+    // Apply the same filter to the main dashboard (which will update the source)
+    const mainFilterBtns = document.querySelectorAll('.dashboard-section .fund-filters .filter-btn');
+    mainFilterBtns.forEach(btn => {
+        if (btn.getAttribute('data-filter') === filter) {
+            btn.click();
+        }
+    });
+    
+    // Re-populate after a short delay
+    setTimeout(populateGroupsSection, 100);
+}
+
+/**
+ * Show profile as fullscreen (mobile nav) - reuses existing profilePanel
+ */
+function showProfileSection() {
+    const profilePanel = document.getElementById('profilePanel');
+    if (profilePanel) {
+        profilePanel.classList.add('profile-panel-fullscreen');
+        profilePanel.classList.remove('hidden');
+        loadProfileData();
+    }
+}
+
+/**
+ * Close profile fullscreen mode (when navigating away via bottom nav)
+ */
+function closeProfileFullscreen() {
+    const profilePanel = document.getElementById('profilePanel');
+    if (profilePanel && profilePanel.classList.contains('profile-panel-fullscreen')) {
+        profilePanel.classList.remove('profile-panel-fullscreen');
+        profilePanel.classList.add('hidden');
+    }
+}
+
+/**
+ * Update bottom nav active state
+ * @param {string} activeSection - The section to mark as active
+ */
+function updateBottomNavActive(activeSection) {
+    const navItems = document.querySelectorAll('.bottom-nav-item');
+    navItems.forEach(item => {
+        const navSection = item.getAttribute('data-nav');
+        if (navSection === activeSection) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+}
+
+/**
+ * Handle back to dashboard - respects mobile nav state
+ */
+function handleBackToDashboard() {
+    if (isMobileNavMode()) {
+        // In mobile nav mode, "back" goes to groups section
+        navigateBottomNav('groups');
+    } else {
+        // Regular desktop behavior
+        showDashboard();
     }
 }
 
@@ -2109,6 +2456,15 @@ async function openFund(fundAddress) {
             throw new Error("Invalid fund address");
         }
         
+        // Update bottom nav - personal colony or groups
+        if (typeof updateBottomNavActive === 'function') {
+            if (fundAddress.startsWith('grp_personal_')) {
+                updateBottomNavActive('colony');
+            } else {
+                updateBottomNavActive('groups');
+            }
+        }
+        
         // Find current fund - Case insensitive comparison for blockchain, exact for simple mode
         currentFund = allUserGroups.find(f => {
             if (!f.fundAddress) return false;
@@ -2161,11 +2517,16 @@ async function openFund(fundAddress) {
         // Hide dashboard, show detail (use inline styles to override any Demo Mode inline styles)
         const dashboardSection = document.getElementById('dashboardSection');
         const fundDetailSection = document.getElementById('fundDetailSection');
+        const groupsSection = document.getElementById('groupsSection');
         
         if (dashboardSection) {
             dashboardSection.classList.remove('active');
             dashboardSection.style.display = 'none';
         }
+        // Hide groups and profile sections (mobile nav)
+        if (groupsSection) groupsSection.style.display = 'none';
+        closeProfileFullscreen();
+        
         if (fundDetailSection) {
             fundDetailSection.classList.add('active');
             fundDetailSection.style.display = 'block';
@@ -2188,6 +2549,13 @@ async function openFund(fundAddress) {
 }
 
 function backToDashboard() {
+    // Check if we're in mobile nav mode
+    if (isMobileNavMode()) {
+        // In mobile nav mode, "back" goes to groups section
+        navigateBottomNav('groups');
+        return;
+    }
+    
     // Hide FAB button FIRST
     const fabBtn = document.getElementById('addExpenseBtn');
     if (fabBtn) fabBtn.style.display = 'none';
@@ -14486,6 +14854,11 @@ function viewPersonalColony() {
     
     const personalColonyId = `grp_personal_${user.uid}`;
     
+    // Update bottom nav active state
+    if (typeof updateBottomNavActive === 'function') {
+        updateBottomNavActive('colony');
+    }
+    
     // Navigate to the personal colony fund view
     if (typeof openFund === 'function') {
         openFund(personalColonyId);
@@ -14536,8 +14909,14 @@ async function loadFinancialSummary() {
     const youOweGroups = document.getElementById('youOweGroups');
     const financialDetails = document.getElementById('financialDetails');
     const allSettledMessage = document.getElementById('allSettledMessage');
+    const skeleton = document.getElementById('financialSummarySkeleton');
+    const content = document.getElementById('financialSummaryContent');
     
     if (!totalOwedToYou || !totalYouOwe) return;
+    
+    // Show skeleton while loading
+    if (skeleton) skeleton.style.display = 'block';
+    if (content) content.style.display = 'none';
     
     try {
         // Get all groups (we'll filter by membership in JavaScript)
@@ -14741,8 +15120,14 @@ async function loadFinancialSummary() {
         const convertedNote = useMultipleCurrencies ? '≈ ' : '';
         
         // Update UI with proper currency symbol and code - ALWAYS show currency code
-        totalOwedToYou.textContent = `${convertedNote}+${displaySymbol}${totalPositive.toFixed(2)} ${displayCurrency}`;
-        totalYouOwe.textContent = `${convertedNote}-${displaySymbol}${totalNegative.toFixed(2)} ${displayCurrency}`;
+        if (totalPositive === 0 && totalNegative === 0) {
+            // All settled - show clean zero
+            totalOwedToYou.textContent = `${displaySymbol}0.00`;
+            totalYouOwe.textContent = `${displaySymbol}0.00`;
+        } else {
+            totalOwedToYou.textContent = `${convertedNote}+${displaySymbol}${totalPositive.toFixed(2)} ${displayCurrency}`;
+            totalYouOwe.textContent = `${convertedNote}-${displaySymbol}${totalNegative.toFixed(2)} ${displayCurrency}`;
+        }
         
         owedToYouGroups.textContent = positiveGroupCount > 0 
             ? `(${positiveGroupCount} ${positiveGroupCount === 1 ? 'group' : 'groups'})` 
@@ -14764,7 +15149,8 @@ async function loadFinancialSummary() {
                 groupBalances.sort((a, b) => Math.abs(b.balanceConverted || b.balance) - Math.abs(a.balanceConverted || a.balance));
                 
                 let html = '';
-                groupBalances.slice(0, 5).forEach(group => { // Show top 5
+                const maxGroups = isMobileNavMode() ? groupBalances.length : 5;
+                groupBalances.slice(0, maxGroups).forEach(group => {
                     const isPositive = group.balance > 0;
                     // Show each group in its original currency - ALWAYS show currency code
                     const symbol = getCurrencySymbol(group.currency);
@@ -14794,8 +15180,15 @@ async function loadFinancialSummary() {
             }
         }
         
+        // Reveal content, hide skeleton
+        if (skeleton) skeleton.style.display = 'none';
+        if (content) content.style.display = 'block';
+        
     } catch (error) {
         console.error('Error loading financial summary:', error);
+        // Still show content on error (with whatever values exist)
+        if (skeleton) skeleton.style.display = 'none';
+        if (content) content.style.display = 'block';
     }
 }
 

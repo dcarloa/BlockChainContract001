@@ -420,6 +420,41 @@ const translations = {
                 vibration: "Vibration",
                 sound: "Sounds"
             },
+            // Bottom Navigation (Mobile/PWA)
+            bottomNav: {
+                home: "Home",
+                colony: "My Colony",
+                groups: "Groups",
+                profile: "Profile"
+            },
+            // Home Empty State
+            home: {
+                empty: {
+                    title: "Welcome to Ant Pool!",
+                    subtitle: "Create your first group to start tracking shared expenses with friends and family. It's quick and easy!",
+                    button: "Create My First Group"
+                },
+                quickAction: {
+                    groups: "My Groups",
+                    colony: "My Colony",
+                    expense: "Add Expense"
+                }
+            },
+            // Profile Menu
+            profile: {
+                stats: {
+                    groups: "Groups",
+                    totalSpent: "Total Spent",
+                    transactions: "Transactions"
+                },
+                menu: {
+                    settings: "Settings",
+                    subscription: "Subscription",
+                    activity: "Activity & Stats",
+                    about: "About Ant Pool"
+                },
+                signOut: "Sign Out"
+            },
             // PWA Install Prompt
             pwa: {
                 installTitle: "Install Ant Pool",
@@ -2100,6 +2135,41 @@ const translations = {
             settings: {
                 vibration: "Vibración",
                 sound: "Sonidos"
+            },
+            // Bottom Navigation (Mobile/PWA)
+            bottomNav: {
+                home: "Inicio",
+                colony: "Mi Colonia",
+                groups: "Grupos",
+                profile: "Perfil"
+            },
+            // Home Empty State
+            home: {
+                empty: {
+                    title: "¡Bienvenido a Ant Pool!",
+                    subtitle: "Crea tu primer grupo para empezar a rastrear gastos compartidos con amigos y familia. ¡Es rápido y fácil!",
+                    button: "Crear Mi Primer Grupo"
+                },
+                quickAction: {
+                    groups: "Mis Grupos",
+                    colony: "Mi Colonia",
+                    expense: "Agregar Gasto"
+                }
+            },
+            // Profile Menu
+            profile: {
+                stats: {
+                    groups: "Grupos",
+                    totalSpent: "Total Gastado",
+                    transactions: "Transacciones"
+                },
+                menu: {
+                    settings: "Configuración",
+                    subscription: "Suscripción",
+                    activity: "Actividad y Estadísticas",
+                    about: "Acerca de Ant Pool"
+                },
+                signOut: "Cerrar Sesión"
             },
             // PWA Install Prompt
             pwa: {

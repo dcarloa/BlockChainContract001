@@ -45,7 +45,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=5.28">
+    <link rel="stylesheet" href="styles-platform.css?v=5.37">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.3">
@@ -891,8 +891,41 @@ Simple, fast, and free.</p>
             <!-- Dashboard Section -->
             <section id="dashboardSection" class="dashboard-section">
                 
+                <!-- Mobile Greeting (only visible in mobile home view) -->
+                <div class="mobile-home-greeting" id="mobileHomeGreeting">
+                    <div class="greeting-text">
+                        <span class="greeting-hello" id="greetingHello">Good morning</span>
+                        <span class="greeting-name" id="greetingName"></span>
+                    </div>
+                    <div class="greeting-date" id="greetingDate"></div>
+                </div>
+                
                 <!-- Financial Summary Hero (replaces old stats-grid) -->
                 <div class="financial-summary">
+                    <!-- Skeleton Loading State -->
+                    <div class="financial-summary-skeleton" id="financialSummarySkeleton">
+                        <div class="skeleton-header">
+                            <div class="skeleton-line skeleton-title"></div>
+                            <div class="skeleton-line skeleton-btn"></div>
+                        </div>
+                        <div class="skeleton-totals">
+                            <div class="skeleton-total">
+                                <div class="skeleton-line skeleton-amount"></div>
+                                <div class="skeleton-line skeleton-label"></div>
+                            </div>
+                            <div class="skeleton-total">
+                                <div class="skeleton-line skeleton-amount"></div>
+                                <div class="skeleton-line skeleton-label"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-items">
+                            <div class="skeleton-item"><div class="skeleton-circle"></div><div class="skeleton-item-lines"><div class="skeleton-line"></div><div class="skeleton-line skeleton-short"></div></div></div>
+                            <div class="skeleton-item"><div class="skeleton-circle"></div><div class="skeleton-item-lines"><div class="skeleton-line"></div><div class="skeleton-line skeleton-short"></div></div></div>
+                            <div class="skeleton-item"><div class="skeleton-circle"></div><div class="skeleton-item-lines"><div class="skeleton-line"></div><div class="skeleton-line skeleton-short"></div></div></div>
+                        </div>
+                    </div>
+                    <!-- Actual Content (hidden until loaded) -->
+                    <div class="financial-summary-content" id="financialSummaryContent" style="display: none;">
                     <div class="financial-summary-header">
                         <h3 class="financial-summary-title">
                             <span class="financial-icon">💰</span>
@@ -929,6 +962,23 @@ Simple, fast, and free.</p>
                     <div class="financial-all-settled" id="allSettledMessage" style="display: none;">
                         <span class="settled-icon">✅</span>
                         <span data-i18n="app.financialSummary.allSettled">All settled up!</span>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Quick Actions (only visible in mobile home view) -->
+                <div class="mobile-quick-actions" id="mobileQuickActions">
+                    <div class="quick-action-card" onclick="navigateBottomNav('groups')">
+                        <span class="quick-action-icon">📋</span>
+                        <span class="quick-action-label" data-i18n="home.quickAction.groups">My Groups</span>
+                    </div>
+                    <div class="quick-action-card" onclick="navigateBottomNav('colony')">
+                        <span class="quick-action-icon">🐜</span>
+                        <span class="quick-action-label" data-i18n="home.quickAction.colony">My Colony</span>
+                    </div>
+                    <div class="quick-action-card" onclick="openQuickExpenseModal()">
+                        <span class="quick-action-icon">➕</span>
+                        <span class="quick-action-label" data-i18n="home.quickAction.expense">Add Expense</span>
                     </div>
                 </div>
 
@@ -1104,6 +1154,76 @@ Simple, fast, and free.</p>
                     </button>
                 </div>
 
+            </section>
+
+            <!-- Groups Section (Mobile Nav - Groups list only) -->
+            <section id="groupsSection" class="groups-section" style="display: none;">
+                
+                <!-- Groups Page Header -->
+                <div class="groups-section-header">
+                    <div>
+                        <h2 data-i18n="app.dashboard.title">My Groups</h2>
+                        <span class="groups-section-count" id="groupsSectionCount"></span>
+                    </div>
+                    <button class="btn-create-group" onclick="document.getElementById('createFundBtn').click();" title="Create a new expense group">
+                        <span>+</span>
+                        <span class="btn-create-label" data-i18n="app.dashboard.createButton">Create New Group</span>
+                    </button>
+                </div>
+
+                <!-- Search + Sort (compact row) -->
+                <div class="groups-toolbar">
+                    <div class="groups-search-compact">
+                        <input 
+                            type="text" 
+                            id="groupsSectionSearchInput" 
+                            class="search-input" 
+                            data-i18n-placeholder="app.dashboard.searchPlaceholder"
+                            placeholder="🔍 Search groups by name..."
+                            onkeyup="filterGroupsSection()"
+                        />
+                    </div>
+                    <select id="groupsSectionSortOrder" class="sort-select groups-sort-compact" onchange="filterGroupsSection()">
+                        <option value="recent" data-i18n="app.dashboard.sortRecent">📅 Recent</option>
+                        <option value="oldest" data-i18n="app.dashboard.sortOldest">📅 Oldest</option>
+                        <option value="name-asc" data-i18n="app.dashboard.sortNameAsc">🔤 A→Z</option>
+                        <option value="name-desc" data-i18n="app.dashboard.sortNameDesc">🔤 Z→A</option>
+                    </select>
+                </div>
+
+                <!-- Inline Filters -->
+                <div class="groups-filters-compact" id="groupsSectionFilters">
+                    <button class="groups-filter-chip active" data-filter="all" onclick="applyGroupsFilter('all')">
+                        <span data-i18n="app.dashboard.filters.all">All</span> <span id="countAllGroups" class="chip-count">0</span>
+                    </button>
+                    <button class="groups-filter-chip" data-filter="created" onclick="applyGroupsFilter('created')">
+                        <span data-i18n="app.dashboard.filters.created">Created</span> <span id="countCreatedGroups" class="chip-count">0</span>
+                    </button>
+                    <button class="groups-filter-chip" data-filter="participating" onclick="applyGroupsFilter('participating')">
+                        <span data-i18n="app.dashboard.filters.participating">Member</span> <span id="countParticipatingGroups" class="chip-count">0</span>
+                    </button>
+                </div>
+
+                <!-- Personal Colony Card -->
+                <div id="groupsSectionPersonalColony" class="personal-colony-section">
+                    <!-- Personal Colony card will be cloned here -->
+                </div>
+
+                <!-- Groups List -->
+                <div id="groupsSectionGrid" class="groups-grid">
+                    <!-- Groups will be loaded here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="groupsSectionEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">🚀</div>
+                    <h3 data-i18n="app.dashboard.empty.title">Start your first adventure!</h3>
+                    <p data-i18n="app.dashboard.empty.subtitle">Create your first group to manage shared expenses.</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('createFundBtn').click()">
+                        <span class="btn-icon">✨</span>
+                        <span data-i18n="app.dashboard.empty.button">Create My First Group</span>
+                    </button>
+                </div>
             </section>
 
             <!-- Fund Detail Section (Single Fund View) -->
@@ -2947,7 +3067,7 @@ Simple, fast, and free.</p>
     </div>
 
     <!-- Scripts -->
-    <script src="i18n.js?v=2.2.0"></script>
+    <script src="i18n.js?v=2.5.0"></script>
     <script src="theme.js"></script>
     <script src="ethers.umd.min.js"></script>
     
@@ -2978,7 +3098,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.7"></script>
     <script src="mascot-system.js?v=1.9"></script>
-    <script src="app-platform.js?v=5.39"></script>
+    <script src="app-platform.js?v=5.50"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)
@@ -4519,6 +4639,26 @@ Simple, fast, and free.</p>
 
     <!-- Load Challenge Games Script -->
     <script src="challenge-games.js"></script>
+
+    <!-- Mobile Bottom Navigation (PWA & Mobile Web only) -->
+    <nav id="mobileBottomNav" class="mobile-bottom-nav">
+        <button class="bottom-nav-item active" data-nav="home" onclick="navigateBottomNav('home')">
+            <span class="bottom-nav-icon">🏠</span>
+            <span class="bottom-nav-label" data-i18n="app.bottomNav.home">Inicio</span>
+        </button>
+        <button class="bottom-nav-item" data-nav="colony" onclick="navigateBottomNav('colony')">
+            <span class="bottom-nav-icon">🐜</span>
+            <span class="bottom-nav-label" data-i18n="app.bottomNav.colony">Mi Colonia</span>
+        </button>
+        <button class="bottom-nav-item" data-nav="groups" onclick="navigateBottomNav('groups')">
+            <span class="bottom-nav-icon">👥</span>
+            <span class="bottom-nav-label" data-i18n="app.bottomNav.groups">Grupos</span>
+        </button>
+        <button class="bottom-nav-item" data-nav="profile" onclick="navigateBottomNav('profile')">
+            <span class="bottom-nav-icon">⚙️</span>
+            <span class="bottom-nav-label" data-i18n="app.bottomNav.profile">Perfil</span>
+        </button>
+    </nav>
 
 </body>
 </html>
