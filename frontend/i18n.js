@@ -579,7 +579,39 @@ const translations = {
                 view: "View",
                 unreadBanner: "You have unread notifications",
                 unreadOne: "You have 1 unread notification",
-                unreadMany: "You have {count} unread notifications"
+                unreadMany: "You have {count} unread notifications",
+                // Notification types
+                types: {
+                    expense_added: "New Expense Added",
+                    expense_deleted: "Expense Deleted",
+                    expense_delete_requested: "Delete Request",
+                    payment_received: "Payment Received",
+                    group_paused: "Group Paused",
+                    group_reactivated: "Group Reactivated",
+                    group_deleted: "Group Deleted",
+                    invitation: "Invitation",
+                    vote_required: "Vote Required",
+                    proposal_approved: "Proposal Approved",
+                    proposal_rejected: "Proposal Rejected",
+                    member_joined: "New Member Joined",
+                    member_removed: "Member Removed",
+                    member_left: "Member Left Group",
+                    removal_requested: "Removal Request",
+                    fund_goal_reached: "Goal Reached",
+                    recurring_expense_created: "Recurring Expense",
+                    budget_exceeded: "Budget Exceeded",
+                    default: "Notification"
+                },
+                // Time ago
+                time: {
+                    justNow: "Just now",
+                    minuteAgo: "1 minute ago",
+                    minutesAgo: "{count} minutes ago",
+                    hourAgo: "1 hour ago",
+                    hoursAgo: "{count} hours ago",
+                    dayAgo: "1 day ago",
+                    daysAgo: "{count} days ago"
+                }
             },
             header: {
                 subtitle: "Shared Expense Manager",
@@ -613,6 +645,15 @@ const translations = {
                 groupsCreated: "Groups Created",
                 activeGroups: "Active Groups",
                 groupsJoined: "Groups Joined"
+            },
+            financialSummary: {
+                title: "Your Balance",
+                addExpense: "Add Expense",
+                owedToYou: "owed to you",
+                youOwe: "you owe",
+                allSettled: "All settled up!",
+                selectGroup: "Add Expense To...",
+                noGroups: "Create a group first"
             },
             invitations: {
                 title: "Pending Invitations",
@@ -851,12 +892,19 @@ const translations = {
                     linksHint: "Save tickets, reservations, or external links",
                     linkTitle: "Title",
                     linkUrl: "URL",
-                    addLink: "Add",
+                    addLink: "Add Link",
                     noLinks: "No links added",
                     linkedExpenses: "💰 Linked Expenses",
                     expensesHint: "Associate group expenses with this event",
                     selectExpense: "Select expense...",
                     noLinkedExpenses: "No linked expenses"
+                },
+                view: {
+                    note: "Note",
+                    links: "Useful Links",
+                    expenses: "Linked Expenses",
+                    noDetails: "No additional details for this event",
+                    edit: "Edit Event"
                 },
                 days: {
                     mon: "Mon",
@@ -994,6 +1042,10 @@ const translations = {
                 success: "Group created successfully!"
             },
             fundDetail: {
+                tabGroups: {
+                    activity: "Activity",
+                    group: "Group"
+                },
                 tabs: {
                     overview: "Overview",
                     deposit: "Deposit",
@@ -2208,7 +2260,39 @@ const translations = {
                 view: "Ver",
                 unreadBanner: "Tienes notificaciones sin leer",
                 unreadOne: "Tienes 1 notificación sin leer",
-                unreadMany: "Tienes {count} notificaciones sin leer"
+                unreadMany: "Tienes {count} notificaciones sin leer",
+                // Notification types
+                types: {
+                    expense_added: "Nuevo Gasto Agregado",
+                    expense_deleted: "Gasto Eliminado",
+                    expense_delete_requested: "Solicitud de Eliminación",
+                    payment_received: "Pago Recibido",
+                    group_paused: "Grupo Pausado",
+                    group_reactivated: "Grupo Reactivado",
+                    group_deleted: "Grupo Eliminado",
+                    invitation: "Invitación",
+                    vote_required: "Voto Requerido",
+                    proposal_approved: "Propuesta Aprobada",
+                    proposal_rejected: "Propuesta Rechazada",
+                    member_joined: "Nuevo Miembro",
+                    member_removed: "Miembro Removido",
+                    member_left: "Miembro Abandonó",
+                    removal_requested: "Solicitud de Remoción",
+                    fund_goal_reached: "Meta Alcanzada",
+                    recurring_expense_created: "Gasto Recurrente",
+                    budget_exceeded: "Presupuesto Excedido",
+                    default: "Notificación"
+                },
+                // Time ago
+                time: {
+                    justNow: "Ahora mismo",
+                    minuteAgo: "Hace 1 minuto",
+                    minutesAgo: "Hace {count} minutos",
+                    hourAgo: "Hace 1 hora",
+                    hoursAgo: "Hace {count} horas",
+                    dayAgo: "Hace 1 día",
+                    daysAgo: "Hace {count} días"
+                }
             },
             header: {
                 subtitle: "Gestor de Gastos Compartidos",
@@ -2242,6 +2326,15 @@ const translations = {
                 groupsCreated: "Grupos Creados",
                 activeGroups: "Grupos Activos",
                 groupsJoined: "Grupos Unidos"
+            },
+            financialSummary: {
+                title: "Tu Balance",
+                addExpense: "Agregar Gasto",
+                owedToYou: "te deben",
+                youOwe: "debes",
+                allSettled: "¡Todo saldado!",
+                selectGroup: "Agregar Gasto a...",
+                noGroups: "Crea un grupo primero"
             },
             invitations: {
                 title: "Invitaciones Pendientes",
@@ -2480,12 +2573,19 @@ const translations = {
                     linksHint: "Guarda boletos, reservaciones o enlaces externos",
                     linkTitle: "Título",
                     linkUrl: "URL",
-                    addLink: "Agregar",
+                    addLink: "Agregar Enlace",
                     noLinks: "Sin enlaces agregados",
                     linkedExpenses: "💰 Gastos Vinculados",
                     expensesHint: "Asocia gastos del grupo a este evento",
                     selectExpense: "Seleccionar gasto...",
                     noLinkedExpenses: "Sin gastos vinculados"
+                },
+                view: {
+                    note: "Nota",
+                    links: "Enlaces Útiles",
+                    expenses: "Gastos Vinculados",
+                    noDetails: "Sin detalles adicionales para este evento",
+                    edit: "Editar Evento"
                 },
                 days: {
                     mon: "Lun",
@@ -2623,6 +2723,10 @@ const translations = {
                 success: "¡Grupo creado exitosamente!"
             },
             fundDetail: {
+                tabGroups: {
+                    activity: "Actividad",
+                    group: "Grupo"
+                },
                 tabs: {
                     overview: "Resumen",
                     deposit: "Depositar",

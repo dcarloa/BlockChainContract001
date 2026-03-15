@@ -851,6 +851,9 @@ async function loadDashboard() {
         // Cargar invitaciones pendientes
         await loadPendingInvitations();
         
+        // Load financial summary and insights
+        await loadFinancialSummary();
+        
         hideLoading();
         
     } catch (error) {
@@ -1696,9 +1699,13 @@ function updateStats() {
         }
     }
     
-    document.getElementById('totalGroupsCreated').textContent = createdCount;
-    document.getElementById('totalGroupsParticipating').textContent = participatingCount;
-    document.getElementById('totalGroupsJoined').textContent = participatingCount;
+    // Update legacy stats elements (if they exist)
+    const totalCreatedEl = document.getElementById('totalGroupsCreated');
+    const totalParticipatingEl = document.getElementById('totalGroupsParticipating');
+    const totalJoinedEl = document.getElementById('totalGroupsJoined');
+    if (totalCreatedEl) totalCreatedEl.textContent = createdCount;
+    if (totalParticipatingEl) totalParticipatingEl.textContent = participatingCount;
+    if (totalJoinedEl) totalJoinedEl.textContent = participatingCount;
     
     // Update filter counts
     document.getElementById('countAll').textContent = allUserGroups.length;
@@ -3548,7 +3555,7 @@ async function loadSimpleModeDetailView() {
         if (inviteBanner) inviteBanner.style.display = 'none';
         if (closedBanner) closedBanner.style.display = 'none';
         
-        // Show/hide tabs for Simple Mode
+        // Show/hide tabs for Simple Mode - find by ID first, then by data-tab
         const depositTab = document.querySelector('.fund-tab-btn[data-tab="deposit"]');
         const voteTab = document.querySelector('.fund-tab-btn[data-tab="vote"]');
         const proposeTab = document.querySelector('.fund-tab-btn[data-tab="propose"]');
@@ -3561,15 +3568,29 @@ async function loadSimpleModeDetailView() {
         const budgetTab = document.querySelector('.fund-tab-btn[data-tab="budget"]');
         const portfolioTab = document.querySelector('.fund-tab-btn[data-tab="portfolio"]');
         const historyTab = document.querySelector('.fund-tab-btn[data-tab="history"]');
-        const itineraryTab = document.querySelector('.fund-tab-btn[data-tab="itinerary"]');
+        // Use ID for itinerary (more reliable)
+        const itineraryTab = document.getElementById('itineraryTabBtn') || document.querySelector('.fund-tab-btn[data-tab="itinerary"]');
         
-        // Detect personal colony
-        const isPersonalColony = currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_personal_');
+        console.log('[Tabs] Found itineraryTab:', !!itineraryTab);
         
-        // Hide blockchain tabs
+        // CRITICAL: Reset ALL tabs to a known initial state
         if (depositTab) depositTab.style.display = 'none';
         if (voteTab) voteTab.style.display = 'none';
         if (proposeTab) proposeTab.style.display = 'none';
+        if (inviteTab) inviteTab.style.display = 'flex';
+        if (membersTab) membersTab.style.display = 'flex';
+        if (balancesTab) balancesTab.style.display = 'flex';
+        if (manageTab) manageTab.style.display = 'none';
+        if (mascotTab) mascotTab.style.display = 'flex';
+        if (overviewTab) overviewTab.style.display = 'flex';
+        if (budgetTab) budgetTab.style.display = 'none';
+        if (portfolioTab) portfolioTab.style.display = 'none';
+        if (historyTab) historyTab.style.display = 'flex';
+        if (itineraryTab) itineraryTab.style.display = 'flex'; // Always visible by default
+        
+        // Detect personal colony
+        const isPersonalColony = currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_personal_');
+        console.log('[Tabs Debug] isPersonalColony:', isPersonalColony, 'fundAddress:', currentFund.fundAddress);
         
         // Personal colony specific adjustments
         if (isPersonalColony) {
@@ -3600,28 +3621,19 @@ async function loadSimpleModeDetailView() {
             await loadPersonalBudget(groupData);
             await loadPersonalPortfolio(groupData);
         } else {
-            // Regular group - Show Simple Mode tabs including Overview
+            // Regular group - tabs already set to visible in the reset above
+            // Just configure group-specific settings
             if (overviewTab) overviewTab.style.display = 'flex';
             if (inviteTab) {
                 inviteTab.style.display = 'flex';
                 inviteTab.innerHTML = '<span class="tab-icon">🎫</span><span>Invite</span>';
             }
-            if (historyTab) historyTab.style.display = 'flex'; // Show history tab
-            if (membersTab) membersTab.style.display = 'flex';
-            if (balancesTab) balancesTab.style.display = 'flex';
-            if (manageTab) manageTab.style.display = 'none'; // Hide for now
-            if (mascotTab) mascotTab.style.display = 'flex'; // Show mascot tab in Simple Mode
-            
-            // Robustly show itinerary tab - re-query if not found initially
-            let itinTab = itineraryTab || document.querySelector('.fund-tab-btn[data-tab="itinerary"]');
-            if (itinTab) {
-                itinTab.style.display = 'flex'; // Show itinerary for shared groups
-            } else {
-                console.warn('[Tabs] Itinerary tab not found in DOM');
-            }
-            
             if (budgetTab) budgetTab.style.display = 'none'; // Budget only for personal
             if (portfolioTab) portfolioTab.style.display = 'none'; // Portfolio only for personal
+            
+            // Itinerary is already visible from reset - just confirm
+            const itinTab = document.getElementById('itineraryTabBtn') || itineraryTab;
+            if (itinTab) itinTab.style.display = 'flex';
             
             // Ensure members stat is visible for regular groups
             const fundMembersStat = document.getElementById('fundMembersStat');
@@ -3856,27 +3868,32 @@ async function loadGroupOverview(groupData) {
     
     const currentLang = getCurrentLanguage();
     
-    // Monthly stats
+    // Get currency for this group
+    const currency = groupData.settings?.currency || 'USD';
+    const currencySymbol = getCurrencySymbol(currency);
+    
+    // Monthly stats - always show currency code
     if (monthlyTotalEl) {
-        monthlyTotalEl.textContent = `$${monthlyTotal.toFixed(2)}`;
+        monthlyTotalEl.textContent = `${currencySymbol}${monthlyTotal.toFixed(2)} ${currency}`;
     }
     if (expenseCountEl) {
         expenseCountEl.textContent = monthlyCount.toString();
     }
     
-    // Balance display
+    // Balance display - always show currency code
     if (userBalanceEl) {
         const absBalance = Math.abs(userBalance).toFixed(2);
+        const balanceText = `${currencySymbol}${absBalance} ${currency}`;
         if (userBalance > 0.01) {
-            userBalanceEl.textContent = `+$${absBalance}`;
+            userBalanceEl.textContent = `+${balanceText}`;
             userBalanceEl.classList.remove('negative', 'settled');
             userBalanceEl.classList.add('positive');
         } else if (userBalance < -0.01) {
-            userBalanceEl.textContent = `-$${absBalance}`;
+            userBalanceEl.textContent = `-${balanceText}`;
             userBalanceEl.classList.remove('positive', 'settled');
             userBalanceEl.classList.add('negative');
         } else {
-            userBalanceEl.textContent = '$0.00';
+            userBalanceEl.textContent = `${currencySymbol}0.00 ${currency}`;
             userBalanceEl.classList.remove('positive', 'negative');
             userBalanceEl.classList.add('settled');
         }
@@ -4874,6 +4891,10 @@ function renderOverviewExpenseItem(expense, currentUserId, groupData, lang) {
         : getMemberDisplayName(paidBy, groupData);
     
     const icon = expense.category ? getCategoryIcon(expense.category) : '💰';
+    const currency = groupData?.settings?.currency || 'USD';
+    const currencySymbol = getCurrencySymbol(currency);
+    // Always show currency code for clarity
+    const amountDisplay = `${currencySymbol}${amount.toFixed(2)} ${currency}`;
     
     return `
         <div class="overview-recent-item">
@@ -4882,7 +4903,7 @@ function renderOverviewExpenseItem(expense, currentUserId, groupData, lang) {
                 <span class="recent-description">${escapeHtml(description)}</span>
                 <span class="recent-payer">${memberName}</span>
             </div>
-            <span class="recent-amount">$${amount.toFixed(2)}</span>
+            <span class="recent-amount">${amountDisplay}</span>
         </div>
     `;
 }
@@ -4908,13 +4929,18 @@ function renderOverviewSettlementItem(settlement, currentUserId, groupData, lang
         description = `${payerName} → ${receiverName}`;
     }
     
+    const currency = groupData?.settings?.currency || 'USD';
+    const currencySymbol = getCurrencySymbol(currency);
+    // Always show currency code for clarity
+    const amountDisplay = `${currencySymbol}${amount.toFixed(2)} ${currency}`;
+    
     return `
         <div class="overview-recent-item settlement">
             <span class="recent-icon">💸</span>
             <div class="recent-info">
                 <span class="recent-description">${description}</span>
             </div>
-            <span class="recent-amount">$${amount.toFixed(2)}</span>
+            <span class="recent-amount">${amountDisplay}</span>
         </div>
     `;
 }
@@ -5597,10 +5623,12 @@ async function loadSmartSettlements() {
         document.getElementById('settlementsList').style.display = 'block';
         document.getElementById('markAllSettledBtn').style.display = 'inline-flex';
         
-        // Update stats
+        // Update stats with proper currency - always show currency code
+        const currency = currentFund.settings?.currency || 'USD';
+        const currencySymbol = getCurrencySymbol(currency);
         const totalAmount = settlements.reduce((sum, s) => sum + s.amount, 0);
         document.getElementById('settlementsCount').textContent = settlements.length;
-        document.getElementById('settlementsTotal').textContent = `$${totalAmount.toFixed(2)}`;
+        document.getElementById('settlementsTotal').textContent = `${currencySymbol}${totalAmount.toFixed(2)} ${currency}`;
         
         // Get translated "pays" label
         const paysLabel = t('app.groups.balances.settlementsPays') || 'pays';
@@ -7753,8 +7781,16 @@ function showRecordPaymentModal(toUserId, amount) {
 
     // Set form values
     document.getElementById('paymentAmount').value = amount.toFixed(2);
-    document.getElementById('paymentTo').value = toName;
+    document.getElementById('paymentTo').textContent = toName;
     document.getElementById('paymentToId').value = toUserId;
+    
+    // Update currency symbol and code
+    const currency = currentFund.settings?.currency || 'USD';
+    const currencyBadge = document.getElementById('paymentCurrencyBadge');
+    if (currencyBadge) {
+        // Show symbol + code for clarity (e.g., "$ MXN")
+        currencyBadge.textContent = `${getCurrencySymbol(currency)} ${currency}`;
+    }
     
     // Set default date to today
     const dateInput = document.getElementById('paymentDate');
@@ -10523,6 +10559,9 @@ function filterExpenses() {
     const endDate = document.getElementById('expenseFilterEnd')?.value || '';
     const onlyMyExpenses = document.getElementById('expenseFilterMyExpenses')?.checked || false;
     
+    // Use Firebase UID for Simple Mode, userAddress for Blockchain Mode
+    const currentUserId = firebase.auth().currentUser?.uid || userAddress;
+    
     const expenseCards = document.querySelectorAll('.expense-card-compact');
     let visibleCount = 0;
     
@@ -10566,9 +10605,9 @@ function filterExpenses() {
         
         // Check if user is involved (paid or split with)
         let matchesMyExpenses = true;
-        if (onlyMyExpenses && userAddress) {
+        if (onlyMyExpenses && currentUserId) {
             const members = membersStr.split(',').filter(m => m);
-            matchesMyExpenses = members.includes(userAddress);
+            matchesMyExpenses = members.includes(currentUserId);
         }
         
         // Show/hide card based on ALL filters
@@ -12855,16 +12894,16 @@ function renderNotifications() {
         
         if (typeof notif.message === 'object' && notif.message !== null) {
             // Old format: entire notification data was nested in message field
-            title = notif.message.title || 'Notificaci�n';
-            message = notif.message.message || '';
             type = notif.message.type || notif.type;
+            title = getNotificationTitle(type); // Always use translated title based on type
+            message = notif.message.message || '';
             fundId = notif.message.fundId || notif.fundId;
             expenseId = notif.message.expenseId || notif.expenseId;
         } else {
             // New format: proper structure
-            title = notif.title || 'Notificaci�n';
-            message = notif.message || '';
             type = notif.type;
+            title = getNotificationTitle(type); // Always use translated title based on type
+            message = notif.message || '';
             fundId = notif.fundId;
             expenseId = notif.expenseId;
         }
@@ -12913,50 +12952,53 @@ function getNotificationIcon(type) {
 }
 
 /**
- * Get notification title by type
+ * Get notification title by type (with i18n support)
  */
 function getNotificationTitle(type) {
+    const t = translations[getCurrentLanguage()]?.app?.notifications?.types || {};
     const titles = {
-        'expense_added': 'New Expense Added',
-        'expense_deleted': 'Expense Deleted',
-        'expense_delete_requested': 'Delete Request',
-        'payment_received': 'Payment Received',
-        'group_paused': 'Group Paused',
-        'group_reactivated': 'Group Reactivated',
-        'group_deleted': 'Group Deleted',
-        'invitation': 'Invitation',
-        'vote_required': 'Vote Required',
-        'proposal_approved': 'Proposal Approved',
-        'proposal_rejected': 'Proposal Rejected',
-        'member_joined': 'New Member Joined',
-        'member_removed': 'Member Removed',
-        'member_left': 'Member Left Group',
-        'removal_requested': 'Removal Request',
-        'fund_goal_reached': 'Goal Reached',
-        'recurring_expense_created': 'Recurring Expense Created',
-        'default': 'Notification'
+        'expense_added': t.expense_added || 'New Expense Added',
+        'expense_deleted': t.expense_deleted || 'Expense Deleted',
+        'expense_delete_requested': t.expense_delete_requested || 'Delete Request',
+        'payment_received': t.payment_received || 'Payment Received',
+        'group_paused': t.group_paused || 'Group Paused',
+        'group_reactivated': t.group_reactivated || 'Group Reactivated',
+        'group_deleted': t.group_deleted || 'Group Deleted',
+        'invitation': t.invitation || 'Invitation',
+        'vote_required': t.vote_required || 'Vote Required',
+        'proposal_approved': t.proposal_approved || 'Proposal Approved',
+        'proposal_rejected': t.proposal_rejected || 'Proposal Rejected',
+        'member_joined': t.member_joined || 'New Member Joined',
+        'member_removed': t.member_removed || 'Member Removed',
+        'member_left': t.member_left || 'Member Left Group',
+        'removal_requested': t.removal_requested || 'Removal Request',
+        'fund_goal_reached': t.fund_goal_reached || 'Goal Reached',
+        'recurring_expense_created': t.recurring_expense_created || 'Recurring Expense Created',
+        'budget_exceeded': t.budget_exceeded || 'Budget Exceeded',
+        'default': t.default || 'Notification'
     };
     return titles[type] || titles.default;
 }
 
 /**
- * Get relative time string
+ * Get relative time string (with i18n support)
  */
 function getTimeAgo(timestamp) {
     const now = Date.now();
     const diff = now - timestamp;
+    const t = translations[getCurrentLanguage()]?.app?.notifications?.time || {};
     
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
     
-    if (minutes < 1) return 'Just now';
-    if (minutes === 1) return '1 minute ago';
-    if (minutes < 60) return `${minutes} minutes ago`;
-    if (hours === 1) return '1 hour ago';
-    if (hours < 24) return `${hours} hours ago`;
-    if (days === 1) return '1 day ago';
-    if (days < 7) return `${days} days ago`;
+    if (minutes < 1) return t.justNow || 'Just now';
+    if (minutes === 1) return t.minuteAgo || '1 minute ago';
+    if (minutes < 60) return (t.minutesAgo || '{count} minutes ago').replace('{count}', minutes);
+    if (hours === 1) return t.hourAgo || '1 hour ago';
+    if (hours < 24) return (t.hoursAgo || '{count} hours ago').replace('{count}', hours);
+    if (days === 1) return t.dayAgo || '1 day ago';
+    if (days < 7) return (t.daysAgo || '{count} days ago').replace('{count}', days);
     
     return new Date(timestamp).toLocaleDateString();
 }
@@ -14433,21 +14475,7 @@ async function loadPersonalBudgetStatus(colonyData, currentSpent, currencySymbol
     }
 }
 
-/**
- * Get currency symbol
- */
-function getCurrencySymbol(currency) {
-    const symbols = {
-        'EUR': '€',
-        'USD': '$',
-        'GBP': '£',
-        'JPY': '¥',
-        'CHF': 'CHF ',
-        'AUD': 'A$',
-        'CAD': 'C$'
-    };
-    return symbols[currency] || currency + ' ';
-}
+// getCurrencySymbol is already defined at line 8555 using CURRENCY_SYMBOLS
 
 /**
  * View personal colony expenses
@@ -14492,6 +14520,415 @@ window.viewPersonalColony = viewPersonalColony;
 window.openPersonalBudgetModal = openPersonalBudgetModal;
 
 // ===================================
+// FINANCIAL SUMMARY - Dashboard Hero
+// ===================================
+
+/**
+ * Load Financial Summary - Shows total balances across all groups
+ */
+async function loadFinancialSummary() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    
+    const totalOwedToYou = document.getElementById('totalOwedToYou');
+    const totalYouOwe = document.getElementById('totalYouOwe');
+    const owedToYouGroups = document.getElementById('owedToYouGroups');
+    const youOweGroups = document.getElementById('youOweGroups');
+    const financialDetails = document.getElementById('financialDetails');
+    const allSettledMessage = document.getElementById('allSettledMessage');
+    
+    if (!totalOwedToYou || !totalYouOwe) return;
+    
+    try {
+        // Get all groups (we'll filter by membership in JavaScript)
+        const groupsRef = firebase.database().ref('groups');
+        const snapshot = await groupsRef.once('value');
+        const groups = snapshot.val() || {};
+        
+        let totalPositive = 0; // Owed to you
+        let totalNegative = 0; // You owe
+        let positiveGroupCount = 0;
+        let negativeGroupCount = 0;
+        const groupBalances = [];
+        const uniqueCurrencies = new Set(); // Track all currencies used
+        
+        // First pass: collect all group balances with their original currencies
+        Object.entries(groups).forEach(([groupId, group]) => {
+            // Check if user is a member
+            if (!group.members || !group.members[user.uid]) return;
+            if (group.isPersonal || groupId.startsWith('grp_personal_')) return;
+            
+            const members = group.members || {}
+            
+            // Accept expenses that are approved OR have no status (Simple Mode)
+            const expenses = Object.values(group.expenses || {}).filter(e => 
+                e.status === 'approved' || !e.status || e.status === undefined
+            );
+            const settlements = Object.values(group.settlements || {}).filter(s => 
+                s.status === 'completed' || !s.status || s.status === undefined
+            );
+            
+            // Detect the primary currency from expenses (most used currency)
+            const currencyCount = {};
+            expenses.forEach(expense => {
+                const expCurrency = expense.currency || group.settings?.currency || 'USD';
+                currencyCount[expCurrency] = (currencyCount[expCurrency] || 0) + 1;
+            });
+            
+            // Get the most common currency in this group's expenses
+            let groupCurrency = group.settings?.currency || 'USD';
+            const groupHasMultipleCurrencies = Object.keys(currencyCount).length > 1;
+            
+            if (Object.keys(currencyCount).length > 0) {
+                // Use the most common currency in expenses
+                groupCurrency = Object.entries(currencyCount)
+                    .sort((a, b) => b[1] - a[1])[0][0];
+            }
+            
+            // DO NOT force USD - keep the group's primary currency
+            // We'll convert other currencies TO the group's primary currency
+            
+            // Track this currency
+            uniqueCurrencies.add(groupCurrency);
+            
+            // Calculate balances
+            const memberTotals = {};
+            Object.keys(members).forEach(memberId => {
+                memberTotals[memberId] = { paid: 0, owes: 0 };
+            });
+            
+            // Process expenses - convert to group's primary currency if needed
+            expenses.forEach(expense => {
+                let amount = parseFloat(expense.amount) || 0;
+                const expCurrency = expense.currency || group.settings?.currency || 'USD';
+                
+                // Convert to group's primary currency if different
+                if (expCurrency !== groupCurrency) {
+                    // First convert to USD
+                    const amountInUSD = convertToUSD(amount, expCurrency);
+                    // Then convert from USD to group currency
+                    if (groupCurrency === 'USD') {
+                        amount = amountInUSD;
+                    } else {
+                        // Convert from USD to group currency
+                        const rateToUSD = EXCHANGE_RATES_TO_USD[groupCurrency] || 1;
+                        amount = amountInUSD / rateToUSD;
+                    }
+                }
+                
+                const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
+                const splitBetween = expense.splitBetween || Object.keys(members);
+                const sharePerPerson = amount / splitBetween.length;
+                
+                // Each payer contributed equally (if multiple payers)
+                const paidPerPayer = amount / paidByArray.length;
+                paidByArray.forEach(payerId => {
+                    if (memberTotals[payerId]) {
+                        memberTotals[payerId].paid += paidPerPayer;
+                    }
+                });
+                
+                // Each member in split owes their share
+                splitBetween.forEach(memberId => {
+                    if (memberTotals[memberId]) {
+                        memberTotals[memberId].owes += sharePerPerson;
+                    }
+                });
+            });
+            
+            // Process settlements - also convert if needed
+            settlements.forEach(settlement => {
+                let amount = parseFloat(settlement.amount) || 0;
+                const settleCurrency = settlement.currency || groupCurrency;
+                
+                // Convert to group's primary currency if different
+                if (settleCurrency !== groupCurrency) {
+                    const amountInUSD = convertToUSD(amount, settleCurrency);
+                    if (groupCurrency === 'USD') {
+                        amount = amountInUSD;
+                    } else {
+                        const rateToUSD = EXCHANGE_RATES_TO_USD[groupCurrency] || 1;
+                        amount = amountInUSD / rateToUSD;
+                    }
+                }
+                
+                if (memberTotals[settlement.from]) {
+                    memberTotals[settlement.from].paid += amount;
+                }
+                if (memberTotals[settlement.to]) {
+                    memberTotals[settlement.to].owes += amount;
+                }
+            });
+            
+            // Calculate my balance in this group
+            const myPaid = memberTotals[user.uid]?.paid || 0;
+            const myOwes = memberTotals[user.uid]?.owes || 0;
+            const myBalance = myPaid - myOwes;
+            
+            if (Math.abs(myBalance) > 0.01) {
+                const groupIcon = group.fundType !== undefined 
+                    ? ['🌴', '💰', '🤝', '📦'][group.fundType] || '📦'
+                    : '👥';
+                
+                // Find who owes me / who I owe
+                let primaryDebtor = null;
+                let maxDebt = 0;
+                
+                Object.entries(members).forEach(([memberId, memberData]) => {
+                    if (memberId === user.uid) return;
+                    const theirBalance = (memberTotals[memberId]?.paid || 0) - (memberTotals[memberId]?.owes || 0);
+                    
+                    if (myBalance > 0 && theirBalance < 0) {
+                        // They owe money, I'm owed
+                        if (Math.abs(theirBalance) > maxDebt) {
+                            maxDebt = Math.abs(theirBalance);
+                            primaryDebtor = memberData.name || memberData.email?.split('@')[0] || 'Someone';
+                        }
+                    } else if (myBalance < 0 && theirBalance > 0) {
+                        // I owe money, they're owed
+                        if (theirBalance > maxDebt) {
+                            maxDebt = theirBalance;
+                            primaryDebtor = memberData.name || memberData.email?.split('@')[0] || 'Someone';
+                        }
+                    }
+                });
+                
+                groupBalances.push({
+                    id: groupId,
+                    name: group.name || group.fundName || 'Group',
+                    icon: groupIcon,
+                    balance: myBalance,
+                    currency: groupCurrency,
+                    debtor: primaryDebtor
+                });
+                
+                // Count groups for display (don't add to totals yet - we'll do currency conversion after)
+                if (myBalance > 0) {
+                    positiveGroupCount++;
+                } else {
+                    negativeGroupCount++;
+                }
+            }
+        });
+        
+        // Determine display currency: if all groups use same currency, use that; otherwise USD
+        const currenciesArray = Array.from(uniqueCurrencies);
+        const useMultipleCurrencies = currenciesArray.length > 1;
+        const displayCurrency = useMultipleCurrencies ? 'USD' : (currenciesArray[0] || 'USD');
+        const displaySymbol = getCurrencySymbol(displayCurrency);
+        
+        // Now calculate totals with proper currency conversion
+        groupBalances.forEach(group => {
+            let balanceInDisplayCurrency = group.balance;
+            
+            // Convert if needed
+            if (useMultipleCurrencies && group.currency !== 'USD') {
+                balanceInDisplayCurrency = convertToUSD(group.balance, group.currency);
+            }
+            
+            // Store converted balance for sorting/display
+            group.balanceConverted = balanceInDisplayCurrency;
+            
+            if (balanceInDisplayCurrency > 0) {
+                totalPositive += balanceInDisplayCurrency;
+            } else {
+                totalNegative += Math.abs(balanceInDisplayCurrency);
+            }
+        });
+        
+        // ALWAYS show currency code in Financial Summary to avoid confusion
+        // If multiple currencies, show "≈ $X USD" to indicate conversion
+        const convertedNote = useMultipleCurrencies ? '≈ ' : '';
+        
+        // Update UI with proper currency symbol and code - ALWAYS show currency code
+        totalOwedToYou.textContent = `${convertedNote}+${displaySymbol}${totalPositive.toFixed(2)} ${displayCurrency}`;
+        totalYouOwe.textContent = `${convertedNote}-${displaySymbol}${totalNegative.toFixed(2)} ${displayCurrency}`;
+        
+        owedToYouGroups.textContent = positiveGroupCount > 0 
+            ? `(${positiveGroupCount} ${positiveGroupCount === 1 ? 'group' : 'groups'})` 
+            : '';
+        youOweGroups.textContent = negativeGroupCount > 0 
+            ? `(${negativeGroupCount} ${negativeGroupCount === 1 ? 'group' : 'groups'})` 
+            : '';
+        
+        // Show group details or settled message
+        if (groupBalances.length === 0) {
+            if (financialDetails) financialDetails.style.display = 'none';
+            if (allSettledMessage) allSettledMessage.style.display = 'flex';
+        } else {
+            if (allSettledMessage) allSettledMessage.style.display = 'none';
+            if (financialDetails) {
+                financialDetails.style.display = 'block';
+                
+                // Sort by absolute converted balance (highest first)
+                groupBalances.sort((a, b) => Math.abs(b.balanceConverted || b.balance) - Math.abs(a.balanceConverted || a.balance));
+                
+                let html = '';
+                groupBalances.slice(0, 5).forEach(group => { // Show top 5
+                    const isPositive = group.balance > 0;
+                    // Show each group in its original currency - ALWAYS show currency code
+                    const symbol = getCurrencySymbol(group.currency);
+                    const debtorText = group.debtor 
+                        ? (isPositive ? `${group.debtor} owes you` : `You owe ${group.debtor}`)
+                        : '';
+                    // Always show currency code for clarity
+                    const amountDisplay = `${symbol}${Math.abs(group.balance).toFixed(2)} ${group.currency}`;
+                    
+                    html += `
+                        <div class="financial-group-item" onclick="openFund('${group.id}')">
+                            <div class="financial-group-info">
+                                <div class="financial-group-icon">${group.icon}</div>
+                                <div>
+                                    <div class="financial-group-name">${group.name}</div>
+                                    <div class="financial-group-detail">${debtorText}</div>
+                                </div>
+                            </div>
+                            <div class="financial-group-amount ${isPositive ? 'positive' : 'negative'}">
+                                ${isPositive ? '+' : '-'}${amountDisplay}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                financialDetails.innerHTML = html;
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading financial summary:', error);
+    }
+}
+
+/**
+ * Open Quick Expense Modal - For adding expense from dashboard
+ */
+async function openQuickExpenseModal() {
+    // If user has groups, show group selector then expense form
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        showToast('Please log in first', 'error');
+        return;
+    }
+    
+    // Check groups directly from Firebase instead of DOM
+    try {
+        const snapshot = await firebase.database().ref('groups')
+            .orderByChild(`members/${user.uid}/joinedAt`)
+            .once('value');
+        const groups = snapshot.val() || {};
+        
+        // Filter to only groups user is member of (excluding personal)
+        const userGroups = Object.entries(groups).filter(([groupId, group]) => {
+            return group.members && 
+                   group.members[user.uid] && 
+                   !group.isPersonal && 
+                   !groupId.startsWith('grp_personal_');
+        });
+        
+        if (userGroups.length === 0) {
+            // No groups - prompt to create one
+            showToast('Create a group first to add expenses', 'info');
+            document.getElementById('createFundBtn')?.click();
+            return;
+        }
+        
+        // Show group selector modal
+        showGroupSelectorForExpense();
+    } catch (error) {
+        console.error('Error checking groups:', error);
+        showToast('Error loading groups', 'error');
+    }
+}
+
+/**
+ * Show modal to select which group to add expense to
+ */
+function showGroupSelectorForExpense() {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('groupSelectorModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'groupSelectorModal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h3>📝 Add Expense To...</h3>
+                    <button class="modal-close" onclick="closeGroupSelectorModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="groupSelectorList" class="group-selector-list">
+                        <!-- Groups will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // Load groups into selector
+    const listContainer = document.getElementById('groupSelectorList');
+    const user = firebase.auth().currentUser;
+    
+    firebase.database().ref('groups')
+        .orderByChild(`members/${user.uid}/joinedAt`)
+        .once('value')
+        .then(snapshot => {
+            const groups = snapshot.val() || {};
+            let html = '';
+            
+            Object.entries(groups).forEach(([groupId, group]) => {
+                if (!group.members || !group.members[user.uid]) return;
+                if (group.isPersonal || groupId.startsWith('grp_personal_')) return;
+                
+                const icon = group.fundType !== undefined 
+                    ? ['🌴', '💰', '🤝', '📦'][group.fundType] || '📦'
+                    : '👥';
+                const name = group.name || group.fundName || 'Group';
+                
+                html += `
+                    <div class="group-selector-item" onclick="selectGroupAndAddExpense('${groupId}')">
+                        <span class="group-selector-icon">${icon}</span>
+                        <span class="group-selector-name">${name}</span>
+                        <span class="group-selector-arrow">→</span>
+                    </div>
+                `;
+            });
+            
+            if (html === '') {
+                html = '<p style="text-align: center; color: var(--text-muted); padding: 1rem;">No groups available</p>';
+            }
+            
+            listContainer.innerHTML = html;
+        });
+    
+    modal.classList.add('active');
+}
+
+function closeGroupSelectorModal() {
+    const modal = document.getElementById('groupSelectorModal');
+    if (modal) modal.classList.remove('active');
+}
+
+async function selectGroupAndAddExpense(groupId) {
+    closeGroupSelectorModal();
+    await openFund(groupId);
+    
+    // Wait for fund to load, then trigger add expense
+    setTimeout(() => {
+        const addExpenseBtn = document.getElementById('addExpenseBtn');
+        if (addExpenseBtn) addExpenseBtn.click();
+    }, 500);
+}
+
+// Make functions globally available
+window.loadFinancialSummary = loadFinancialSummary;
+window.openQuickExpenseModal = openQuickExpenseModal;
+window.showGroupSelectorForExpense = showGroupSelectorForExpense;
+window.closeGroupSelectorModal = closeGroupSelectorModal;
+window.selectGroupAndAddExpense = selectGroupAndAddExpense;
+
+// ===================================
 // COLONY INSIGHTS - Phase 2
 // ===================================
 
@@ -14503,6 +14940,7 @@ async function loadColonyInsights() {
     if (!user) return;
     
     try {
+        await loadFinancialSummary();
         await loadWeeklyDigest();
         await loadBalanceGlance();
     } catch (error) {
@@ -15310,8 +15748,6 @@ async function loadItinerary() {
     itineraryEvents = [];
     itineraryLinkedExpenses = [];
     
-    console.log('[Itinerary] Loading events for group:', groupId);
-    
     try {
         // Load events
         const eventsData = await window.FirebaseConfig.readDb(`itineraries/${groupId}/events`);
@@ -15333,7 +15769,6 @@ async function loadItinerary() {
             .map(([id, exp]) => ({ id, ...exp }))
             .filter(exp => exp.linkedEventId) : [];
         
-        console.log('[Itinerary] Loaded events:', itineraryEvents.length, 'Linked expenses:', itineraryLinkedExpenses.length);
         renderItinerary();
     } catch (error) {
         console.error('[Itinerary] Error loading events:', error);
@@ -15398,7 +15833,15 @@ function renderItinerary() {
     timeline.innerHTML = days.map(day => {
         const dateStr = formatLocalDate(day);
         const isToday = day.toDateString() === new Date().toDateString();
-        const dayEvents = itineraryEvents.filter(e => e.date === dateStr);
+        // Filter events: include single-day events on this date OR multi-day events where this date is in range
+        const dayEvents = itineraryEvents.filter(e => {
+            if (e.date === dateStr) return true; // Start date matches
+            if (e.endDate) {
+                // Multi-day event - check if dateStr falls within range
+                return dateStr >= e.date && dateStr <= e.endDate;
+            }
+            return false;
+        });
         const todayLabel = t.today || 'Today';
         
         return `
@@ -15416,15 +15859,27 @@ function renderItinerary() {
                         const expenseCount = eventExpenses.length;
                         const { total: expenseTotal, currency } = calculateEventExpenseTotal(eventExpenses);
                         
+                        // Determine if this is a multi-day event and which day of it we're showing
+                        const isMultiDay = event.endDate && event.endDate !== event.date;
+                        let dayIndicator = '';
+                        if (isMultiDay) {
+                            const startDate = new Date(event.date);
+                            const currentDate = new Date(dateStr);
+                            const dayNum = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                            const endDate = new Date(event.endDate);
+                            const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                            dayIndicator = `<span class="multi-day-badge">${dayNum}/${totalDays}</span>`;
+                        }
+                        
                         return `
-                        <div class="itinerary-event" onclick="viewEvent('${event.id}')">
-                            ${event.time ? `<div class="itinerary-event-time">${formatEventTime(event.time)}</div>` : ''}
+                        <div class="itinerary-event ${isMultiDay ? 'multi-day-event' : ''}" onclick="viewEvent('${event.id}')">
+                            ${event.time && event.date === dateStr ? `<div class="itinerary-event-time">${formatEventTime(event.time)}</div>` : ''}
                             <div class="itinerary-event-content">
                                 <span class="itinerary-event-icon">${event.icon || '📍'}</span>
                                 <div class="itinerary-event-info">
-                                    <div class="itinerary-event-title">${escapeHtml(event.title)}</div>
-                                    ${event.note ? `<div class="itinerary-event-note">${escapeHtml(event.note)}</div>` : ''}
-                                    ${expenseCount > 0 ? `
+                                    <div class="itinerary-event-title">${escapeHtml(event.title)}${dayIndicator}</div>
+                                    ${event.note && event.date === dateStr ? `<div class="itinerary-event-note">${escapeHtml(event.note)}</div>` : ''}
+                                    ${expenseCount > 0 && event.date === dateStr ? `
                                         <div class="itinerary-event-expenses" title="${expenseCount} expense${expenseCount > 1 ? 's' : ''} linked">
                                             <span class="expense-badge">💸 ${formatCurrency(expenseTotal, currency)}</span>
                                         </div>
@@ -15700,11 +16155,27 @@ function renderCalendarView() {
     // Days in previous month
     const daysInPrevMonth = new Date(currentCalendarYear, currentCalendarMonth, 0).getDate();
     
-    // Build event map for quick lookup
+    // Build event map for quick lookup (including multi-day events)
     const eventMap = {};
     itineraryEvents.forEach(event => {
+        // Always add to start date
         if (!eventMap[event.date]) eventMap[event.date] = [];
         eventMap[event.date].push(event);
+        
+        // For multi-day events, add to all intermediate dates
+        if (event.endDate && event.endDate !== event.date) {
+            const startDate = new Date(event.date);
+            const endDate = new Date(event.endDate);
+            let currentDate = new Date(startDate);
+            currentDate.setDate(currentDate.getDate() + 1); // Start from day after start
+            
+            while (currentDate <= endDate) {
+                const dateStr = formatLocalDate(currentDate);
+                if (!eventMap[dateStr]) eventMap[dateStr] = [];
+                eventMap[dateStr].push(event);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+        }
     });
     
     let html = '';
@@ -15779,7 +16250,14 @@ function selectCalendarDay(dateStr) {
     
     if (!eventsContainer || !eventsList) return;
     
-    const dayEvents = itineraryEvents.filter(e => e.date === dateStr);
+    // Filter events: include single-day events on this date OR multi-day events where this date is in range
+    const dayEvents = itineraryEvents.filter(e => {
+        if (e.date === dateStr) return true;
+        if (e.endDate) {
+            return dateStr >= e.date && dateStr <= e.endDate;
+        }
+        return false;
+    });
     
     // Format date for display
     const date = new Date(dateStr + 'T00:00:00');
@@ -15808,14 +16286,26 @@ function selectCalendarDay(dateStr) {
             // Calculate total with proper currency handling (converts to USD if mixed)
             const { total: expenseTotal, currency } = calculateEventExpenseTotal(eventExpenses);
             
+            // Show multi-day indicator
+            const isMultiDay = event.endDate && event.endDate !== event.date;
+            let dayIndicator = '';
+            if (isMultiDay) {
+                const startDate = new Date(event.date);
+                const currentDate = new Date(dateStr);
+                const dayNum = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                const endDateObj = new Date(event.endDate);
+                const totalDays = Math.floor((endDateObj - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                dayIndicator = `<span class="multi-day-badge">${dayNum}/${totalDays}</span>`;
+            }
+            
             return `
-                <div class="calendar-event-item" onclick="viewEvent('${event.id}')">
+                <div class="calendar-event-item ${isMultiDay ? 'multi-day-event' : ''}" onclick="viewEvent('${event.id}')">
                     <div class="calendar-event-icon">${event.icon || '📍'}</div>
                     <div class="calendar-event-details">
-                        <div class="calendar-event-title">${escapeHtml(event.title)}</div>
-                        ${event.time ? `<div class="calendar-event-time">🕐 ${formatEventTime(event.time)}</div>` : ''}
-                        ${event.note ? `<div class="calendar-event-note">${escapeHtml(event.note)}</div>` : ''}
-                        ${eventExpenses.length > 0 ? `<div class="calendar-event-expense">💸 ${formatCurrency(expenseTotal, currency)}</div>` : ''}
+                        <div class="calendar-event-title">${escapeHtml(event.title)}${dayIndicator}</div>
+                        ${event.time && event.date === dateStr ? `<div class="calendar-event-time">🕐 ${formatEventTime(event.time)}</div>` : ''}
+                        ${event.note && event.date === dateStr ? `<div class="calendar-event-note">${escapeHtml(event.note)}</div>` : ''}
+                        ${eventExpenses.length > 0 && event.date === dateStr ? `<div class="calendar-event-expense">💸 ${formatCurrency(expenseTotal, currency)}</div>` : ''}
                     </div>
                 </div>
             `;
@@ -15840,19 +16330,11 @@ let currentLinkedExpenseIds = [];
  * Open add event modal
  */
 function openAddEventModal(prefillDate = null) {
-    console.log('[Itinerary] openAddEventModal called with prefillDate:', prefillDate);
-    
     const modal = document.getElementById('eventModal');
     const titleEl = document.getElementById('eventModalTitle');
     const saveBtn = document.getElementById('saveEventBtn');
     
-    console.log('[Itinerary] Modal element:', modal);
-    console.log('[Itinerary] Modal exists:', !!modal);
-    
-    if (!modal) {
-        console.error('[Itinerary] ERROR: eventModal not found in DOM!');
-        return;
-    }
+    if (!modal) return;
     
     // Reset form
     document.getElementById('eventId').value = '';
@@ -15862,6 +16344,17 @@ function openAddEventModal(prefillDate = null) {
     document.getElementById('eventNote').value = '';
     document.getElementById('eventIcon').value = '📍';
     selectedEventIcon = '📍';
+    
+    // Reset multi-day toggle
+    const multiDayToggle = document.getElementById('multiDayToggle');
+    const endDateInput = document.getElementById('eventEndDate');
+    const separator = document.getElementById('dateRangeSeparator');
+    if (multiDayToggle) multiDayToggle.checked = false;
+    if (endDateInput) {
+        endDateInput.style.display = 'none';
+        endDateInput.value = '';
+    }
+    if (separator) separator.style.display = 'none';
     
     // Reset links and expenses
     currentEventLinks = [];
@@ -15886,7 +16379,6 @@ function openAddEventModal(prefillDate = null) {
     // Show modal - remove any inline display style and add active class
     modal.style.display = '';
     modal.classList.add('active');
-    console.log('[Itinerary] Modal opened, display:', modal.style.display, 'classes:', modal.className);
     
     // Setup icon selector
     setupIconSelector();
@@ -15912,6 +16404,27 @@ function editEvent(eventId) {
     document.getElementById('eventNote').value = event.note || '';
     document.getElementById('eventIcon').value = event.icon || '📍';
     selectedEventIcon = event.icon || '📍';
+    
+    // Handle multi-day events
+    const multiDayToggle = document.getElementById('multiDayToggle');
+    const endDateInput = document.getElementById('eventEndDate');
+    const separator = document.getElementById('dateRangeSeparator');
+    
+    if (event.endDate) {
+        if (multiDayToggle) multiDayToggle.checked = true;
+        if (endDateInput) {
+            endDateInput.style.display = '';
+            endDateInput.value = event.endDate;
+        }
+        if (separator) separator.style.display = '';
+    } else {
+        if (multiDayToggle) multiDayToggle.checked = false;
+        if (endDateInput) {
+            endDateInput.style.display = 'none';
+            endDateInput.value = '';
+        }
+        if (separator) separator.style.display = 'none';
+    }
     
     // Load existing links
     currentEventLinks = event.links ? [...event.links] : [];
@@ -16089,21 +16602,13 @@ function linkExpenseToEvent() {
     const selector = document.getElementById('linkExpenseSelect');
     const expenseId = selector?.value;
     
-    console.log('[Itinerary] linkExpenseToEvent called, expenseId:', expenseId);
-    
-    if (!expenseId) {
-        console.log('[Itinerary] No expense selected, returning');
-        return;
-    }
+    if (!expenseId) return;
     
     // Add to linked expenses
     if (!currentLinkedExpenseIds.includes(expenseId)) {
         currentLinkedExpenseIds.push(expenseId);
-        console.log('[Itinerary] Added expense to currentLinkedExpenseIds:', currentLinkedExpenseIds);
         renderLinkedExpenses();
-        populateExpenseSelector(); // Refresh to remove from dropdown
-    } else {
-        console.log('[Itinerary] Expense already in list');
+        populateExpenseSelector();
     }
     
     // Reset selector
@@ -16181,14 +16686,22 @@ function closeEventModal() {
  * Save event (create or update)
  */
 async function saveEvent() {
-    if (!currentFund) return;
+    if (!currentFund) {
+        showToast('No group selected. Please select a group first.', 'error');
+        return;
+    }
     
     const groupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
-    if (!groupId) return;
+    if (!groupId) {
+        showToast('Error: Group ID not found', 'error');
+        return;
+    }
     
     const eventId = document.getElementById('eventId').value;
     const title = document.getElementById('eventTitle').value.trim();
     const date = document.getElementById('eventDate').value;
+    const isMultiDay = document.getElementById('multiDayToggle')?.checked || false;
+    const endDate = isMultiDay ? document.getElementById('eventEndDate').value : null;
     const time = document.getElementById('eventTime').value;
     const note = document.getElementById('eventNote').value.trim();
     const icon = selectedEventIcon;
@@ -16202,6 +16715,14 @@ async function saveEvent() {
         showToast('Please select a date', 'error');
         return;
     }
+    if (isMultiDay && !endDate) {
+        showToast('Please select an end date', 'error');
+        return;
+    }
+    if (isMultiDay && endDate && new Date(endDate) < new Date(date)) {
+        showToast('End date must be after start date', 'error');
+        return;
+    }
     
     const t = translations[getCurrentLanguage()]?.app?.itinerary || {};
     
@@ -16209,6 +16730,7 @@ async function saveEvent() {
         const eventData = {
             title,
             date,
+            endDate: endDate || null,
             time: time || null,
             note: note || null,
             icon,
@@ -16235,12 +16757,9 @@ async function saveEvent() {
                 createdAt: Date.now(),
                 createdBy: currentUser?.uid || 'unknown'
             });
-            console.log('[Itinerary] New event created with ID:', finalEventId);
         }
         
         // Update expense links
-        console.log('[Itinerary] Saving event, currentLinkedExpenseIds:', currentLinkedExpenseIds);
-        console.log('[Itinerary] Calling updateExpenseLinks with groupId:', groupId, 'finalEventId:', finalEventId, 'oldEventId:', eventId);
         await updateExpenseLinks(groupId, finalEventId, eventId);
         
         showToast(t.saveSuccess || 'Event saved', 'success');
@@ -16252,7 +16771,7 @@ async function saveEvent() {
             try {
                 await loadSimpleModeExpenses();
             } catch (e) {
-                console.log('[Itinerary] Expenses refresh skipped:', e.message);
+                // Expenses refresh skipped
             }
         }
     } catch (error) {
@@ -16265,29 +16784,20 @@ async function saveEvent() {
  * Update expense linkedEventId for linked/unlinked expenses
  */
 async function updateExpenseLinks(groupId, eventId, oldEventId) {
-    console.log('[Itinerary] updateExpenseLinks called with:', { groupId, eventId, oldEventId });
-    console.log('[Itinerary] currentLinkedExpenseIds at start:', [...currentLinkedExpenseIds]);
-    
     try {
         // Get all expenses
         const expensesData = await window.FirebaseConfig.readDb(`groups/${groupId}/expenses`);
-        console.log('[Itinerary] Loaded expenses from Firebase:', expensesData ? Object.keys(expensesData).length : 0, 'expenses');
         
-        if (!expensesData) {
-            console.log('[Itinerary] No expenses data found for group:', groupId);
-            return;
-        }
+        if (!expensesData) return;
         
         // Find expenses that were linked to this event before
         const previouslyLinked = Object.entries(expensesData)
             .filter(([id, exp]) => exp.linkedEventId === (oldEventId || eventId))
             .map(([id]) => id);
-        console.log('[Itinerary] Previously linked expenses:', previouslyLinked);
         
         // Unlink expenses that are no longer linked
         for (const expId of previouslyLinked) {
             if (!currentLinkedExpenseIds.includes(expId)) {
-                console.log('[Itinerary] Unlinking expense:', expId);
                 await window.FirebaseConfig.writeDb(
                     `groups/${groupId}/expenses/${expId}/linkedEventId`,
                     null
@@ -16296,19 +16806,13 @@ async function updateExpenseLinks(groupId, eventId, oldEventId) {
         }
         
         // Link new expenses
-        console.log('[Itinerary] Linking expenses:', currentLinkedExpenseIds);
         for (const expId of currentLinkedExpenseIds) {
             const exp = expensesData[expId];
-            console.log('[Itinerary] Processing expense:', expId, 'exists:', !!exp, 'currentLink:', exp?.linkedEventId, 'targetEventId:', eventId);
             if (exp && exp.linkedEventId !== eventId) {
-                console.log('[Itinerary] Writing linkedEventId for expense:', expId, 'to event:', eventId);
                 await window.FirebaseConfig.writeDb(
                     `groups/${groupId}/expenses/${expId}/linkedEventId`,
                     eventId
                 );
-                console.log('[Itinerary] Successfully linked expense:', expId);
-            } else if (exp) {
-                console.log('[Itinerary] Expense already linked or skipped:', expId);
             }
         }
     } catch (error) {
@@ -16371,11 +16875,31 @@ async function viewEvent(eventId) {
     document.getElementById('eventViewIcon').textContent = event.icon || '📍';
     document.getElementById('eventViewTitle').textContent = event.title || 'Event';
     
-    // Format and set date
+    // Format and set date (with support for date range)
     if (event.date) {
         const dateObj = new Date(event.date + 'T00:00:00');
         const monthName = monthNames[monthKeys[dateObj.getMonth()]];
-        const formattedDate = `📅 ${monthName} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+        
+        let formattedDate;
+        if (event.endDate && event.endDate !== event.date) {
+            // Multi-day event - show range
+            const endDateObj = new Date(event.endDate + 'T00:00:00');
+            const endMonthName = monthNames[monthKeys[endDateObj.getMonth()]];
+            
+            if (dateObj.getMonth() === endDateObj.getMonth() && dateObj.getFullYear() === endDateObj.getFullYear()) {
+                // Same month
+                formattedDate = `📅 ${monthName} ${dateObj.getDate()} - ${endDateObj.getDate()}, ${dateObj.getFullYear()}`;
+            } else if (dateObj.getFullYear() === endDateObj.getFullYear()) {
+                // Same year, different month
+                formattedDate = `📅 ${monthName} ${dateObj.getDate()} - ${endMonthName} ${endDateObj.getDate()}, ${dateObj.getFullYear()}`;
+            } else {
+                // Different year
+                formattedDate = `📅 ${monthName} ${dateObj.getDate()}, ${dateObj.getFullYear()} - ${endMonthName} ${endDateObj.getDate()}, ${endDateObj.getFullYear()}`;
+            }
+        } else {
+            formattedDate = `📅 ${monthName} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+        }
+        
         document.getElementById('eventViewDate').textContent = formattedDate;
         document.getElementById('eventViewDate').style.display = '';
     } else {
@@ -16405,13 +16929,26 @@ async function viewEvent(eventId) {
     const linksSection = document.getElementById('eventViewLinksSection');
     const linksContainer = document.getElementById('eventViewLinks');
     if (event.links && event.links.length > 0) {
-        linksContainer.innerHTML = event.links.map(link => `
-            <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" class="event-view-link">
+        linksContainer.innerHTML = event.links.map((link, index) => `
+            <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" class="event-view-link" data-link-index="${index}">
                 <span class="link-icon">🔗</span>
                 <span class="link-title">${escapeHtml(link.title || link.url)}</span>
                 <span class="link-external">↗</span>
             </a>
         `).join('');
+        
+        // Add explicit click handlers for PWA compatibility
+        linksContainer.querySelectorAll('.event-view-link').forEach(linkEl => {
+            linkEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const url = linkEl.getAttribute('href');
+                if (url) {
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                }
+            });
+        });
+        
         linksSection.style.display = 'block';
     } else {
         linksSection.style.display = 'none';
@@ -16463,6 +17000,7 @@ async function viewEvent(eventId) {
     emptyState.style.display = hasContent ? 'none' : 'block';
     
     // Show modal
+    modal.style.display = '';
     modal.classList.add('active');
 }
 
@@ -16481,9 +17019,39 @@ function closeEventViewModal() {
  * Edit event from view modal (opens edit modal)
  */
 function editEventFromView() {
-    if (!currentViewEventId) return;
+    const eventId = currentViewEventId; // Save before closing
+    if (!eventId) return;
     closeEventViewModal();
-    editEvent(currentViewEventId);
+    editEvent(eventId);
+}
+
+/**
+ * Toggle multi-day event visibility
+ */
+function toggleMultiDay() {
+    const toggle = document.getElementById('multiDayToggle');
+    const endDateInput = document.getElementById('eventEndDate');
+    const separator = document.getElementById('dateRangeSeparator');
+    const startDate = document.getElementById('eventDate').value;
+    
+    if (toggle?.checked) {
+        if (separator) separator.style.display = '';
+        if (endDateInput) {
+            endDateInput.style.display = '';
+            // Set default end date to start date + 1 day if not already set
+            if (!endDateInput.value && startDate) {
+                const nextDay = new Date(startDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                endDateInput.value = formatLocalDate(nextDay);
+            }
+        }
+    } else {
+        if (separator) separator.style.display = 'none';
+        if (endDateInput) {
+            endDateInput.style.display = 'none';
+            endDateInput.value = '';
+        }
+    }
 }
 
 // Make itinerary functions globally available
@@ -16500,5 +17068,5 @@ window.deleteEvent = deleteEvent;
 window.viewEvent = viewEvent;
 window.closeEventViewModal = closeEventViewModal;
 window.editEventFromView = editEventFromView;
-console.log('[Itinerary] Functions registered globally. openAddEventModal:', typeof window.openAddEventModal);
+window.toggleMultiDay = toggleMultiDay;
 
