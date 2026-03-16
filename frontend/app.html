@@ -45,7 +45,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=5.56">
+    <link rel="stylesheet" href="styles-platform.css?v=5.57">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.3">
@@ -2014,35 +2014,7 @@ Simple, fast, and free.</p>
                             <div class="modal-body">
                                 <input type="hidden" id="eventId" value="">
                                 
-                                <!-- Icon Selector -->
-                                <div class="form-group">
-                                    <label data-i18n="app.itinerary.modal.icon">Icon</label>
-                                    <div class="event-icon-selector" id="eventIconSelector">
-                                        <button type="button" class="icon-option" data-icon="✈️">✈️</button>
-                                        <button type="button" class="icon-option" data-icon="🍽️">🍽️</button>
-                                        <button type="button" class="icon-option" data-icon="🏨">🏨</button>
-                                        <button type="button" class="icon-option" data-icon="🚗">🚗</button>
-                                        <button type="button" class="icon-option" data-icon="🚌">🚌</button>
-                                        <button type="button" class="icon-option" data-icon="🚂">🚂</button>
-                                        <button type="button" class="icon-option" data-icon="⛱️">⛱️</button>
-                                        <button type="button" class="icon-option" data-icon="🏖️">🏖️</button>
-                                        <button type="button" class="icon-option" data-icon="🎭">🎭</button>
-                                        <button type="button" class="icon-option" data-icon="🎵">🎵</button>
-                                        <button type="button" class="icon-option" data-icon="🍹">🍹</button>
-                                        <button type="button" class="icon-option" data-icon="☕">☕</button>
-                                        <button type="button" class="icon-option" data-icon="🛍️">🛍️</button>
-                                        <button type="button" class="icon-option" data-icon="🏛️">🏛️</button>
-                                        <button type="button" class="icon-option" data-icon="⛰️">⛰️</button>
-                                        <button type="button" class="icon-option" data-icon="🎿">🎿</button>
-                                        <button type="button" class="icon-option" data-icon="🏊">🏊</button>
-                                        <button type="button" class="icon-option" data-icon="📸">📸</button>
-                                        <button type="button" class="icon-option" data-icon="🎉">🎉</button>
-                                        <button type="button" class="icon-option" data-icon="📍">📍</button>
-                                    </div>
-                                    <input type="hidden" id="eventIcon" value="📍">
-                                </div>
-
-                                <!-- Title -->
+                                <!-- Title (FIRST - most important) -->
                                 <div class="form-group">
                                     <label for="eventTitle" data-i18n="app.itinerary.modal.title">Title *</label>
                                     <input type="text" id="eventTitle" class="form-control" placeholder="Flight to Cancun" required>
@@ -2074,6 +2046,39 @@ Simple, fast, and free.</p>
                                 <div class="form-group">
                                     <label for="eventNote" data-i18n="app.itinerary.modal.note">Note (optional)</label>
                                     <textarea id="eventNote" class="form-control" rows="2" placeholder="Terminal 2, Gate 15"></textarea>
+                                </div>
+
+                                <!-- Scroll hint -->
+                                <div class="form-scroll-hint" id="eventFormScrollHint">
+                                    <span>▼</span> More options below
+                                </div>
+
+                                <!-- Icon Selector (moved below main fields) -->
+                                <div class="form-group">
+                                    <label data-i18n="app.itinerary.modal.icon">Icon</label>
+                                    <div class="event-icon-selector" id="eventIconSelector">
+                                        <button type="button" class="icon-option" data-icon="✈️">✈️</button>
+                                        <button type="button" class="icon-option" data-icon="🍽️">🍽️</button>
+                                        <button type="button" class="icon-option" data-icon="🏨">🏨</button>
+                                        <button type="button" class="icon-option" data-icon="🚗">🚗</button>
+                                        <button type="button" class="icon-option" data-icon="🚌">🚌</button>
+                                        <button type="button" class="icon-option" data-icon="🚂">🚂</button>
+                                        <button type="button" class="icon-option" data-icon="⛱️">⛱️</button>
+                                        <button type="button" class="icon-option" data-icon="🏖️">🏖️</button>
+                                        <button type="button" class="icon-option" data-icon="🎭">🎭</button>
+                                        <button type="button" class="icon-option" data-icon="🎵">🎵</button>
+                                        <button type="button" class="icon-option" data-icon="🍹">🍹</button>
+                                        <button type="button" class="icon-option" data-icon="☕">☕</button>
+                                        <button type="button" class="icon-option" data-icon="🛍️">🛍️</button>
+                                        <button type="button" class="icon-option" data-icon="🏛️">🏛️</button>
+                                        <button type="button" class="icon-option" data-icon="⛰️">⛰️</button>
+                                        <button type="button" class="icon-option" data-icon="🎿">🎿</button>
+                                        <button type="button" class="icon-option" data-icon="🏊">🏊</button>
+                                        <button type="button" class="icon-option" data-icon="📸">📸</button>
+                                        <button type="button" class="icon-option" data-icon="🎉">🎉</button>
+                                        <button type="button" class="icon-option" data-icon="📍">📍</button>
+                                    </div>
+                                    <input type="hidden" id="eventIcon" value="📍">
                                 </div>
 
                                 <!-- Useful Links Section -->
@@ -2349,11 +2354,29 @@ Simple, fast, and free.</p>
                                 </div>
                                 <div class="form-group">
                                     <label data-i18n="app.portfolio.targetAmount">Target Amount</label>
-                                    <input type="number" id="goalAmountInput" class="form-input" placeholder="10000" min="0">
+                                    <div class="goal-amount-row">
+                                        <input type="number" id="goalAmountInput" class="form-input" placeholder="10000" min="0">
+                                        <select id="goalCurrencySelect" class="form-input goal-currency-select">
+                                            <option value="USD">USD $</option>
+                                            <option value="EUR">EUR €</option>
+                                            <option value="GBP">GBP £</option>
+                                            <option value="MXN">MXN $</option>
+                                            <option value="COP">COP $</option>
+                                            <option value="ARS">ARS $</option>
+                                            <option value="BRL">BRL R$</option>
+                                            <option value="CLP">CLP $</option>
+                                            <option value="PEN">PEN S/</option>
+                                            <option value="CAD">CAD CA$</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label data-i18n="app.portfolio.targetDate">Target Date</label>
                                     <input type="date" id="goalDateInput" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>🔗 Link (optional)</label>
+                                    <input type="url" id="goalLinkInput" class="form-input" placeholder="https://...">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -3041,7 +3064,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.8"></script>
     <script src="mascot-system.js?v=2.1"></script>
-    <script src="app-platform.js?v=5.64"></script>
+    <script src="app-platform.js?v=5.65"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)

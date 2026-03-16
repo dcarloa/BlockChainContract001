@@ -18946,6 +18946,54 @@ body.light-mode .link-event-field {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
+.goal-amount-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.goal-amount-row input {
+  flex: 1;
+}
+
+.goal-currency-select {
+  width: auto !important;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.goal-link-btn {
+  font-size: 0.75rem;
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.goal-link-btn:hover {
+  opacity: 1;
+}
+
+/* Event form scroll hint */
+.form-scroll-hint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+  padding: 0.5rem 0;
+  animation: bounceHint 2s ease-in-out infinite;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  margin: 0.25rem 0;
+}
+
+.form-scroll-hint span {
+  display: inline-block;
+  margin-right: 0.25rem;
+}
+
+@keyframes bounceHint {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+
 /* Light Mode - Portfolio */
 [data-theme="light"] .portfolio-networth-card {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);

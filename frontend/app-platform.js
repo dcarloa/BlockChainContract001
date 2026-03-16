@@ -5098,10 +5098,13 @@ async function loadPersonalPortfolio(groupData) {
         } else {
             let goalsHtml = '';
             goalsEntries.forEach(([goalId, goal]) => {
+                const goalCurrency = goal.currency || savedCurrency;
+                const goalSymbol = CURRENCY_SYMBOLS[goalCurrency] || '$';
                 const progress = totalNetWorth > 0 && goal.target > 0 
                     ? Math.min((totalNetWorth / goal.target) * 100, 100) 
                     : 0;
                 const statusClass = progress >= 100 ? 'completed' : progress >= 50 ? 'progress' : 'starting';
+                const linkHtml = goal.link ? `<a href="${escapeHtml(goal.link)}" target="_blank" rel="noopener noreferrer" class="goal-link-btn" title="${escapeHtml(goal.link)}">🔗</a>` : '';
                 
                 goalsHtml += `
                     <div class="portfolio-goal-item ${statusClass}">
@@ -5109,6 +5112,7 @@ async function loadPersonalPortfolio(groupData) {
                             <span class="goal-icon">🎯</span>
                             <span class="goal-name">${escapeHtml(goal.name)}</span>
                             <div class="goal-actions">
+                                ${linkHtml}
                                 <span class="goal-status">${progress.toFixed(0)}%</span>
                                 <button class="goal-edit-btn" onclick="editGoal('${goalId}')" title="${currentLang === 'es' ? 'Editar' : 'Edit'}">✏️</button>
                                 <button class="goal-delete-btn" onclick="deleteGoal('${goalId}')" title="${currentLang === 'es' ? 'Eliminar' : 'Delete'}">🗑️</button>
@@ -5118,8 +5122,8 @@ async function loadPersonalPortfolio(groupData) {
                             <div class="goal-progress-fill" style="width: ${progress}%;"></div>
                         </div>
                         <div class="goal-footer">
-                            <span class="goal-current">${currencySymbol}${totalNetWorth.toLocaleString()}</span>
-                            <span class="goal-target">${currentLang === 'es' ? 'de' : 'of'} ${currencySymbol}${goal.target.toLocaleString()}</span>
+                            <span class="goal-current">${goalSymbol}${totalNetWorth.toLocaleString()} ${goalCurrency}</span>
+                            <span class="goal-target">${currentLang === 'es' ? 'de' : 'of'} ${goalSymbol}${goal.target.toLocaleString()} ${goalCurrency}</span>
                         </div>
                     </div>
                 `;
@@ -5326,14 +5330,23 @@ function openGoalModal() {
     const nameInput = document.getElementById('goalNameInput');
     const amountInput = document.getElementById('goalAmountInput');
     const dateInput = document.getElementById('goalDateInput');
+    const linkInput = document.getElementById('goalLinkInput');
+    const currencySelect = document.getElementById('goalCurrencySelect');
     
     if (nameInput) nameInput.value = '';
     if (amountInput) amountInput.value = '';
+    if (linkInput) linkInput.value = '';
     if (dateInput) {
         // Default to 1 year from now
         const nextYear = new Date();
         nextYear.setFullYear(nextYear.getFullYear() + 1);
         dateInput.value = nextYear.toISOString().split('T')[0];
+    }
+    
+    // Default currency from portfolio or USD
+    if (currencySelect) {
+        const portfolioCurrency = currentFund?.portfolio?.currency || 'USD';
+        currencySelect.value = portfolioCurrency;
     }
     
     // Reset editing state and title
@@ -5414,6 +5427,12 @@ async function editGoal(goalId) {
         if (amountInput) amountInput.value = goalData.target || '';
         if (dateInput) dateInput.value = goalData.targetDate || '';
         
+        const linkInput = document.getElementById('goalLinkInput');
+        if (linkInput) linkInput.value = goalData.link || '';
+        
+        const currencySelect = document.getElementById('goalCurrencySelect');
+        if (currencySelect) currencySelect.value = goalData.currency || 'USD';
+        
         // Track that we're editing
         window._editingGoalId = goalId;
         
@@ -5442,10 +5461,14 @@ async function saveGoal() {
     const nameInput = document.getElementById('goalNameInput');
     const amountInput = document.getElementById('goalAmountInput');
     const dateInput = document.getElementById('goalDateInput');
+    const linkInput = document.getElementById('goalLinkInput');
+    const currencySelect = document.getElementById('goalCurrencySelect');
     
     const name = nameInput?.value?.trim() || '';
     const target = parseFloat(amountInput?.value) || 0;
     const targetDate = dateInput?.value || '';
+    const link = linkInput?.value?.trim() || '';
+    const goalCurrency = currencySelect?.value || 'USD';
     
     if (!name || target <= 0) {
         const lang = getCurrentLanguage();
@@ -5461,6 +5484,8 @@ async function saveGoal() {
             name: name,
             target: target,
             targetDate: targetDate,
+            currency: goalCurrency,
+            link: link || null,
             createdAt: Date.now()
         });
         
@@ -17057,6 +17082,14 @@ function openAddEventModal(prefillDate = null) {
     // Show modal - remove any inline display style and add active class
     modal.style.display = '';
     modal.classList.add('active');
+    
+    // Show scroll hint and hide on scroll
+    const scrollHint = document.getElementById('eventFormScrollHint');
+    if (scrollHint) scrollHint.style.display = 'block';
+    const modalBody = modal.querySelector('.modal-body');
+    if (modalBody && scrollHint) {
+        modalBody.onscroll = () => { scrollHint.style.display = 'none'; };
+    }
     
     // Setup icon selector
     setupIconSelector();
