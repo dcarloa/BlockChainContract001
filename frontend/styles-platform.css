@@ -2137,7 +2137,8 @@ header,
   color: var(--text-secondary);
   font-size: 1.25rem;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: 0.25rem 0.25rem 0.25rem 0;
+  margin-left: -0.25rem;
   line-height: 1;
   flex-shrink: 0;
   transition: color var(--transition-fast);
