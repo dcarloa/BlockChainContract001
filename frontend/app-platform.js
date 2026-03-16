@@ -3840,6 +3840,17 @@ async function loadFundDetailView() {
     }
 }
 
+/**
+ * Position the tabs container sticky top to be right below the header
+ */
+function positionTabsBelowHeader() {
+    const header = document.getElementById('fundDetailHeader');
+    const tabsContainer = document.querySelector('.fund-tabs-container');
+    if (header && tabsContainer) {
+        tabsContainer.style.top = header.offsetHeight + 'px';
+    }
+}
+
 async function switchFundTab(tabName) {
     // Remove active class from all tabs
     document.querySelectorAll('.fund-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -3848,6 +3859,9 @@ async function switchFundTab(tabName) {
     // Add active class to selected tab
     document.querySelector(`.fund-tab-btn[data-tab="${tabName}"]`).classList.add('active');
     document.getElementById(`${tabName}Tab`).classList.add('active');
+    
+    // Ensure tabs sticky position is correctly below header
+    positionTabsBelowHeader();
     
     // Determine if this is a Simple Mode group (grp_ prefix or mode === 'simple')
     const isSimpleModeGroup = currentFund && (currentFund.mode === 'simple' || (currentFund.fundAddress && currentFund.fundAddress.startsWith('grp_')));
@@ -4229,6 +4243,7 @@ async function loadSimpleModeDetailView() {
                 // Update mascot header if available
                 if (window.MascotSystem) {
                     await MascotSystem.updateMascotHeader(currentFund.fundAddress);
+                    positionTabsBelowHeader();
                 }
             } catch (colonyError) {
                 console.error("Colony system error:", colonyError);
