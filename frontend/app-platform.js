@@ -17323,12 +17323,13 @@ async function renderLinkedExpenses() {
             if (!exp) return '';
             
             const amount = formatCurrency(exp.amount || 0, exp.currency || 'USD');
+            const expCurrencyCode = exp.currency || 'USD';
             return `
                 <div class="linked-expense-item">
                     <div class="linked-expense-info">
                         <span class="expense-icon">💸</span>
                         <span class="expense-desc">${escapeHtml(exp.description || 'Expense')}</span>
-                        <span class="expense-amount">${amount}</span>
+                        <span class="expense-amount">${amount} <small class="currency-code">${expCurrencyCode}</small></span>
                     </div>
                     <button type="button" class="unlink-expense-btn" onclick="unlinkExpense('${expId}')">✕</button>
                 </div>
@@ -17641,7 +17642,8 @@ async function viewEvent(eventId) {
     if (eventExpenses.length > 0) {
         // Render each expense
         expensesContainer.innerHTML = eventExpenses.map(exp => {
-            const amount = formatCurrency(exp.amount || 0, exp.currency || 'USD');
+            const expCurrency = exp.currency || 'USD';
+            const amount = formatCurrency(exp.amount || 0, expCurrency);
             const date = exp.date || (exp.timestamp ? new Date(exp.timestamp).toLocaleDateString() : '');
             const paidBy = exp.paidByName || 'Unknown';
             
@@ -17649,7 +17651,7 @@ async function viewEvent(eventId) {
                 <div class="event-view-expense">
                     <div class="expense-main">
                         <span class="expense-desc">${escapeHtml(exp.description || 'Expense')}</span>
-                        <span class="expense-amount">${amount}</span>
+                        <span class="expense-amount">${amount} <small class="currency-code">${expCurrency}</small></span>
                     </div>
                     <div class="expense-meta">
                         <span class="expense-payer">👤 ${escapeHtml(paidBy)}</span>
@@ -17662,7 +17664,7 @@ async function viewEvent(eventId) {
         // Calculate and show total
         const { total, currency, isMixed } = calculateEventExpenseTotal(eventExpenses);
         const totalLabel = currentLang === 'es' ? 'Total' : 'Total';
-        totalEl.innerHTML = `<strong>${totalLabel}:</strong> ${formatCurrency(total, currency)}${isMixed ? ' (USD)' : ''}`;
+        totalEl.innerHTML = `<strong>${totalLabel}:</strong> ${formatCurrency(total, currency)} ${isMixed ? 'USD' : currency}`;
         totalEl.style.display = 'block';
         
         expensesSection.style.display = 'block';

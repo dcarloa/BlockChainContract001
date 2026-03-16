@@ -19997,6 +19997,14 @@ body.light-mode .event-link-item,
   flex-shrink: 0;
 }
 
+.event-view-expense .expense-amount .currency-code,
+.linked-expense-item .expense-amount .currency-code {
+  font-weight: 500;
+  opacity: 0.7;
+  font-size: 0.75em;
+  margin-left: 2px;
+}
+
 .event-view-expense .expense-meta {
   display: flex;
   gap: 1rem;
@@ -20380,25 +20388,27 @@ body.light-mode .event-link-item,
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
 }
 
 .calendar-day {
   min-height: 80px;
   padding: 0.5rem;
-  border-right: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
   flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .calendar-day:nth-child(7n) {
-  border-right: none;
+  /* No special override needed with individual borders */
 }
 
 .calendar-day:hover {
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(102, 126, 234, 0.08);
 }
 
 .calendar-day.other-month {
@@ -20426,7 +20436,9 @@ body.light-mode .event-link-item,
 }
 
 .calendar-day.has-events {
-  background: rgba(102, 126, 234, 0.03);
+  background: rgba(102, 126, 234, 0.08);
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.15);
 }
 
 .calendar-day-number {
@@ -20633,6 +20645,13 @@ body.light-mode .calendar-weekdays,
 body.light-mode .calendar-day,
 [data-theme="light"] .calendar-day {
   border-color: #e5e7eb;
+  background: rgba(0, 0, 0, 0.01);
+}
+
+body.light-mode .calendar-day.has-events,
+[data-theme="light"] .calendar-day.has-events {
+  background: rgba(102, 126, 234, 0.06);
+  border-color: rgba(102, 126, 234, 0.25);
 }
 
 body.light-mode .calendar-day:hover,
