@@ -2759,45 +2759,54 @@ header,
 
 /* Tabs - Two Row Layout */
 .fund-tabs-container {
-  margin-bottom: 0;
+  margin-bottom: var(--spacing-lg);
   background: var(--bg-primary, #0a0b1e);
-  padding: 0.5rem 0.75rem 0.375rem;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-sm);
   position: sticky;
-  top: 0; /* JS will set this dynamically */
+  top: 0;
   z-index: 100;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-  border-bottom: 1px solid rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(102, 126, 234, 0.15);
 }
 
 .fund-tabs-row {
-  padding: 0.125rem 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) 0;
 }
 
 .fund-tabs-row:first-child {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 0.375rem;
-  margin-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 .tabs-row-label {
-  display: block;
-  font-size: 0.55rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   color: var(--text-muted);
-  opacity: 0.45;
-  margin-bottom: 0.3rem;
-  text-align: center;
+  opacity: 0.6;
+  min-width: 52px;
+  flex-shrink: 0;
 }
 
 .fund-tabs-buttons {
   display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+}
+
+.fund-tabs-buttons::-webkit-scrollbar {
+  display: none;
 }
 
 /* Legacy single-row tabs (for backwards compatibility) */
@@ -2823,8 +2832,7 @@ header,
 /* Light mode adjustments */
 [data-theme="light"] .fund-tabs-container {
   background: #f8fafc;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] .fund-tabs-row:first-child {
@@ -2849,68 +2857,57 @@ header,
 [data-theme="light"] .fund-tab-btn,
 [data-theme="light"] .tab-btn {
   color: #64748b;
-  background: rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.08);
+  background: transparent;
 }
 
 [data-theme="light"] .fund-tab-btn:hover,
 [data-theme="light"] .tab-btn:hover {
   color: #0f172a;
-  opacity: 1;
-  background: rgba(102, 126, 234, 0.06);
-  border-color: rgba(102, 126, 234, 0.2);
+  background: rgba(102, 126, 234, 0.05);
 }
 
 [data-theme="light"] .fund-tab-btn.active,
 [data-theme="light"] .tab-btn.active {
-  color: var(--primary);
-  opacity: 1;
-  background: rgba(102, 126, 234, 0.1);
-  border-color: rgba(102, 126, 234, 0.3);
-  box-shadow: 0 0 8px rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: rgba(102, 126, 234, 0.08);
 }
 
-/* Fund Tab Buttons - Rounded Chip/Tile Style */
+/* Fund Tab Buttons */
 .fund-tab-btn,
 .tab-btn {
-  padding: 0.45rem 0.65rem 0.35rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-bottom: 3px solid transparent;
   color: var(--text-secondary);
-  font-size: 0.6rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   white-space: nowrap;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
-  min-width: 54px;
-  opacity: 0.75;
+  gap: var(--spacing-xs);
+  margin-bottom: -2px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .fund-tab-btn .tab-icon {
-  font-size: 1.05rem;
-  line-height: 1;
+  font-size: 0.85rem;
 }
 
 .fund-tab-btn:hover,
 .tab-btn:hover {
   color: var(--text-primary);
-  opacity: 1;
-  background: rgba(102, 126, 234, 0.08);
-  border-color: rgba(102, 126, 234, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
 }
 
 .fund-tab-btn.active,
 .tab-btn.active {
   color: var(--primary-light);
-  opacity: 1;
-  background: rgba(102, 126, 234, 0.12);
-  border-color: rgba(102, 126, 234, 0.35);
-  box-shadow: 0 0 8px rgba(102, 126, 234, 0.15);
+  border-bottom-color: var(--primary-light);
 }
 
 /* Tab Content */
