@@ -900,7 +900,7 @@ async function loadMascotTab(groupId) {
         }
     } catch (error) {
         console.error('[Mascot] Error loading tab:', error);
-        container.innerHTML = '<div class="error-message">Error cargando mascota</div>';
+        container.innerHTML = '<div class="error-message" data-i18n="app.fundDetail.mascot.errorLoading">Error loading mascot</div>';
     }
 }
 

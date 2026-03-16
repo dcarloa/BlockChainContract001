@@ -3831,8 +3831,8 @@ async function loadFundDetailView() {
         await loadMembers();
         await loadProposals();
         
-        // Default to history tab
-        switchFundTab('history');
+        // Default to balances tab
+        switchFundTab('balances');
         
     } catch (error) {
         console.error("Error loading fund details:", error);
@@ -4162,8 +4162,8 @@ async function loadSimpleModeDetailView() {
         }
         
         // Switch to appropriate default tab
-        // Both personal colony and regular groups default to history
-        switchFundTab('history');
+        // Both personal colony and regular groups default to balances
+        switchFundTab('balances');
         
         
         // Show Add Expense Action Card
