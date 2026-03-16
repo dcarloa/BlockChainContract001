@@ -13637,12 +13637,16 @@ async function deleteAllNotifications() {
 window.deleteAllNotifications = deleteAllNotifications;
 
 /**
- * Close notification banner
+ * Close notification banner (remembers dismissal for this session)
  */
+let bannerDismissedUntil = 0;
+
 function closeNotificationBanner() {
     const banner = document.getElementById('notificationBanner');
     if (banner) {
         banner.classList.add('hidden');
+        // Don't show again for 10 minutes after manual dismiss
+        bannerDismissedUntil = Date.now() + 10 * 60 * 1000;
     }
 }
 
@@ -13651,12 +13655,24 @@ window.closeNotificationBanner = closeNotificationBanner;
 
 /**
  * Update notification banner on main page
+ * Respects: in-app notifications toggle, manual dismiss cooldown
  */
 function updateNotificationBanner() {
     const banner = document.getElementById('notificationBanner');
     const bannerText = document.getElementById('notificationBannerText');
     
     if (!banner || !bannerText) return;
+    
+    // Respect the in-app notifications toggle
+    if (localStorage.getItem('notificationsEnabled') === 'false') {
+        banner.classList.add('hidden');
+        return;
+    }
+    
+    // Respect manual dismiss cooldown
+    if (Date.now() < bannerDismissedUntil) {
+        return;
+    }
     
     if (unreadCount > 0) {
         // Get translations
@@ -14212,6 +14228,11 @@ async function togglePushNotifications(checkbox) {
 function toggleNotificationsSetting(checkbox) {
     const isEnabled = checkbox.checked;
     localStorage.setItem('notificationsEnabled', isEnabled ? 'true' : 'false');
+    // Immediately hide banner when disabled
+    if (!isEnabled) {
+        const banner = document.getElementById('notificationBanner');
+        if (banner) banner.classList.add('hidden');
+    }
     showToast(isEnabled ? 'In-app notifications enabled' : 'In-app notifications disabled', 'success');
 }
 
