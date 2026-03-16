@@ -2116,7 +2116,7 @@ header,
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
-  padding: 0.75rem 0.5rem;
+  padding: 0.4rem 0.5rem;
   position: sticky;
   top: 0;
   z-index: 101;
@@ -2779,7 +2779,8 @@ header,
   letter-spacing: 0.08em;
   color: var(--text-muted);
   opacity: 0.4;
-  padding: 0.25rem 0.5rem 0;
+  padding: 0.15rem 0.4rem 0;
+  line-height: 1;
 }
 
 .tabs-divider {
@@ -2853,7 +2854,7 @@ header,
 /* Fund Tab Buttons */
 .fund-tab-btn,
 .tab-btn {
-  padding: 0.5rem 0.75rem;
+  padding: 0.35rem 0.6rem;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
