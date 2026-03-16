@@ -5088,8 +5088,8 @@ async function loadPersonalPortfolio(groupData) {
     // Render goals
     const goalsEl = document.getElementById('portfolioGoals');
     if (goalsEl) {
-        const goalsArray = Object.values(goals);
-        if (goalsArray.length === 0) {
+        const goalsEntries = Object.entries(goals);
+        if (goalsEntries.length === 0) {
             goalsEl.innerHTML = `
                 <div class="portfolio-goals-empty">
                     <span>${currentLang === 'es' ? 'Sin metas definidas' : 'No goals set'}</span>
@@ -5097,7 +5097,7 @@ async function loadPersonalPortfolio(groupData) {
             `;
         } else {
             let goalsHtml = '';
-            goalsArray.forEach(goal => {
+            goalsEntries.forEach(([goalId, goal]) => {
                 const progress = totalNetWorth > 0 && goal.target > 0 
                     ? Math.min((totalNetWorth / goal.target) * 100, 100) 
                     : 0;
@@ -5108,7 +5108,11 @@ async function loadPersonalPortfolio(groupData) {
                         <div class="goal-header">
                             <span class="goal-icon">🎯</span>
                             <span class="goal-name">${escapeHtml(goal.name)}</span>
-                            <span class="goal-status">${progress.toFixed(0)}%</span>
+                            <div class="goal-actions">
+                                <span class="goal-status">${progress.toFixed(0)}%</span>
+                                <button class="goal-edit-btn" onclick="editGoal('${goalId}')" title="${currentLang === 'es' ? 'Editar' : 'Edit'}">✏️</button>
+                                <button class="goal-delete-btn" onclick="deleteGoal('${goalId}')" title="${currentLang === 'es' ? 'Eliminar' : 'Delete'}">🗑️</button>
+                            </div>
                         </div>
                         <div class="goal-progress-bar">
                             <div class="goal-progress-fill" style="width: ${progress}%;"></div>
@@ -5332,6 +5336,12 @@ function openGoalModal() {
         dateInput.value = nextYear.toISOString().split('T')[0];
     }
     
+    // Reset editing state and title
+    delete window._editingGoalId;
+    const titleEl = document.getElementById('goalModalTitle');
+    const currentLang = getCurrentLanguage();
+    if (titleEl) titleEl.textContent = currentLang === 'es' ? '🎯 Nueva Meta Financiera' : '🎯 Set Financial Goal';
+    
     modal.style.display = 'flex';
     modal.classList.add('active');
 }
@@ -5344,6 +5354,78 @@ function closeGoalModal() {
     if (modal) {
         modal.style.display = 'none';
         modal.classList.remove('active');
+    }
+    // Reset editing state
+    delete window._editingGoalId;
+}
+
+/**
+ * Delete a financial goal
+ */
+async function deleteGoal(goalId) {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    
+    const currentLang = getCurrentLanguage();
+    const confirmMsg = currentLang === 'es' 
+        ? '¿Estás seguro de eliminar esta meta?' 
+        : 'Are you sure you want to delete this goal?';
+    
+    if (!confirm(confirmMsg)) return;
+    
+    const personalColonyId = `grp_personal_${user.uid}`;
+    
+    try {
+        await firebase.database().ref(`groups/${personalColonyId}/portfolio/goals/${goalId}`).remove();
+        
+        // Reload portfolio
+        const groupData = await window.FirebaseConfig.readDb(`groups/${personalColonyId}`);
+        await loadPersonalPortfolio(groupData);
+        
+        showToast(currentLang === 'es' ? '🗑️ Meta eliminada' : '🗑️ Goal deleted', 'success');
+    } catch (error) {
+        console.error('Error deleting goal:', error);
+        showToast('Error deleting goal', 'error');
+    }
+}
+
+/**
+ * Edit a financial goal - pre-fills the modal
+ */
+async function editGoal(goalId) {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    
+    const personalColonyId = `grp_personal_${user.uid}`;
+    
+    try {
+        const goalData = await window.FirebaseConfig.readDb(`groups/${personalColonyId}/portfolio/goals/${goalId}`);
+        if (!goalData) return;
+        
+        // Open modal and pre-fill values
+        const modal = document.getElementById('goalSetupModal');
+        if (!modal) return;
+        
+        const nameInput = document.getElementById('goalNameInput');
+        const amountInput = document.getElementById('goalAmountInput');
+        const dateInput = document.getElementById('goalDateInput');
+        
+        if (nameInput) nameInput.value = goalData.name || '';
+        if (amountInput) amountInput.value = goalData.target || '';
+        if (dateInput) dateInput.value = goalData.targetDate || '';
+        
+        // Track that we're editing
+        window._editingGoalId = goalId;
+        
+        // Update modal title
+        const titleEl = document.getElementById('goalModalTitle');
+        const currentLang = getCurrentLanguage();
+        if (titleEl) titleEl.textContent = currentLang === 'es' ? '✏️ Editar Meta' : '✏️ Edit Goal';
+        
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+    } catch (error) {
+        console.error('Error loading goal for edit:', error);
     }
 }
 
@@ -5372,7 +5454,7 @@ async function saveGoal() {
     }
     
     const personalColonyId = `grp_personal_${user.uid}`;
-    const goalId = `goal_${Date.now()}`;
+    const goalId = window._editingGoalId || `goal_${Date.now()}`;
     
     try {
         await firebase.database().ref(`groups/${personalColonyId}/portfolio/goals/${goalId}`).set({
@@ -5389,7 +5471,10 @@ async function saveGoal() {
         closeGoalModal();
         
         const currentLang = getCurrentLanguage();
-        showToast(currentLang === 'es' ? '✅ Meta guardada' : '✅ Goal saved', 'success');
+        const isEditing = !!window._editingGoalId;
+        showToast(currentLang === 'es' 
+            ? (isEditing ? '✅ Meta actualizada' : '✅ Meta guardada') 
+            : (isEditing ? '✅ Goal updated' : '✅ Goal saved'), 'success');
     } catch (error) {
         console.error('Error saving goal:', error);
         showToast('Error saving goal', 'error');
