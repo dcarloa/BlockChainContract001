@@ -387,7 +387,7 @@ function exitDemoMode() {
     
     // Restore original tabs if they were saved
     if (originalTabsHTML) {
-        const tabsContainer = document.querySelector('.fund-tabs');
+        const tabsContainer = document.querySelector('.fund-tabs-buttons') || document.querySelector('.fund-tabs');
         if (tabsContainer) {
             tabsContainer.innerHTML = originalTabsHTML;
         }
@@ -1193,7 +1193,7 @@ function populateDemoPersonalColonyDetail() {
     });
     
     // Create custom Personal Colony tabs
-    const tabsContainer = document.querySelector('.fund-tabs');
+    const tabsContainer = document.querySelector('.fund-tabs-buttons') || document.querySelector('.fund-tabs');
     if (tabsContainer) {
         // IMPORTANT: Save original tabs HTML before replacing (only once)
         if (!originalTabsHTML) {
@@ -1631,7 +1631,7 @@ function populateDemoGroupDetail() {
     
     // ========== RESTORE ORIGINAL TABS IF NEEDED ==========
     // This is critical when switching from Personal Colony view back to shared group
-    const tabsContainer = document.querySelector('.fund-tabs');
+    const tabsContainer = document.querySelector('.fund-tabs-buttons') || document.querySelector('.fund-tabs');
     if (tabsContainer && originalTabsHTML) {
         tabsContainer.innerHTML = originalTabsHTML;
         console.log('🔄 Restored original tabs for shared group view');

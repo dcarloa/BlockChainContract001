@@ -45,7 +45,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=5.38">
+    <link rel="stylesheet" href="styles-platform.css?v=5.39">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.3">
@@ -65,7 +65,7 @@
     <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
     
     <!-- Demo Mode System -->
-    <script src="demo-mode.js?v=3.4"></script>
+    <script src="demo-mode.js?v=3.5"></script>
     
     <!-- Subscription Manager -->
     <script src="subscription-manager.js?v=1.0"></script>
@@ -1229,62 +1229,80 @@ Simple, fast, and free.</p>
             <!-- Fund Detail Section (Single Fund View) -->
             <section id="fundDetailSection" class="fund-detail-section">
                 
-                <!-- Fund Header with integrated back button and stats -->
-                <div class="fund-detail-header">
-                    <!-- Back Button -->
-                    <button id="backToDashboard" class="back-button-integrated">
+                <!-- Compact Header: back + name + icon -->
+                <div class="fund-detail-header-compact">
+                    <button id="backToDashboard" class="back-btn-compact">
                         <span class="back-icon">←</span>
-                        <span class="back-text" data-i18n="app.fundDetail.info.backToDashboard">Back to My Groups</span>
                     </button>
-
-                    <!-- Header Content -->
-                    <div class="fund-header-content">
-                        <div class="fund-header-icon" id="fundHeaderIcon">🌴</div>
-                        <div class="fund-header-main">
-                            <div class="fund-title-row">
-                                <h1 id="fundDetailName" class="fund-header-title">Cargando...</h1>
-                                <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none;" title="Edit group info">
-                                    ✏️
-                                </button>
-                            </div>
-                            <p id="fundDetailDescription" class="fund-header-description">-</p>
-                            
-                            <!-- Mascot and Colony Display Row -->
-                            <div class="fund-systems-row">
-                                <div id="mascotHeaderContainer" style="display: none;"></div>
-                                <div id="colonyDisplayContainer" style="display: none;"></div>
-                            </div>
-                        </div>
-                        <div class="fund-badges">
-                            <span class="badge" id="fundTypeBadge" data-i18n="app.fundDetail.info.type">Tipo</span>
-                            <span class="badge" id="groupStatusBadge" data-i18n="app.fundDetail.info.status">Estado</span>
-                        </div>
+                    <div class="fund-header-compact-info">
+                        <span class="fund-header-compact-icon" id="fundHeaderIcon">🌴</span>
+                        <h1 id="fundDetailName" class="fund-header-compact-title">Loading...</h1>
+                        <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none;" title="Edit group info">
+                            ✏️
+                        </button>
                     </div>
+                    <div class="fund-header-compact-badges" id="fundBadgesCompact">
+                        <span class="badge badge-sm" id="fundTypeBadge">Type</span>
+                        <span class="badge badge-sm" id="groupStatusBadge">Status</span>
+                    </div>
+                </div>
 
-                    <!-- Integrated Stats -->
-                    <div class="fund-stats-integrated">
-                        <div class="fund-stat-card">
-                            <div class="stat-icon">💰</div>
-                            <div class="stat-content">
-                                <span class="stat-label" data-i18n="app.fundDetail.info.total">Total</span>
-                                <span class="stat-value" id="fundBalanceMain">0 ETH</span>
-                                <div class="stat-breakdown" id="fundBalanceBreakdown" style="display: none;"></div>
-                            </div>
-                        </div>
-                        <div class="fund-stat-card" id="fundMembersStat">
-                            <div class="stat-icon">👥</div>
-                            <div class="stat-content">
-                                <span class="stat-label" data-i18n="app.fundDetail.info.members">Members</span>
-                                <span class="stat-value" id="fundMembers">0</span>
-                            </div>
-                        </div>
-                        <div class="fund-stat-card">
-                            <div class="stat-icon">💸</div>
-                            <div class="stat-content">
-                                <span class="stat-label" data-i18n="app.fundDetail.info.expenses">Expenses</span>
-                                <span class="stat-value" id="fundProposals">0</span>
-                            </div>
-                        </div>
+                <!-- Fund Tabs - Single row, sticky under compact header -->
+                <div class="fund-tabs-container">
+                    <div class="fund-tabs-buttons">
+                        <button class="fund-tab-btn active" data-tab="history">
+                            <span class="tab-icon">📜</span>
+                            <span data-i18n="app.fundDetail.tabs.history">History</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="balances">
+                            <span class="tab-icon">⚖️</span>
+                            <span data-i18n="app.fundDetail.tabs.balances">Balances</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="overview" style="display: none;">
+                            <span class="tab-icon">📊</span>
+                            <span data-i18n="app.fundDetail.tabs.overview">Overview</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="members">
+                            <span class="tab-icon">👥</span>
+                            <span data-i18n="app.fundDetail.tabs.members">Members</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="invite">
+                            <span class="tab-icon">🎫</span>
+                            <span data-i18n="app.fundDetail.tabs.invite">Invite</span>
+                        </button>
+                        <button id="itineraryTabBtn" class="fund-tab-btn" data-tab="itinerary">
+                            <span class="tab-icon">🗓️</span>
+                            <span data-i18n="app.fundDetail.tabs.itinerary">Itinerary</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="mascot" style="display: none;">
+                            <span class="tab-icon">🐜</span>
+                            <span data-i18n="app.fundDetail.tabs.mascot">Mascot</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="budget" style="display: none;">
+                            <span class="tab-icon">💰</span>
+                            <span data-i18n="app.fundDetail.tabs.budget">Budget</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="portfolio" style="display: none;">
+                            <span class="tab-icon">📈</span>
+                            <span data-i18n="app.fundDetail.tabs.portfolio">Portfolio</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="manage">
+                            <span class="tab-icon">⚙️</span>
+                            <span data-i18n="app.fundDetail.tabs.manage">Manage</span>
+                        </button>
+                        <!-- Blockchain-only tabs (hidden by default) -->
+                        <button class="fund-tab-btn" data-tab="deposit" style="display: none;">
+                            <span class="tab-icon">💵</span>
+                            <span data-i18n="app.fundDetail.tabs.deposit">Deposit</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="propose" style="display: none;">
+                            <span class="tab-icon">📝</span>
+                            <span data-i18n="app.fundDetail.tabs.propose">Propose</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="vote" style="display: none;">
+                            <span class="tab-icon">🗳️</span>
+                            <span data-i18n="app.fundDetail.tabs.vote">Vote</span>
+                        </button>
                     </div>
                 </div>
 
@@ -1302,123 +1320,13 @@ Simple, fast, and free.</p>
                 <!-- Weekly Chest Banner Container -->
                 <div id="weeklyChestBannerContainer"></div>
 
-                <!-- Colony Life Info Card (collapsible) -->
-                <div id="colonyLifeInfoCard" class="colony-life-info-card" style="display: none;">
-                    <div class="colony-life-header" onclick="toggleColonyLifeInfo()">
-                        <div class="colony-life-title">
-                            <span class="colony-life-icon">🐜</span>
-                            <span data-i18n="app.colonyLife.title">Colony Life Features</span>
-                        </div>
-                        <div class="colony-life-actions">
-                            <button class="colony-life-dismiss" onclick="event.stopPropagation(); dismissColonyLifeInfo()" title="Dismiss">×</button>
-                            <span class="colony-life-toggle" id="colonyLifeToggle">▼</span>
-                        </div>
-                    </div>
-                    <div class="colony-life-content" id="colonyLifeContent">
-                        <div class="colony-life-features">
-                            <div class="colony-life-feature">
-                                <span class="feature-emoji">🏆</span>
-                                <div class="feature-info">
-                                    <strong data-i18n="app.colonyLife.milestones.title">Milestones</strong>
-                                    <p data-i18n="app.colonyLife.milestones.desc">Celebrate achievements together! Get badges at 10, 50, 100 expenses and more.</p>
-                                </div>
-                            </div>
-                            <div class="colony-life-feature">
-                                <span class="feature-emoji">🔥</span>
-                                <div class="feature-info">
-                                    <strong data-i18n="app.colonyLife.streaks.title">Health Streaks</strong>
-                                    <p data-i18n="app.colonyLife.streaks.desc">Stay balanced! Earn streak badges when your group remains settled week after week.</p>
-                                </div>
-                            </div>
-                            <div class="colony-life-feature">
-                                <span class="feature-emoji">💡</span>
-                                <div class="feature-info">
-                                    <strong data-i18n="app.colonyLife.nudges.title">Smart Reminders</strong>
-                                    <p data-i18n="app.colonyLife.nudges.desc">Gentle nudges when it's a good time to settle up with your group.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="colony-life-footer" data-i18n="app.colonyLife.footer">Work together like ants. Track, split, settle. 🐜</p>
-                    </div>
-                </div>
-
                 <!-- Closed Fund Banner -->
                 <div id="closedFundBanner" class="closed-fund-banner" style="display: none;">
                     <div class="closed-fund-content">
                         <span class="closed-fund-icon">🔒</span>
                         <div>
                             <h4 data-i18n="app.fundDetail.banners.closedTitle">Closed Group</h4>
-                            <p data-i18n="app.fundDetail.banners.closedText">This group has been permanently closed. Balances were settled proportionally among all members.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fund Tabs - Two Row Layout -->
-                <div class="fund-tabs-container">
-                    <!-- Row 1: Activity/Finance -->
-                    <div class="fund-tabs-row">
-                        <span class="tabs-row-label" data-i18n="app.fundDetail.tabGroups.activity">Activity</span>
-                        <div class="fund-tabs-buttons">
-                            <button class="fund-tab-btn" data-tab="overview" style="display: none;">
-                                <span class="tab-icon">📊</span>
-                                <span data-i18n="app.fundDetail.tabs.overview">Overview</span>
-                            </button>
-                            <button class="fund-tab-btn active" data-tab="deposit">
-                                <span class="tab-icon">💵</span>
-                                <span data-i18n="app.fundDetail.tabs.deposit">Deposit</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="history">
-                                <span class="tab-icon">📜</span>
-                                <span data-i18n="app.fundDetail.tabs.history">History</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="balances">
-                                <span class="tab-icon">⚖️</span>
-                                <span data-i18n="app.fundDetail.tabs.balances">Balances</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="budget" style="display: none;">
-                                <span class="tab-icon">💰</span>
-                                <span data-i18n="app.fundDetail.tabs.budget">Budget</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="portfolio" style="display: none;">
-                                <span class="tab-icon">📈</span>
-                                <span data-i18n="app.fundDetail.tabs.portfolio">Portfolio</span>
-                            </button>
-                            <!-- Blockchain-only tabs -->
-                            <button class="fund-tab-btn" data-tab="propose">
-                                <span class="tab-icon">📝</span>
-                                <span data-i18n="app.fundDetail.tabs.propose">Propose</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="vote">
-                                <span class="tab-icon">🗳️</span>
-                                <span data-i18n="app.fundDetail.tabs.vote">Vote</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Row 2: Group/Social -->
-                    <div class="fund-tabs-row">
-                        <span class="tabs-row-label" data-i18n="app.fundDetail.tabGroups.group">Group</span>
-                        <div class="fund-tabs-buttons">
-                            <button class="fund-tab-btn" data-tab="invite">
-                                <span class="tab-icon">🎫</span>
-                                <span data-i18n="app.fundDetail.tabs.invite">Invite</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="members">
-                                <span class="tab-icon">👥</span>
-                                <span data-i18n="app.fundDetail.tabs.members">Members</span>
-                            </button>
-                            <button id="itineraryTabBtn" class="fund-tab-btn" data-tab="itinerary">
-                                <span class="tab-icon">🗓️</span>
-                                <span data-i18n="app.fundDetail.tabs.itinerary">Itinerary</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="mascot" style="display: none;">
-                                <span class="tab-icon">🐜</span>
-                                <span data-i18n="app.fundDetail.tabs.mascot">Mascot</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="manage">
-                                <span class="tab-icon">⚙️</span>
-                                <span data-i18n="app.fundDetail.tabs.manage">Manage</span>
-                            </button>
+                            <p data-i18n="app.fundDetail.banners.closedText">This group has been permanently closed.</p>
                         </div>
                     </div>
                 </div>
@@ -1429,6 +1337,41 @@ Simple, fast, and free.</p>
                     <!-- Overview Tab (Simple Mode) -->
                     <div id="overviewTab" class="tab-pane">
                         <div class="group-overview">
+                            <!-- Group Info (moved from old header) -->
+                            <div class="overview-card overview-group-info">
+                                <p id="fundDetailDescription" class="fund-description-inline">-</p>
+                                <div class="fund-systems-row">
+                                    <div id="mascotHeaderContainer" style="display: none;"></div>
+                                    <div id="colonyDisplayContainer" style="display: none;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Stats (moved from old header) -->
+                            <div class="fund-stats-integrated">
+                                <div class="fund-stat-card">
+                                    <div class="stat-icon">💰</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label" data-i18n="app.fundDetail.info.total">Total</span>
+                                        <span class="stat-value" id="fundBalanceMain">0 ETH</span>
+                                        <div class="stat-breakdown" id="fundBalanceBreakdown" style="display: none;"></div>
+                                    </div>
+                                </div>
+                                <div class="fund-stat-card" id="fundMembersStat">
+                                    <div class="stat-icon">👥</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label" data-i18n="app.fundDetail.info.members">Members</span>
+                                        <span class="stat-value" id="fundMembers">0</span>
+                                    </div>
+                                </div>
+                                <div class="fund-stat-card">
+                                    <div class="stat-icon">💸</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label" data-i18n="app.fundDetail.info.expenses">Expenses</span>
+                                        <span class="stat-value" id="fundProposals">0</span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Monthly Summary Card -->
                             <div class="overview-card overview-monthly">
                                 <div class="overview-card-header">
@@ -1486,7 +1429,7 @@ Simple, fast, and free.</p>
                     </div>
                     
                     <!-- Deposit Tab -->
-                    <div id="depositTab" class="tab-pane active">
+                    <div id="depositTab" class="tab-pane">
                         <div class="tab-card">
                             <h3>💰 Contribute to the Pot</h3>
                             <p>Deposit money to the group. Useful for future expenses or to balance contributions.</p>
@@ -3098,7 +3041,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.8"></script>
     <script src="mascot-system.js?v=2.0"></script>
-    <script src="app-platform.js?v=5.57"></script>
+    <script src="app-platform.js?v=5.58"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)

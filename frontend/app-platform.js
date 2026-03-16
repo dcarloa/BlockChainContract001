@@ -3831,6 +3831,9 @@ async function loadFundDetailView() {
         await loadMembers();
         await loadProposals();
         
+        // Default to history tab
+        switchFundTab('history');
+        
     } catch (error) {
         console.error("Error loading fund details:", error);
         showToast("Error loading fund details", "error");
@@ -4130,6 +4133,11 @@ async function loadSimpleModeDetailView() {
             const fundMembersStat = document.getElementById('fundMembersStat');
             if (fundMembersStat) fundMembersStat.style.display = '';
             
+            // Show manage tab for group creator
+            if (groupData.createdBy === currentUserId && manageTab) {
+                manageTab.style.display = 'flex';
+            }
+            
             // Load Overview tab data
             await loadGroupOverview(groupData);
         }
@@ -4154,12 +4162,8 @@ async function loadSimpleModeDetailView() {
         }
         
         // Switch to appropriate default tab
-        // Personal Colony: show history, Regular Group: show overview
-        if (isPersonalColony) {
-            switchFundTab('history');
-        } else {
-            switchFundTab('overview');
-        }
+        // Both personal colony and regular groups default to history
+        switchFundTab('history');
         
         
         // Show Add Expense Action Card
