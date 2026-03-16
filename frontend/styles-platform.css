@@ -2120,6 +2120,9 @@ header,
   position: sticky;
   top: 0;
   z-index: 101;
+  margin: 0 calc(-1 * var(--spacing-lg));
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-lg);
 }
 
 .fund-header-single-row {
@@ -2753,6 +2756,9 @@ header,
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(102, 126, 234, 0.15);
+  margin: 0 calc(-1 * var(--spacing-lg));
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-lg);
 }
 
 .fund-tabs-container > .fund-tabs-buttons {
