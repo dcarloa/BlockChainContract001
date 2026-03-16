@@ -45,7 +45,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=5.44">
+    <link rel="stylesheet" href="styles-platform.css?v=5.45">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.3">
@@ -1231,90 +1231,76 @@ Simple, fast, and free.</p>
                 
                 <!-- Group Detail Header -->
                 <div class="fund-detail-header-compact" id="fundDetailHeader">
-                    <button id="backToDashboard" class="back-btn-compact">
-                        <span class="back-icon">←</span>
-                        <span data-i18n="app.fundDetail.info.backToDashboard">Back to My Groups</span>
-                    </button>
-                    <div class="fund-header-compact-row">
+                    <div class="fund-header-single-row">
+                        <button id="backToDashboard" class="back-arrow-btn">←</button>
                         <span class="fund-header-compact-icon" id="fundHeaderIcon">🌴</span>
                         <h1 id="fundDetailName" class="fund-header-compact-title">Loading...</h1>
+                        <div id="mascotHeaderContainer" class="mascot-header-inline" style="display: none;"></div>
                         <button id="editGroupInfoBtn" class="btn-icon-small" onclick="showEditGroupModal()" style="display: none;" title="Edit group info">
                             ✏️
                         </button>
                     </div>
-                    <div id="mascotHeaderContainer" class="mascot-header-compact" style="display: none;"></div>
                     <!-- Hidden badges for JS compatibility -->
                     <span id="fundTypeBadge" style="display:none;"></span>
                     <span id="groupStatusBadge" style="display:none;"></span>
                 </div>
 
-                <!-- Fund Tabs - Two Row Layout -->
+                <!-- Fund Tabs - Single Row -->
                 <div class="fund-tabs-container">
-                    <!-- Row 1: Activity/Finance -->
-                    <div class="fund-tabs-row">
-                        <span class="tabs-row-label" data-i18n="app.fundDetail.tabGroups.activity">Activity</span>
-                        <div class="fund-tabs-buttons">
-                            <button class="fund-tab-btn active" data-tab="balances">
-                                <span class="tab-icon">⚖️</span>
-                                <span data-i18n="app.fundDetail.tabs.balances">Balances</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="history">
-                                <span class="tab-icon">📜</span>
-                                <span data-i18n="app.fundDetail.tabs.history">History</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="overview" style="display: none;">
-                                <span class="tab-icon">📊</span>
-                                <span data-i18n="app.fundDetail.tabs.overview">Overview</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="budget" style="display: none;">
-                                <span class="tab-icon">💰</span>
-                                <span data-i18n="app.fundDetail.tabs.budget">Budget</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="portfolio" style="display: none;">
-                                <span class="tab-icon">📈</span>
-                                <span data-i18n="app.fundDetail.tabs.portfolio">Portfolio</span>
-                            </button>
-                            <!-- Blockchain-only tabs -->
-                            <button class="fund-tab-btn" data-tab="deposit" style="display: none;">
-                                <span class="tab-icon">💵</span>
-                                <span data-i18n="app.fundDetail.tabs.deposit">Deposit</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="propose" style="display: none;">
-                                <span class="tab-icon">📝</span>
-                                <span data-i18n="app.fundDetail.tabs.propose">Propose</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="vote" style="display: none;">
-                                <span class="tab-icon">🗳️</span>
-                                <span data-i18n="app.fundDetail.tabs.vote">Vote</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Row 2: Group/Social -->
-                    <div class="fund-tabs-row">
-                        <span class="tabs-row-label" data-i18n="app.fundDetail.tabGroups.group">Group</span>
-                        <div class="fund-tabs-buttons">
-                            <button class="fund-tab-btn" data-tab="invite">
-                                <span class="tab-icon">🎫</span>
-                                <span data-i18n="app.fundDetail.tabs.invite">Invite</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="members">
-                                <span class="tab-icon">👥</span>
-                                <span data-i18n="app.fundDetail.tabs.members">Members</span>
-                            </button>
-                            <button id="itineraryTabBtn" class="fund-tab-btn" data-tab="itinerary">
-                                <span class="tab-icon">🗓️</span>
-                                <span data-i18n="app.fundDetail.tabs.itinerary">Itinerary</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="mascot" style="display: none;">
-                                <span class="tab-icon">🐜</span>
-                                <span data-i18n="app.fundDetail.tabs.mascot">Mascot</span>
-                            </button>
-                            <button class="fund-tab-btn" data-tab="manage">
-                                <span class="tab-icon">⚙️</span>
-                                <span data-i18n="app.fundDetail.tabs.manage">Manage</span>
-                            </button>
-                        </div>
+                    <div class="fund-tabs-buttons">
+                        <button class="fund-tab-btn active" data-tab="balances">
+                            <span class="tab-icon">⚖️</span>
+                            <span data-i18n="app.fundDetail.tabs.balances">Balances</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="history">
+                            <span class="tab-icon">📜</span>
+                            <span data-i18n="app.fundDetail.tabs.history">History</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="overview" style="display: none;">
+                            <span class="tab-icon">📊</span>
+                            <span data-i18n="app.fundDetail.tabs.overview">Overview</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="budget" style="display: none;">
+                            <span class="tab-icon">💰</span>
+                            <span data-i18n="app.fundDetail.tabs.budget">Budget</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="portfolio" style="display: none;">
+                            <span class="tab-icon">📈</span>
+                            <span data-i18n="app.fundDetail.tabs.portfolio">Portfolio</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="deposit" style="display: none;">
+                            <span class="tab-icon">💵</span>
+                            <span data-i18n="app.fundDetail.tabs.deposit">Deposit</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="propose" style="display: none;">
+                            <span class="tab-icon">📝</span>
+                            <span data-i18n="app.fundDetail.tabs.propose">Propose</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="vote" style="display: none;">
+                            <span class="tab-icon">🗳️</span>
+                            <span data-i18n="app.fundDetail.tabs.vote">Vote</span>
+                        </button>
+                        <span class="tabs-divider"></span>
+                        <button class="fund-tab-btn" data-tab="invite">
+                            <span class="tab-icon">🎫</span>
+                            <span data-i18n="app.fundDetail.tabs.invite">Invite</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="members">
+                            <span class="tab-icon">👥</span>
+                            <span data-i18n="app.fundDetail.tabs.members">Members</span>
+                        </button>
+                        <button id="itineraryTabBtn" class="fund-tab-btn" data-tab="itinerary">
+                            <span class="tab-icon">🗓️</span>
+                            <span data-i18n="app.fundDetail.tabs.itinerary">Itinerary</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="mascot" style="display: none;">
+                            <span class="tab-icon">🐜</span>
+                            <span data-i18n="app.fundDetail.tabs.mascot">Mascot</span>
+                        </button>
+                        <button class="fund-tab-btn" data-tab="manage">
+                            <span class="tab-icon">⚙️</span>
+                            <span data-i18n="app.fundDetail.tabs.manage">Manage</span>
+                        </button>
                     </div>
                 </div>
 
