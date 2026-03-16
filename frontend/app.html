@@ -45,7 +45,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=5.58">
+    <link rel="stylesheet" href="styles-platform.css?v=5.59">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.3">
@@ -737,7 +737,7 @@ Simple, fast, and free.</p>
             <div class="settings-content">
                 <!-- Language Selection -->
                 <div class="setting-group">
-                    <label>🌍 Language</label>
+                    <label id="settingsLangLabel">🌍 Language</label>
                     <div class="setting-options">
                         <button class="setting-option" data-lang="en" onclick="changeLanguage('en')">
                             <span class="option-flag">🇺🇸</span>
@@ -754,16 +754,16 @@ Simple, fast, and free.</p>
 
                 <!-- Theme Selection -->
                 <div class="setting-group">
-                    <label>🎨 Theme</label>
+                    <label id="settingsThemeLabel">🎨 Theme</label>
                     <div class="setting-options">
                         <button class="setting-option" data-theme="light" onclick="changeTheme('light')">
                             <span class="option-icon">☀️</span>
-                            <span>Light Mode</span>
+                            <span class="option-label-text">Light Mode</span>
                             <span class="option-check">✓</span>
                         </button>
                         <button class="setting-option" data-theme="dark" onclick="changeTheme('dark')">
                             <span class="option-icon">🌙</span>
-                            <span>Dark Mode</span>
+                            <span class="option-label-text">Dark Mode</span>
                             <span class="option-check">✓</span>
                         </button>
                     </div>
@@ -771,7 +771,7 @@ Simple, fast, and free.</p>
 
                 <!-- Haptic Feedback -->
                 <div class="setting-group">
-                    <label>📳 Feedback</label>
+                    <label id="settingsFeedbackLabel">📳 Feedback</label>
                     <div class="setting-options">
                         <button class="setting-option" id="hapticToggle" onclick="toggleHapticFeedback()">
                             <span class="option-icon">📳</span>
@@ -3068,7 +3068,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.9"></script>
     <script src="mascot-system.js?v=2.1"></script>
-    <script src="app-platform.js?v=5.66"></script>
+    <script src="app-platform.js?v=5.67"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)
@@ -3590,6 +3590,23 @@ Simple, fast, and free.</p>
             // Update settings title
             const settingsTitleText = document.querySelector('#appSettingsModal .settings-title-text');
             if (settingsTitleText) settingsTitleText.textContent = settings.title;
+            
+            // Update section labels
+            const langLabel = document.getElementById('settingsLangLabel');
+            if (langLabel) langLabel.textContent = `🌍 ${settings.language}`;
+            
+            const themeLabel = document.getElementById('settingsThemeLabel');
+            if (themeLabel) themeLabel.textContent = `🎨 ${settings.theme}`;
+            
+            const feedbackLabel = document.getElementById('settingsFeedbackLabel');
+            if (feedbackLabel) feedbackLabel.textContent = `📳 ${settings.feedback}`;
+            
+            // Update theme option labels
+            const lightBtn = document.querySelector('[data-theme="light"] .option-label-text');
+            if (lightBtn) lightBtn.textContent = settings.lightMode;
+            
+            const darkBtn = document.querySelector('[data-theme="dark"] .option-label-text');
+            if (darkBtn) darkBtn.textContent = settings.darkMode;
             
             // Update language buttons
             document.querySelectorAll('[data-lang]').forEach(btn => {

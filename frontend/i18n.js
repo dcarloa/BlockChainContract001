@@ -1689,15 +1689,6 @@ const translations = {
             },
             back: "Back"
         },
-        // Settings
-        settings: {
-            language: "Language",
-            theme: "Theme",
-            lightMode: "Light Mode",
-            darkMode: "Dark Mode",
-            vibration: "Vibration",
-            sound: "Sounds"
-        },
         // Beta Launch Modal
         betaModal: {
             welcome: "Welcome to Ant Pool",
@@ -3406,15 +3397,6 @@ const translations = {
                 paymentCancelled: "Pago cancelado. Puedes suscribirte cuando quieras desde tu perfil."
             },
             back: "Volver"
-        },
-        // Settings
-        settings: {
-            language: "Idioma",
-            theme: "Tema",
-            lightMode: "Modo Claro",
-            darkMode: "Modo Oscuro",
-            vibration: "Vibración",
-            sound: "Sonidos"
         },
         // Beta Launch Modal
         betaModal: {

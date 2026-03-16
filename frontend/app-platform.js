@@ -3347,7 +3347,7 @@ function showLoginInvitation(action = 'continue') {
         }
     };
     
-    const lang = window.currentLanguage || 'en';
+    const lang = getCurrentLanguage() || 'en';
     const msg = messages[action] || messages.default;
     const content = msg[lang] || msg.en;
     
@@ -14285,7 +14285,8 @@ function toggleDarkModeSetting(checkbox) {
         document.documentElement.setAttribute('data-theme', theme);
     }
     
-    showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled', 'success');
+    const s = translations[getCurrentLanguage()]?.settings || translations.en.settings;
+    showToast(isDark ? s.darkMode : s.lightMode, 'success');
 }
 
 /**
@@ -14293,7 +14294,7 @@ function toggleDarkModeSetting(checkbox) {
  */
 async function togglePushNotifications(checkbox) {
     const isEnabled = checkbox.checked;
-    const t = translations[currentLanguage] || translations.en;
+    const t = translations[getCurrentLanguage()] || translations.en;
     
     if (isEnabled) {
         try {
