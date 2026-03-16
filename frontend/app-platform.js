@@ -2977,7 +2977,7 @@ async function createFund(event) {
     
     try {
         const fundName = document.getElementById('fundName').value.trim();
-        const description = document.getElementById('fundDescription').value.trim() || "Sin descripción";
+        const description = document.getElementById('fundDescription').value.trim() || (currentLang === 'es' ? 'Sin descripción' : 'No description');
         const isPrivate = document.getElementById('isPrivate').value === 'true'; // Hidden field with default true
         const approvalPercentage = document.getElementById('approvalPercentage').value;
         const minimumVotes = document.getElementById('minimumVotes').value;
@@ -3987,7 +3987,7 @@ async function loadSimpleModeDetailView() {
         };
         
         // Update UI safely
-        safeUpdate('fundDetailDescription', 'textContent', groupData.description || 'No description');
+        safeUpdate('fundDetailDescription', 'textContent', groupData.description || (currentLang === 'es' ? 'Sin descripción' : 'No description'));
         safeUpdate('fundTypeBadge', 'textContent', '🐜 Simple Mode');
         safeUpdate('fundStatusBadge', 'textContent', '✅ Active');
         safeUpdate('fundPrivacyBadge', 'textContent', groupData.isPrivate ? '🔒 Private' : '🌍 Public');

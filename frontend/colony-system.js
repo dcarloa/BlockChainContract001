@@ -466,12 +466,16 @@ async function updateColonyDisplay(groupId) {
         // Get translated state name and description
         const stateName = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colony.state}.name`) : colony.state;
         const stateDesc = window.i18n ? window.i18n.t(`app.fundDetail.colony.states.${colony.state}.description`) : '';
+        const statusLabel = window.i18n ? window.i18n.t('app.groupOverview.colonyStatus') : 'Colony Status';
         
         container.style.display = 'flex';
         container.innerHTML = `
             <div class="colony-mini-display" title="${stateDesc}">
                 ${renderColonyVisual(colony.state, 40)}
-                <span class="colony-state-label">${stateName}</span>
+                <div class="colony-state-info">
+                    <span class="colony-state-meta">${statusLabel}</span>
+                    <span class="colony-state-label">${stateName}</span>
+                </div>
             </div>
         `;
         // console.log('[Colony] Display updated with state:', colony.state);

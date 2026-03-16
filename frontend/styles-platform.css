@@ -2175,9 +2175,23 @@ header,
 /* Description inline in overview */
 .fund-description-inline {
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  line-height: 1.6;
   margin: 0;
+  text-align: center;
+}
+
+.overview-group-info {
+  text-align: center;
+}
+
+.overview-group-info .overview-card-header {
+  justify-content: center;
+}
+
+.overview-group-info .fund-systems-row {
+  justify-content: center;
+  margin-top: 0.75rem;
 }
 
 .overview-group-info:empty,

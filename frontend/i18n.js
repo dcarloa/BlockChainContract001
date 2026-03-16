@@ -843,6 +843,8 @@ const translations = {
             },
             // Group Overview Tab
             groupOverview: {
+                aboutGroup: "About this group",
+                colonyStatus: "Colony Status",
                 thisMonth: "This Month",
                 totalSpent: "Total Spent",
                 expenses: "Expenses",
@@ -2559,6 +2561,8 @@ const translations = {
             },
             // Group Overview Tab
             groupOverview: {
+                aboutGroup: "Acerca del grupo",
+                colonyStatus: "Estado de la Colonia",
                 thisMonth: "Este Mes",
                 totalSpent: "Total Gastado",
                 expenses: "Gastos",
