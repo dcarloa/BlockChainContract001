@@ -332,6 +332,53 @@ window.addEventListener('DOMContentLoaded', async () => {
     // Show dashboard
     showDashboard();
     
+    // Initialize history state for PWA back button support
+    history.replaceState({ section: 'home' }, '', window.location.pathname);
+    
+    // Handle browser back button
+    window.addEventListener('popstate', (event) => {
+        const state = event.state;
+        
+        // If we're in fund detail view, go back to groups/dashboard
+        const fundDetailSection = document.getElementById('fundDetailSection');
+        if (fundDetailSection && fundDetailSection.classList.contains('active')) {
+            backToDashboard();
+            return;
+        }
+        
+        // If we have a specific section in state, navigate to it
+        if (state && state.section) {
+            if (isMobileNavMode()) {
+                // Don't push another history entry when handling popstate
+                currentMobileNavSection = state.section;
+                updateBottomNavActive(state.section);
+                
+                const dashboardSection = document.getElementById('dashboardSection');
+                const groupsSection = document.getElementById('groupsSection');
+                
+                if (dashboardSection) {
+                    dashboardSection.style.display = 'none';
+                    dashboardSection.classList.remove('mobile-home-view');
+                }
+                if (groupsSection) groupsSection.style.display = 'none';
+                closeProfileFullscreen();
+                if (fundDetailSection) {
+                    fundDetailSection.style.display = 'none';
+                    fundDetailSection.classList.remove('hide-back-button');
+                }
+                
+                switch(state.section) {
+                    case 'home': showMobileHomeView(); break;
+                    case 'colony': showColonyView(); break;
+                    case 'groups': showGroupsSection(); break;
+                    case 'profile': showProfileSection(); break;
+                }
+            } else {
+                showDashboard();
+            }
+        }
+    });
+    
     // Load user funds (both Simple and Blockchain modes)
     // ONLY if not in demo mode - demo mode handles its own data
     if (!window.DemoMode || !window.DemoMode.isActive || !window.DemoMode.isActive()) {
@@ -1071,6 +1118,9 @@ window.openInvitedFund = async function(fundAddress) {
             fundDetailSection.style.display = 'block';
         }
         
+        // Push history state for back button support
+        history.pushState({ section: 'fundDetail', fundAddress: fundAddress }, '', window.location.pathname);
+        
         // Load fund details
         await loadFundDetailView();
         
@@ -1159,6 +1209,12 @@ function isMobileNavMode() {
  */
 function navigateBottomNav(section) {
     currentMobileNavSection = section;
+    
+    // Push history state for back button support
+    const currentState = history.state;
+    if (!currentState || currentState.section !== section) {
+        history.pushState({ section: section }, '', window.location.pathname);
+    }
     
     // Update active state
     updateBottomNavActive(section);
@@ -2564,6 +2620,9 @@ async function openFund(fundAddress) {
         const fundDetailSection = document.getElementById('fundDetailSection');
         const groupsSection = document.getElementById('groupsSection');
         
+        // Push history state for back button support
+        history.pushState({ section: 'fundDetail', fundAddress: fundAddress }, '', window.location.pathname);
+        
         if (dashboardSection) {
             dashboardSection.classList.remove('active');
             dashboardSection.style.display = 'none';
@@ -2776,20 +2835,39 @@ async function hideFund(fundAddress, fundName) {
             showLoading(t.app?.loading?.deletingGroup || "Deleting group...");
             
             // Notify all group members BEFORE deleting
-            await notifyGroupMembers(
-                fundAddress,
-                'group_deleted',
-                `El grupo "${fundName}" ha sido eliminado por el creador`,
-                { groupName: fundName }
-            );
+            try {
+                await notifyGroupMembers(
+                    fundAddress,
+                    'group_deleted',
+                    `El grupo "${fundName}" ha sido eliminado por el creador`,
+                    { groupName: fundName }
+                );
+            } catch (notifError) {
+                console.warn('Could not notify all members:', notifError);
+            }
             
             // Get all members to remove group from their user data
             const groupData = await window.FirebaseConfig.readDb(`groups/${fundAddress}`);
             const members = groupData?.members || {};
+            const currentUser = firebase.auth().currentUser;
             
             // Remove group from each member's user data
+            // Only current user's data can be deleted (Firebase rules restrict writes to own user path)
             for (const memberId of Object.keys(members)) {
-                await window.FirebaseConfig.deleteDb(`users/${memberId}/groups/${fundAddress}`);
+                try {
+                    if (memberId === currentUser?.uid) {
+                        await window.FirebaseConfig.deleteDb(`users/${memberId}/groups/${fundAddress}`);
+                    }
+                } catch (memberErr) {
+                    console.warn(`Could not remove group from user ${memberId}:`, memberErr);
+                }
+            }
+            
+            // Delete weekly chests data for this group
+            try {
+                await window.FirebaseConfig.deleteDb(`weeklyChests/${fundAddress}`);
+            } catch (chestErr) {
+                console.warn('Could not delete weekly chests:', chestErr);
             }
             
             // Delete the entire group from Firebase
@@ -13940,6 +14018,9 @@ async function openGroupFromProfile(groupId) {
         // Hide dashboard, show detail
         document.getElementById('dashboardSection').classList.remove('active');
         document.getElementById('fundDetailSection').classList.add('active');
+
+        // Push history state for back button support
+        history.pushState({ section: 'fundDetail', fundAddress: groupId }, '', window.location.pathname);
 
         await loadSimpleModeDetailView();
         hideLoading();
