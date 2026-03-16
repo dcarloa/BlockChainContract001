@@ -15066,10 +15066,20 @@ async function loadFinancialSummary() {
     if (content) content.style.display = 'none';
     
     try {
-        // Get all groups (we'll filter by membership in JavaScript)
-        const groupsRef = firebase.database().ref('groups');
-        const snapshot = await groupsRef.once('value');
-        const groups = snapshot.val() || {};
+        // Read user's groups individually (reading all groups at root level requires admin)
+        const userGroupsRef = firebase.database().ref(`users/${user.uid}/groups`);
+        const userGroupsSnapshot = await userGroupsRef.once('value');
+        const userGroupIds = userGroupsSnapshot.val() || {};
+        
+        const groups = {};
+        const groupReadPromises = Object.keys(userGroupIds).map(async (groupId) => {
+            const groupSnapshot = await firebase.database().ref(`groups/${groupId}`).once('value');
+            const groupData = groupSnapshot.val();
+            if (groupData) {
+                groups[groupId] = groupData;
+            }
+        });
+        await Promise.all(groupReadPromises);
         
         let totalPositive = 0; // Owed to you
         let totalNegative = 0; // You owe
