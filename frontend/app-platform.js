@@ -4176,8 +4176,11 @@ async function loadSimpleModeDetailView() {
         }
         
         // Switch to appropriate default tab
-        // Both personal colony and regular groups default to balances
-        switchFundTab('balances');
+        if (isPersonalColony) {
+            switchFundTab('history');
+        } else {
+            switchFundTab('balances');
+        }
         
         
         // Show Add Expense Action Card
