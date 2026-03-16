@@ -2065,6 +2065,7 @@ header,
 
 .fund-detail-section.active {
   display: block;
+  margin: 0 calc(-1 * var(--spacing-lg));
 }
 
 .back-button {
@@ -2116,13 +2117,10 @@ header,
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 1rem;
   position: sticky;
   top: 0;
   z-index: 101;
-  margin: 0 calc(-1 * var(--spacing-lg));
-  padding-left: var(--spacing-lg);
-  padding-right: var(--spacing-lg);
 }
 
 .fund-header-single-row {
@@ -2137,8 +2135,7 @@ header,
   color: var(--text-secondary);
   font-size: 1.25rem;
   cursor: pointer;
-  padding: 0.25rem 0.25rem 0.25rem 0;
-  margin-left: -0.25rem;
+  padding: 0.25rem;
   line-height: 1;
   flex-shrink: 0;
   transition: color var(--transition-fast);
@@ -2750,16 +2747,13 @@ header,
 /* Tabs - Single Row Layout */
 .fund-tabs-container {
   background: var(--bg-primary, #0a0b1e);
-  padding: 0;
+  padding: 0 1rem;
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(102, 126, 234, 0.15);
-  margin: 0 calc(-1 * var(--spacing-lg));
-  padding-left: var(--spacing-lg);
-  padding-right: var(--spacing-lg);
 }
 
 .fund-tabs-container > .fund-tabs-buttons {
