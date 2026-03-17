@@ -447,7 +447,7 @@ function setupEventListeners() {
     if (disconnectWalletBtn) disconnectWalletBtn.addEventListener('click', disconnectWallet);
     if (setNicknameBtn) setNicknameBtn.addEventListener('click', setNickname);
     if (createFundBtn) createFundBtn.addEventListener('click', showCreateFundModal);
-    if (createFundForm) createFundForm.addEventListener('submit', createFund);
+    // createFundForm submit is handled by onsubmit="createFund(event)" in HTML
     if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', backToDashboard);
     
     // Fund Detail Actions
