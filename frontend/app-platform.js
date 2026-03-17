@@ -16440,22 +16440,19 @@ function formatLocalDate(date) {
 /**
  * Build share text from itinerary events
  */
-/**
- * Strip emoji variation selectors that cause garbled chars on some platforms
- */
-function cleanForShare(str) {
-    return str.replace(/[\uFE0E\uFE0F]/g, '');
-}
-
 function buildItineraryShareText() {
     const groupName = currentFund.name || currentFund.fundName || 'My Trip';
     const lang = getCurrentLanguage() || 'en';
 
     const eventLines = itineraryEvents.map(event => {
-        const icon = event.icon ? cleanForShare(event.icon) : '-';
-        const date = formatShareDate(event.date, lang);
-        const time = event.time ? ` ${formatEventTime(event.time)}` : '';
-        return `  ${icon} ${event.title} - ${date}${time}`;
+        const icon = event.icon || '-';
+        const startDate = formatShareDate(event.date, lang);
+        const isMultiDay = event.endDate && event.endDate !== event.date;
+        const dateStr = isMultiDay
+            ? `${startDate} - ${formatShareDate(event.endDate, lang)}`
+            : startDate;
+        const time = !isMultiDay && event.time ? ` ${formatEventTime(event.time)}` : '';
+        return `  ${icon} ${event.title} - ${dateStr}${time}`;
     });
 
     const header = lang === 'es'
