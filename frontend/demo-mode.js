@@ -459,6 +459,12 @@ function exitDemoMode() {
     // Clear demo data from window
     window.demoGroupData = null;
     window.demoCurrentUser = null;
+    
+    // Reset financial summary to loading state (real data will be loaded by auth handler)
+    const skeleton = document.getElementById('financialSummarySkeleton');
+    const summaryContent = document.getElementById('financialSummaryContent');
+    if (skeleton) skeleton.style.display = 'block';
+    if (summaryContent) summaryContent.style.display = 'none';
 }
 
 /**

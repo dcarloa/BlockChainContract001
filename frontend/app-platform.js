@@ -259,9 +259,12 @@ window.addEventListener('DOMContentLoaded', async () => {
                     // Always reload user funds when user is confirmed
                     loadUserFunds();
                     
-                    // Update UI components
-                    if (typeof updateFabVisibility === 'function') {
-                        updateFabVisibility();
+                    // Refresh financial summary on Home view with real data
+                    loadFinancialSummary();
+                    
+                    // Refresh Home greeting with user name
+                    if (typeof updateMobileGreeting === 'function') {
+                        updateMobileGreeting();
                     }
                     
                     // NOTE: Personal dashboard and colony insights are now only shown 
