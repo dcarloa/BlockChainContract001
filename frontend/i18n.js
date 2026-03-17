@@ -5,12 +5,13 @@ const translations = {
     en: {
         // Navigation
         nav: {
-            features: "The Colony",
-            howItWorks: "How Ants Work",
-            demos: "Watch Demos",
-            benefits: "Ant Power",
+            features: "Features",
+            howItWorks: "How It Works",
+            demos: "Demos",
+            benefits: "Benefits",
+            personal: "Personal",
             faq: "FAQ",
-            launchApp: "Join Colony"
+            launchApp: "Launch App"
         },
         // Settings
         settings: {
@@ -58,12 +59,12 @@ const translations = {
         landing: {
             installApp: "Install App",
             hero: {
-                title: "Split expenses with friends.",
-                title2: "No drama.",
-                subtitle: "Create a group. Log expenses. See who owes who. Done.",
-                cta: "Start Free →",
+                title: "Organize your personal and shared expenses",
+                title2: "without the stress.",
+                subtitle: "Track your spending, set budgets, and split group expenses — all in one app. No spreadsheets. No arguments.",
+                cta: "Try It in 30 Seconds →",
                 tryDemo: "Try Demo First",
-                ctaSecondary: "See how it works",
+                ctaSecondary: "See How It Works",
                 ctaMicro: "Free forever · No credit card · 30 seconds",
                 betaBadge: "Free · No card · Beta",
                 stats: {
@@ -257,10 +258,10 @@ const translations = {
                 message: "We're building Ant Pool with our first users. Your feedback shapes the product."
             },
             finalCta: {
-                title: "Ready to stop the money drama?",
-                subtitle: "Join 150+ groups already splitting expenses.",
-                button: "Create Your Group Now →",
-                buttonMicro: "Takes 30 seconds · No signup to explore",
+                title: "Start organizing your expenses today",
+                subtitle: "Personal tracking + group splitting. One app, zero stress.",
+                button: "Start Now — It's Free →",
+                buttonMicro: "30 seconds to set up · No credit card required",
                 note: "Free · No card · Beta"
             },
             funFeatures: {
@@ -383,14 +384,60 @@ const translations = {
                 button: "Start your colony \u2014 Free",
                 noRegistration: "No apps to download \u2022 Works everywhere \u2022 Free to start"
             },
+            howItWorksNew: {
+                title: "How It Works",
+                subtitle: "Three steps. That's it.",
+                step1: {
+                    title: "Add an expense",
+                    desc: "Personal or shared. Just the amount and category."
+                },
+                step2: {
+                    title: "See your balance",
+                    desc: "Real-time totals, categories, and who owes what."
+                },
+                step3: {
+                    title: "Share if you want",
+                    desc: "Create a group and invite friends. Or keep it personal."
+                },
+                cta: "Try It in 30 Seconds →"
+            },
+            featuresSimple: {
+                title: "Why Ant Pool?",
+                subtitle: "Everything you need, nothing you don't.",
+                multicurrency: {
+                    title: "12 Currencies",
+                    desc: "USD, EUR, MXN, COP, and 8 more. Perfect for international groups."
+                },
+                settlements: {
+                    title: "Smart Settlements",
+                    desc: "Minimizes payments automatically. A owes B, B owes C? A pays C directly."
+                },
+                mobile: {
+                    title: "Mobile-First",
+                    desc: "Works on any device. Install as an app on your phone."
+                },
+                realtime: {
+                    title: "Real-Time Sync",
+                    desc: "Everyone sees updates instantly. No refresh needed."
+                },
+                free: {
+                    title: "Free to Use",
+                    desc: "No ads, no premium tiers, no tricks. Free tier for everyone."
+                },
+                secure: {
+                    title: "Private & Secure",
+                    desc: "Firebase security. Only your group sees your data."
+                }
+            },
             footer: {
                 tagline: "Made with ❤️ for cooperative expense management.",
                 subtitle: "🐜 Open source • Community-driven • Built with ❤️",
-                description: "🐜 Work together like ants. Track and split expenses cooperatively. Nature's wisdom meets modern expense management.",
+                description: "🐜 Track and organize your personal and shared expenses. Simple, free, and built for real life.",
                 product: "Product",
                 features: "Features",
                 howItWorks: "How It Works",
-                benefits: "Benefits",
+                personal: "Personal Finance",
+                tutorials: "Video Tutorials",
                 launchApp: "Launch App",
                 resources: "Resources",
                 faq: "FAQ",
@@ -406,7 +453,7 @@ const translations = {
                 javascript: "JavaScript",
                 opensource: "Open Source",
                 community: "Community",
-                copyright: "© 2025 Ant Pool. Built by the colony, for the colony. Powered by modern web technologies."
+                copyright: "© 2026 Ant Pool. Expense tracking and organization tool."
             }
         },
         // App Platform
@@ -1714,12 +1761,13 @@ const translations = {
     es: {
         // Navigation
         nav: {
-            features: "La Colonia",
-            howItWorks: "Cómo Trabajan las Hormigas",
-            demos: "Ver Demos",
-            benefits: "Poder Hormiga",
+            features: "Características",
+            howItWorks: "Cómo Funciona",
+            demos: "Demos",
+            benefits: "Beneficios",
+            personal: "Personal",
             faq: "FAQ",
-            launchApp: "Unirse a la Colonia"
+            launchApp: "Abrir App"
         },
         // Settings
         settings: {
@@ -1767,12 +1815,12 @@ const translations = {
         landing: {
             installApp: "Instalar App",
             hero: {
-                title: "Divide gastos con amigos.",
-                title2: "Sin peleas.",
-                subtitle: "Crea un grupo. Registra gastos. Mira quién debe qué. Listo.",
-                cta: "Empieza Gratis →",
+                title: "Organiza tus gastos personales y compartidos",
+                title2: "sin estrés.",
+                subtitle: "Controla tus gastos, establece presupuestos y divide cuentas en grupo — todo en una app. Sin hojas de cálculo. Sin discusiones.",
+                cta: "Pruébalo en 30 Segundos →",
                 tryDemo: "Prueba el Demo",
-                ctaSecondary: "Ver cómo funciona",
+                ctaSecondary: "Ver Cómo Funciona",
                 ctaMicro: "Gratis para siempre · Sin tarjeta · 30 segundos",
                 betaBadge: "Gratis · Sin tarjeta · Beta",
                 stats: {
@@ -1966,10 +2014,10 @@ const translations = {
                 message: "Estamos construyendo Ant Pool con nuestros primeros usuarios. Tu feedback da forma al producto."
             },
             finalCta: {
-                title: "¿Listo para acabar con el drama del dinero?",
-                subtitle: "Únete a 150+ grupos que ya dividen gastos.",
-                button: "Crea Tu Grupo Ahora →",
-                buttonMicro: "Toma 30 segundos · Sin registro para explorar",
+                title: "Empieza a organizar tus gastos hoy",
+                subtitle: "Control personal + división grupal. Una app, cero estrés.",
+                button: "Empieza Ahora — Es Gratis →",
+                buttonMicro: "30 segundos para configurar · Sin tarjeta de crédito",
                 note: "Gratis · Sin tarjeta · Beta"
             },
             funFeatures: {
@@ -2092,15 +2140,61 @@ const translations = {
                 button: "Inicia tu colonia — Gratis",
                 noRegistration: "Sin apps que descargar • Funciona en todos lados • Gratis para empezar"
             },
+            howItWorksNew: {
+                title: "Cómo Funciona",
+                subtitle: "Tres pasos. Eso es todo.",
+                step1: {
+                    title: "Agrega un gasto",
+                    desc: "Personal o compartido. Solo el monto y la categoría."
+                },
+                step2: {
+                    title: "Ve tu balance",
+                    desc: "Totales en tiempo real, categorías y quién debe qué."
+                },
+                step3: {
+                    title: "Comparte si quieres",
+                    desc: "Crea un grupo e invita amigos. O mantenlo personal."
+                },
+                cta: "Pruébalo en 30 Segundos →"
+            },
+            featuresSimple: {
+                title: "¿Por qué Ant Pool?",
+                subtitle: "Todo lo que necesitas, nada que no.",
+                multicurrency: {
+                    title: "12 Monedas",
+                    desc: "USD, EUR, MXN, COP y 8 más. Perfecto para grupos internacionales."
+                },
+                settlements: {
+                    title: "Liquidaciones Inteligentes",
+                    desc: "Minimiza pagos automáticamente. A le debe a B, B le debe a C? A le paga a C directo."
+                },
+                mobile: {
+                    title: "Diseño Móvil",
+                    desc: "Funciona en cualquier dispositivo. Instálalo como app en tu teléfono."
+                },
+                realtime: {
+                    title: "Sincronización en Tiempo Real",
+                    desc: "Todos ven las actualizaciones al instante. Sin necesidad de refrescar."
+                },
+                free: {
+                    title: "Gratis",
+                    desc: "Sin anuncios, sin niveles premium, sin trucos. Nivel gratuito para todos."
+                },
+                secure: {
+                    title: "Privado y Seguro",
+                    desc: "Seguridad de Firebase. Solo tu grupo ve tus datos."
+                }
+            },
             footer: {
                 tagline: "Hecho con ❤️ para la gestión cooperativa de gastos.",
                 subtitle: "🐜 Código abierto • Impulsado por la comunidad • Hecho con ❤️",
-                description: "🐜 Trabaja junto como hormigas. Rastrea y divide gastos cooperativamente. La sabiduría de la naturaleza encuentra la gestión moderna de gastos.",
+                description: "🐜 Rastrea y organiza tus gastos personales y compartidos. Simple, gratis y hecho para la vida real.",
                 product: "Producto",
                 features: "Características",
                 howItWorks: "Cómo Funciona",
-                benefits: "Beneficios",
-                launchApp: "Lanzar App",
+                personal: "Finanzas Personales",
+                tutorials: "Video Tutoriales",
+                launchApp: "Abrir App",
                 resources: "Recursos",
                 faq: "FAQ",
                 explorer: "Explorador",
@@ -2115,7 +2209,7 @@ const translations = {
                 javascript: "JavaScript",
                 opensource: "Código Abierto",
                 community: "Comunidad",
-                copyright: "© 2025 Ant Pool. Construido por la colonia, para la colonia. Impulsado por tecnologías web modernas."
+                copyright: "© 2026 Ant Pool. Herramienta de rastreo y organización de gastos."
             }
         },
         // App Platform

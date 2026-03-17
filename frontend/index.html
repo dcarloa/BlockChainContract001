@@ -72,23 +72,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Ant Pool - Split expenses with friends without the awkward money talks. Track shared bills, manage group expenses in 12 currencies. Keep friendships, not spreadsheets.">
-    <meta name="keywords" content="shared expenses, split bills, expense tracker, group expenses, ant pool, settle debts, expense sharing app, multi-currency, debt optimization">
+    <meta name="description" content="Ant Pool - Organize your personal and shared expenses without the stress. Track spending, set budgets, and split group bills in 12 currencies. Free, simple, mobile-first.">
+    <meta name="keywords" content="expense tracker, personal finance, split bills, shared expenses, group expenses, ant pool, budget tracker, multi-currency, debt optimization, expense sharing app">
     <meta name="author" content="Ant Pool">
     <meta name="robots" content="index, follow">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://antpool.cloud/">
-    <meta property="og:title" content="Ant Pool - Split Expenses Like Ants Work Together">
-    <meta property="og:description" content="Track shared expenses, split bills with friends, and settle debts transparently. Support for 12 currencies with smart debt optimization.">
+    <meta property="og:title" content="Ant Pool - Personal & Shared Expense Tracker">
+    <meta property="og:description" content="Track your spending, set budgets, and split group expenses — all in one free app. 12 currencies, smart settlements, real-time sync.">
     <meta property="og:image" content="https://antpool.cloud/assets/LogoAntPool.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://antpool.cloud/">
-    <meta property="twitter:title" content="Ant Pool - Split Expenses Like Ants Work Together">
-    <meta property="twitter:description" content="Track shared expenses, split bills with friends, and settle debts transparently. Support for 12 currencies with smart debt optimization.">
+    <meta property="twitter:title" content="Ant Pool - Personal & Shared Expense Tracker">
+    <meta property="twitter:description" content="Track your spending, set budgets, and split group expenses — all in one free app. 12 currencies, smart settlements, real-time sync.">
     <meta property="twitter:image" content="https://antpool.cloud/assets/LogoAntPool.png">
     
     <!-- PWA Manifest -->
@@ -104,7 +104,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
     
-    <title>Ant Pool - Split Expenses Like Ants Work Together | Free Expense Sharing App</title>
+    <title>Ant Pool - Personal & Shared Expense Tracker | Free Finance App</title>
     <link rel="stylesheet" href="landing-styles.css">
     <link rel="stylesheet" href="simple-mode-styles.css">
 </head>
@@ -117,10 +117,9 @@
                 <span class="logo-text">Ant Pool</span>
             </div>
             <div class="nav-links">
-                <a href="#features" data-i18n="nav.features">Features</a>
-                <a href="#tutorials" data-i18n="nav.demos">Watch Demos</a>
                 <a href="#how-it-works" data-i18n="nav.howItWorks">How It Works</a>
-                <a href="#benefits" data-i18n="nav.benefits">Benefits</a>
+                <a href="#personal-finance" data-i18n="nav.personal">Personal</a>
+                <a href="#tutorials" data-i18n="nav.demos">Demos</a>
                 <a href="#faq" data-i18n="nav.faq">FAQ</a>
                 <button class="settings-btn" onclick="openSettings()" title="Settings">
                     ⚙️
@@ -191,18 +190,18 @@
             <div class="hero-content">
                 <div class="hero-text">
                     <h1 class="hero-title">
-                        <span data-i18n="landing.hero.title">Split group expenses</span>
-                        <span class="gradient-text" data-i18n="landing.hero.title2">without the drama.</span>
+                        <span data-i18n="landing.hero.title">Organize your personal and shared expenses</span>
+                        <span class="gradient-text" data-i18n="landing.hero.title2">without the stress.</span>
                     </h1>
                     <p class="hero-subtitle" data-i18n="landing.hero.subtitle">
-                        Trips, roommates, dinners, events. Everyone pays, Ant Pool does the math. No spreadsheets. No arguments.
+                        Track your spending, set budgets, and split group expenses — all in one app. No spreadsheets. No arguments.
                     </p>
                     <div class="hero-buttons" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                        <a href="app.html" class="btn btn-large btn-primary" onclick="trackCTA('hero', 'create_group')">
-                            <span data-i18n="landing.hero.cta">Start Free →</span>
+                        <a href="app.html" class="btn btn-large btn-primary" onclick="trackCTA('hero', 'try_now')">
+                            <span data-i18n="landing.hero.cta">Try It in 30 Seconds →</span>
                         </a>
-                        <a href="app.html?demo=true" class="btn btn-large btn-secondary" onclick="trackCTA('hero', 'try_demo')" style="background: var(--glass-bg); border: 2px solid var(--primary); color: var(--primary); font-weight: 600;">
-                            <span data-i18n="landing.hero.tryDemo">Try Demo First</span>
+                        <a href="#how-it-works" class="btn btn-large btn-secondary" style="background: var(--glass-bg); border: 2px solid var(--primary); color: var(--primary); font-weight: 600;">
+                            <span data-i18n="landing.hero.ctaSecondary">See How It Works</span>
                         </a>
                     </div>
                     <p class="hero-micro-text" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
@@ -294,31 +293,100 @@
         </div>
     </section>
 
-    <!-- Problem Section - Sound Familiar? -->
-    <section id="problem" class="problem-section" style="padding: 4rem 0; background: var(--bg-secondary);">
-        <div class="container" style="max-width: 800px; text-align: center;">
-            <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 2rem;" data-i18n="landing.problem.title">🤦 Sound familiar?</h2>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
-                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
-                    <span style="font-size: 2rem;">💸</span>
-                    <span style="color: var(--text-primary); font-size: 1.1rem;" data-i18n="landing.problem.bullet1">Someone always pays more</span>
+    <!-- How It Works - 3 Simple Steps -->
+    <section id="how-it-works" class="modes-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 4rem 0;">
+        <div class="container">
+            <div class="section-header" style="color: white; text-align: center;">
+                <h2 class="section-title" style="color: white; font-size: 2.2rem;" data-i18n="landing.howItWorksNew.title">How It Works</h2>
+                <p class="section-subtitle" style="color: rgba(255,255,255,0.9); font-size: 1.2rem;" data-i18n="landing.howItWorksNew.subtitle">Three steps. That's it.</p>
+            </div>
+            <div class="features-highlight-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem; max-width: 1000px; margin-left: auto; margin-right: auto;">
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">1️⃣</div>
+                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorksNew.step1.title">Add an expense</h3>
+                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;" data-i18n="landing.howItWorksNew.step1.desc">Personal or shared. Just the amount and category.</p>
                 </div>
-                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
-                    <span style="font-size: 2rem;">🧮</span>
-                    <span style="color: var(--text-primary); font-size: 1.1rem;" data-i18n="landing.problem.bullet2">The numbers never add up</span>
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">2️⃣</div>
+                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorksNew.step2.title">See your balance</h3>
+                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;" data-i18n="landing.howItWorksNew.step2.desc">Real-time totals, categories, and who owes what.</p>
                 </div>
-                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
-                    <span style="font-size: 2rem;">😬</span>
-                    <span style="color: var(--text-primary); font-size: 1.1rem;" data-i18n="landing.problem.bullet3">Awkward money conversations</span>
-                </div>
-                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
-                    <span style="font-size: 2rem;">🕐</span>
-                    <span style="color: var(--text-primary); font-size: 1.1rem;" data-i18n="landing.problem.bullet4">"We'll figure it out later" (never happens)</span>
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">3️⃣</div>
+                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorksNew.step3.title">Share if you want</h3>
+                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;" data-i18n="landing.howItWorksNew.step3.desc">Create a group and invite friends. Or keep it personal.</p>
                 </div>
             </div>
-            <p style="font-size: 1.5rem; color: var(--primary); font-weight: 700; margin-top: 2rem;" data-i18n="landing.problem.solution">🐜 Ant Pool fixes this.</p>
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <a href="app.html" class="btn btn-large" onclick="trackCTA('how_it_works', 'try_now')" style="background: white; color: #667eea; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <span data-i18n="landing.howItWorksNew.cta">Try It in 30 Seconds →</span>
+                </a>
+            </div>
         </div>
     </section>
+
+    <!-- Personal Colony Section -->
+    <section id="personal-finance" class="personal-finance-section" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 5rem 0;">
+        <div class="container">
+            <div class="section-header" style="text-align: center; color: white; margin-bottom: 3rem;">
+                <span style="background: rgba(255,255,255,0.2); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; display: inline-block; margin-bottom: 1rem;" data-i18n="landing.personal.badge">✨ NEW: Personal Finance</span>
+                <h2 class="section-title" style="color: white; font-size: 2.5rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.title">Your Personal Colony</h2>
+                <p class="section-subtitle" style="color: rgba(255,255,255,0.9); font-size: 1.2rem; max-width: 600px; margin: 0 auto;" data-i18n="landing.personal.subtitle">Track your own expenses, set budgets, and plan your investments — all in one place.</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1100px; margin: 0 auto;">
+                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">🐜</div>
+                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.expenses.title">Personal Colony</h3>
+                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.expenses.desc">Track your daily expenses in a private space. Categories, dates, and notes. Just for you.</p>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🍔 Food</span>
+                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🚗 Transport</span>
+                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🏠 Housing</span>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">💰</div>
+                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.budget.title">Monthly Budgets</h3>
+                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.budget.desc">Set limits by category. Visual progress bars. Alerts when you're close to the limit.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <div style="background: #e5e7eb; border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 0.5rem;">
+                            <div style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: 65%; border-radius: 8px;"></div>
+                        </div>
+                        <span style="font-size: 0.85rem; color: #059669; font-weight: 600;">65% of budget used</span>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">📈</div>
+                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.portfolio.title">Investment Portfolio</h3>
+                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.portfolio.desc">Track stocks, crypto, real estate, and more. Set financial goals and watch your progress.</p>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                        <span style="background: #eff6ff; color: #3b82f6; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">📊 Stocks</span>
+                        <span style="background: #fef3c7; color: #d97706; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">₿ Crypto</span>
+                        <span style="background: #ecfdf5; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🏠 Real Estate</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="app.html" class="btn btn-large" onclick="trackCTA('personal_finance', 'start_personal')" style="background: white; color: #059669; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <span data-i18n="landing.personal.cta">Start Your Personal Colony →</span>
+                </a>
+                <p style="margin-top: 0.75rem; font-size: 0.9rem; color: rgba(255,255,255,0.9);" data-i18n="landing.personal.ctaSub">Automatically created when you sign up</p>
+            </div>
+        </div>
+    </section>
+    
+    <style>
+        @media (max-width: 768px) {
+            #personal-finance > div > div:nth-child(2) {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+        }
+    </style>
 
     <!-- Video Tutorials Section -->
     <section id="tutorials" class="tutorials-section" style="background: var(--bg-primary); padding: 5rem 0;">
@@ -456,16 +524,15 @@
         
         /* Tablet and below (900px) */
         @media (max-width: 900px) {
-            #modes .features-highlight-grid {
+            #how-it-works .features-highlight-grid {
                 grid-template-columns: 1fr !important;
             }
             
             /* Reduce section padding */
             #tutorials,
-            #modes,
-            #features,
             #how-it-works,
-            #benefits {
+            #features,
+            #personal-finance {
                 padding: 3rem 0 !important;
             }
         }
@@ -495,12 +562,12 @@
                 padding: 1rem 1.25rem !important;
             }
             
-            /* Modes section mobile */
-            #modes h2 {
+            /* How It Works section mobile */
+            #how-it-works h2 {
                 font-size: 1.75rem !important;
             }
             
-            #modes p.section-subtitle {
+            #how-it-works p.section-subtitle {
                 font-size: 1rem !important;
             }
             
@@ -514,32 +581,6 @@
         
         /* Small mobile (600px) */
         @media (max-width: 600px) {
-            /* Problem section */
-            #problem .container > div:nth-child(2) {
-                grid-template-columns: 1fr !important;
-                gap: 1rem !important;
-            }
-            
-            #problem h2 {
-                font-size: 1.75rem !important;
-            }
-            
-            #problem .container > div > div {
-                padding: 1rem !important;
-            }
-            
-            #problem .container > div > div span:first-child {
-                font-size: 1.5rem !important;
-            }
-            
-            #problem .container > div > div span:last-child {
-                font-size: 0.95rem !important;
-            }
-            
-            #problem p[data-i18n="landing.problem.solution"] {
-                font-size: 1.25rem !important;
-            }
-            
             /* Tutorial section small mobile */
             #tutorials .section-header {
                 margin-bottom: 2rem !important;
@@ -570,25 +611,25 @@
                 padding: 0.5rem !important;
             }
             
-            /* Modes section small mobile */
-            #modes {
+            /* How It Works section small mobile */
+            #how-it-works {
                 padding: 2.5rem 0 !important;
             }
             
-            #modes h2 {
+            #how-it-works h2 {
                 font-size: 1.5rem !important;
             }
             
-            #modes .features-highlight-grid {
+            #how-it-works .features-highlight-grid {
                 gap: 1rem !important;
                 margin-top: 1.5rem !important;
             }
             
-            #modes .features-highlight-grid > div {
+            #how-it-works .features-highlight-grid > div {
                 padding: 1.5rem 1.25rem !important;
             }
             
-            #modes .features-highlight-grid > div > div:first-child {
+            #how-it-works .features-highlight-grid > div > div:first-child {
                 font-size: 2.5rem !important;
             }
             
@@ -617,10 +658,6 @@
             #tutorials .tutorial-tab {
                 width: 100% !important;
                 justify-content: center !important;
-            }
-            
-            #problem .container > div > div span:last-child {
-                font-size: 0.875rem !important;
             }
         }
         
@@ -743,417 +780,6 @@
         }
     </style>
 
-    <!-- Key Features Highlight Section -->
-    <section id="modes" class="modes-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 4rem 0;">
-        <div class="container">
-            <div class="section-header" style="color: white; text-align: center;">
-                <h2 class="section-title" style="color: white; font-size: 2.2rem;" data-i18n="landing.modesSection.title">Ant Pool makes it simple.</h2>
-                <p class="section-subtitle" style="color: rgba(255,255,255,0.9); font-size: 1.2rem;" data-i18n="landing.modesSection.subtitle">Everyone sees the same numbers. No awkward conversations.</p>
-            </div>
-            <div class="features-highlight-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem; max-width: 1000px; margin-left: auto; margin-right: auto;">
-                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
-                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">1️⃣</div>
-                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorks.step1.title">Create a group</h3>
-                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;">Invite your people. 30 seconds.</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
-                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">2️⃣</div>
-                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorks.step2.title">Log expenses</h3>
-                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;">Who paid, how much. Done.</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); text-align: center;">
-                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">3️⃣</div>
-                    <h3 style="color: white; font-size: 1.4rem; margin-bottom: 0.5rem;" data-i18n="landing.howItWorks.step3.title">See who owes who</h3>
-                    <p style="color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 1rem;">Clear numbers. Peace restored.</p>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 2.5rem;">
-                <a href="app.html" class="btn btn-large" onclick="trackCTA('modes_section', 'create_group')" style="background: white; color: #667eea; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                    <span data-i18n="landing.hero.cta">Create Your First Group →</span>
-                </a>
-                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: rgba(255,255,255,0.85);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section - Redesigned -->
-    <section id="features" class="features features-redesigned" style="background: var(--bg-primary); padding: 5rem 0;">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" data-i18n="landing.philosophy.title">🐜 The Ant Pool Philosophy</h2>
-                <p class="section-subtitle" data-i18n="landing.philosophy.subtitle">Inspired by nature's most efficient cooperators</p>
-            </div>
-            
-            <!-- Two Column Layout: Image + Features List -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 3rem; align-items: center;">
-                
-                <!-- Left: Animated Illustration -->
-                <div style="position: relative;">
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 24px; padding: 3rem; text-align: center; box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);">
-                        <div style="font-size: 8rem; animation: float 3s ease-in-out infinite;">🐜</div>
-                        <h3 style="color: white; font-size: 1.8rem; margin-top: 1rem; margin-bottom: 0.5rem;" data-i18n="landing.philosophy.workTogether">Work Together</h3>
-                        <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem;" data-i18n="landing.philosophy.likeNature">Like Nature Intended</p>
-                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
-                            <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
-                                <div style="font-size: 1.8rem; font-weight: bold; color: white;">12</div>
-                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">Currencies</div>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
-                                <div style="font-size: 1.8rem; font-weight: bold; color: white;">FREE</div>
-                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">Tier</div>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
-                                <div style="font-size: 1.8rem; font-weight: bold; color: white;">24/7</div>
-                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">Available</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Right: Features List (Vertical Timeline Style) -->
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div class="feature-card-item" style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                        <div style="font-size: 2.5rem; flex-shrink: 0;">🌍</div>
-                        <div>
-                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);" data-i18n="landing.philosophy.multiCurrency.title">Multi-Currency Support</h3>
-                            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;" data-i18n="landing.philosophy.multiCurrency.desc">Track expenses in USD, EUR, GBP, MXN, COP, BRL, CAD, AUD, JPY, CNY, INR, CHF. Global colonies, local currencies.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-card-item" style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                        <div style="font-size: 2.5rem; flex-shrink: 0;">🔀</div>
-                        <div>
-                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);" data-i18n="landing.philosophy.settlements.title">Smart Settlements</h3>
-                            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;" data-i18n="landing.philosophy.settlements.desc">Debt optimization algorithm minimizes transactions. If Alice owes Bob and Bob owes Charlie, Alice pays Charlie directly.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-card-item" style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                        <div style="font-size: 2.5rem; flex-shrink: 0;">📅</div>
-                        <div>
-                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);" data-i18n="landing.philosophy.timeline.title">Timeline & Filters</h3>
-                            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;" data-i18n="landing.philosophy.timeline.desc">View expenses by week, month, or custom range. Every contribution is recorded and searchable with date filters.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-card-item" style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                        <div style="font-size: 2.5rem; flex-shrink: 0;">🔔</div>
-                        <div>
-                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);" data-i18n="landing.philosophy.updates.title">Real-Time Updates</h3>
-                            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;" data-i18n="landing.philosophy.updates.desc">All transactions visible to colony members. Instant notifications when expenses are added or modified.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-card-item" style="display: flex; gap: 1.5rem; align-items: start; padding: 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                        <div style="font-size: 2.5rem; flex-shrink: 0;">📱</div>
-                        <div>
-                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);" data-i18n="landing.philosophy.mobile.title">Mobile-First Design</h3>
-                            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;" data-i18n="landing.philosophy.mobile.desc">Compact cards, responsive layout, touch-optimized. Manage your colony from any device, anywhere.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <style>
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .feature-card-item:hover {
-            transform: translateX(10px);
-            box-shadow: 0 8px 30px rgba(102,126,234,0.2) !important;
-        }
-        
-        @media (max-width: 768px) {
-            #features > div > div:nth-child(2) {
-                grid-template-columns: 1fr !important;
-                gap: 2rem !important;
-            }
-        }
-    </style>
-
-    <!-- How It Works Section -->
-    <section id="how-it-works" class="how-it-works" style="background: var(--bg-secondary); padding: 5rem 0;">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" data-i18n="landing.howItWorks.title">🐜 How Ants Cooperate</h2>
-                <p class="section-subtitle" data-i18n="landing.howItWorks.subtitle">Follow the ant trail to collective success</p>
-            </div>
-            
-            <!-- Simple Workflow -->
-            <div class="workflow-mode">
-                <h3 class="workflow-mode-title" data-i18n="landing.howItWorks.threeSteps">🐜 Three Steps to Colony Success</h3>
-                <div class="steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h3 class="step-title" data-i18n="landing.howItWorks.step1.title">Create Your Colony</h3>
-                            <p class="step-description" data-i18n="landing.howItWorks.step1.desc">
-                                Sign in with Google or Email. Create a group with a name and type (trip, event, apartment, project). Invite members by email—no crypto needed.
-                            </p>
-                        </div>
-                        <div class="step-visual">
-                            <div class="visual-card">
-                                <div class="visual-icon">✏️</div>
-                                <div class="visual-text">Cancun Trip 🐜</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="step step-reverse">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h3 class="step-title" data-i18n="landing.howItWorks.step2.title">Add Expenses as They Happen</h3>
-                            <p class="step-description" data-i18n="landing.howItWorks.step2.desc">
-                                Anyone can add an expense with amount, currency (USD, COP, EUR...), and who paid. Multiple payers supported. Timeline tracks everything.
-                            </p>
-                        </div>
-                        <div class="step-visual">
-                            <div class="visual-card">
-                                <div class="visual-icon">💵</div>
-                                <div class="visual-text">$150 USD - Restaurant</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h3 class="step-title" data-i18n="landing.howItWorks.step3.title">Smart Settlements</h3>
-                            <p class="step-description" data-i18n="landing.howItWorks.step3.desc">
-                                When it's time to settle, our calculator optimizes the distribution. See who owes whom, with minimal transactions. Settle expenses however you prefer outside the app.
-                            </p>
-                        </div>
-                        <div class="step-visual">
-                            <div class="visual-card">
-                                <div class="visual-icon">✅</div>
-                                <div class="visual-text">Alice → Charlie: $50</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Personal Finance Section (NEW) -->
-    <section id="personal-finance" class="personal-finance-section" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 5rem 0;">
-        <div class="container">
-            <div class="section-header" style="text-align: center; color: white; margin-bottom: 3rem;">
-                <span style="background: rgba(255,255,255,0.2); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; display: inline-block; margin-bottom: 1rem;" data-i18n="landing.personal.badge">✨ NEW: Personal Finance</span>
-                <h2 class="section-title" style="color: white; font-size: 2.5rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.title">Your Personal Colony</h2>
-                <p class="section-subtitle" style="color: rgba(255,255,255,0.9); font-size: 1.2rem; max-width: 600px; margin: 0 auto;" data-i18n="landing.personal.subtitle">Track your own expenses, set budgets, and plan your investments — all in one place.</p>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1100px; margin: 0 auto;">
-                <!-- Personal Expenses -->
-                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
-                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">🐜</div>
-                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.expenses.title">Personal Colony</h3>
-                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.expenses.desc">Track your daily expenses in a private space. Categories, dates, and notes. Just for you.</p>
-                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🍔 Food</span>
-                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🚗 Transport</span>
-                        <span style="background: #f0fdf4; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🏠 Housing</span>
-                    </div>
-                </div>
-                
-                <!-- Monthly Budgets -->
-                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
-                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">💰</div>
-                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.budget.title">Monthly Budgets</h3>
-                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.budget.desc">Set limits by category. Visual progress bars. Alerts when you're close to the limit.</p>
-                    <div style="margin-top: 1.5rem;">
-                        <div style="background: #e5e7eb; border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 0.5rem;">
-                            <div style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: 65%; border-radius: 8px;"></div>
-                        </div>
-                        <span style="font-size: 0.85rem; color: #059669; font-weight: 600;">65% of budget used</span>
-                    </div>
-                </div>
-                
-                <!-- Investment Portfolio -->
-                <div style="background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
-                    <div style="font-size: 3.5rem; margin-bottom: 1rem;">📈</div>
-                    <h3 style="color: #111; font-size: 1.3rem; margin-bottom: 0.75rem;" data-i18n="landing.personal.portfolio.title">Investment Portfolio</h3>
-                    <p style="color: #666; line-height: 1.6; font-size: 0.95rem;" data-i18n="landing.personal.portfolio.desc">Track stocks, crypto, real estate, and more. Set financial goals and watch your progress.</p>
-                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-                        <span style="background: #eff6ff; color: #3b82f6; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">📊 Stocks</span>
-                        <span style="background: #fef3c7; color: #d97706; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">₿ Crypto</span>
-                        <span style="background: #ecfdf5; color: #059669; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">🏠 Real Estate</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 3rem;">
-                <a href="app.html" class="btn btn-large" onclick="trackCTA('personal_finance', 'start_personal')" style="background: white; color: #059669; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                    <span data-i18n="landing.personal.cta">Start Your Personal Colony →</span>
-                </a>
-                <p style="margin-top: 0.75rem; font-size: 0.9rem; color: rgba(255,255,255,0.9);" data-i18n="landing.personal.ctaSub">Automatically created when you sign up</p>
-            </div>
-        </div>
-    </section>
-    
-    <style>
-        @media (max-width: 768px) {
-            #personal-finance > div > div:nth-child(2) {
-                grid-template-columns: 1fr !important;
-                gap: 1.5rem !important;
-            }
-        }
-    </style>
-
-    <!-- Benefits Section -->
-    <section id="benefits" class="benefits-redesign" style="background: var(--bg-primary); padding: 5rem 0;">
-        <div class="container">
-            <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
-                <h2 class="section-title" data-i18n="landing.benefits.title">🐜 Why Ant Pool Wins</h2>
-                <p class="section-subtitle" data-i18n="landing.benefits.subtitle">Built different. Built better. Built for your colony.</p>
-            </div>
-            
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <div class="benefit-card-icon">🌍</div>
-                    <h4 data-i18n="landing.benefits.globalColony.title">Global Ant Colony</h4>
-                    <p data-i18n="landing.benefits.globalColony.desc">12 currencies supported. Track expenses in USD, COP, EUR, MXN, and more. Like ants gathering from different sources, your colony works worldwide.</p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-card-icon">💰</div>
-                    <h4 data-i18n="landing.benefits.freeForever.title">Free to Start</h4>
-                    <p data-i18n="landing.benefits.freeForever.desc">No subscriptions required to get started. Track expenses, manage groups, and settle balances with our free tier.</p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-card-icon">🔀</div>
-                    <h4 data-i18n="landing.benefits.smartDebt.title">Smart Debt Optimization</h4>
-                    <p data-i18n="landing.benefits.smartDebt.desc">Like ants finding the shortest path, our settlement algorithm minimizes transactions. If A owes B and B owes C, A pays C directly.</p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-card-icon">⏰</div>
-                    <h4 data-i18n="landing.benefits.neverSleep.title">Ants Never Sleep</h4>
-                    <p data-i18n="landing.benefits.neverSleep.desc">Access your colony 24/7 from any device. Mobile-optimized design. Timeline filters. Real-time updates. Work happens when it needs to.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <style>
-        /* Benefits Section Redesign */
-        .benefits-redesign {
-            padding: 6rem 0;
-            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-        }
-        
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        .benefit-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2.5rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .benefit-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary, #a855f7));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .benefit-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
-        }
-        
-        .benefit-card:hover::before {
-            opacity: 1;
-        }
-        
-        .benefit-card-icon {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-        
-        .benefit-card h4 {
-            font-size: 1.4rem;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-        
-        .benefit-card p {
-            color: var(--text-secondary);
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .benefits-redesign {
-                padding: 4rem 0;
-            }
-            
-            .benefits-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-                padding: 0 1rem;
-            }
-            
-            .benefit-card {
-                padding: 2rem;
-            }
-            
-            .benefit-card-icon {
-                font-size: 2.5rem;
-            }
-            
-            .benefit-card h4 {
-                font-size: 1.2rem;
-            }
-        }
-        
-        /* Light theme specific */
-        [data-theme="light"] .benefits-redesign {
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-        }
-        
-        [data-theme="light"] .benefit-card {
-            background: #ffffff;
-            border-color: #e2e8f0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-        
-        [data-theme="light"] .benefit-card:hover {
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.12);
-        }
-        
-        [data-theme="light"] .benefit-card h4 {
-            color: #0f172a;
-        }
-        
-        [data-theme="light"] .benefit-card p {
-            color: #475569;
-        }
-    </style>
-
     <!-- Use Cases Section -->
     <section class="use-cases" style="padding: 5rem 0; background: var(--bg-primary);">
         <div class="container">
@@ -1207,20 +833,59 @@
         }
     </style>
 
-    <!-- Social Proof Section -->
-    <section class="social-proof" style="padding: 4rem 0; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);">
-        <div class="container" style="max-width: 800px; text-align: center;">
-            <h2 class="section-title" style="margin-bottom: 2rem;" data-i18n="landing.socialProof.title">🔨 Building together</h2>
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
-                <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.5rem 1.25rem; border-radius: 25px; font-size: 0.95rem; font-weight: 600;" data-i18n="landing.socialProof.badge1">🚀 Public Beta</span>
-                <span style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 0.5rem 1.25rem; border-radius: 25px; font-size: 0.95rem; font-weight: 500;" data-i18n="landing.socialProof.badge3">🔨 Active development</span>
-                <span style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 0.5rem 1.25rem; border-radius: 25px; font-size: 0.95rem; font-weight: 500;" data-i18n="landing.socialProof.badge4">👥 Real groups testing</span>
+    <!-- Features Section -->
+    <section id="features" class="features-simple" style="padding: 5rem 0; background: var(--bg-primary);">
+        <div class="container">
+            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                <h2 class="section-title" data-i18n="landing.featuresSimple.title">Why Ant Pool?</h2>
+                <p class="section-subtitle" data-i18n="landing.featuresSimple.subtitle">Everything you need, nothing you don't.</p>
             </div>
-            <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; max-width: 600px; margin: 0 auto;" data-i18n="landing.socialProof.message">
-                We're building Ant Pool with our first users. Your feedback shapes the product.
-            </p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1000px; margin: 0 auto;">
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🌍</div>
+                    <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.featuresSimple.multicurrency.title">12 Currencies</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;" data-i18n="landing.featuresSimple.multicurrency.desc">USD, EUR, MXN, COP, and 8 more. Perfect for international groups.</p>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔀</div>
+                    <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.featuresSimple.settlements.title">Smart Settlements</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;" data-i18n="landing.featuresSimple.settlements.desc">Minimizes payments automatically. A owes B, B owes C? A pays C directly.</p>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📱</div>
+                    <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.featuresSimple.mobile.title">Mobile-First</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;" data-i18n="landing.featuresSimple.mobile.desc">Works on any device. Install as an app on your phone.</p>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">⚡</div>
+                    <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.featuresSimple.realtime.title">Real-Time Sync</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;" data-i18n="landing.featuresSimple.realtime.desc">Everyone sees updates instantly. No refresh needed.</p>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🆓</div>
+                    <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.featuresSimple.free.title">Free to Use</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;" data-i18n="landing.featuresSimple.free.desc">No ads, no premium tiers, no tricks. Free tier for everyone.</p>
+                </div>
+                <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔒</div>
+                    <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="landing.featuresSimple.secure.title">Private & Secure</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;" data-i18n="landing.featuresSimple.secure.desc">Firebase security. Only your group sees your data.</p>
+                </div>
+            </div>
         </div>
     </section>
+    
+    <style>
+        .features-simple div[style*="grid"] > div:hover {
+            transform: translateY(-4px);
+            transition: transform 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .features-simple div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
 
     <!-- FAQ Section -->
     <section id="faq" class="faq" style="background: var(--bg-secondary); padding: 5rem 0;">
@@ -1293,15 +958,15 @@
     <section class="cta">
         <div class="container">
             <div class="cta-content">
-                <h2 class="cta-title" data-i18n="landing.finalCta.title">🐜 Ready to stop the money drama?</h2>
+                <h2 class="cta-title" data-i18n="landing.finalCta.title">Start organizing your expenses today</h2>
                 <p class="cta-subtitle" data-i18n="landing.finalCta.subtitle">
-                    Join 150+ groups already splitting expenses.
+                    Personal tracking + group splitting. One app, zero stress.
                 </p>
-                <a href="app.html" class="btn btn-large btn-primary btn-glow" onclick="trackCTA('final_cta', 'create_group')">
-                    <span data-i18n="landing.finalCta.button">Create Your Group Now →</span>
+                <a href="app.html" class="btn btn-large btn-primary btn-glow" onclick="trackCTA('final_cta', 'start_now')">
+                    <span data-i18n="landing.finalCta.button">Start Now — It's Free →</span>
                 </a>
                 <p class="cta-micro" style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.9;" data-i18n="landing.finalCta.buttonMicro">
-                    Takes 30 seconds · No signup to explore
+                    30 seconds to set up · No credit card required
                 </p>
             </div>
         </div>
@@ -1323,9 +988,9 @@
                 <div class="footer-section">
                     <h4 data-i18n="landing.footer.product">Product</h4>
                     <ul class="footer-links">
-                        <li><a href="#features" data-i18n="landing.footer.features">Features</a></li>
                         <li><a href="#how-it-works" data-i18n="landing.footer.howItWorks">How It Works</a></li>
-                        <li><a href="#benefits" data-i18n="landing.footer.benefits">Benefits</a></li>
+                        <li><a href="#personal-finance" data-i18n="landing.footer.personal">Personal Finance</a></li>
+                        <li><a href="#features" data-i18n="landing.footer.features">Features</a></li>
                         <li><a href="app.html" data-i18n="landing.footer.launchApp">Launch App</a></li>
                     </ul>
                 </div>
@@ -1333,7 +998,7 @@
                     <h4 data-i18n="landing.footer.resources">Resources</h4>
                     <ul class="footer-links">
                         <li><a href="#faq" data-i18n="landing.footer.faq">FAQ</a></li>
-                        <li><a href="#how-it-works" data-i18n="landing.footer.howItWorks">How It Works</a></li>
+                        <li><a href="#tutorials" data-i18n="landing.footer.tutorials">Video Tutorials</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -1364,7 +1029,7 @@
     </footer>
 
     <!-- i18n and theme system -->
-    <script src="i18n.js?v=2.0.0"></script>
+    <script src="i18n.js?v=2.1.0"></script>
     <script src="theme.js"></script>
     <script src="landing-script.js"></script>
     <script>
@@ -1434,7 +1099,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Ant Pool",
-        "description": "Split group expenses without awkward money talks. Keep friendships, not spreadsheets. Track shared bills in 12 currencies with smart debt optimization.",
+        "description": "Organize your personal and shared expenses without the stress. Track spending, set budgets, and split group expenses in 12 currencies with smart settlements.",
         "url": "https://antpool.cloud/",
         "applicationCategory": "FinanceApplication",
         "operatingSystem": "Web, Android, iOS",
