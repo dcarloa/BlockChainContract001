@@ -2280,14 +2280,7 @@ function injectDemoStyles() {
             }
         }
         
-        .demo-signup-cta.minimized {
-            padding: 0.5rem 1rem;
-        }
-        
-        .demo-signup-cta.minimized .demo-cta-text,
-        .demo-signup-cta.minimized .demo-cta-close {
-            display: none;
-        }
+
         
         .demo-cta-content {
             display: flex;
@@ -2318,19 +2311,29 @@ function injectDemoStyles() {
         }
         
         .demo-cta-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #333;
+            border: 2px solid rgba(255,255,255,0.2);
+            color: #fff;
             cursor: pointer;
-            font-size: 1.25rem;
-            padding: 0.25rem;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             line-height: 1;
-            opacity: 0.6;
-            transition: opacity 0.2s;
+            opacity: 1;
+            transition: background 0.2s;
+            z-index: 2;
         }
         
         .demo-cta-close:hover {
-            opacity: 1;
+            background: #e74c3c;
         }
         
         /* Demo Fund Card - matches fund-card styles */
