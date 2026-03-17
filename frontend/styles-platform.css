@@ -20341,16 +20341,19 @@ body.light-mode .event-link-item,
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  gap: 0.35rem;
+  padding: 0 0.75rem;
+  height: 34px;
   border-radius: 10px;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  color: var(--text-secondary);
-  font-size: 1rem;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--primary-light);
+  font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .btn-share-itinerary:hover {
@@ -20471,6 +20474,7 @@ body.light-mode .event-link-item,
 .share-twitter { background: #000000; }
 .share-telegram { background: #0088cc; }
 .share-facebook { background: #1877F2; }
+.share-email { background: #EA4335; }
 .share-copy { background: var(--bg-tertiary); font-size: 1.4rem; }
 
 .share-option-label {

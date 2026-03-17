@@ -45,7 +45,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="styles-platform.css?v=5.62">
+    <link rel="stylesheet" href="styles-platform.css?v=5.63">
     <link rel="stylesheet" href="wallet-connector.css">
     <link rel="stylesheet" href="create-group-styles.css?v=2.0">
     <link rel="stylesheet" href="simple-mode-styles.css?v=2.3">
@@ -1865,6 +1865,7 @@ Simple, fast, and free.</p>
                                     <!-- Share Button -->
                                     <button class="btn-share-itinerary" onclick="shareItinerary()" title="Share itinerary">
                                         <span>📤</span>
+                                        <span data-i18n="app.itinerary.share.button">Share</span>
                                     </button>
                                     <!-- View Toggle -->
                                     <div class="view-toggle">
@@ -3072,7 +3073,7 @@ Simple, fast, and free.</p>
     <script src="form-wizard.js"></script>
     <script src="colony-system.js?v=1.9"></script>
     <script src="mascot-system.js?v=2.1"></script>
-    <script src="app-platform.js?v=5.69"></script>
+    <script src="app-platform.js?v=5.70"></script>
     
     <script>
         // Mark that user has used the app (for redirect from landing page)
@@ -4683,6 +4684,12 @@ Simple, fast, and free.</p>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                     </span>
                     <span class="share-option-label">Facebook</span>
+                </button>
+                <button class="share-option" onclick="shareVia('email')">
+                    <span class="share-option-icon share-email">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </span>
+                    <span class="share-option-label">Email</span>
                 </button>
                 <button class="share-option" onclick="shareVia('copy')">
                     <span class="share-option-icon share-copy">📋</span>

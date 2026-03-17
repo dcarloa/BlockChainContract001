@@ -16440,26 +16440,33 @@ function formatLocalDate(date) {
 /**
  * Build share text from itinerary events
  */
+/**
+ * Strip emoji variation selectors that cause garbled chars on some platforms
+ */
+function cleanForShare(str) {
+    return str.replace(/[\uFE0E\uFE0F]/g, '');
+}
+
 function buildItineraryShareText() {
     const groupName = currentFund.name || currentFund.fundName || 'My Trip';
     const lang = getCurrentLanguage() || 'en';
 
     const eventLines = itineraryEvents.map(event => {
-        const icon = event.icon || '📍';
+        const icon = event.icon ? cleanForShare(event.icon) : '-';
         const date = formatShareDate(event.date, lang);
         const time = event.time ? ` ${formatEventTime(event.time)}` : '';
-        return `${icon} ${event.title} — ${date}${time}`;
+        return `  ${icon} ${event.title} - ${date}${time}`;
     });
 
     const header = lang === 'es'
-        ? `✈️ Itinerario: ${groupName}`
-        : `✈️ Itinerary: ${groupName}`;
+        ? `Itinerario: ${groupName}`
+        : `Itinerary: ${groupName}`;
     const eventCount = lang === 'es'
-        ? `🗓️ ${itineraryEvents.length} evento${itineraryEvents.length !== 1 ? 's' : ''} planificado${itineraryEvents.length !== 1 ? 's' : ''}`
-        : `🗓️ ${itineraryEvents.length} event${itineraryEvents.length !== 1 ? 's' : ''} planned`;
+        ? `${itineraryEvents.length} evento${itineraryEvents.length !== 1 ? 's' : ''} planificado${itineraryEvents.length !== 1 ? 's' : ''}`
+        : `${itineraryEvents.length} event${itineraryEvents.length !== 1 ? 's' : ''} planned`;
     const footer = lang === 'es'
-        ? `\nOrganizado con Ant Pool 🐜\nhttps://antpool.cloud`
-        : `\nOrganized with Ant Pool 🐜\nhttps://antpool.cloud`;
+        ? `\n---\nOrganizado con Ant Pool\nhttps://antpool.cloud`
+        : `\n---\nOrganized with Ant Pool\nhttps://antpool.cloud`;
 
     return `${header}\n${eventCount}\n\n${eventLines.join('\n')}${footer}`;
 }
@@ -16499,21 +16506,27 @@ async function shareVia(platform) {
         case 'whatsapp':
             shareUrl = `https://wa.me/?text=${encoded}`;
             break;
-        case 'twitter':
-            // Twitter has 280 char limit, use shorter text
+        case 'twitter': {
             const groupName = currentFund.name || currentFund.fundName || 'My Trip';
             const lang = getCurrentLanguage() || 'en';
             const shortText = lang === 'es'
-                ? `✈️ ${groupName} — ${itineraryEvents.length} eventos planificados 🗓️\n\nOrganizado con @AntPoolApp 🐜`
-                : `✈️ ${groupName} — ${itineraryEvents.length} events planned 🗓️\n\nOrganized with @AntPoolApp 🐜`;
+                ? `${groupName} - ${itineraryEvents.length} eventos planificados\n\nOrganizado con @AntPoolApp`
+                : `${groupName} - ${itineraryEvents.length} events planned\n\nOrganized with @AntPoolApp`;
             shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shortText)}&url=${encodedUrl}`;
             break;
+        }
         case 'telegram':
             shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encoded}`;
             break;
         case 'facebook':
             shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encoded}`;
             break;
+        case 'email': {
+            const gName = currentFund.name || currentFund.fundName || 'My Trip';
+            const subject = encodeURIComponent(gName + ' - Ant Pool');
+            shareUrl = `mailto:?subject=${subject}&body=${encoded}`;
+            break;
+        }
         case 'copy':
             try {
                 await navigator.clipboard.writeText(text);
