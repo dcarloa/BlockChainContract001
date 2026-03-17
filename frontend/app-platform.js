@@ -10675,7 +10675,51 @@ async function previewCloseFund() {
     try {
         showLoading(t('app.loading.calculatingDistribution'));
         
-        // Get fund data
+        // Simple Mode: use Firebase data instead of smart contract
+        if (!currentFundContract) {
+            if (currentFund && currentFund.mode === 'simple') {
+                window.modeManager.currentGroupId = currentFund.fundId;
+                window.modeManager.groupData = currentFund;
+                const memberBalances = await window.modeManager.calculateSimpleBalances();
+                
+                if (!memberBalances || memberBalances.length === 0) {
+                    showToast(t('app.fundDetail.manage.noMembers') || 'No members in this group', 'warning');
+                    hideLoading();
+                    return;
+                }
+                
+                const currency = currentFund.currency || 'MXN';
+                let distributionHTML = '<div class="distribution-table">';
+                distributionHTML += `<table><thead><tr><th>${t('app.fundDetail.manage.member') || 'Member'}</th><th>${t('app.fundDetail.manage.spent') || 'Spent'}</th><th>${t('app.fundDetail.manage.balance') || 'Balance'}</th></tr></thead><tbody>`;
+                
+                let totalSpent = 0;
+                for (const member of memberBalances) {
+                    totalSpent += member.totalPaid || 0;
+                    const balanceClass = member.balance > 0 ? 'positive' : member.balance < 0 ? 'negative' : '';
+                    const balanceSign = member.balance > 0 ? '+' : '';
+                    distributionHTML += `
+                        <tr>
+                            <td><strong>${member.name || member.email || 'Member'}</strong></td>
+                            <td>$${(member.totalPaid || 0).toFixed(2)} ${currency}</td>
+                            <td class="highlight ${balanceClass}">${balanceSign}$${(member.balance || 0).toFixed(2)} ${currency}</td>
+                        </tr>
+                    `;
+                }
+                
+                distributionHTML += '</tbody></table></div>';
+                distributionHTML += `<div class="total-distribution"><strong>${t('app.fundDetail.manage.totalSpent') || 'Total Spent'}:</strong> $${totalSpent.toFixed(2)} ${currency}</div>`;
+                
+                document.getElementById('distributionList').innerHTML = distributionHTML;
+                document.getElementById('closeFundPreview').style.display = 'block';
+                hideLoading();
+                return;
+            }
+            showToast('Fund contract not available', 'error');
+            hideLoading();
+            return;
+        }
+        
+        // Blockchain Mode: use smart contract
         const balance = await currentFundContract.getBalance();
         const [addresses, nicknames, amounts] = await currentFundContract.getContributorsWithNicknames();
         
@@ -11583,8 +11627,8 @@ async function checkAndProcessRecurring() {
         const createdCount = await window.modeManager.processRecurringExpenses();
         
         if (createdCount > 0) {
-            // Reload history to show new expenses
-            await loadSimpleModeHistory();
+            // Reload expenses to show new entries
+            await loadSimpleModeExpenses();
             // Reload recurring list to update nextDue display
             await loadRecurringExpenses();
             
