@@ -2999,7 +2999,8 @@ async function createFund(event) {
         const preferredCurrency = document.getElementById('preferredCurrency')?.value || 'NONE';
         
         if (!fundName) {
-            showToast("Please enter the fund name", "warning");
+            const lang = getCurrentLanguage();
+            showToast(lang === 'es' ? "Por favor ingresa el nombre del grupo" : "Please enter the group name", "warning");
             return;
         }
         
