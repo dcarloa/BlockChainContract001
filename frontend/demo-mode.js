@@ -2236,7 +2236,7 @@ function injectDemoStyles() {
         /* Demo Floating CTA */
         .demo-signup-cta {
             position: fixed;
-            bottom: 5rem;
+            bottom: calc(65px + 0.75rem);
             left: 50%;
             transform: translateX(-50%);
             background: var(--glass-bg, rgba(255, 255, 255, 0.95));
@@ -2244,7 +2244,7 @@ function injectDemoStyles() {
             border-radius: 16px;
             padding: 1rem 1.25rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            z-index: 999;
+            z-index: 1001;
             display: flex;
             align-items: center;
             gap: 1rem;
