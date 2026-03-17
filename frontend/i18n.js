@@ -290,7 +290,7 @@ const translations = {
             },
             // Personal Finance Section (NEW)
             personal: {
-                badge: "✨ NEW: Personal Finance",
+                badge: "💰 Personal Finance",
                 title: "Your Personal Colony",
                 subtitle: "Track your own expenses, set budgets, and plan your investments — all in one place.",
                 expenses: {
@@ -299,11 +299,20 @@ const translations = {
                 },
                 budget: {
                     title: "Monthly Budgets",
-                    desc: "Set limits by category. Visual progress bars. Alerts when you're close to the limit."
+                    desc: "Set limits by category. Visual progress bars. Alerts when you're close to the limit.",
+                    progress: "65% of budget used"
                 },
                 portfolio: {
                     title: "Investment Portfolio",
                     desc: "Track stocks, crypto, real estate, and more. Set financial goals and watch your progress."
+                },
+                mascot: {
+                    title: "Collectible Ant Mascot",
+                    desc: "Dress up your group's ant with hats, outfits & accessories. Open weekly chests to unlock new items."
+                },
+                itinerary: {
+                    title: "Trip Itineraries",
+                    desc: "Plan trips with a timeline. Attach links, notes, and link expenses directly to each event."
                 },
                 cta: "Start Your Personal Colony →",
                 ctaSub: "Automatically created when you sign up"
@@ -2046,7 +2055,7 @@ const translations = {
             },
             // Sección de Finanzas Personales (NUEVO)
             personal: {
-                badge: "✨ NUEVO: Finanzas Personales",
+                badge: "💰 Finanzas Personales",
                 title: "Tu Colonia Personal",
                 subtitle: "Rastrea tus gastos, establece presupuestos y planifica tus inversiones — todo en un solo lugar.",
                 expenses: {
@@ -2055,11 +2064,20 @@ const translations = {
                 },
                 budget: {
                     title: "Presupuestos Mensuales",
-                    desc: "Establece límites por categoría. Barras de progreso visuales. Alertas cuando estés cerca del límite."
+                    desc: "Establece límites por categoría. Barras de progreso visuales. Alertas cuando estés cerca del límite.",
+                    progress: "65% del presupuesto usado"
                 },
                 portfolio: {
                     title: "Portafolio de Inversiones",
                     desc: "Rastrea acciones, cripto, bienes raíces y más. Establece metas financieras y observa tu progreso."
+                },
+                mascot: {
+                    title: "Mascota Hormiga Coleccionable",
+                    desc: "Viste a la hormiga de tu grupo con sombreros, trajes y accesorios. Abre cofres semanales para desbloquear nuevos objetos."
+                },
+                itinerary: {
+                    title: "Itinerarios de Viaje",
+                    desc: "Planifica viajes con una línea de tiempo. Adjunta enlaces, notas y vincula gastos a cada evento."
                 },
                 cta: "Inicia Tu Colonia Personal →",
                 ctaSub: "Se crea automáticamente cuando te registras"
