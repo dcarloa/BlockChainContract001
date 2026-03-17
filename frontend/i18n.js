@@ -58,6 +58,15 @@ const translations = {
         // Landing Page
         landing: {
             installApp: "Install App",
+            iosInstall: {
+                title: "Install Ant Pool",
+                step1Title: "Tap the Share button",
+                step1Desc: "In Safari's bottom bar, tap this icon:",
+                step2Title: "Scroll down & tap",
+                step2Desc: "\"Add to Home Screen\"",
+                step3Title: "Tap \"Add\"",
+                step3Desc: "The app will appear on your home screen"
+            },
             hero: {
                 title: "Organize your personal and shared expenses",
                 title2: "without the stress.",
@@ -1831,6 +1840,15 @@ const translations = {
         // Landing Page
         landing: {
             installApp: "Instalar App",
+            iosInstall: {
+                title: "Instalar Ant Pool",
+                step1Title: "Toca el botón Compartir",
+                step1Desc: "En la barra inferior de Safari, toca este icono:",
+                step2Title: "Desliza hacia abajo y toca",
+                step2Desc: "\"Añadir a pantalla de inicio\"",
+                step3Title: "Toca \"Añadir\"",
+                step3Desc: "La app aparecerá en tu pantalla de inicio"
+            },
             hero: {
                 title: "Organiza tus gastos personales y compartidos",
                 title2: "sin estrés.",

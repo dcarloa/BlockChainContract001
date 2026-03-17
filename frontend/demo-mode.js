@@ -528,6 +528,9 @@ function hideDemoBanner() {
  * Show the floating CTA to sign up
  */
 function showDemoSignupCTA() {
+    // Don't show if user dismissed it this session
+    if (sessionStorage.getItem('demoCTAdismissed') === 'true') return;
+    
     let cta = document.getElementById('demoSignupCTA');
     
     if (!cta) {
@@ -561,7 +564,7 @@ function showDemoSignupCTA() {
                     <span>${t.button}</span>
                 </button>
             </div>
-            <button class="demo-cta-close" onclick="window.minimizeDemoSignupCTA()" title="Minimize">−</button>
+            <button class="demo-cta-close" onclick="window.dismissDemoSignupCTA()" title="Close">×</button>
         `;
         
         document.body.appendChild(cta);
@@ -574,6 +577,17 @@ function showDemoSignupCTA() {
     if (typeof applyTranslations === 'function') {
         applyTranslations();
     }
+}
+
+/**
+ * Dismiss the floating CTA permanently for this session
+ */
+function dismissDemoSignupCTA() {
+    const cta = document.getElementById('demoSignupCTA');
+    if (cta) {
+        cta.remove();
+    }
+    sessionStorage.setItem('demoCTAdismissed', 'true');
 }
 
 /**
@@ -3704,6 +3718,7 @@ window.showDemoActionModal = showDemoActionModal;
 window.closeDemoActionModal = closeDemoActionModal;
 window.promptDemoSignup = promptDemoSignup;
 window.minimizeDemoSignupCTA = minimizeDemoSignupCTA;
+window.dismissDemoSignupCTA = dismissDemoSignupCTA;
 
 // Auto-enter demo mode if URL has ?demo=true parameter
 (function checkDemoUrlParam() {
