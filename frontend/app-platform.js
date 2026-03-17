@@ -16447,7 +16447,7 @@ async function shareItinerary() {
     }
 
     const groupName = currentFund.name || currentFund.fundName || 'My Trip';
-    const lang = currentLanguage || 'en';
+    const lang = getCurrentLanguage() || 'en';
 
     // Build event list text (no financial data)
     const eventLines = itineraryEvents.map(event => {
