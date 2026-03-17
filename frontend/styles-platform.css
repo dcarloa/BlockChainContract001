@@ -2117,8 +2117,9 @@ header,
   backdrop-filter: blur(20px);
   border-bottom: none;
   padding: 0.4rem 0.5rem;
-  position: relative;
-  z-index: 11;
+  position: sticky;
+  top: 0;
+  z-index: 101;
 }
 
 .fund-header-single-row {
@@ -2763,14 +2764,14 @@ header,
 .fund-tabs-container {
   background: var(--glass-bg, rgba(15, 23, 42, 0.8));
   padding: 0.25rem 0 0.35rem;
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 2.1rem;
+  z-index: 100;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(102, 126, 234, 0.12);
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.5rem;
 }
 
 .fund-tabs-container > .fund-tabs-buttons {
