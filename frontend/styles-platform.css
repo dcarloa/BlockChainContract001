@@ -20363,6 +20363,122 @@ body.light-mode .event-link-item,
   transform: scale(0.92);
 }
 
+/* Share Itinerary Modal */
+.share-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.share-modal-overlay.active {
+  display: flex;
+}
+
+.share-modal {
+  background: var(--bg-primary);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 1.5rem;
+  animation: slideUpShare 0.3s ease;
+}
+
+@keyframes slideUpShare {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.share-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.share-modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.share-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.share-modal-close:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.share-modal-grid {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+}
+
+.share-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  min-width: 64px;
+  transition: transform var(--transition-fast);
+}
+
+.share-option:hover {
+  transform: translateY(-2px);
+}
+
+.share-option:active {
+  transform: scale(0.92);
+}
+
+.share-option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  font-size: 1.5rem;
+}
+
+.share-whatsapp { background: #25D366; }
+.share-twitter { background: #000000; }
+.share-telegram { background: #0088cc; }
+.share-facebook { background: #1877F2; }
+.share-copy { background: var(--bg-tertiary); font-size: 1.4rem; }
+
+.share-option-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
 .view-toggle {
   display: flex;
   background: var(--bg-tertiary);

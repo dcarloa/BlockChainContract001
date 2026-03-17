@@ -994,9 +994,11 @@ const translations = {
                 },
                 share: {
                     button: "Share",
+                    title: "Share Itinerary",
                     success: "Itinerary shared!",
                     copied: "Itinerary copied to clipboard!",
-                    noEvents: "No events to share"
+                    noEvents: "No events to share",
+                    copyLink: "Copy Text"
                 },
                 view: {
                     note: "Note",
@@ -2765,9 +2767,11 @@ const translations = {
                 },
                 share: {
                     button: "Compartir",
+                    title: "Compartir Itinerario",
                     success: "¡Itinerario compartido!",
                     copied: "¡Itinerario copiado al portapapeles!",
-                    noEvents: "No hay eventos para compartir"
+                    noEvents: "No hay eventos para compartir",
+                    copyLink: "Copiar Texto"
                 },
                 view: {
                     note: "Nota",

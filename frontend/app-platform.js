@@ -16438,18 +16438,12 @@ function formatLocalDate(date) {
 }
 
 /**
- * Share itinerary via Web Share API or clipboard fallback
+ * Build share text from itinerary events
  */
-async function shareItinerary() {
-    if (!currentFund || !itineraryEvents || itineraryEvents.length === 0) {
-        showToast(t('app.itinerary.share.noEvents') || 'No events to share', 'warning');
-        return;
-    }
-
+function buildItineraryShareText() {
     const groupName = currentFund.name || currentFund.fundName || 'My Trip';
     const lang = getCurrentLanguage() || 'en';
 
-    // Build event list text (no financial data)
     const eventLines = itineraryEvents.map(event => {
         const icon = event.icon || '📍';
         const date = formatShareDate(event.date, lang);
@@ -16467,38 +16461,80 @@ async function shareItinerary() {
         ? `\nOrganizado con Ant Pool 🐜\nhttps://antpool.cloud`
         : `\nOrganized with Ant Pool 🐜\nhttps://antpool.cloud`;
 
-    const shareText = `${header}\n${eventCount}\n\n${eventLines.join('\n')}${footer}`;
+    return `${header}\n${eventCount}\n\n${eventLines.join('\n')}${footer}`;
+}
 
-    // Try Web Share API first (mobile-native)
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: `${groupName} — Ant Pool`,
-                text: shareText
-            });
-            showToast(t('app.itinerary.share.success') || 'Itinerary shared!', 'success');
-            return;
-        } catch (err) {
-            // User cancelled or API failed — fall through to clipboard
-            if (err.name === 'AbortError') return;
-        }
+/**
+ * Show share modal with social media options
+ */
+function shareItinerary() {
+    if (!currentFund || !itineraryEvents || itineraryEvents.length === 0) {
+        showToast(t('app.itinerary.share.noEvents') || 'No events to share', 'warning');
+        return;
     }
 
-    // Clipboard fallback (desktop)
-    try {
-        await navigator.clipboard.writeText(shareText);
-        showToast(t('app.itinerary.share.copied') || 'Itinerary copied to clipboard!', 'success');
-    } catch (err) {
-        // Last resort: select-and-copy
-        const textarea = document.createElement('textarea');
-        textarea.value = shareText;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showToast(t('app.itinerary.share.copied') || 'Itinerary copied to clipboard!', 'success');
+    const modal = document.getElementById('shareItineraryModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeShareModal() {
+    const modal = document.getElementById('shareItineraryModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+async function shareVia(platform) {
+    const text = buildItineraryShareText();
+    const url = 'https://antpool.cloud';
+    const encoded = encodeURIComponent(text);
+    const encodedUrl = encodeURIComponent(url);
+
+    let shareUrl = '';
+    switch (platform) {
+        case 'whatsapp':
+            shareUrl = `https://wa.me/?text=${encoded}`;
+            break;
+        case 'twitter':
+            // Twitter has 280 char limit, use shorter text
+            const groupName = currentFund.name || currentFund.fundName || 'My Trip';
+            const lang = getCurrentLanguage() || 'en';
+            const shortText = lang === 'es'
+                ? `✈️ ${groupName} — ${itineraryEvents.length} eventos planificados 🗓️\n\nOrganizado con @AntPoolApp 🐜`
+                : `✈️ ${groupName} — ${itineraryEvents.length} events planned 🗓️\n\nOrganized with @AntPoolApp 🐜`;
+            shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shortText)}&url=${encodedUrl}`;
+            break;
+        case 'telegram':
+            shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encoded}`;
+            break;
+        case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encoded}`;
+            break;
+        case 'copy':
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch (err) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+            showToast(t('app.itinerary.share.copied') || 'Itinerary copied to clipboard!', 'success');
+            closeShareModal();
+            return;
+    }
+
+    if (shareUrl) {
+        window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=500');
+        closeShareModal();
     }
 }
 
