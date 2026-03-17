@@ -20337,6 +20337,32 @@ body.light-mode .event-link-item,
   gap: 0.75rem;
 }
 
+.btn-share-itinerary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-share-itinerary:hover {
+  background: rgba(102, 126, 234, 0.15);
+  color: var(--primary-light);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.btn-share-itinerary:active {
+  transform: scale(0.92);
+}
+
 .view-toggle {
   display: flex;
   background: var(--bg-tertiary);

@@ -16438,6 +16438,82 @@ function formatLocalDate(date) {
 }
 
 /**
+ * Share itinerary via Web Share API or clipboard fallback
+ */
+async function shareItinerary() {
+    if (!currentFund || !itineraryEvents || itineraryEvents.length === 0) {
+        showToast(t('app.itinerary.share.noEvents') || 'No events to share', 'warning');
+        return;
+    }
+
+    const groupName = currentFund.name || currentFund.fundName || 'My Trip';
+    const lang = currentLanguage || 'en';
+
+    // Build event list text (no financial data)
+    const eventLines = itineraryEvents.map(event => {
+        const icon = event.icon || '📍';
+        const date = formatShareDate(event.date, lang);
+        const time = event.time ? ` ${formatEventTime(event.time)}` : '';
+        return `${icon} ${event.title} — ${date}${time}`;
+    });
+
+    const header = lang === 'es'
+        ? `✈️ Itinerario: ${groupName}`
+        : `✈️ Itinerary: ${groupName}`;
+    const eventCount = lang === 'es'
+        ? `🗓️ ${itineraryEvents.length} evento${itineraryEvents.length !== 1 ? 's' : ''} planificado${itineraryEvents.length !== 1 ? 's' : ''}`
+        : `🗓️ ${itineraryEvents.length} event${itineraryEvents.length !== 1 ? 's' : ''} planned`;
+    const footer = lang === 'es'
+        ? `\nOrganizado con Ant Pool 🐜\nhttps://antpool.cloud`
+        : `\nOrganized with Ant Pool 🐜\nhttps://antpool.cloud`;
+
+    const shareText = `${header}\n${eventCount}\n\n${eventLines.join('\n')}${footer}`;
+
+    // Try Web Share API first (mobile-native)
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: `${groupName} — Ant Pool`,
+                text: shareText
+            });
+            showToast(t('app.itinerary.share.success') || 'Itinerary shared!', 'success');
+            return;
+        } catch (err) {
+            // User cancelled or API failed — fall through to clipboard
+            if (err.name === 'AbortError') return;
+        }
+    }
+
+    // Clipboard fallback (desktop)
+    try {
+        await navigator.clipboard.writeText(shareText);
+        showToast(t('app.itinerary.share.copied') || 'Itinerary copied to clipboard!', 'success');
+    } catch (err) {
+        // Last resort: select-and-copy
+        const textarea = document.createElement('textarea');
+        textarea.value = shareText;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast(t('app.itinerary.share.copied') || 'Itinerary copied to clipboard!', 'success');
+    }
+}
+
+/**
+ * Format date for share text
+ */
+function formatShareDate(dateStr, lang) {
+    const d = new Date(dateStr + 'T12:00:00');
+    const months_en = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months_es = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const months = lang === 'es' ? months_es : months_en;
+    return `${months[d.getMonth()]} ${d.getDate()}`;
+}
+
+/**
  * Load itinerary events for current group
  */
 let itineraryLinkedExpenses = []; // Store expenses linked to itinerary events

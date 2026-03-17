@@ -992,6 +992,12 @@ const translations = {
                     selectExpense: "Select expense...",
                     noLinkedExpenses: "No linked expenses"
                 },
+                share: {
+                    button: "Share",
+                    success: "Itinerary shared!",
+                    copied: "Itinerary copied to clipboard!",
+                    noEvents: "No events to share"
+                },
                 view: {
                     note: "Note",
                     links: "Useful Links",
@@ -2756,6 +2762,12 @@ const translations = {
                     expensesHint: "Asocia gastos del grupo a este evento",
                     selectExpense: "Seleccionar gasto...",
                     noLinkedExpenses: "Sin gastos vinculados"
+                },
+                share: {
+                    button: "Compartir",
+                    success: "¡Itinerario compartido!",
+                    copied: "¡Itinerario copiado al portapapeles!",
+                    noEvents: "No hay eventos para compartir"
                 },
                 view: {
                     note: "Nota",
