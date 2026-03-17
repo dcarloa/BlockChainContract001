@@ -2875,6 +2875,12 @@ async function hideFund(fundAddress, fundName) {
             
             showToast(t.app?.fundDetail?.manage?.groupDeleted || "Group deleted successfully", "success");
             
+            // Navigate back to groups list
+            await loadUserFunds();
+            hideLoading();
+            navigateBottomNav('groups');
+            return;
+            
         } else {
             // Blockchain mode - just hide locally
             const confirmed = confirm(
@@ -3092,14 +3098,10 @@ async function createSimpleFund(fundInfo) {
         // Track group creation
         window.dispatchEvent(new CustomEvent('groupCreated', { detail: { type: 'simple', groupId: groupId } }));
         
-        // Reload funds list
+        // Reload funds list and navigate to groups
         await loadUserFunds();
-        
-        // Show dashboard
-        document.getElementById('dashboardSection').classList.add('active');
-        document.getElementById('fundDetailSection').classList.remove('active');
-        
         hideLoading();
+        navigateBottomNav('groups');
         
     } catch (error) {
         hideLoading();
@@ -3161,12 +3163,10 @@ async function createBlockchainFund(fundInfo) {
         // Reload funds
         showLoading(t('app.loading.loadingNewFund'));
         await loadUserFunds();
-        
-        // Show dashboard
-        document.getElementById('dashboardSection').classList.add('active');
-        document.getElementById('fundDetailSection').classList.remove('active');
-        
         hideLoading();
+        
+        // Navigate to groups section
+        navigateBottomNav('groups');
         
     } catch (error) {
         hideLoading();
@@ -7080,10 +7080,9 @@ async function leaveGroup() {
 
         showToast(`You have left "${groupName}"`, 'success');
         
-        // Return to groups list
-        setTimeout(() => {
-            window.location.reload();
-        }, 1500);
+        // Reload groups and navigate back
+        await loadUserFunds();
+        navigateBottomNav('groups');
 
     } catch (error) {
         console.error('Error leaving group:', error);
