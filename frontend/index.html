@@ -200,12 +200,12 @@
                         <a href="app.html" class="btn btn-large btn-primary" onclick="trackCTA('hero', 'try_now')">
                             <span data-i18n="landing.hero.cta">Try It in 30 Seconds →</span>
                         </a>
-                        <a href="#how-it-works" class="btn btn-large btn-secondary" style="background: var(--glass-bg); border: 2px solid var(--primary); color: var(--primary); font-weight: 600;">
+                        <a href="#how-it-works" class="btn btn-large btn-secondary" style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); color: white; font-weight: 600; backdrop-filter: blur(8px);">
                             <span data-i18n="landing.hero.ctaSecondary">See How It Works</span>
                         </a>
                     </div>
                     <p class="hero-micro-text" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);" data-i18n="landing.hero.ctaMicro">Free forever · No credit card · 30 seconds</p>
-                    <p class="hero-beta-badge" style="margin-top: 0.75rem; font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+                    <p class="hero-beta-badge" style="margin-top: 0.5rem; margin-bottom: 2rem; font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
                         <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;" data-i18n="landing.hero.betaBadge">Free · No card · Beta</span>
                     </p>
                 </div>
@@ -318,7 +318,7 @@
                 </div>
             </div>
             <div style="text-align: center; margin-top: 2.5rem;">
-                <a href="app.html" class="btn btn-large" onclick="trackCTA('how_it_works', 'try_now')" style="background: white; color: #667eea; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <a href="app.html" class="btn btn-large" onclick="trackCTA('how_it_works', 'try_now')" style="background: white; color: #1e1b4b; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-decoration: none; display: inline-block;">
                     <span data-i18n="landing.howItWorksNew.cta">Try It in 30 Seconds →</span>
                 </a>
             </div>
@@ -390,7 +390,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 3rem;">
-                <a href="app.html" class="btn btn-large" onclick="trackCTA('personal_finance', 'start_personal')" style="background: white; color: #4f46e5; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                <a href="app.html" class="btn btn-large" onclick="trackCTA('personal_finance', 'start_personal')" style="background: white; color: #1e1b4b; font-weight: 700; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-decoration: none; display: inline-block;">
                     <span data-i18n="landing.personal.cta">Start Your Personal Colony →</span>
                 </a>
                 <p style="margin-top: 0.75rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);" data-i18n="landing.personal.ctaSub">Automatically created when you sign up</p>
@@ -613,6 +613,47 @@
         
         /* Small mobile (600px) */
         @media (max-width: 600px) {
+            /* Hero mobile refinements */
+            .hero {
+                padding: 2rem 0 !important;
+            }
+            
+            .hero-beta-badge {
+                justify-content: center;
+            }
+            
+            .hero-micro-text {
+                text-align: center;
+                font-size: 0.8rem !important;
+            }
+            
+            /* Personal Colony section mobile */
+            #personal-finance {
+                padding: 2.5rem 0 !important;
+            }
+            
+            #personal-finance .section-header h2 {
+                font-size: 1.75rem !important;
+            }
+            
+            #personal-finance .section-header .section-subtitle {
+                font-size: 1rem !important;
+            }
+            
+            #personal-finance > div > div:nth-child(2) > div {
+                padding: 1.5rem 1.25rem !important;
+            }
+            
+            /* CTA buttons on mobile */
+            #how-it-works > div > div:last-child a,
+            #personal-finance > div > div:last-child a {
+                width: 100% !important;
+                text-align: center !important;
+                padding: 0.875rem 1.5rem !important;
+                font-size: 1rem !important;
+                box-sizing: border-box;
+            }
+            
             /* Tutorial section small mobile */
             #tutorials .section-header {
                 margin-bottom: 2rem !important;
@@ -665,6 +706,20 @@
                 font-size: 2.5rem !important;
             }
             
+            /* Use Cases mobile */
+            .use-cases-grid {
+                gap: 1rem !important;
+            }
+            
+            .use-case-card {
+                padding: 1.5rem 1.25rem !important;
+            }
+            
+            /* Features simple mobile */
+            .features-simple div[style*="grid-template-columns"] > div {
+                padding: 1.5rem 1.25rem !important;
+            }
+            
             /* General section titles */
             .section-title {
                 font-size: 1.5rem !important;
@@ -679,10 +734,23 @@
                 width: 100% !important;
                 justify-content: center !important;
             }
+            
+            /* Final CTA mobile */
+            .cta {
+                padding: 3rem 0 !important;
+            }
+            
+            .cta .section-title {
+                font-size: 1.4rem !important;
+            }
         }
         
         /* Extra small mobile (380px) */
         @media (max-width: 380px) {
+            .hero-title {
+                font-size: 1.6rem !important;
+            }
+            
             #tutorials .tutorial-tabs {
                 flex-direction: column !important;
             }
