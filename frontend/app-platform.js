@@ -2977,7 +2977,8 @@ async function createFund(event) {
     
     try {
         const fundName = document.getElementById('fundName').value.trim();
-        const description = document.getElementById('fundDescription').value.trim() || (currentLang === 'es' ? 'Sin descripción' : 'No description');
+        const lang = getCurrentLanguage();
+        const description = document.getElementById('fundDescription').value.trim() || (lang === 'es' ? 'Sin descripción' : 'No description');
         const isPrivate = document.getElementById('isPrivate').value === 'true'; // Hidden field with default true
         const approvalPercentage = document.getElementById('approvalPercentage').value;
         const minimumVotes = document.getElementById('minimumVotes').value;
