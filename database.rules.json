@@ -146,6 +146,7 @@
     
     "weeklyChests": {
       "$groupId": {
+        ".write": "auth != null && !newData.exists() && root.child('groups').child($groupId).child('createdBy').val() === auth.uid",
         "$weekId": {
           ".read": "auth != null && root.child('groups').child($groupId).child('members').child(auth.uid).exists()",
           ".write": "auth != null",
