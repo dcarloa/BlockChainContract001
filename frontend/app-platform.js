@@ -17049,6 +17049,16 @@ async function loadItinerary() {
  * Render the itinerary timeline
  */
 function renderItinerary() {
+    // Also refresh calendar view if it's active
+    const calendarView = document.getElementById('itineraryCalendarView');
+    if (calendarView?.classList.contains('active')) {
+        renderCalendarView();
+        // Re-render selected day events if a day is selected
+        if (window.selectedCalendarDate) {
+            selectCalendarDay(window.selectedCalendarDate);
+        }
+    }
+
     const timeline = document.getElementById('itineraryTimeline');
     const emptyState = document.getElementById('itineraryEmpty');
     
