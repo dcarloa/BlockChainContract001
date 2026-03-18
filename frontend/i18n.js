@@ -7,6 +7,7 @@ const translations = {
         nav: {
             features: "Features",
             howItWorks: "How It Works",
+            tryIt: "Try It",
             demos: "Demos",
             benefits: "Benefits",
             personal: "Personal",
@@ -1839,6 +1840,7 @@ const translations = {
         nav: {
             features: "Características",
             howItWorks: "Cómo Funciona",
+            tryIt: "Pruébalo",
             demos: "Demos",
             benefits: "Beneficios",
             personal: "Personal",
