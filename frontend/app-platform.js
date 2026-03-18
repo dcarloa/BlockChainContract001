@@ -5736,7 +5736,8 @@ function renderExpenseItem(expense, currentUserId, groupData) {
     
     // Check if current user created/paid this expense
     const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
-    const isCreator = paidByArray.includes(currentUserId);
+    const isCreator = paidByArray.includes(currentUserId)
+        || paidByArray.some(uid => isGhostMember(uid) && (!groupData.members?.[uid] || groupData.members[uid].addedBy === currentUserId));
     
     // Format paidBy display
     let paidByDisplay = expense.paidByName || '';
@@ -8253,9 +8254,11 @@ async function deleteExpense(expenseId) {
             return;
         }
 
-        // Check if user is one of the payers
+        // Check if user is one of the payers (or managed a ghost who paid)
         const paidByArray = Array.isArray(expense.paidBy) ? expense.paidBy : [expense.paidBy];
-        if (!paidByArray.includes(user.uid)) {
+        const canDelete = paidByArray.includes(user.uid)
+            || paidByArray.some(uid => isGhostMember(uid) && (!currentFund.members?.[uid] || currentFund.members[uid].addedBy === user.uid));
+        if (!canDelete) {
             showToast('Only those who paid can delete this expense', 'error');
             return;
         }
