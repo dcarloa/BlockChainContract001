@@ -16597,11 +16597,11 @@ async function buildBalancesShareText() {
     let lines = [];
     if (owed.length > 0) {
         lines.push(lang === 'es' ? '\n🟢 Les deben:' : '\n🟢 Are owed:');
-        owed.forEach(m => lines.push(`  ${m.memberName}: +${symbol}${m.isOwed.toFixed(2)}`));
+        owed.forEach(m => lines.push(`  ${m.memberName}: +${symbol}${m.isOwed.toFixed(2)} ${currency}`));
     }
     if (owes.length > 0) {
         lines.push(lang === 'es' ? '\n🔴 Deben:' : '\n🔴 Owe:');
-        owes.forEach(m => lines.push(`  ${m.memberName}: -${symbol}${m.owes.toFixed(2)}`));
+        owes.forEach(m => lines.push(`  ${m.memberName}: -${symbol}${m.owes.toFixed(2)} ${currency}`));
     }
 
     const footer = lang === 'es'
@@ -16641,7 +16641,7 @@ async function buildSettlementsShareText() {
     const lines = settlements.map(s => {
         const fromName = currentFund.members[s.from]?.name || 'Unknown';
         const toName = currentFund.members[s.to]?.name || 'Unknown';
-        return `  ${fromName} → ${toName}: ${symbol}${s.amount.toFixed(2)}`;
+        return `  ${fromName} → ${toName}: ${symbol}${s.amount.toFixed(2)} ${currency}`;
     });
 
     const footer = lang === 'es'
