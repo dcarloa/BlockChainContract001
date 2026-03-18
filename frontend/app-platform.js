@@ -7002,6 +7002,18 @@ function editGhostName(ghostId) {
     showEditNicknameModal(ghostId, currentName);
 }
 
+function dismissGhostTip() {
+    localStorage.setItem('ghost_tip_dismissed', '1');
+    const tip = document.getElementById('ghostOnboardingTip');
+    if (tip) {
+        tip.style.transition = 'opacity 0.3s, max-height 0.3s';
+        tip.style.opacity = '0';
+        tip.style.maxHeight = '0';
+        tip.style.overflow = 'hidden';
+        setTimeout(() => tip.remove(), 300);
+    }
+}
+
 /**
  * Load Simple Mode members list
  */
@@ -7134,7 +7146,21 @@ function loadSimpleModeMembers() {
     // Add "Add offline member" button if user is admin or member
     const addGhostBtn = document.createElement('div');
     addGhostBtn.className = 'add-ghost-member-section';
+
+    // Show one-time tip if not dismissed
+    const tipDismissed = localStorage.getItem('ghost_tip_dismissed');
+    const tipHtml = tipDismissed ? '' : `
+        <div class="ghost-onboarding-tip" id="ghostOnboardingTip">
+            <div class="ghost-tip-content">
+                <span class="ghost-tip-icon">💡</span>
+                <p class="ghost-tip-text">${t('app.ghostMembers.onboardingTip') || 'Someone in your group doesn\'t have an account? Add them as an offline member so they\'re included in expenses and balances.'}</p>
+            </div>
+            <button class="ghost-tip-dismiss" onclick="dismissGhostTip()">${t('app.ghostMembers.gotIt') || 'Got it'}</button>
+        </div>
+    `;
+
     addGhostBtn.innerHTML = `
+        ${tipHtml}
         <button class="btn-add-ghost" onclick="showAddGhostModal()">
             <span class="btn-add-ghost-icon">👻</span>
             <div class="btn-add-ghost-content">

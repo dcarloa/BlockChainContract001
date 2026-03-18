@@ -921,7 +921,9 @@ const translations = {
                 errorRemoving: "Error removing member",
                 cannotRemoveOwed: "Cannot remove \"{name}\". They are owed {amount}. Settle all debts first.",
                 cannotRemoveOwes: "Cannot remove \"{name}\". They owe {amount}. Settle all debts first.",
-                deletedMember: "Deleted member"
+                deletedMember: "Deleted member",
+                onboardingTip: "Someone in your group doesn't have an account? Add them as an offline member so they're included in expenses and balances.",
+                gotIt: "Got it"
             },
             // Colony Life - Phase 4
             colonyLife: {
@@ -2737,7 +2739,9 @@ const translations = {
                 errorRemoving: "Error al eliminar miembro",
                 cannotRemoveOwed: "No se puede eliminar a \"{name}\". Se le deben {amount}. Salda todas las deudas primero.",
                 cannotRemoveOwes: "No se puede eliminar a \"{name}\". Debe {amount}. Salda todas las deudas primero.",
-                deletedMember: "Miembro eliminado"
+                deletedMember: "Miembro eliminado",
+                onboardingTip: "¿Alguien de tu grupo no tiene cuenta? Agrégalo como miembro offline para que se incluya en gastos y balances.",
+                gotIt: "Entendido"
             },
             // Colony Life - Phase 4
             colonyLife: {
