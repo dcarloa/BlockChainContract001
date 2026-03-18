@@ -4436,8 +4436,51 @@ header,
 .balances-header-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
+}
+
+.btn-share-balances {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 2rem;
+  border: 1px solid rgba(102, 126, 234, 0.25);
+  background: rgba(102, 126, 234, 0.08);
+  color: var(--primary-light, #818cf8);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.btn-share-balances .btn-share-icon {
+  font-size: 0.9rem;
+}
+
+.btn-share-balances:hover {
+  background: rgba(102, 126, 234, 0.18);
+  border-color: rgba(102, 126, 234, 0.4);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.btn-share-balances:active {
+  transform: scale(0.95);
+}
+
+[data-theme="light"] .btn-share-balances {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.2);
+  color: #6366f1;
+}
+
+[data-theme="light"] .btn-share-balances:hover {
+  background: rgba(99, 102, 241, 0.14);
+  border-color: rgba(99, 102, 241, 0.35);
 }
 
 .balances-header-simple h3 {
@@ -5039,6 +5082,11 @@ header,
   
   .balances-header-simple .tab-description {
     font-size: 0.875rem;
+  }
+  
+  .btn-share-balances {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
   }
   
   .timeline-filter-section,
