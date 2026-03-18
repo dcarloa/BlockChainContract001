@@ -16516,6 +16516,9 @@ function buildItineraryShareText() {
     return `${header}\n${eventCount}\n\n${eventLines.join('\n')}${footer}`;
 }
 
+// Current share text builder (set before opening the share modal)
+let pendingShareText = '';
+
 /**
  * Show share modal with social media options
  */
@@ -16524,16 +16527,141 @@ function shareItinerary() {
         showToast(t('app.itinerary.share.noEvents') || 'No events to share', 'warning');
         return;
     }
+    pendingShareText = buildItineraryShareText();
+    openShareModal(t('app.itinerary.share.title') || 'Share Itinerary');
+}
 
-    const modal = document.getElementById('shareItineraryModal');
-    if (modal) {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+/**
+ * Share group balances summary
+ */
+async function shareBalances() {
+    if (!currentFund) return;
+    const text = await buildBalancesShareText();
+    if (!text) {
+        showToast(t('app.shareBalances.noData') || 'No balance data to share', 'warning');
+        return;
     }
+    pendingShareText = text;
+    openShareModal(t('app.shareBalances.title') || 'Share Balances');
+}
+
+/**
+ * Share smart settlements summary
+ */
+async function shareSettlements() {
+    if (!currentFund) return;
+    const text = await buildSettlementsShareText();
+    if (!text) {
+        showToast(t('app.shareSettlements.noData') || 'No settlements to share', 'warning');
+        return;
+    }
+    pendingShareText = text;
+    openShareModal(t('app.shareSettlements.title') || 'Share Smart Settlements');
+}
+
+/**
+ * Build share text for group balances
+ */
+async function buildBalancesShareText() {
+    const groupName = currentFund.name || currentFund.fundName || 'My Group';
+    const lang = getCurrentLanguage() || 'en';
+    const currency = currentFund.settings?.currency || 'USD';
+    const symbol = getCurrencySymbol(currency);
+
+    window.modeManager.currentGroupId = currentFund.fundId;
+    window.modeManager.groupData = currentFund;
+    const memberBalances = await window.modeManager.calculateSimpleBalances();
+    if (!memberBalances || memberBalances.length === 0) return null;
+
+    // Calculate total expenses
+    const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
+    let totalExpenses = 0;
+    if (groupData?.expenses) {
+        for (const exp of Object.values(groupData.expenses)) {
+            totalExpenses += Math.abs(exp.amount || 0);
+        }
+    }
+    const memberCount = Object.keys(currentFund.members || {}).length;
+
+    const header = lang === 'es'
+        ? `⚖️ Balances: ${groupName}`
+        : `⚖️ Balances: ${groupName}`;
+
+    const statsLine = lang === 'es'
+        ? `💸 Total gastado: ${symbol}${totalExpenses.toFixed(2)} ${currency} · 👥 ${memberCount} miembros`
+        : `💸 Total spent: ${symbol}${totalExpenses.toFixed(2)} ${currency} · 👥 ${memberCount} members`;
+
+    const owed = memberBalances.filter(m => m.balance > 0.01);
+    const owes = memberBalances.filter(m => m.balance < -0.01);
+
+    let lines = [];
+    if (owed.length > 0) {
+        lines.push(lang === 'es' ? '\n🟢 Les deben:' : '\n🟢 Are owed:');
+        owed.forEach(m => lines.push(`  ${m.memberName}: +${symbol}${m.isOwed.toFixed(2)}`));
+    }
+    if (owes.length > 0) {
+        lines.push(lang === 'es' ? '\n🔴 Deben:' : '\n🔴 Owe:');
+        owes.forEach(m => lines.push(`  ${m.memberName}: -${symbol}${m.owes.toFixed(2)}`));
+    }
+
+    const footer = lang === 'es'
+        ? `\n---\nOrganizado con Ant Pool\nhttps://antpool.cloud`
+        : `\n---\nOrganized with Ant Pool\nhttps://antpool.cloud`;
+
+    return `${header}\n${statsLine}\n${lines.join('\n')}${footer}`;
+}
+
+/**
+ * Build share text for smart settlements
+ */
+async function buildSettlementsShareText() {
+    const groupName = currentFund.name || currentFund.fundName || 'My Group';
+    const lang = getCurrentLanguage() || 'en';
+    const currency = currentFund.settings?.currency || 'USD';
+    const symbol = getCurrencySymbol(currency);
+
+    window.modeManager.currentGroupId = currentFund.fundId;
+    window.modeManager.groupData = currentFund;
+    const memberBalances = await window.modeManager.calculateSimpleBalances();
+    if (!memberBalances || memberBalances.length === 0) return null;
+
+    const settlements = simplifyDebts(memberBalances);
+    if (settlements.length === 0) return null;
+
+    const totalAmount = settlements.reduce((sum, s) => sum + s.amount, 0);
+
+    const header = lang === 'es'
+        ? `🎯 Liquidaciones: ${groupName}`
+        : `🎯 Settlements: ${groupName}`;
+
+    const statsLine = lang === 'es'
+        ? `${settlements.length} pago${settlements.length !== 1 ? 's' : ''} necesario${settlements.length !== 1 ? 's' : ''} · Total: ${symbol}${totalAmount.toFixed(2)} ${currency}`
+        : `${settlements.length} payment${settlements.length !== 1 ? 's' : ''} needed · Total: ${symbol}${totalAmount.toFixed(2)} ${currency}`;
+
+    const lines = settlements.map(s => {
+        const fromName = currentFund.members[s.from]?.name || 'Unknown';
+        const toName = currentFund.members[s.to]?.name || 'Unknown';
+        return `  ${fromName} → ${toName}: ${symbol}${s.amount.toFixed(2)}`;
+    });
+
+    const footer = lang === 'es'
+        ? `\n---\nOrganizado con Ant Pool\nhttps://antpool.cloud`
+        : `\n---\nOrganized with Ant Pool\nhttps://antpool.cloud`;
+
+    return `${header}\n${statsLine}\n\n${lines.join('\n')}${footer}`;
+}
+
+function openShareModal(title) {
+    const modal = document.getElementById('shareModal');
+    if (!modal) return;
+    const titleEl = modal.querySelector('.share-modal-header h3');
+    if (titleEl) titleEl.textContent = title;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeShareModal() {
-    const modal = document.getElementById('shareItineraryModal');
+    const modal = document.getElementById('shareModal');
     if (modal) {
         modal.classList.remove('active');
         document.body.style.overflow = '';
@@ -16541,7 +16669,7 @@ function closeShareModal() {
 }
 
 async function shareVia(platform) {
-    const text = buildItineraryShareText();
+    const text = pendingShareText;
     const url = 'https://antpool.cloud';
     const encoded = encodeURIComponent(text);
     const encodedUrl = encodeURIComponent(url);
@@ -16552,11 +16680,12 @@ async function shareVia(platform) {
             shareUrl = `https://wa.me/?text=${encoded}`;
             break;
         case 'twitter': {
-            const groupName = currentFund.name || currentFund.fundName || 'My Trip';
+            const groupName = currentFund.name || currentFund.fundName || 'My Group';
             const lang = getCurrentLanguage() || 'en';
-            const shortText = lang === 'es'
-                ? `${groupName} - ${itineraryEvents.length} eventos planificados\n\nOrganizado con @AntPoolApp`
-                : `${groupName} - ${itineraryEvents.length} events planned\n\nOrganized with @AntPoolApp`;
+            // Use a short version for Twitter (280 char limit)
+            const shortText = text.length > 250
+                ? text.substring(0, 247) + '...'
+                : text;
             shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shortText)}&url=${encodedUrl}`;
             break;
         }
@@ -16567,7 +16696,7 @@ async function shareVia(platform) {
             shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encoded}`;
             break;
         case 'email': {
-            const gName = currentFund.name || currentFund.fundName || 'My Trip';
+            const gName = currentFund.name || currentFund.fundName || 'My Group';
             const subject = encodeURIComponent(gName + ' - Ant Pool');
             shareUrl = `mailto:?subject=${subject}&body=${encoded}`;
             break;
@@ -16585,7 +16714,7 @@ async function shareVia(platform) {
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
             }
-            showToast(t('app.itinerary.share.copied') || 'Itinerary copied to clipboard!', 'success');
+            showToast(t('app.share.copied') || 'Copied to clipboard!', 'success');
             closeShareModal();
             return;
     }

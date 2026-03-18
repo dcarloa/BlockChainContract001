@@ -4433,6 +4433,13 @@ header,
   border-bottom: 2px solid var(--glass-border);
 }
 
+.balances-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
 .balances-header-simple h3 {
   font-size: 1.75rem;
   font-weight: 700;

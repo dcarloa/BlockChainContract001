@@ -889,6 +889,19 @@ const translations = {
                 shareMessage: "Settlement: {from} pays {to} {amount}",
                 copied: "Copied to clipboard!"
             },
+            share: {
+                copied: "Copied to clipboard!"
+            },
+            shareBalances: {
+                button: "Share",
+                title: "Share Balances",
+                noData: "No balance data to share"
+            },
+            shareSettlements: {
+                button: "Share",
+                title: "Share Smart Settlements",
+                noData: "No settlements to share"
+            },
             // Colony Life - Phase 4
             colonyLife: {
                 title: "Colony Life Features",
@@ -2670,6 +2683,19 @@ const translations = {
                 shareTitle: "Liquidación",
                 shareMessage: "Liquidación: {from} paga a {to} {amount}",
                 copied: "¡Copiado al portapapeles!"
+            },
+            share: {
+                copied: "¡Copiado al portapapeles!"
+            },
+            shareBalances: {
+                button: "Compartir",
+                title: "Compartir Balances",
+                noData: "No hay datos de balance para compartir"
+            },
+            shareSettlements: {
+                button: "Compartir",
+                title: "Compartir Liquidaciones",
+                noData: "No hay liquidaciones para compartir"
             },
             // Colony Life - Phase 4
             colonyLife: {
