@@ -918,7 +918,10 @@ const translations = {
                 errorNoName: "Please enter a name",
                 errorNameTooLong: "Name must be 30 characters or less",
                 errorAdding: "Error adding member",
-                errorRemoving: "Error removing member"
+                errorRemoving: "Error removing member",
+                cannotRemoveOwed: "Cannot remove \"{name}\". They are owed {amount}. Settle all debts first.",
+                cannotRemoveOwes: "Cannot remove \"{name}\". They owe {amount}. Settle all debts first.",
+                deletedMember: "Deleted member"
             },
             // Colony Life - Phase 4
             colonyLife: {
@@ -2731,7 +2734,10 @@ const translations = {
                 errorNoName: "Por favor ingresa un nombre",
                 errorNameTooLong: "El nombre debe tener 30 caracteres o menos",
                 errorAdding: "Error al agregar miembro",
-                errorRemoving: "Error al eliminar miembro"
+                errorRemoving: "Error al eliminar miembro",
+                cannotRemoveOwed: "No se puede eliminar a \"{name}\". Se le deben {amount}. Salda todas las deudas primero.",
+                cannotRemoveOwes: "No se puede eliminar a \"{name}\". Debe {amount}. Salda todas las deudas primero.",
+                deletedMember: "Miembro eliminado"
             },
             // Colony Life - Phase 4
             colonyLife: {

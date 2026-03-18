@@ -4488,6 +4488,7 @@ function getMemberDisplayName(memberId, groupData) {
     if (member) {
         return member.name || member.email?.split('@')[0] || 'Member';
     }
+    if (isGhostMember(memberId)) return t('app.ghostMembers.deletedMember') || 'Deleted member';
     return 'Unknown';
 }
 
@@ -5742,7 +5743,9 @@ function renderExpenseItem(expense, currentUserId, groupData) {
     if (!paidByDisplay && paidByArray.length > 0) {
         const names = paidByArray.map(uid => {
             const member = groupData.members?.[uid];
-            return member?.name || member?.email || uid;
+            if (member) return member.name || member.email || uid;
+            if (isGhostMember(uid)) return t('app.ghostMembers.deletedMember') || 'Deleted member';
+            return uid;
         });
         paidByDisplay = names.join(' & ');
     }
@@ -6946,10 +6949,32 @@ async function removeGhostMember(ghostId) {
 
     const member = currentFund.members?.[ghostId];
     const memberName = member?.name || 'Member';
+
+    // Check if ghost has a non-zero balance before allowing deletion
+    try {
+        window.modeManager.currentGroupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
+        window.modeManager.groupData = currentFund;
+        const memberBalances = await window.modeManager.calculateSimpleBalances();
+        const ghostBalance = memberBalances.find(m => m.memberId === ghostId);
+        if (ghostBalance && Math.abs(ghostBalance.balance) > 0.01) {
+            const currency = currentFund.currency || 'USD';
+            const balanceStr = `$${Math.abs(ghostBalance.balance).toFixed(2)} ${currency}`;
+            const msg = ghostBalance.balance > 0
+                ? (t('app.ghostMembers.cannotRemoveOwed') || `Cannot remove "${memberName}". They are owed ${balanceStr}. Settle all debts first.`)
+                    .replace('{name}', memberName).replace('{amount}', balanceStr)
+                : (t('app.ghostMembers.cannotRemoveOwes') || `Cannot remove "${memberName}". They owe ${balanceStr}. Settle all debts first.`)
+                    .replace('{name}', memberName).replace('{amount}', balanceStr);
+            showToast(msg, 'warning');
+            return;
+        }
+    } catch (err) {
+        console.error('Error checking ghost balance:', err);
+    }
+
     const lang = getCurrentLanguage() || 'en';
     const confirmMsg = lang === 'es'
-        ? `¿Eliminar a "${memberName}" del grupo? Sus gastos ya registrados se mantendrán.`
-        : `Remove "${memberName}" from the group? Already recorded expenses will be preserved.`;
+        ? `¿Eliminar a "${memberName}" del grupo?`
+        : `Remove "${memberName}" from the group?`;
 
     if (!confirm(confirmMsg)) return;
 
