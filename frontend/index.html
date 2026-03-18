@@ -999,6 +999,364 @@
         }
     </style>
 
+    <!-- Interactive Demo Section -->
+    <section id="interactive-demo" style="padding: 5rem 0; background: var(--bg-primary); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 30% 50%, rgba(102, 126, 234, 0.08) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(118, 75, 162, 0.06) 0%, transparent 60%); pointer-events: none;"></div>
+        <div class="container" style="max-width: 900px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1;">
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <h2 class="section-title" style="font-size: 2rem; margin-bottom: 0.75rem;" data-i18n="landing.demo.title">Try It Right Now</h2>
+                <p style="color: var(--text-secondary); font-size: 1.1rem;" data-i18n="landing.demo.subtitle">Add expenses, see who owes whom — instantly. No sign-up needed.</p>
+            </div>
+
+            <!-- Demo App Container -->
+            <div id="demoApp" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 0; overflow: hidden; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+
+                <!-- Demo Header -->
+                <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 1.5rem;">🏖️</span>
+                        <div>
+                            <div style="font-weight: 700; color: white; font-size: 1.1rem;" data-i18n="landing.demo.groupName">Beach Trip</div>
+                            <div style="color: rgba(255,255,255,0.8); font-size: 0.8rem;"><span id="demoMemberCount">3</span> <span data-i18n="landing.demo.members">members</span></div>
+                        </div>
+                    </div>
+                    <button onclick="demoResetAll()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'" data-i18n="landing.demo.reset">🔄 Reset</button>
+                </div>
+
+                <!-- Demo Tabs -->
+                <div style="display: flex; border-bottom: 1px solid var(--glass-border); background: var(--bg-secondary);">
+                    <button class="demo-tab active" onclick="demoSwitchTab('expenses')" id="demoTabExpenses" style="flex: 1; padding: 0.75rem; border: none; background: none; color: var(--text-primary); cursor: pointer; font-weight: 600; font-size: 0.85rem; border-bottom: 2px solid #667eea; transition: all 0.2s;">💰 <span data-i18n="landing.demo.tabExpenses">Expenses</span></button>
+                    <button class="demo-tab" onclick="demoSwitchTab('balances')" id="demoTabBalances" style="flex: 1; padding: 0.75rem; border: none; background: none; color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 0.85rem; border-bottom: 2px solid transparent; transition: all 0.2s;">📊 <span data-i18n="landing.demo.tabBalances">Balances</span></button>
+                    <button class="demo-tab" onclick="demoSwitchTab('settle')" id="demoTabSettle" style="flex: 1; padding: 0.75rem; border: none; background: none; color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 0.85rem; border-bottom: 2px solid transparent; transition: all 0.2s;">🤝 <span data-i18n="landing.demo.tabSettle">Settle Up</span></button>
+                </div>
+
+                <!-- Demo Content -->
+                <div style="padding: 1.25rem;">
+                    <!-- Expenses Tab -->
+                    <div id="demoExpensesTab">
+                        <!-- Add Expense Form -->
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                            <input type="text" id="demoExpDesc" placeholder="Dinner, Taxi, Snacks..." maxlength="40" style="flex: 2; min-width: 120px; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--bg-primary); color: var(--text-primary); font-size: 0.9rem;">
+                            <input type="number" id="demoExpAmount" placeholder="$" min="0.01" max="9999" step="0.01" style="flex: 1; min-width: 70px; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--bg-primary); color: var(--text-primary); font-size: 0.9rem;">
+                            <select id="demoExpPayer" style="flex: 1; min-width: 90px; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--bg-primary); color: var(--text-primary); font-size: 0.9rem;"></select>
+                            <button onclick="demoAddExpense()" style="padding: 0.6rem 1rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 600; cursor: pointer; font-size: 0.9rem; white-space: nowrap; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='scale(1.03)';this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">+ <span data-i18n="landing.demo.addBtn">Add</span></button>
+                        </div>
+                        <!-- Quick Add Buttons -->
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                            <button onclick="demoQuickAdd('🍕 Pizza', 45)" class="demo-quick-btn" style="padding: 0.4rem 0.7rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; transition: all 0.15s;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='var(--glass-border)'">🍕 Pizza $45</button>
+                            <button onclick="demoQuickAdd('🚕 Taxi', 28)" class="demo-quick-btn" style="padding: 0.4rem 0.7rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; transition: all 0.15s;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='var(--glass-border)'">🚕 Taxi $28</button>
+                            <button onclick="demoQuickAdd('🏨 Hotel', 180)" class="demo-quick-btn" style="padding: 0.4rem 0.7rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; transition: all 0.15s;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='var(--glass-border)'">🏨 Hotel $180</button>
+                            <button onclick="demoQuickAdd('🍹 Drinks', 36)" class="demo-quick-btn" style="padding: 0.4rem 0.7rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; transition: all 0.15s;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='var(--glass-border)'">🍹 Drinks $36</button>
+                            <button onclick="demoQuickAdd('⛽ Gas', 55)" class="demo-quick-btn" style="padding: 0.4rem 0.7rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; transition: all 0.15s;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='var(--glass-border)'">⛽ Gas $55</button>
+                        </div>
+                        <!-- Expense List -->
+                        <div id="demoExpenseList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 260px; overflow-y: auto;"></div>
+                        <div id="demoExpenseEmpty" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🐜</div>
+                            <p style="margin: 0;" data-i18n="landing.demo.emptyExpenses">Add an expense to get started!</p>
+                        </div>
+                    </div>
+
+                    <!-- Balances Tab -->
+                    <div id="demoBalancesTab" style="display: none;">
+                        <div id="demoBalancesList"></div>
+                        <div id="demoBalancesEmpty" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📊</div>
+                            <p style="margin: 0;" data-i18n="landing.demo.emptyBalances">Add expenses to see balances</p>
+                        </div>
+                    </div>
+
+                    <!-- Settle Tab -->
+                    <div id="demoSettleTab" style="display: none;">
+                        <div id="demoSettleList"></div>
+                        <div id="demoSettleEmpty" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
+                            <p style="margin: 0;" data-i18n="landing.demo.emptySettle">Add expenses, then see the optimal settlements</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Footer CTA -->
+                <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--glass-border); background: var(--bg-secondary); text-align: center;">
+                    <a href="app.html" onclick="trackCTA('interactive_demo', 'start_free')" style="display: inline-block; padding: 0.7rem 2rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'" data-i18n="landing.demo.cta">✨ Create Your Own Group — Free</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    // ======== Interactive Demo Logic ========
+    (function() {
+        const DEMO_MEMBERS = [
+            { id: 'you', name: 'You', emoji: '👤' },
+            { id: 'alex', name: 'Alex', emoji: '🧑' },
+            { id: 'sam', name: 'Sam', emoji: '👩' }
+        ];
+        let demoExpenses = [];
+        let demoNextId = 1;
+
+        function escHtml(t) {
+            if (!t) return '';
+            return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+        }
+
+        function init() {
+            const sel = document.getElementById('demoExpPayer');
+            if (!sel) return;
+            sel.innerHTML = DEMO_MEMBERS.map(m => 
+                `<option value="${m.id}">${m.emoji} ${m.name}</option>`
+            ).join('');
+            render();
+        }
+
+        function render() {
+            renderExpenses();
+            renderBalances();
+            renderSettlements();
+        }
+
+        function renderExpenses() {
+            const list = document.getElementById('demoExpenseList');
+            const empty = document.getElementById('demoExpenseEmpty');
+            if (!list) return;
+            if (demoExpenses.length === 0) {
+                list.innerHTML = '';
+                if (empty) empty.style.display = 'block';
+                return;
+            }
+            if (empty) empty.style.display = 'none';
+            list.innerHTML = demoExpenses.map(exp => {
+                const payer = DEMO_MEMBERS.find(m => m.id === exp.payer);
+                const share = (exp.amount / DEMO_MEMBERS.length).toFixed(2);
+                return `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.8rem; background: var(--bg-primary); border-radius: 10px; border: 1px solid var(--glass-border); animation: demoSlideIn 0.25s ease-out;">
+                        <div style="display: flex; align-items: center; gap: 0.6rem; flex: 1; min-width: 0;">
+                            <span style="font-size: 1.1rem;">${payer ? payer.emoji : '👤'}</span>
+                            <div style="min-width: 0;">
+                                <div style="font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary);">${escHtml(exp.desc)}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">${payer ? escHtml(payer.name) : '?'} · $${share}/person</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-weight: 700; color: #667eea; font-size: 0.95rem; white-space: nowrap;">$${exp.amount.toFixed(2)}</span>
+                            <button onclick="demoRemoveExpense(${exp.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; padding: 0.2rem; line-height: 1; transition: color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--text-secondary)'" title="Remove">✕</button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function renderBalances() {
+            const list = document.getElementById('demoBalancesList');
+            const empty = document.getElementById('demoBalancesEmpty');
+            if (!list) return;
+            if (demoExpenses.length === 0) {
+                list.innerHTML = '';
+                if (empty) empty.style.display = 'block';
+                return;
+            }
+            if (empty) empty.style.display = 'none';
+            const balances = calcBalances();
+            const totalSpent = demoExpenses.reduce((s, e) => s + e.amount, 0);
+            list.innerHTML = `
+                <div style="text-align: center; margin-bottom: 1rem; padding: 0.75rem; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border-radius: 12px;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Total spent</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #667eea;">$${totalSpent.toFixed(2)}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">$${(totalSpent / DEMO_MEMBERS.length).toFixed(2)} / person</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    ${DEMO_MEMBERS.map(m => {
+                        const bal = balances[m.id] || 0;
+                        const isPos = bal > 0.005;
+                        const isNeg = bal < -0.005;
+                        const color = isPos ? '#22c55e' : isNeg ? '#ef4444' : 'var(--text-secondary)';
+                        const label = isPos ? 'is owed' : isNeg ? 'owes' : 'settled';
+                        const maxBal = Math.max(...Object.values(balances).map(Math.abs), 1);
+                        const pct = Math.min(Math.abs(bal) / maxBal * 100, 100);
+                        return `
+                        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; background: var(--bg-primary); border-radius: 10px; border: 1px solid var(--glass-border);">
+                            <span style="font-size: 1.3rem;">${m.emoji}</span>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                                    <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">${escHtml(m.name)}</span>
+                                    <span style="font-weight: 700; color: ${color}; font-size: 0.9rem;">${isNeg ? '-' : isPos ? '+' : ''}$${Math.abs(bal).toFixed(2)} <span style="font-weight: 400; font-size: 0.75rem;">${label}</span></span>
+                                </div>
+                                <div style="height: 4px; background: var(--glass-border); border-radius: 2px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${pct}%; background: ${color}; border-radius: 2px; transition: width 0.4s ease;"></div>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+        }
+
+        function renderSettlements() {
+            const list = document.getElementById('demoSettleList');
+            const empty = document.getElementById('demoSettleEmpty');
+            if (!list) return;
+            if (demoExpenses.length === 0) {
+                list.innerHTML = '';
+                if (empty) empty.style.display = 'block';
+                return;
+            }
+            if (empty) empty.style.display = 'none';
+            const settlements = calcSettlements();
+            if (settlements.length === 0) {
+                list.innerHTML = `<div style="text-align: center; padding: 2rem;"><div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎉</div><p style="color: var(--text-secondary); margin: 0;">Everyone is settled up!</p></div>`;
+                return;
+            }
+            list.innerHTML = `
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem;">Smart Settlements</div>
+                    <div style="font-size: 0.75rem; color: #667eea;">${settlements.length} payment${settlements.length > 1 ? 's' : ''} to settle everything</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                    ${settlements.map(s => {
+                        const from = DEMO_MEMBERS.find(m => m.id === s.from);
+                        const to = DEMO_MEMBERS.find(m => m.id === s.to);
+                        return `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.08)); border-radius: 12px; border: 1px solid rgba(102,126,234,0.2);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 1.3rem;">${from ? from.emoji : '?'}</span>
+                                <span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${from ? escHtml(from.name) : '?'}</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <span style="font-weight: 800; color: #667eea; font-size: 1rem;">$${s.amount.toFixed(2)}</span>
+                                <span style="font-size: 0.7rem; color: var(--text-secondary);">→ pays →</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${to ? escHtml(to.name) : '?'}</span>
+                                <span style="font-size: 1.3rem;">${to ? to.emoji : '?'}</span>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+        }
+
+        function calcBalances() {
+            const balances = {};
+            DEMO_MEMBERS.forEach(m => balances[m.id] = 0);
+            demoExpenses.forEach(exp => {
+                const share = exp.amount / DEMO_MEMBERS.length;
+                balances[exp.payer] += exp.amount;
+                DEMO_MEMBERS.forEach(m => balances[m.id] -= share);
+            });
+            // Round
+            for (const k in balances) balances[k] = Math.round(balances[k] * 100) / 100;
+            return balances;
+        }
+
+        function calcSettlements() {
+            const balances = calcBalances();
+            const debtors = []; // negative balance (owes money)
+            const creditors = []; // positive balance (is owed)
+            for (const [id, bal] of Object.entries(balances)) {
+                if (bal < -0.005) debtors.push({ id, amount: -bal });
+                else if (bal > 0.005) creditors.push({ id, amount: bal });
+            }
+            debtors.sort((a, b) => b.amount - a.amount);
+            creditors.sort((a, b) => b.amount - a.amount);
+            const settlements = [];
+            let di = 0, ci = 0;
+            while (di < debtors.length && ci < creditors.length) {
+                const pay = Math.min(debtors[di].amount, creditors[ci].amount);
+                if (pay > 0.005) {
+                    settlements.push({ from: debtors[di].id, to: creditors[ci].id, amount: Math.round(pay * 100) / 100 });
+                }
+                debtors[di].amount -= pay;
+                creditors[ci].amount -= pay;
+                if (debtors[di].amount < 0.005) di++;
+                if (creditors[ci].amount < 0.005) ci++;
+            }
+            return settlements;
+        }
+
+        // Global functions
+        window.demoAddExpense = function() {
+            const descEl = document.getElementById('demoExpDesc');
+            const amtEl = document.getElementById('demoExpAmount');
+            const payerEl = document.getElementById('demoExpPayer');
+            if (!descEl || !amtEl || !payerEl) return;
+            const desc = descEl.value.trim();
+            const amount = parseFloat(amtEl.value);
+            if (!desc || isNaN(amount) || amount <= 0) {
+                descEl.style.borderColor = !desc ? '#ef4444' : '';
+                amtEl.style.borderColor = (isNaN(amount) || amount <= 0) ? '#ef4444' : '';
+                setTimeout(() => { descEl.style.borderColor = ''; amtEl.style.borderColor = ''; }, 1500);
+                return;
+            }
+            demoExpenses.push({ id: demoNextId++, desc, amount: Math.round(amount * 100) / 100, payer: payerEl.value });
+            descEl.value = '';
+            amtEl.value = '';
+            render();
+            if (typeof gtag === 'function') gtag('event', 'demo_add_expense', { event_category: 'engagement' });
+        };
+
+        window.demoQuickAdd = function(desc, amount) {
+            const payerEl = document.getElementById('demoExpPayer');
+            // Rotate payer for variety
+            const currentIdx = DEMO_MEMBERS.findIndex(m => m.id === (payerEl ? payerEl.value : 'you'));
+            const nextPayer = DEMO_MEMBERS[(currentIdx + 1) % DEMO_MEMBERS.length];
+            if (payerEl) payerEl.value = nextPayer.id;
+            demoExpenses.push({ id: demoNextId++, desc, amount, payer: nextPayer.id });
+            render();
+            if (typeof gtag === 'function') gtag('event', 'demo_quick_add', { event_category: 'engagement', event_label: desc });
+        };
+
+        window.demoRemoveExpense = function(id) {
+            demoExpenses = demoExpenses.filter(e => e.id !== id);
+            render();
+        };
+
+        window.demoResetAll = function() {
+            demoExpenses = [];
+            demoNextId = 1;
+            const payerEl = document.getElementById('demoExpPayer');
+            if (payerEl) payerEl.value = 'you';
+            render();
+        };
+
+        window.demoSwitchTab = function(tab) {
+            ['expenses', 'balances', 'settle'].forEach(t => {
+                const panel = document.getElementById('demo' + t.charAt(0).toUpperCase() + t.slice(1) + 'Tab');
+                const btn = document.getElementById('demoTab' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (panel) panel.style.display = t === tab ? 'block' : 'none';
+                if (btn) {
+                    btn.style.borderBottomColor = t === tab ? '#667eea' : 'transparent';
+                    btn.style.color = t === tab ? 'var(--text-primary)' : 'var(--text-secondary)';
+                }
+            });
+            render();
+            if (typeof gtag === 'function') gtag('event', 'demo_tab_switch', { event_category: 'engagement', event_label: tab });
+        };
+
+        // Allow Enter key to add
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            const descEl = document.getElementById('demoExpDesc');
+            const amtEl = document.getElementById('demoExpAmount');
+            if (descEl) descEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') window.demoAddExpense(); });
+            if (amtEl) amtEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') window.demoAddExpense(); });
+        });
+    })();
+    </script>
+
+    <style>
+        @keyframes demoSlideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #demoApp input:focus, #demoApp select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+        @media (max-width: 600px) {
+            #interactive-demo .container { padding: 0 1rem; }
+            #demoApp { border-radius: 16px; }
+            .demo-quick-btn { font-size: 0.75rem !important; padding: 0.35rem 0.6rem !important; }
+        }
+    </style>
+
     <!-- Use Cases Section -->
     <section class="use-cases" style="padding: 5rem 0; background: var(--bg-secondary);">
         <div class="container">

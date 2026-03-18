@@ -1089,6 +1089,11 @@ function displayDemoGroups() {
     if (countParticipating) countParticipating.textContent = '2';
     
     console.log('[Demo] Demo groups displayed. Cards:', document.querySelectorAll('.demo-fund-card').length);
+    
+    // Mark groups data as ready so mobile Groups tab works
+    if (typeof window.setGroupsDataReady === 'function') {
+        window.setGroupsDataReady();
+    }
 }
 
 /**

@@ -236,9 +236,22 @@ const translations = {
                     }
                 }
             },
+            demo: {
+                title: "Try It Right Now",
+                subtitle: "Add expenses, see who owes whom — instantly. No sign-up needed.",
+                groupName: "Beach Trip",
+                members: "members",
+                reset: "🔄 Reset",
+                tabExpenses: "Expenses",
+                tabBalances: "Balances",
+                tabSettle: "Settle Up",
+                addBtn: "Add",
+                emptyExpenses: "Add an expense to get started!",
+                emptyBalances: "Add expenses to see balances",
+                emptySettle: "Add expenses, then see the optimal settlements",
+                cta: "✨ Create Your Own Group — Free"
+            },
             useCases: {
-                title: "Perfect for...",
-                subtitle: "Everyone pays, Ant Pool does the math.",
                 items: {
                     travel: {
                         title: "🧳 Trips with friends",
@@ -2054,9 +2067,22 @@ const translations = {
                     }
                 }
             },
+            demo: {
+                title: "Pruébalo Ahora Mismo",
+                subtitle: "Agrega gastos, ve quién debe a quién — al instante. Sin registrarte.",
+                groupName: "Viaje a la Playa",
+                members: "miembros",
+                reset: "🔄 Reiniciar",
+                tabExpenses: "Gastos",
+                tabBalances: "Balances",
+                tabSettle: "Liquidar",
+                addBtn: "Agregar",
+                emptyExpenses: "¡Agrega un gasto para empezar!",
+                emptyBalances: "Agrega gastos para ver los balances",
+                emptySettle: "Agrega gastos y luego ve las liquidaciones óptimas",
+                cta: "✨ Crea Tu Propio Grupo — Gratis"
+            },
             useCases: {
-                title: "Perfecto Para...",
-                subtitle: "Todos pagan, Ant Pool hace las cuentas.",
                 items: {
                     travel: {
                         title: "🧳 Viajes con amigos",

@@ -144,6 +144,7 @@ window.clearAllUserGroups = () => {
 
 // Track whether groups data has been loaded at least once
 let groupsDataReady = false;
+window.setGroupsDataReady = () => { groupsDataReady = true; };
 
 // ============================================
 // INITIALIZATION
