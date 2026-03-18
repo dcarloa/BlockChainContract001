@@ -249,7 +249,8 @@ const translations = {
                 emptyExpenses: "Add an expense to get started!",
                 emptyBalances: "Add expenses to see balances",
                 emptySettle: "Add expenses, then see the optimal settlements",
-                cta: "✨ Create Your Own Group — Free"
+                cta: "🚀 Create Your Own Group — Free",
+                ctaSub: "No credit card needed · Works on any device"
             },
             useCases: {
                 items: {
@@ -2080,7 +2081,8 @@ const translations = {
                 emptyExpenses: "¡Agrega un gasto para empezar!",
                 emptyBalances: "Agrega gastos para ver los balances",
                 emptySettle: "Agrega gastos y luego ve las liquidaciones óptimas",
-                cta: "✨ Crea Tu Propio Grupo — Gratis"
+                cta: "🚀 Crea Tu Propio Grupo — Gratis",
+                ctaSub: "Sin tarjeta de crédito · Funciona en cualquier dispositivo"
             },
             useCases: {
                 items: {
