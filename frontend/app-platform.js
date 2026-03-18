@@ -6395,87 +6395,6 @@ async function loadSmartSettlements() {
 }
 
 /**
- * Mtry {
-        const settlementEl = document.getElementById(`settlement-${index}`);
-        if (!settlementEl) return;
-        
-        const settlement = currentSettlements[index];
-        if (!settlement) {
-            showToast('Settlement not found', 'error');
-            return;
-        }
-        
-        // Record settlement in Firebase
-        window.modeManager.currentGroupId = currentFund.fundId;
-        const settlementInfo = {
-            from: settlement.from,
-            to: settlement.to,
-            amount: settlement.amount,
-            method: 'cash',
-            notes: `Settled via Smart Settlements on ${new Date().toLocaleDateString()}`
-        };
-    try {
-        const settlements = document.querySelectorAll('.settlement-item');
-        
-        if (settlements.length === 0) return;
-        
-        const confirmed = confirm(
-            `Record all ${currentSettlements.length} payments?\n\n` +
-            'This will register each payment in the group history and update balances.'
-        );
-        
-        if (!confirmed) return;
-        
-        window.modeManager.currentGroupId = currentFund.fundId;
-        
-        // Record all settlements
-        for (let i = 0; i < currentSettlements.length; i++) {
-            const settlement = currentSettlements[i];
-            const settlementInfo = {
-                from: settlement.from,
-                to: settlement.to,
-                amount: settlement.amount,
-                method: 'cash',
-                notes: `Settled via Smart Settlements on ${new Date().toLocaleDateString()}`
-            };
-            
-            await window.modeManager.recordSettlement(settlementInfo);
-            
-            // Animate settlement
-            const settlementEl = document.getElementById(`settlement-${i}`);
-            if (settlementEl) {
-                settlementEl.classList.add('settlement-completed');
-            }
-        }
-        
-        // Wait for animations
-        setTimeout(async () => {
-            showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
-            closeSmartSettlements();
-            
-            // Reload data
-            await loadSimpleModeBalances();
-            await loadSimpleModeExpenses(); // Refresh history to show settlements
-        }, 500);
-        
-    } catch (error) {
-        console.error('Error recording settlements:', error);
-        showToast('Error recording payments', 'error');
-    });
-            await loadSimpleModeBalances();
-            await loadSimpleModeExpenses(); // Refresh history to show settlement
-        }, 1000);
-        
-    } catch (error) {
-        console.error('Error recording settlement:', error);
-        showToast('Error recording payment', 'error');
-    }
-    }, 300);
-    
-    showToast('Settlement marked as complete! ✅', 'success');
-}
-
-/**
  * Mark all settlements as complete
  */
 async function markAllSettled() {
@@ -6535,9 +6454,13 @@ async function markAllSettled() {
             showToast(`All ${currentSettlements.length} payments recorded successfully! 🎉`, 'success');
             closeSmartSettlements();
             
-            // Reload data
+            // Reload all affected views
             await loadSimpleModeBalances();
-            await loadSimpleModeExpenses(); // Refresh history to show settlements
+            await loadSimpleModeExpenses();
+            await loadSmartSettlements();
+            await loadColonyInsights();
+            const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
+            if (groupData) await loadGroupOverview(groupData);
         }, 500);
     
     } catch (error) {
@@ -6602,8 +6525,12 @@ async function markSettlementDone(index) {
         // Refresh after animation
         setTimeout(async () => {
             await loadSimpleModeBalances();
+            await loadSimpleModeExpenses();
             await loadSmartSettlements();
-            await loadColonyInsights(); // Update balance glance
+            await loadColonyInsights();
+            // Refresh overview if visible
+            const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
+            if (groupData) await loadGroupOverview(groupData);
         }, 800);
         
     } catch (error) {
@@ -6995,6 +6922,8 @@ async function addGhostMember() {
         // Refresh UI
         loadSimpleModeMembers();
         if (typeof loadSimpleModeBalances === 'function') loadSimpleModeBalances();
+        const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress || currentFund.fundId || currentFund.groupId}`);
+        if (groupData) await loadGroupOverview(groupData);
 
         // Analytics
         if (typeof gtag === 'function') {
@@ -7050,6 +6979,9 @@ async function removeGhostMember(ghostId) {
         showToast(t('app.ghostMembers.removed') || `${memberName} removed`, 'success');
         loadSimpleModeMembers();
         if (typeof loadSimpleModeBalances === 'function') loadSimpleModeBalances();
+        if (typeof loadSmartSettlements === 'function') loadSmartSettlements();
+        const gData = await window.FirebaseConfig.readDb(`groups/${groupId}`);
+        if (gData) await loadGroupOverview(gData);
     } catch (error) {
         console.error('Error removing ghost member:', error);
         showToast(t('app.ghostMembers.errorRemoving') || 'Error removing member', 'error');
@@ -7607,13 +7539,11 @@ async function updateMemberNickname(userId, newName) {
         
         showToast('Name updated successfully!', 'success');
         
-        // Reload the members list to reflect the change
+        // Reload all views that display member names
         loadSimpleModeMembers();
-        
-        // Also reload balances as they display names too
-        if (typeof loadSimpleModeBalances === 'function') {
-            loadSimpleModeBalances();
-        }
+        loadSimpleModeBalances();
+        loadSimpleModeExpenses();
+        loadSmartSettlements();
         
     } catch (error) {
         console.error('Error updating nickname:', error);
@@ -8800,8 +8730,13 @@ async function handlePaymentSubmission(event) {
         showToast('Payment recorded successfully!', 'success');
         closeRecordPaymentModal();
 
-        // Refresh balances
+        // Refresh all affected views
         await loadSimpleModeBalances();
+        await loadSimpleModeExpenses();
+        await loadSmartSettlements();
+        await loadColonyInsights();
+        const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
+        if (groupData) await loadGroupOverview(groupData);
 
     } catch (error) {
         console.error('Error recording payment:', error);
@@ -11944,10 +11879,13 @@ async function checkAndProcessRecurring() {
         const createdCount = await window.modeManager.processRecurringExpenses();
         
         if (createdCount > 0) {
-            // Reload expenses to show new entries
+            // Reload all affected views
             await loadSimpleModeExpenses();
-            // Reload recurring list to update nextDue display
+            await loadSimpleModeBalances();
             await loadRecurringExpenses();
+            await loadSmartSettlements();
+            const groupData = await window.FirebaseConfig.readDb(`groups/${currentFund.fundAddress}`);
+            if (groupData) await loadGroupOverview(groupData);
             
             showToast(`${createdCount} recurring expense(s) created automatically`, 'success');
         }
@@ -18165,6 +18103,7 @@ async function deleteEvent(eventId) {
         showToast(t.deleteSuccess || 'Event deleted', 'success');
         closeEventModal();
         await loadItinerary();
+        await loadSimpleModeExpenses();
     } catch (error) {
         console.error('[Itinerary] Error deleting event:', error);
         showToast('Error deleting event', 'error');
