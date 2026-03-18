@@ -26,7 +26,7 @@
         
         "members": {
           "$memberId": {
-            ".write": "auth != null && ($memberId === auth.uid || root.child('groups').child($groupId).child('createdBy').val() === auth.uid)",
+            ".write": "auth != null && ($memberId === auth.uid || root.child('groups').child($groupId).child('createdBy').val() === auth.uid || ($memberId.beginsWith('ghost_') && data.child('addedBy').val() === auth.uid))",
             
             "email": {
               ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"

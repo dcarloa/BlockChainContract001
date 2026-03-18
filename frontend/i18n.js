@@ -902,6 +902,29 @@ const translations = {
                 title: "Share Smart Settlements",
                 noData: "No settlements to share"
             },
+            ghostMembers: {
+                modalTitle: "Add Offline Member",
+                modalDescription: "This person won't need an account. You'll manage their expenses for them.",
+                nameLabel: "Name",
+                namePlaceholder: "e.g. Grandma, Uncle John...",
+                addButton: "Add Offline Member",
+                addButtonSubtitle: "For people without an account",
+                badge: "Offline",
+                addedOn: "Added",
+                editName: "Edit Name",
+                remove: "Remove",
+                added: "Offline member added!",
+                removed: "Member removed",
+                errorNoName: "Please enter a name",
+                errorNameTooLong: "Name must be 30 characters or less",
+                errorAdding: "Error adding member",
+                errorRemoving: "Error removing member",
+                cannotRemoveOwed: "Cannot remove \"{name}\". They are owed {amount}. Settle all debts first.",
+                cannotRemoveOwes: "Cannot remove \"{name}\". They owe {amount}. Settle all debts first.",
+                deletedMember: "Deleted member",
+                onboardingTip: "Someone in your group doesn't have an account? Add them as an offline member so they're included in expenses and balances.",
+                gotIt: "Got it"
+            },
             // Colony Life - Phase 4
             colonyLife: {
                 title: "Colony Life Features",
@@ -2696,6 +2719,29 @@ const translations = {
                 button: "Compartir",
                 title: "Compartir Liquidaciones",
                 noData: "No hay liquidaciones para compartir"
+            },
+            ghostMembers: {
+                modalTitle: "Agregar Miembro Offline",
+                modalDescription: "Esta persona no necesitará una cuenta. Tú administrarás sus gastos por ella.",
+                nameLabel: "Nombre",
+                namePlaceholder: "ej. Abuela, Tío Juan...",
+                addButton: "Agregar Miembro Offline",
+                addButtonSubtitle: "Para personas sin cuenta",
+                badge: "Offline",
+                addedOn: "Agregado",
+                editName: "Editar Nombre",
+                remove: "Eliminar",
+                added: "¡Miembro offline agregado!",
+                removed: "Miembro eliminado",
+                errorNoName: "Por favor ingresa un nombre",
+                errorNameTooLong: "El nombre debe tener 30 caracteres o menos",
+                errorAdding: "Error al agregar miembro",
+                errorRemoving: "Error al eliminar miembro",
+                cannotRemoveOwed: "No se puede eliminar a \"{name}\". Se le deben {amount}. Salda todas las deudas primero.",
+                cannotRemoveOwes: "No se puede eliminar a \"{name}\". Debe {amount}. Salda todas las deudas primero.",
+                deletedMember: "Miembro eliminado",
+                onboardingTip: "¿Alguien de tu grupo no tiene cuenta? Agrégalo como miembro offline para que se incluya en gastos y balances.",
+                gotIt: "Entendido"
             },
             // Colony Life - Phase 4
             colonyLife: {
