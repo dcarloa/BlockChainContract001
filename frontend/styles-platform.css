@@ -167,7 +167,6 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
-  overflow-x: hidden;
   min-height: 100vh;
   min-height: 100dvh;
 }
@@ -3243,7 +3242,7 @@ header,
   height: 100dvh;
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(10px);
-  z-index: 1000;
+  z-index: 1100;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-md);
