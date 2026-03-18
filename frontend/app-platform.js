@@ -142,6 +142,9 @@ window.clearAllUserGroups = () => {
     if (groupsGrid) groupsGrid.innerHTML = '';
 };
 
+// Track whether groups data has been loaded at least once
+let groupsDataReady = false;
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -1405,7 +1408,24 @@ function showGroupsSection() {
     const groupsSection = document.getElementById('groupsSection');
     if (groupsSection) {
         groupsSection.style.display = 'block';
-        
+
+        if (!groupsDataReady) {
+            // Data still loading — show spinner instead of empty state
+            const targetGrid = document.getElementById('groupsSectionGrid');
+            const emptyState = document.getElementById('groupsSectionEmptyState');
+            if (targetGrid) targetGrid.innerHTML = '';
+            if (emptyState) {
+                emptyState.style.display = 'flex';
+                emptyState.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon" style="animation: pulse 1.5s ease-in-out infinite;">⏳</div>
+                        <h3>${t('app.loading.loading') || 'Loading...'}</h3>
+                    </div>
+                `;
+            }
+            return;
+        }
+
         // Populate groups from the main groups grid
         populateGroupsSection();
     }
@@ -2026,6 +2046,13 @@ async function loadUserFunds() {
         
         // Mostrar fondos
         displayFunds();
+
+        // Mark groups data as ready and refresh GROUPS tab if visible
+        groupsDataReady = true;
+        const groupsSection = document.getElementById('groupsSection');
+        if (groupsSection && groupsSection.style.display !== 'none') {
+            populateGroupsSection();
+        }
         
     } catch (error) {
         console.error("Error loading user funds:", error);
@@ -3874,27 +3901,27 @@ async function switchFundTab(tabName) {
     // Load history when history tab is selected
     if (tabName === 'history') {
         if (isSimpleModeGroup) {
-            loadSimpleModeExpenses();
+            await loadSimpleModeExpenses();
         } else {
-            loadHistory();
+            await loadHistory();
         }
     }
     
     // Load balances when balances tab is selected
     if (tabName === 'balances') {
         if (isSimpleModeGroup) {
-            loadSimpleModeBalances();
+            await loadSimpleModeBalances();
         } else {
-            loadBalances();
+            await loadBalances();
         }
     }
     
     // Load members when members tab is selected
     if (tabName === 'members') {
         if (isSimpleModeGroup) {
-            loadSimpleModeMembers();
+            await loadSimpleModeMembers();
         } else {
-            loadMembers();
+            await loadMembers();
         }
     }
     
@@ -4182,9 +4209,9 @@ async function loadSimpleModeDetailView() {
         
         // Switch to appropriate default tab
         if (isPersonalColony) {
-            switchFundTab('history');
+            await switchFundTab('history');
         } else {
-            switchFundTab('balances');
+            await switchFundTab('balances');
         }
         
         
