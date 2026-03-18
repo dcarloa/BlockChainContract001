@@ -2683,6 +2683,43 @@ async function openFund(fundAddress) {
 }
 
 function backToDashboard() {
+    // Sync currentFund stats back to allUserGroups before leaving
+    if (currentFund && currentFund.fundAddress) {
+        const idx = allUserGroups.findIndex(f => f.fundAddress === currentFund.fundAddress);
+        if (idx !== -1) {
+            const fund = allUserGroups[idx];
+            // Update card-visible fields from the enriched currentFund
+            const members = currentFund.members ? Object.keys(currentFund.members) : [];
+            fund.memberCount = members.length;
+            fund.contributors = members.length;
+
+            // Recalculate expenses and balance from currentFund data
+            const expenses = currentFund.expenses ? Object.values(currentFund.expenses) : [];
+            fund.proposals = expenses.filter(e => e.status === 'approved' || !e.status).length;
+
+            let balanceByCurrency = {};
+            for (const expense of expenses) {
+                if (expense.status === 'approved' || !expense.status) {
+                    const currency = expense.currency || 'USD';
+                    balanceByCurrency[currency] = (balanceByCurrency[currency] || 0) + Math.abs(expense.amount || 0);
+                }
+            }
+            const currencies = Object.keys(balanceByCurrency);
+            fund.balanceByCurrency = balanceByCurrency;
+            fund.currencies = currencies;
+            if (currencies.length > 0) {
+                fund.balance = balanceByCurrency[currencies[0]].toFixed(2);
+                fund.primaryCurrency = currencies[0];
+            } else {
+                fund.balance = 0;
+                fund.primaryCurrency = currentFund.currency || 'USD';
+            }
+
+            // Re-render cards
+            displayFunds();
+        }
+    }
+
     // Check if we're in mobile nav mode
     if (isMobileNavMode()) {
         // In mobile nav mode, "back" goes to groups section
