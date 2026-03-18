@@ -218,7 +218,7 @@
       },
       "admins": {
         ".read": "auth != null",
-        ".write": "auth != null",
+        ".write": "auth != null && root.child('system/admins').child(auth.uid).val() === true",
         "$adminId": {
           ".validate": "newData.isBoolean()"
         }

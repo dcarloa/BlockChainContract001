@@ -999,12 +999,12 @@ async function loadPendingInvitations() {
                         <div class="invitation-item-info">
                             <h4>
                                 ${getFundTypeIcon(Number(fundType))}
-                                ${fundName}
+                                ${escapeHtml(fundName)}
                             </h4>
-                            <p>Invited by: ${creatorDisplay}</p>
+                            <p>Invited by: ${escapeHtml(creatorDisplay)}</p>
                         </div>
                         <div class="invitation-item-actions">
-                            <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fundAddress}', '${fundName}')">
+                            <button class="btn btn-success btn-sm" onclick="acceptFundInvitation('${fundAddress}', '${escapeHtml(fundName).replace(/'/g, "\\'")}')">
                                 ✅ Accept
                             </button>
                             <button class="btn btn-secondary btn-sm" onclick="openInvitedFund('${fundAddress}')">
@@ -2513,7 +2513,7 @@ function createFundCard(fund) {
                 <div class="fund-card-header">
                     <div class="fund-icon">${icon}</div>
                     <div class="fund-card-title">
-                        <h3>${fund.fundName}</h3>
+                        <h3>${escapeHtml(fund.fundName)}</h3>
                         <div class="fund-badges">
                             ${fund.mode === 'simple' ? `<span class="badge badge-mode mode-simple">🐜 Simple</span>` : `<span class="badge badge-mode mode-blockchain">⛓️ Blockchain</span>`}
                             ${isInactive ? `<span class="badge badge-status status-inactive">${t.app.dashboard.card.inactive}</span>` : ''}
@@ -2525,15 +2525,15 @@ function createFundCard(fund) {
                     ${fund.isCreator ? `
                     <div class="fund-actions">
                         ${fund.isActive ? `
-                        <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Pausar grupo">
+                        <button class="fund-action-btn fund-pause-btn" onclick="event.stopPropagation(); deactivateFund('${fund.fundAddress}', '${escapeHtml(fund.fundName).replace(/'/g, "\\'")}')" title="Pausar grupo">
                             ⏸️
                         </button>
                         ` : `
-                        <button class="fund-action-btn fund-resume-btn" onclick="event.stopPropagation(); reactivateFund('${fund.fundAddress}', '${fund.fundName}')" title="Reactivar grupo">
+                        <button class="fund-action-btn fund-resume-btn" onclick="event.stopPropagation(); reactivateFund('${fund.fundAddress}', '${escapeHtml(fund.fundName).replace(/'/g, "\\'")}')" title="Reactivar grupo">
                             ▶️
                         </button>
                         `}
-                        <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${fund.fundName}')" title="Eliminar grupo">
+                        <button class="fund-action-btn fund-hide-btn" onclick="event.stopPropagation(); hideFund('${fund.fundAddress}', '${escapeHtml(fund.fundName).replace(/'/g, "\\'")}')" title="Eliminar grupo">
                             🗑️
                         </button>
                     </div>
@@ -3706,6 +3706,16 @@ async function signOutFromFirebase() {
         }
         
         showLoading(t('app.loading.signingOut'));
+        
+        // Clear timers to prevent background operations after sign-out
+        if (typeof recurringProcessTimer !== 'undefined' && recurringProcessTimer) {
+            clearInterval(recurringProcessTimer);
+            recurringProcessTimer = null;
+        }
+        if (typeof notificationRefreshInterval !== 'undefined' && notificationRefreshInterval) {
+            clearInterval(notificationRefreshInterval);
+            notificationRefreshInterval = null;
+        }
         
         // Clear current fund/group to prevent permission errors during cleanup
         currentFundId = null;
@@ -5758,7 +5768,7 @@ function renderSettlementItem(settlement, currentUserId, groupData) {
             </div>
             ${settlement.notes ? `
                 <div class="expense-details" style="display: block; padding-top: 8px;">
-                    <p class="expense-notes">📝 ${settlement.notes}</p>
+                    <p class="expense-notes">📝 ${escapeHtml(settlement.notes)}</p>
                 </div>
             ` : ''}
         </div>
@@ -5837,7 +5847,7 @@ function renderExpenseItem(expense, currentUserId, groupData) {
             <div class="expense-header" onclick="toggleExpenseDetails('${expense.id}')">
                 <div class="expense-header-left">
                     <h4 class="expense-title-compact">
-                        ${isNegative ? '💸 ' : ''}${expense.description}
+                        ${isNegative ? '💸 ' : ''}${escapeHtml(expense.description)}
                         ${isNegative ? '<span class="expense-badge badge-payment">Payment</span>' : ''}
                     </h4>
                     <span class="expense-date-compact">📅 ${dateStr}</span>
@@ -5855,7 +5865,7 @@ function renderExpenseItem(expense, currentUserId, groupData) {
                     <span class="meta-item">👤 ${paidByDisplay}</span>
                     <span class="meta-item">👥 ${sharesDisplay}</span>
                 </div>
-                ${expense.notes ? `<p class="expense-notes">📝 ${expense.notes}</p>` : ''}
+                ${expense.notes ? `<p class="expense-notes">📝 ${escapeHtml(expense.notes)}</p>` : ''}
                 
                 <!-- View Full Details Button -->
                 <button class="btn btn-secondary btn-sm btn-full-details" onclick="showExpenseDetailsModal('${expense.id}')" style="margin-bottom: 0.5rem;">
@@ -7919,7 +7929,7 @@ async function showExpenseDetailsModal(expenseId) {
                     </div>
                     <div class="modal-body">
                         <div class="expense-detail-section">
-                            <h4 class="expense-detail-title">${expense.description}</h4>
+                            <h4 class="expense-detail-title">${escapeHtml(expense.description)}</h4>
                             <div class="expense-detail-amount">${amountStr}</div>
                             <div class="expense-detail-date">📅 ${dateStr}</div>
                         </div>
@@ -7940,7 +7950,7 @@ async function showExpenseDetailsModal(expenseId) {
                         ${expense.notes ? `
                             <div class="expense-detail-section">
                                 <h5>📝 Notes</h5>
-                                <p class="expense-notes-full">${expense.notes}</p>
+                                <p class="expense-notes-full">${escapeHtml(expense.notes)}</p>
                             </div>
                         ` : ''}
                         
@@ -8027,7 +8037,7 @@ async function showExpenseComments(expenseId) {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;" onclick="event.stopPropagation()">
                 <div class="modal-header">
-                    <h3>💬 Comments: ${expense.description}</h3>
+                    <h3>💬 Comments: ${escapeHtml(expense.description)}</h3>
                     <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">&times;</button>
                 </div>
                 <div class="modal-body">
@@ -8086,10 +8096,10 @@ async function renderComments(comments) {
         return `
             <div class="comment-item">
                 <div class="comment-header">
-                    <span class="comment-author">👤 ${comment.userName}</span>
+                    <span class="comment-author">👤 ${escapeHtml(comment.userName)}</span>
                     <span class="comment-date">${date}</span>
                 </div>
-                <div class="comment-text">${comment.text}</div>
+                <div class="comment-text">${escapeHtml(comment.text)}</div>
             </div>
         `;
     }).join('');
@@ -10364,7 +10374,7 @@ async function loadProposals() {
                         
                         ${borrowedAlert}
                         
-                        <p class="proposal-description">${proposal.description}</p>
+                        <p class="proposal-description">${escapeHtml(proposal.description)}</p>
                         
                         <div class="proposal-meta">
                             <span title="${proposal.proposer}">?? From: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
@@ -10589,7 +10599,7 @@ async function loadHistory() {
                         <h4>Propuesta #${proposal.id} ${statusBadge}</h4>
                         <span class="proposal-amount">${amount} ETH</span>
                     </div>
-                    <p class="proposal-description">${proposal.description}</p>
+                    <p class="proposal-description">${escapeHtml(proposal.description)}</p>
                     <div class="proposal-meta">
                         <span title="${proposal.proposer}">?? From: ${formatUserDisplay(proposal.proposerNickname, proposal.proposer)}</span>
                         <span title="${proposal.recipient}">?? To: ${formatUserDisplay(proposal.recipientNickname, proposal.recipient)}</span>
@@ -11959,7 +11969,7 @@ async function loadRecurringExpenses() {
                         <div style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                                 <span style="font-size: 1.2rem;">${icon}</span>
-                                <strong style="font-size: 1rem;">${rec.description}</strong>
+                                <strong style="font-size: 1rem;">${escapeHtml(rec.description)}</strong>
                                 ${isOverdue ? '<span style="background: #ef4444; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">⚠️ OVERDUE</span>' : ''}
                             </div>
                             <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
@@ -12122,7 +12132,7 @@ async function loadAllRecurringExpenses() {
                         <div style="font-size: 2rem;">${icon}</div>
                         <div style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                                <strong style="font-size: 1.1rem;">${rec.description}</strong>
+                                <strong style="font-size: 1.1rem;">${escapeHtml(rec.description)}</strong>
                                 ${statusBadge}
                             </div>
                             <div style="display: flex; gap: 2rem; flex-wrap: wrap; font-size: 0.9rem; color: rgba(255,255,255,0.8);">
@@ -12199,7 +12209,7 @@ async function showRecurringDetails(recurringId) {
         content.innerHTML = `
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 4rem; margin-bottom: 0.5rem;">${icon}</div>
-                <h3 style="margin: 0; font-size: 1.5rem;">${rec.description}</h3>
+                <h3 style="margin: 0; font-size: 1.5rem;">${escapeHtml(rec.description)}</h3>
                 <div style="margin-top: 0.5rem;">${statusBadge}</div>
             </div>
             
@@ -17201,16 +17211,6 @@ function calculateEventExpenseTotal(expenses) {
         }, 0);
         return { total, currency: 'USD', isMixed: true };
     }
-}
-
-/**
- * Escape HTML to prevent XSS
- */
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 /**
