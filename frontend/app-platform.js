@@ -6833,6 +6833,149 @@ async function updateMemberCounter(currentCount, creatorId) {
     }
 }
 
+// ============================================
+// GHOST MEMBERS (Offline/Dummy Members)
+// ============================================
+
+/**
+ * Check if a member ID belongs to a ghost member
+ */
+function isGhostMember(memberId) {
+    return typeof memberId === 'string' && memberId.startsWith('ghost_');
+}
+
+/**
+ * Generate a unique ghost member ID
+ */
+function generateGhostId() {
+    const rand = Math.random().toString(36).substring(2, 6);
+    return `ghost_${Date.now()}_${rand}`;
+}
+
+/**
+ * Show the Add Ghost Member modal
+ */
+function showAddGhostModal() {
+    const modal = document.getElementById('addGhostModal');
+    if (!modal) return;
+    const input = document.getElementById('ghostMemberName');
+    if (input) input.value = '';
+    modal.classList.add('active');
+    setTimeout(() => input?.focus(), 300);
+}
+
+/**
+ * Close the Add Ghost Member modal
+ */
+function closeGhostModal() {
+    const modal = document.getElementById('addGhostModal');
+    if (modal) modal.classList.remove('active');
+}
+
+/**
+ * Add a ghost (offline) member to the current group
+ */
+async function addGhostMember() {
+    const input = document.getElementById('ghostMemberName');
+    const name = input?.value?.trim();
+
+    if (!name) {
+        showToast(t('app.ghostMembers.errorNoName') || 'Please enter a name', 'error');
+        return;
+    }
+    if (name.length > 30) {
+        showToast(t('app.ghostMembers.errorNameTooLong') || 'Name must be 30 characters or less', 'error');
+        return;
+    }
+    if (!currentFund) return;
+
+    const groupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
+    if (!groupId) return;
+
+    // Check subscription limits
+    const creatorId = currentFund.createdBy || currentFund.creator;
+    if (window.SubscriptionManager) {
+        const canAdd = await window.SubscriptionManager.canAddMember(creatorId, groupId);
+        if (!canAdd.allowed) {
+            showToast(canAdd.reason, 'error');
+            return;
+        }
+    }
+
+    try {
+        const ghostId = generateGhostId();
+        const user = firebase.auth().currentUser;
+        const memberData = {
+            name: name,
+            email: 'offline',
+            joinedAt: Date.now(),
+            role: 'ghost',
+            status: 'active',
+            addedBy: user.uid,
+            isGhost: true
+        };
+
+        await window.FirebaseConfig.updateDb(`groups/${groupId}/members/${ghostId}`, memberData);
+
+        // Update local cache
+        if (!currentFund.members) currentFund.members = {};
+        currentFund.members[ghostId] = memberData;
+
+        closeGhostModal();
+        showToast(t('app.ghostMembers.added') || `${name} added as offline member`, 'success');
+
+        // Refresh UI
+        loadSimpleModeMembers();
+        if (typeof loadSimpleModeBalances === 'function') loadSimpleModeBalances();
+
+        // Analytics
+        if (typeof gtag === 'function') {
+            gtag('event', 'ghost_member_added', { event_category: 'members' });
+        }
+    } catch (error) {
+        console.error('Error adding ghost member:', error);
+        showToast(t('app.ghostMembers.errorAdding') || 'Error adding member', 'error');
+    }
+}
+
+/**
+ * Remove a ghost member from the group
+ */
+async function removeGhostMember(ghostId) {
+    if (!currentFund || !isGhostMember(ghostId)) return;
+
+    const member = currentFund.members?.[ghostId];
+    const memberName = member?.name || 'Member';
+    const lang = getCurrentLanguage() || 'en';
+    const confirmMsg = lang === 'es'
+        ? `¿Eliminar a "${memberName}" del grupo? Sus gastos ya registrados se mantendrán.`
+        : `Remove "${memberName}" from the group? Already recorded expenses will be preserved.`;
+
+    if (!confirm(confirmMsg)) return;
+
+    const groupId = currentFund.fundId || currentFund.fundAddress || currentFund.groupId;
+    try {
+        await firebase.database().ref(`groups/${groupId}/members/${ghostId}`).remove();
+        delete currentFund.members[ghostId];
+        showToast(t('app.ghostMembers.removed') || `${memberName} removed`, 'success');
+        loadSimpleModeMembers();
+        if (typeof loadSimpleModeBalances === 'function') loadSimpleModeBalances();
+    } catch (error) {
+        console.error('Error removing ghost member:', error);
+        showToast(t('app.ghostMembers.errorRemoving') || 'Error removing member', 'error');
+    }
+}
+
+/**
+ * Edit a ghost member's name
+ */
+function editGhostName(ghostId) {
+    if (!currentFund || !isGhostMember(ghostId)) return;
+    const member = currentFund.members?.[ghostId];
+    const currentName = member?.name || '';
+    showEditNicknameModal(ghostId, currentName);
+}
+
 /**
  * Load Simple Mode members list
  */
@@ -6874,9 +7017,23 @@ function loadSimpleModeMembers() {
         const joinDate = member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'N/A';
         const isCurrentUser = uid === currentUserId;
         const isCreator = uid === currentFund.creator;
+        const isGhost = isGhostMember(uid);
 
         let actionsHtml = '';
-        if (isCurrentUser && !isCreator) {
+        if (isGhost) {
+            // Ghost members: creator or the user who added them can edit/remove
+            const canManageGhost = isAdmin || member.addedBy === currentUserId;
+            if (canManageGhost) {
+                actionsHtml = `
+                    <button class="btn btn-secondary btn-sm" onclick="editGhostName('${uid}')">
+                        <span>✏️ ${t('app.ghostMembers.editName') || 'Edit Name'}</span>
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="removeGhostMember('${uid}')">
+                        <span>🚫 ${t('app.ghostMembers.remove') || 'Remove'}</span>
+                    </button>
+                `;
+            }
+        } else if (isCurrentUser && !isCreator) {
             // Current user can leave group (if not creator)
             actionsHtml = `
                 <button class="btn btn-warning btn-sm" onclick="leaveGroup()">
@@ -6901,9 +7058,9 @@ function loadSimpleModeMembers() {
             }
         }
 
-        // Add edit nickname button for current user
+        // Add edit nickname button for current user (not ghosts — handled above)
         let editNicknameBtn = '';
-        if (isCurrentUser) {
+        if (isCurrentUser && !isGhost) {
             editNicknameBtn = `
                 <button class="btn btn-secondary btn-sm" onclick="showEditNicknameModal('${uid}', '${(member.name || '').replace(/'/g, "\\'")}')">
                     <span>✏️ Edit Name</span>
@@ -6911,19 +7068,32 @@ function loadSimpleModeMembers() {
             `;
         }
 
+        // Role/badge display
+        let roleBadge = '';
+        if (isGhost) {
+            roleBadge = `<span class="ghost-badge">👻 ${t('app.ghostMembers.badge') || 'Offline'}</span>`;
+        } else if (isCreator) {
+            roleBadge = '👑 Creator';
+        } else if (isCurrentUser) {
+            roleBadge = '(You)';
+        }
+
+        // Avatar class for ghost styling
+        const avatarClass = isGhost ? 'member-avatar ghost-avatar' : 'member-avatar';
+        const emailDisplay = isGhost ? '' : (member.email || '');
+
         return `
-            <div class="member-card">
+            <div class="member-card ${isGhost ? 'member-card-ghost' : ''}">
                 <div class="member-info">
-                    <div class="member-avatar">
-                        ${(member.name || member.email || 'U').charAt(0).toUpperCase()}
+                    <div class="${avatarClass}">
+                        ${isGhost ? '👻' : (member.name || member.email || 'U').charAt(0).toUpperCase()}
                     </div>
                     <div class="member-details">
                         <h4>${member.name || member.email || uid}</h4>
-                        <p class="member-email">${member.email || ''}</p>
+                        <p class="member-email">${emailDisplay}</p>
                         <p class="member-meta">
-                            ${isCreator ? '👑 Creator' : ''}
-                            ${isCurrentUser && !isCreator ? '(You)' : ''}
-                            📅 Joined ${joinDate}
+                            ${roleBadge}
+                            📅 ${isGhost ? (t('app.ghostMembers.addedOn') || 'Added') : 'Joined'} ${joinDate}
                         </p>
                     </div>
                 </div>
@@ -6934,6 +7104,21 @@ function loadSimpleModeMembers() {
             </div>
         `;
     }).join('');
+
+    // Add "Add offline member" button if user is admin or member
+    const addGhostBtn = document.createElement('div');
+    addGhostBtn.className = 'add-ghost-member-section';
+    addGhostBtn.innerHTML = `
+        <button class="btn-add-ghost" onclick="showAddGhostModal()">
+            <span class="btn-add-ghost-icon">👻</span>
+            <div class="btn-add-ghost-content">
+                <span class="btn-add-ghost-title">${t('app.ghostMembers.addButton') || 'Add Offline Member'}</span>
+                <span class="btn-add-ghost-subtitle">${t('app.ghostMembers.addButtonSubtitle') || 'For people without an account'}</span>
+            </div>
+            <span class="btn-add-ghost-arrow">+</span>
+        </button>
+    `;
+    membersList.appendChild(addGhostBtn);
     
     // Load removal requests if user is admin
     if (isAdmin) {
@@ -7260,7 +7445,12 @@ async function removeMember(memberId) {
  * Show modal to edit user's nickname in the group
  */
 function showEditNicknameModal(userId, currentName) {
-    const newName = prompt('Enter your display name for this group:', currentName || '');
+    const isGhost = isGhostMember(userId);
+    const lang = getCurrentLanguage() || 'en';
+    const promptText = isGhost
+        ? (lang === 'es' ? 'Nombre para este miembro offline:' : 'Name for this offline member:')
+        : (lang === 'es' ? 'Tu nombre para este grupo:' : 'Enter your display name for this group:');
+    const newName = prompt(promptText, currentName || '');
     
     if (newName === null) return; // Cancelled
     
@@ -8786,14 +8976,19 @@ function populateExpenseMembers() {
     // Add members to both sections with checkboxes
     let memberIndex = 0;
     Object.entries(currentFund.members).forEach(([uid, member]) => {
+        const isGhost = isGhostMember(uid);
+        const avatarContent = isGhost ? '👻' : (member.name || member.email || 'U').charAt(0).toUpperCase();
+        const ghostLabel = isGhost ? ' 👻' : '';
+        const displayName = (member.name || member.email || uid) + ghostLabel;
+
         // Add to "Paid by" checkboxes
         const paidByDiv = document.createElement('div');
         paidByDiv.className = 'checkbox-option';
         paidByDiv.innerHTML = `
             <input type="checkbox" name="paidBy" value="${uid}" id="paidby_${uid}">
             <label for="paidby_${uid}">
-                <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
-                <span class="member-name">${member.name || member.email || uid}</span>
+                <span class="member-avatar${isGhost ? ' ghost-avatar' : ''}">${avatarContent}</span>
+                <span class="member-name">${displayName}</span>
             </label>
         `;
         
@@ -8821,8 +9016,8 @@ function populateExpenseMembers() {
             <label class="member-share-checkbox" for="split_${uid}">
                 <input type="checkbox" name="splitBetween" value="${uid}" id="split_${uid}" checked onchange="toggleExpenseShare(this, ${memberIndex})">
                 <div class="member-share-info">
-                    <span class="member-avatar">${(member.name || member.email || 'U').charAt(0).toUpperCase()}</span>
-                    <span class="member-share-name">${member.name || member.email || uid}</span>
+                    <span class="member-avatar${isGhost ? ' ghost-avatar' : ''}">${avatarContent}</span>
+                    <span class="member-share-name">${displayName}</span>
                 </div>
             </label>
             <div class="member-share-controls" id="split-share-controls-${memberIndex}">
@@ -14500,6 +14695,8 @@ async function notifyGroupMembers(fundId, type, message, extraData = {}) {
         const members = membersSnapshot.val() || {};
         
         const notificationPromises = Object.keys(members).map(memberId => {
+            // Skip ghost members — they don't have real accounts
+            if (isGhostMember(memberId)) return null;
             if (members[memberId]) {
                 const notificationData = {
                     type: type,

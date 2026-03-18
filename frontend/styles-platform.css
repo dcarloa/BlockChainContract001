@@ -2763,6 +2763,140 @@ header,
   border-color: rgba(102, 126, 234, 0.5);
 }
 
+/* Ghost Member Card */
+.member-card-ghost {
+  border-style: dashed;
+  border-color: rgba(168, 85, 247, 0.3);
+  background: rgba(168, 85, 247, 0.04);
+}
+
+.member-card-ghost:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+}
+
+[data-theme="dark"] .member-card-ghost {
+  background: rgba(168, 85, 247, 0.06);
+  border-color: rgba(168, 85, 247, 0.25);
+}
+
+[data-theme="dark"] .member-card-ghost:hover {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.ghost-avatar {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(139, 92, 246, 0.3)) !important;
+  font-size: 1.1rem !important;
+}
+
+.ghost-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 1rem;
+  background: rgba(168, 85, 247, 0.12);
+  color: #a855f7;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="light"] .ghost-badge {
+  background: rgba(168, 85, 247, 0.1);
+  color: #7c3aed;
+}
+
+/* Add Ghost Member Button */
+.add-ghost-member-section {
+  margin-top: 1rem;
+}
+
+.btn-add-ghost {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 2px dashed rgba(168, 85, 247, 0.25);
+  background: rgba(168, 85, 247, 0.04);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.btn-add-ghost:hover {
+  border-color: rgba(168, 85, 247, 0.45);
+  background: rgba(168, 85, 247, 0.08);
+}
+
+.btn-add-ghost:active {
+  transform: scale(0.99);
+}
+
+.btn-add-ghost-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.btn-add-ghost-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-add-ghost-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.btn-add-ghost-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 0.1rem;
+}
+
+.btn-add-ghost-arrow {
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: rgba(168, 85, 247, 0.6);
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .btn-add-ghost {
+  border-color: rgba(124, 58, 237, 0.2);
+  background: rgba(124, 58, 237, 0.03);
+}
+
+[data-theme="light"] .btn-add-ghost:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+  background: rgba(124, 58, 237, 0.06);
+}
+
+[data-theme="light"] .btn-add-ghost-arrow {
+  color: rgba(124, 58, 237, 0.5);
+}
+
+/* Ghost Modal Description */
+.ghost-modal-description {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: rgba(168, 85, 247, 0.06);
+  border-left: 3px solid rgba(168, 85, 247, 0.4);
+}
+
+[data-theme="light"] .ghost-modal-description {
+  background: rgba(124, 58, 237, 0.04);
+  border-left-color: rgba(124, 58, 237, 0.3);
+}
+
 /* Tabs - Compact Two-Row Layout */
 .fund-tabs-container {
   background: var(--glass-bg, rgba(15, 23, 42, 0.8));
