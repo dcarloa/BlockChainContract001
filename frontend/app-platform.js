@@ -3549,13 +3549,26 @@ async function signInWithGoogleOnly() {
         
         // Track signin/signup success with isNewUser distinction
         if (user.isNewUser) {
-            // First-time Google signup
+            // First-time Google signup — save UTM source
             window.dispatchEvent(new CustomEvent('signupComplete', { detail: { method: 'google_signup' } }));
             console.log('📊 Analytics: google_signup (NEW user)');
+            try {
+                const utmRaw = sessionStorage.getItem('antpool_utm') || new URLSearchParams(window.location.search).toString();
+                const utmData = utmRaw ? (utmRaw.startsWith('{') ? JSON.parse(utmRaw) : {}) : {};
+                await window.FirebaseConfig.updateDb(`users/${user.uid}`, {
+                    createdAt: Date.now(),
+                    signupSource: utmData.utm_source || 'direct',
+                    signupMedium: utmData.utm_medium || 'none',
+                    signupCampaign: utmData.utm_campaign || 'none'
+                });
+            } catch (e) { console.error('UTM save error:', e); }
         } else {
             // Returning user signin
             window.dispatchEvent(new CustomEvent('signinComplete', { detail: { method: 'google_signin' } }));
             console.log('📊 Analytics: google_signin (RETURNING user)');
+            try {
+                await window.FirebaseConfig.updateDb(`users/${user.uid}`, { lastActive: Date.now() });
+            } catch (e) { /* silent */ }
         }
         
         closeSignInModal();

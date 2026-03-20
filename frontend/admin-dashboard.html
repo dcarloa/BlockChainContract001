@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Ant Pool</title>
-    <link rel="stylesheet" href="styles-platform.css">
     <style>
         :root {
             --admin-primary: #667eea;
@@ -13,240 +12,109 @@
             --admin-warning: #f59e0b;
             --admin-danger: #ef4444;
             --admin-info: #3b82f6;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --card-hover: #334155;
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
         }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg);
             min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text);
         }
+        .admin-container { max-width: 1440px; margin: 0 auto; padding: 1.5rem; }
 
-        .admin-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
+        /* Header */
         .admin-header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .admin-header h1 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2rem;
             background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
         }
+        .admin-header h1 { font-size: 1.5rem; color: white; }
+        .admin-header p { color: rgba(255,255,255,0.8); font-size: 0.85rem; }
+        .header-actions { display: flex; gap: 0.75rem; align-items: center; }
+        .btn { padding: 0.5rem 1.25rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-ghost { background: rgba(255,255,255,0.15); color: white; }
+        .btn-ghost:hover { background: rgba(255,255,255,0.25); }
+        .btn-danger { background: var(--admin-danger); color: white; }
 
-        .admin-header p {
-            margin: 0;
-            color: #64748b;
-            font-size: 0.95rem;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
+        /* Metrics Grid */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         .metric-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-left: 4px solid var(--admin-primary);
+            background: var(--card); border-radius: 14px; padding: 1.25rem;
+            border-left: 3px solid var(--admin-primary); transition: transform 0.2s;
         }
-
-        .metric-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
-
+        .metric-card:hover { transform: translateY(-2px); }
         .metric-card.success { border-left-color: var(--admin-success); }
         .metric-card.warning { border-left-color: var(--admin-warning); }
         .metric-card.danger { border-left-color: var(--admin-danger); }
         .metric-card.info { border-left-color: var(--admin-info); }
+        .metric-card.purple { border-left-color: #8b5cf6; }
+        .metric-icon { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
+        .metric-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.3rem; }
+        .metric-value { font-size: 2rem; font-weight: 700; line-height: 1; margin-bottom: 0.3rem; }
+        .metric-sub { font-size: 0.75rem; color: var(--text-secondary); }
+        .metric-sub .green { color: var(--admin-success); font-weight: 600; }
 
-        .metric-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
+        /* Section Titles */
+        .section-title { font-size: 1.1rem; font-weight: 700; margin: 2rem 0 1rem; padding-left: 0.5rem; border-left: 3px solid var(--admin-primary); }
 
-        .metric-label {
-            font-size: 0.85rem;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
+        /* Funnel */
+        .funnel-container { background: var(--card); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .funnel-step { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .funnel-label { min-width: 180px; font-size: 0.85rem; font-weight: 600; }
+        .funnel-bar-bg { flex: 1; background: var(--border); border-radius: 6px; height: 28px; overflow: hidden; position: relative; }
+        .funnel-bar { height: 100%; border-radius: 6px; transition: width 0.8s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700; color: white; min-width: 30px; }
+        .funnel-bar.step1 { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .funnel-bar.step2 { background: linear-gradient(90deg, #3b82f6, #667eea); }
+        .funnel-bar.step3 { background: linear-gradient(90deg, #10b981, #3b82f6); }
+        .funnel-bar.step4 { background: linear-gradient(90deg, #f59e0b, #10b981); }
+        .funnel-stats { min-width: 100px; text-align: right; font-size: 0.85rem; }
+        .funnel-stats strong { display: block; font-size: 1.1rem; }
 
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #1e293b;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
+        /* Charts */
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .chart-card { background: var(--card); border-radius: 14px; padding: 1.5rem; }
+        .chart-card h3 { font-size: 1rem; margin-bottom: 1rem; color: var(--text); }
+        .chart-container { position: relative; height: 280px; }
 
-        .metric-change {
-            font-size: 0.85rem;
-            color: var(--admin-success);
-            font-weight: 600;
-        }
+        /* Tables */
+        .data-table { background: var(--card); border-radius: 14px; padding: 1.5rem; overflow-x: auto; margin-bottom: 1.5rem; }
+        .data-table h3 { font-size: 1rem; margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--border); color: var(--text-secondary); padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); font-size: 0.85rem; }
+        tr:hover { background: rgba(102,126,234,0.05); }
 
-        .metric-change.negative {
-            color: var(--admin-danger);
-        }
+        .badge { padding: 0.2rem 0.6rem; border-radius: 10px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+        .badge.active { background: rgba(16,185,129,0.15); color: var(--admin-success); }
+        .badge.inactive { background: rgba(239,68,68,0.15); color: var(--admin-danger); }
+        .colony-badge { padding: 0.2rem 0.6rem; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+        .colony-badge.forming { background: rgba(148,163,184,0.2); color: #94a3b8; }
+        .colony-badge.active { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        .colony-badge.stable { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .colony-badge.consolidated { background: rgba(16,185,129,0.15); color: #10b981; }
 
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
+        /* Loading & Access */
+        .loading { text-align: center; padding: 4rem; color: white; }
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .access-denied { text-align: center; padding: 4rem; background: var(--card); border-radius: 16px; }
+        .access-denied h2 { color: var(--admin-danger); font-size: 1.5rem; margin-bottom: 0.5rem; }
 
-        .chart-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .chart-card h3 {
-            margin: 0 0 1.5rem 0;
-            font-size: 1.25rem;
-            color: #1e293b;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-
-        .data-table {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            overflow-x: auto;
-        }
-
-        .data-table h3 {
-            margin: 0 0 1.5rem 0;
-            font-size: 1.25rem;
-            color: #1e293b;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
-            color: white;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            color: #475569;
-        }
-
-        tr:hover {
-            background: #f8fafc;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 4rem;
-            color: white;
-            font-size: 1.25rem;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .access-denied {
-            text-align: center;
-            padding: 4rem;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .access-denied h2 {
-            color: var(--admin-danger);
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
-            color: white;
-            border: none;
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 1rem;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .badge.active {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .badge.inactive {
-            background: #fee2e2;
-            color: #991b1b;
+        /* Two-col layout for tables */
+        .tables-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        @media (max-width: 900px) {
+            .tables-grid { grid-template-columns: 1fr; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .funnel-step { flex-direction: column; align-items: stretch; }
+            .funnel-label { min-width: unset; }
+            .funnel-stats { text-align: left; }
         }
     </style>
 </head>
@@ -257,113 +125,180 @@
             <p>Loading Admin Dashboard...</p>
         </div>
 
-        <div id="accessDenied" style="display: none;" class="access-denied">
+        <div id="accessDenied" style="display:none;" class="access-denied">
             <h2>🚫 Access Denied</h2>
-            <p>You don't have permission to access this page.</p>
-            <button class="logout-btn" onclick="logout()">Sign Out</button>
+            <p style="color:var(--text-secondary);">You don't have permission to view this dashboard.</p>
+            <button class="btn btn-danger" onclick="logout()" style="margin-top:1rem;">Sign Out</button>
         </div>
 
-        <div id="dashboardContent" style="display: none;">
+        <div id="dashboardContent" style="display:none;">
+
             <!-- Header -->
             <div class="admin-header">
-                <h1>🛡️ Admin Dashboard</h1>
-                <p>Real-time analytics and system metrics • Last updated: <span id="lastUpdated">-</span></p>
+                <div>
+                    <h1>🐜 Ant Pool — Admin Dashboard</h1>
+                    <p>Real-time metrics · Last updated: <span id="lastUpdated">-</span></p>
+                </div>
+                <div class="header-actions">
+                    <button id="refreshBtn" class="btn btn-ghost">🔄 Refresh</button>
+                    <button class="btn btn-ghost" onclick="logout()">Sign Out</button>
+                </div>
             </div>
 
-            <!-- Key Metrics -->
+            <!-- ===== KEY METRICS ===== -->
             <div class="metrics-grid">
                 <div class="metric-card success">
                     <span class="metric-icon">👥</span>
                     <div class="metric-label">Total Users</div>
                     <div class="metric-value" id="totalUsers">-</div>
-                    <div class="metric-change">+<span id="userGrowth">0</span> this month</div>
+                    <div class="metric-sub"><span class="green">+<span id="userGrowthMonth">0</span></span> this month · <span class="green">+<span id="userGrowthWeek">0</span></span> this week</div>
                 </div>
-
                 <div class="metric-card info">
-                    <span class="metric-icon">🏘️</span>
-                    <div class="metric-label">Total Groups</div>
-                    <div class="metric-value" id="totalGroups">-</div>
-                    <div class="metric-change">+<span id="groupGrowth">0</span> this week</div>
-                </div>
-
-                <div class="metric-card warning">
-                    <span class="metric-icon">💰</span>
-                    <div class="metric-label">Total Transactions</div>
-                    <div class="metric-value" id="totalTransactions">-</div>
-                    <div class="metric-change">$<span id="transactionVolume">0</span> total volume</div>
-                </div>
-
-                <div class="metric-card">
                     <span class="metric-icon">⚡</span>
                     <div class="metric-label">Active Users (7d)</div>
                     <div class="metric-value" id="activeUsers">-</div>
-                    <div class="metric-change"><span id="activePercent">0</span>% of total</div>
+                    <div class="metric-sub"><span id="activePercent">0</span>% of total</div>
                 </div>
-
+                <div class="metric-card">
+                    <span class="metric-icon">🏘️</span>
+                    <div class="metric-label">Shared Groups</div>
+                    <div class="metric-value" id="sharedGroups">-</div>
+                    <div class="metric-sub"><span class="green">+<span id="groupGrowth">0</span></span> this week · <span id="activeGroupsCount">0</span> active</div>
+                </div>
+                <div class="metric-card purple">
+                    <span class="metric-icon">🧑</span>
+                    <div class="metric-label">Personal Colonies</div>
+                    <div class="metric-value" id="personalGroups">-</div>
+                    <div class="metric-sub" id="totalGroups">-</div>
+                </div>
+                <div class="metric-card warning">
+                    <span class="metric-icon">💰</span>
+                    <div class="metric-label">Total Expenses</div>
+                    <div class="metric-value" id="totalTransactions">-</div>
+                    <div class="metric-sub">Volume: <span id="transactionVolume">$0</span></div>
+                </div>
+                <div class="metric-card danger">
+                    <span class="metric-icon">📊</span>
+                    <div class="metric-label">This Week</div>
+                    <div class="metric-value" id="weeklyTx">-</div>
+                    <div class="metric-sub">Volume: <span id="weeklyVolume">$0</span> · Avg: <span id="avgExpense">$0</span></div>
+                </div>
                 <div class="metric-card success">
                     <span class="metric-icon">🐜</span>
                     <div class="metric-label">Active Colonies</div>
                     <div class="metric-value" id="activeColonies">-</div>
-                    <div class="metric-change"><span id="colonyChests">0</span> chests opened</div>
-                </div>
-
-                <div class="metric-card info">
-                    <span class="metric-icon">🎭</span>
-                    <div class="metric-label">Active Mascots</div>
-                    <div class="metric-value" id="activeMascots">-</div>
-                    <div class="metric-change"><span id="mascotLevels">0</span> avg level</div>
+                    <div class="metric-sub"><span id="colonyChests">0</span> chests opened</div>
                 </div>
             </div>
 
-            <!-- Charts -->
+            <!-- Colony State Breakdown -->
+            <div class="metrics-grid" style="margin-top:-0.5rem;">
+                <div class="metric-card" style="border-left-color:#94a3b8;">
+                    <div class="metric-label">🌱 Forming</div>
+                    <div class="metric-value" id="colonyForming" style="font-size:1.5rem;">-</div>
+                </div>
+                <div class="metric-card" style="border-left-color:#3b82f6;">
+                    <div class="metric-label">🐜 Active</div>
+                    <div class="metric-value" id="colonyActive" style="font-size:1.5rem;">-</div>
+                </div>
+                <div class="metric-card" style="border-left-color:#f59e0b;">
+                    <div class="metric-label">💎 Stable</div>
+                    <div class="metric-value" id="colonyStable" style="font-size:1.5rem;">-</div>
+                </div>
+                <div class="metric-card" style="border-left-color:#10b981;">
+                    <div class="metric-label">👑 Consolidated</div>
+                    <div class="metric-value" id="colonyConsolidated" style="font-size:1.5rem;">-</div>
+                </div>
+            </div>
+
+            <!-- ===== ACTIVATION FUNNEL ===== -->
+            <h2 class="section-title">📊 Activation Funnel</h2>
+            <div class="funnel-container">
+                <div class="funnel-step">
+                    <div class="funnel-label">1. Registered</div>
+                    <div class="funnel-bar-bg"><div id="funnelBarRegistered" class="funnel-bar step1" style="width:100%;"></div></div>
+                    <div class="funnel-stats"><strong id="funnelRegistered">-</strong><span id="funnelRegisteredRate">100%</span></div>
+                </div>
+                <div class="funnel-step">
+                    <div class="funnel-label">2. Created/Joined Group</div>
+                    <div class="funnel-bar-bg"><div id="funnelBarGroup" class="funnel-bar step2" style="width:0%;"></div></div>
+                    <div class="funnel-stats"><strong id="funnelWithGroup">-</strong><span id="funnelGroupRate">-</span></div>
+                </div>
+                <div class="funnel-step">
+                    <div class="funnel-label">3. Added Expense</div>
+                    <div class="funnel-bar-bg"><div id="funnelBarExpense" class="funnel-bar step3" style="width:0%;"></div></div>
+                    <div class="funnel-stats"><strong id="funnelWithExpense">-</strong><span id="funnelExpenseRate">-</span></div>
+                </div>
+                <div class="funnel-step">
+                    <div class="funnel-label">4. Multiple Groups</div>
+                    <div class="funnel-bar-bg"><div id="funnelBarMulti" class="funnel-bar step4" style="width:0%;"></div></div>
+                    <div class="funnel-stats"><strong id="funnelMultiGroup">-</strong><span id="funnelMultiGroupRate">-</span></div>
+                </div>
+            </div>
+
+            <!-- ===== CHARTS ===== -->
+            <h2 class="section-title">📈 Growth & Activity</h2>
             <div class="charts-grid">
                 <div class="chart-card">
-                    <h3>📈 User Growth (Last 30 Days)</h3>
-                    <div class="chart-container">
-                        <canvas id="userGrowthChart"></canvas>
-                    </div>
+                    <h3>👥 User Growth (30 Days)</h3>
+                    <div class="chart-container"><canvas id="userGrowthChart"></canvas></div>
                 </div>
-
                 <div class="chart-card">
-                    <h3>💸 Transaction Volume</h3>
-                    <div class="chart-container">
-                        <canvas id="transactionChart"></canvas>
-                    </div>
+                    <h3>💸 Expenses (14 Days)</h3>
+                    <div class="chart-container"><canvas id="transactionChart"></canvas></div>
                 </div>
-
                 <div class="chart-card">
                     <h3>🌍 Currency Distribution</h3>
-                    <div class="chart-container">
-                        <canvas id="currencyChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="currencyChart"></canvas></div>
                 </div>
-
                 <div class="chart-card">
-                    <h3>🎯 Group Types</h3>
-                    <div class="chart-container">
-                        <canvas id="groupTypeChart"></canvas>
-                    </div>
+                    <h3>👥 Group Size Distribution</h3>
+                    <div class="chart-container"><canvas id="groupSizeChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>🕐 Expense Activity by Hour</h3>
+                    <div class="chart-container"><canvas id="expenseTimeChart"></canvas></div>
                 </div>
             </div>
 
-            <!-- Recent Groups Table -->
-            <div class="data-table">
-                <h3>📋 Recent Groups</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Group Name</th>
-                            <th>Created By</th>
-                            <th>Members</th>
-                            <th>Expenses</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recentGroupsTable">
-                        <tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading...</td></tr>
-                    </tbody>
-                </table>
+            <!-- ===== TABLES ===== -->
+            <h2 class="section-title">📋 Details</h2>
+            <div class="tables-grid">
+                <div class="data-table">
+                    <h3>🏘️ Recent Groups</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Members</th>
+                                <th>Expenses</th>
+                                <th>Volume</th>
+                                <th>Colony</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentGroupsTable">
+                            <tr><td colspan="7" style="text-align:center;padding:2rem;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="data-table">
+                    <h3>📡 User Acquisition Sources</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Users</th>
+                                <th>Share</th>
+                            </tr>
+                        </thead>
+                        <tbody id="acquisitionTable">
+                            <tr><td colspan="3" style="text-align:center;padding:2rem;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top:1rem;font-size:0.75rem;color:var(--text-secondary);">💡 UTM tracking is now active. Share your ad link as:<br><code style="background:var(--border);padding:0.2rem 0.4rem;border-radius:4px;font-size:0.7rem;">antpool.cloud?utm_source=instagram&utm_medium=paid&utm_campaign=reel_mar2026</code></p>
+                </div>
             </div>
         </div>
     </div>
@@ -372,14 +307,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
     <!-- Firebase Config -->
     <script src="firebase-config.js"></script>
-    
-    <!-- Admin Dashboard Script -->
+    <!-- Admin Dashboard -->
     <script src="admin-dashboard.js"></script>
 </body>
 </html>

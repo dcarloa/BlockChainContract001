@@ -26,16 +26,44 @@
             'analytics_storage': 'denied'
         });
         gtag('config', 'G-8G443F7LPT');
+
+        // UTM Parameter Tracking
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+            var utmData = {};
+            utmKeys.forEach(function(k) { if (params.get(k)) utmData[k] = params.get(k); });
+            if (Object.keys(utmData).length > 0) {
+                sessionStorage.setItem('antpool_utm', JSON.stringify(utmData));
+                gtag('event', 'campaign_visit', utmData);
+            }
+            // Forward UTM params to app.html links
+            window.getUTMQuery = function() {
+                var saved = sessionStorage.getItem('antpool_utm');
+                if (!saved) return '';
+                var d = JSON.parse(saved);
+                return '?' + Object.keys(d).map(function(k) { return k + '=' + encodeURIComponent(d[k]); }).join('&');
+            };
+            document.addEventListener('DOMContentLoaded', function() {
+                var q = window.getUTMQuery();
+                if (q) document.querySelectorAll('a[href="app.html"]').forEach(function(a) { a.href = 'app.html' + q; });
+            });
+        })();
         
         // CTA Click Tracking
         function trackCTA(location, action) {
+            var utmData = {};
+            try { utmData = JSON.parse(sessionStorage.getItem('antpool_utm') || '{}'); } catch(e) {}
             gtag('event', 'cta_click', {
                 'event_category': 'conversion',
                 'event_label': location,
                 'cta_location': location,
-                'cta_action': action || 'create_group'
+                'cta_action': action || 'create_group',
+                'utm_source': utmData.utm_source || 'direct',
+                'utm_medium': utmData.utm_medium || 'none',
+                'utm_campaign': utmData.utm_campaign || 'none'
             });
-            console.log('📊 CTA tracked:', location);
+            console.log('📊 CTA tracked:', location, utmData.utm_source || 'direct');
         }
         
         // Scroll Depth Tracking
