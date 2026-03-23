@@ -1013,7 +1013,7 @@ class ModeManager {
                 const notificationData = {
                     type: 'payment_received',
                     title: 'Payment Received',
-                    message: `${fromName} paid you ${settlement.amount} ${groupData.currency || 'USD'}`,
+                    message: `${fromName} paid you ${settlement.amount} ${this.detectedCurrency || groupData.currency || 'USD'}`,
                     fundId: this.currentGroupId
                 };
                 

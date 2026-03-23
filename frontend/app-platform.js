@@ -2410,7 +2410,7 @@ async function renderPersonalColonyCard(fund, container) {
                 
                 <div class="colony-stats-row">
                     <div class="colony-stat-item">
-                        <span class="colony-stat-value">$${balance.toLocaleString()}</span>
+                        <span class="colony-stat-value">${getCurrencySymbol(fund.primaryCurrency || 'USD')}${balance.toLocaleString()}</span>
                         <span class="colony-stat-label">${currentLang === 'es' ? 'Este mes' : 'This month'}</span>
                     </div>
                     <div class="colony-stat-divider"></div>
@@ -2544,7 +2544,7 @@ function createFundCard(fund) {
                 <div class="fund-stats">
                     <div class="fund-stat">
                         <span class="fund-stat-label">${t.app.fundDetail.info.balance}</span>
-                        <span class="fund-stat-value">${fund.mode === 'simple' ? `$${fund.balance || 0} ${fund.primaryCurrency || 'USD'}` : `${formatEth(fund.balance || 0)} ETH`}</span>
+                        <span class="fund-stat-value">${fund.mode === 'simple' ? `${getCurrencySymbol(fund.primaryCurrency || 'USD')}${fund.balance || 0} ${fund.primaryCurrency || 'USD'}` : `${formatEth(fund.balance || 0)} ETH`}</span>
                         ${fund.mode === 'simple' && fund.currencies && fund.currencies.length > 1 ? `<small class="fund-stat-hint">+${fund.currencies.length - 1} more</small>` : ''}
                     </div>
                     ${fund.mode === 'blockchain' && parseFloat(fund.target || 0) > 0 ? `
@@ -4144,9 +4144,11 @@ async function loadSimpleModeDetailView() {
         
         // User's share/balance
         const myBalance = calculateMyBalance(groupData);
+        const balCurrency = window.modeManager?.detectedCurrency || currentFund?.settings?.currency || 'USD';
+        const balSymbol = getCurrencySymbol(balCurrency);
         const userBalanceText = myBalance >= 0 
-            ? `You are owed $${Math.abs(myBalance).toFixed(2)}`
-            : `You owe $${Math.abs(myBalance).toFixed(2)}`;
+            ? `You are owed ${balSymbol}${Math.abs(myBalance).toFixed(2)} ${balCurrency}`
+            : `You owe ${balSymbol}${Math.abs(myBalance).toFixed(2)} ${balCurrency}`;
         safeUpdate('userContribution', 'textContent', userBalanceText);
         
         
@@ -6975,8 +6977,9 @@ async function removeGhostMember(ghostId) {
         const memberBalances = await window.modeManager.calculateSimpleBalances();
         const ghostBalance = memberBalances.find(m => m.memberId === ghostId);
         if (ghostBalance && Math.abs(ghostBalance.balance) > 0.01) {
-            const currency = currentFund.currency || 'USD';
-            const balanceStr = `$${Math.abs(ghostBalance.balance).toFixed(2)} ${currency}`;
+            const currency = window.modeManager?.detectedCurrency || currentFund.currency || 'USD';
+            const ghostSymbol = getCurrencySymbol(currency);
+            const balanceStr = `${ghostSymbol}${Math.abs(ghostBalance.balance).toFixed(2)} ${currency}`;
             const msg = ghostBalance.balance > 0
                 ? (t('app.ghostMembers.cannotRemoveOwed') || `Cannot remove "${memberName}". They are owed ${balanceStr}. Settle all debts first.`)
                     .replace('{name}', memberName).replace('{amount}', balanceStr)
@@ -7292,9 +7295,11 @@ async function leaveGroup() {
         const balanceCheck = await checkMemberBalance(user.uid);
         
         if (balanceCheck.hasBalance) {
+            const leaveCurrency = window.modeManager?.detectedCurrency || currentFund?.settings?.currency || 'USD';
+            const leaveSymbol = getCurrencySymbol(leaveCurrency);
             const balanceText = balanceCheck.balance > 0 
-                ? `You are owed $${balanceCheck.balance.toFixed(2)}` 
-                : `You owe $${Math.abs(balanceCheck.balance).toFixed(2)}`;
+                ? `You are owed ${leaveSymbol}${balanceCheck.balance.toFixed(2)} ${leaveCurrency}` 
+                : `You owe ${leaveSymbol}${Math.abs(balanceCheck.balance).toFixed(2)} ${leaveCurrency}`;
             
             showToast(
                 `Cannot leave group: ${balanceText}. Settle all balances first.`,
@@ -7376,9 +7381,11 @@ async function removeMemberWithValidation(memberId) {
         const balanceCheck = await checkMemberBalance(memberId);
         
         if (balanceCheck.hasBalance) {
+            const rmCurrency = window.modeManager?.detectedCurrency || currentFund?.settings?.currency || 'USD';
+            const rmSymbol = getCurrencySymbol(rmCurrency);
             const balanceText = balanceCheck.balance > 0 
-                ? `is owed $${balanceCheck.balance.toFixed(2)}` 
-                : `owes $${Math.abs(balanceCheck.balance).toFixed(2)}`;
+                ? `is owed ${rmSymbol}${balanceCheck.balance.toFixed(2)} ${rmCurrency}` 
+                : `owes ${rmSymbol}${Math.abs(balanceCheck.balance).toFixed(2)} ${rmCurrency}`;
             
             showToast(
                 `Cannot remove ${memberName}: Member ${balanceText}. Settle all balances first.`,
@@ -7656,9 +7663,11 @@ async function approveRemovalRequest(requestId) {
         const balanceCheck = await checkMemberBalance(request.targetMember);
         
         if (balanceCheck.hasBalance) {
+            const approveCurrency = window.modeManager?.detectedCurrency || currentFund?.settings?.currency || 'USD';
+            const approveSymbol = getCurrencySymbol(approveCurrency);
             const balanceText = balanceCheck.balance > 0 
-                ? `is owed $${balanceCheck.balance.toFixed(2)}` 
-                : `owes $${Math.abs(balanceCheck.balance).toFixed(2)}`;
+                ? `is owed ${approveSymbol}${balanceCheck.balance.toFixed(2)} ${approveCurrency}` 
+                : `owes ${approveSymbol}${Math.abs(balanceCheck.balance).toFixed(2)} ${approveCurrency}`;
             
             showToast(
                 `Cannot remove ${request.targetMemberName}: Member ${balanceText}. Settle all balances first.`,
@@ -8307,9 +8316,11 @@ async function deleteExpense(expenseId) {
             return;
         }
 
+        const delCurrency = expense.currency || window.modeManager?.detectedCurrency || 'USD';
+        const delSymbol = getCurrencySymbol(delCurrency);
         const confirmed = confirm(
             `Delete expense: ${expense.description}?\n\n` +
-            `Amount: $${expense.amount}\n` +
+            `Amount: ${delSymbol}${expense.amount} ${delCurrency}\n` +
             `This action cannot be undone.`
         );
 
@@ -10964,7 +10975,8 @@ async function previewCloseFund() {
                     return;
                 }
                 
-                const currency = currentFund.currency || 'MXN';
+                const currency = window.modeManager?.detectedCurrency || currentFund.currency || 'USD';
+                const distSymbol = getCurrencySymbol(currency);
                 let distributionHTML = '<div class="distribution-table">';
                 distributionHTML += `<table><thead><tr><th>${t('app.fundDetail.manage.member') || 'Member'}</th><th>${t('app.fundDetail.manage.spent') || 'Spent'}</th><th>${t('app.fundDetail.manage.balance') || 'Balance'}</th></tr></thead><tbody>`;
                 
@@ -10976,14 +10988,14 @@ async function previewCloseFund() {
                     distributionHTML += `
                         <tr>
                             <td><strong>${member.name || member.email || 'Member'}</strong></td>
-                            <td>$${(member.totalPaid || 0).toFixed(2)} ${currency}</td>
-                            <td class="highlight ${balanceClass}">${balanceSign}$${(member.balance || 0).toFixed(2)} ${currency}</td>
+                            <td>${distSymbol}${(member.totalPaid || 0).toFixed(2)} ${currency}</td>
+                            <td class="highlight ${balanceClass}">${balanceSign}${distSymbol}${(member.balance || 0).toFixed(2)} ${currency}</td>
                         </tr>
                     `;
                 }
                 
                 distributionHTML += '</tbody></table></div>';
-                distributionHTML += `<div class="total-distribution"><strong>${t('app.fundDetail.manage.totalSpent') || 'Total Spent'}:</strong> $${totalSpent.toFixed(2)} ${currency}</div>`;
+                distributionHTML += `<div class="total-distribution"><strong>${t('app.fundDetail.manage.totalSpent') || 'Total Spent'}:</strong> ${distSymbol}${totalSpent.toFixed(2)} ${currency}</div>`;
                 
                 document.getElementById('distributionList').innerHTML = distributionHTML;
                 document.getElementById('closeFundPreview').style.display = 'block';
@@ -14398,7 +14410,7 @@ async function loadProfileRecentActivity() {
                     <span class="activity-meta">${activity.groupName} • ${getTimeAgo(activity.timestamp)}</span>
                 </div>
                 <span class="activity-amount ${activity.type === 'settlement' ? 'settlement' : ''}">
-                    $${activity.amount.toFixed(2)} ${activity.currency}
+                    ${getCurrencySymbol(activity.currency || 'USD')}${activity.amount.toFixed(2)} ${activity.currency || 'USD'}
                 </span>
             </div>
         `).join('');
