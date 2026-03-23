@@ -9280,57 +9280,40 @@ window.updateToggleAllButton = updateToggleAllButton;
 // CURRENCY UTILITIES
 // ============================================
 
-// FALLBACK exchange rates to USD (used if API/Firebase fails)
-// These are approximate rates as of January 2026
-const EXCHANGE_RATES_TO_USD_FALLBACK = {
-    'USD': 1.0,
-    'EUR': 1.08,
-    'GBP': 1.27,
-    'MXN': 0.058,     // 1 MXN = ~0.058 USD
-    'COP': 0.00025,   // 1 COP = ~0.00025 USD
-    'BRL': 0.20,
-    'CAD': 0.74,
-    'AUD': 0.66,
-    'JPY': 0.0067,
-    'CNY': 0.14,
-    'INR': 0.012,
-    'CHF': 1.17,
-    'PEN': 0.27,       // 1 PEN = ~0.27 USD
-    'ARS': 0.001,      // 1 ARS = ~0.001 USD
-    'CLP': 0.0011      // 1 CLP = ~0.0011 USD
-};
-
-// Active exchange rates (updated from API/Firebase or fallback)
-let EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
-let EXCHANGE_RATES_LAST_UPDATED = null; // Timestamp of last rate update
+// Active exchange rates (populated from Firebase cache or API — never hardcoded)
+let EXCHANGE_RATES_TO_USD = { 'USD': 1.0 };
+let EXCHANGE_RATES_LAST_UPDATED = null;
 
 /**
  * Fetch and cache exchange rates from API
- * Updates Firebase cache and local rates
+ * Priority: Fresh API > Firebase cache (any age) > whatever we have in memory
  * @returns {Promise<Object>} Updated rates or null if failed
  */
 async function fetchAndCacheExchangeRates() {
-    // Skip in demo mode - no Firebase access needed
+    // Skip in demo mode
     if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
-        console.log('[ExchangeRates] Using fallback rates in demo mode');
-        EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
-        return EXCHANGE_RATES_TO_USD_FALLBACK;
+        console.log('[ExchangeRates] Skipped in demo mode — using USD only');
+        return null;
     }
     
+    let firebaseCache = null;
+    
     try {
-        // Checking for exchange rate updates
-        const cached = await window.FirebaseConfig.readDb('system/exchangeRates');
+        // Step 1: Always read Firebase cache first (our persistent fallback)
+        firebaseCache = await window.FirebaseConfig.readDb('system/exchangeRates');
         const now = Date.now();
         const TWELVE_HOURS = 12 * 60 * 60 * 1000;
         
-        // If cache is fresh (< 12h), use it
-        if (cached && cached.lastUpdated && (now - cached.lastUpdated) < TWELVE_HOURS) {
-            EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK, ...cached.rates };
-            EXCHANGE_RATES_LAST_UPDATED = cached.lastUpdated;
-            return cached.rates;
+        // If cache is fresh (< 12h), use it directly — no API call needed
+        if (firebaseCache && firebaseCache.rates && firebaseCache.lastUpdated && 
+            (now - firebaseCache.lastUpdated) < TWELVE_HOURS) {
+            EXCHANGE_RATES_TO_USD = { 'USD': 1.0, ...firebaseCache.rates };
+            EXCHANGE_RATES_LAST_UPDATED = firebaseCache.lastUpdated;
+            console.log('[ExchangeRates] Using fresh Firebase cache');
+            return firebaseCache.rates;
         }
         
-        // Fetch fresh rates from API (exchangerate-api.com - free tier)
+        // Step 2: Cache is stale or missing — fetch fresh rates from API
         const response = await fetch('https://open.exchangerate-api.com/v6/latest/USD');
         
         if (!response.ok) {
@@ -9346,38 +9329,48 @@ async function fetchAndCacheExchangeRates() {
         // Convert rates to "to USD" format (API gives "from USD", so we invert)
         const ratesToUSD = {};
         for (const [currency, rate] of Object.entries(data.rates)) {
-            ratesToUSD[currency] = 1 / rate; // Invert: if 1 USD = 17.24 MXN, then 1 MXN = 0.058 USD
+            ratesToUSD[currency] = 1 / rate;
         }
-        ratesToUSD['USD'] = 1.0; // USD to USD is always 1
+        ratesToUSD['USD'] = 1.0;
         
-        // Cache in Firebase
+        // Cache in Firebase for all users
         await window.FirebaseConfig.updateDb('system/exchangeRates', {
             rates: ratesToUSD,
             lastUpdated: now,
             source: 'exchangerate-api.com'
         });
         
-        // Update local rates
-        EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK, ...ratesToUSD };
+        EXCHANGE_RATES_TO_USD = { ...ratesToUSD };
         EXCHANGE_RATES_LAST_UPDATED = now;
+        console.log('[ExchangeRates] Updated from API');
         return ratesToUSD;
         
     } catch (error) {
-        console.warn('[ExchangeRates] ⚠️ Failed to fetch rates, using fallback:', error.message);
-        EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
+        console.warn('[ExchangeRates] API fetch failed:', error.message);
+        
+        // Step 3: API failed — use stale Firebase cache if available (better than nothing)
+        if (firebaseCache && firebaseCache.rates) {
+            EXCHANGE_RATES_TO_USD = { 'USD': 1.0, ...firebaseCache.rates };
+            EXCHANGE_RATES_LAST_UPDATED = firebaseCache.lastUpdated || null;
+            console.log('[ExchangeRates] Using stale Firebase cache as fallback');
+            return firebaseCache.rates;
+        }
+        
+        // Step 4: No cache at all — only USD conversion works (1:1)
+        console.warn('[ExchangeRates] No cached rates available — only USD conversions will work');
         return null;
     }
 }
 
 /**
  * Convert amount from one currency to USD
- * Uses cached/updated rates, falls back to hardcoded if unavailable
+ * Uses the latest available rates (API > Firebase cache)
  * @param {number} amount - Amount to convert
  * @param {string} fromCurrency - Source currency code
  * @returns {number} Amount in USD
  */
 function convertToUSD(amount, fromCurrency) {
-    const rate = EXCHANGE_RATES_TO_USD[fromCurrency] || EXCHANGE_RATES_TO_USD_FALLBACK[fromCurrency] || 1.0;
+    const rate = EXCHANGE_RATES_TO_USD[fromCurrency] || 1.0;
     return amount * rate;
 }
 
@@ -9385,18 +9378,15 @@ function convertToUSD(amount, fromCurrency) {
 window.convertToUSD = convertToUSD;
 
 // Initialize exchange rates when Firebase is ready
-// This runs after DOMContentLoaded when Firebase auth is initialized
 if (typeof window.initExchangeRates === 'undefined') {
     window.initExchangeRates = async function() {
-        // Skip in demo mode - no Firebase access needed
         if (window.DemoMode && window.DemoMode.isActive && window.DemoMode.isActive()) {
-            console.log('[ExchangeRates] Skipped in demo mode');
             return;
         }
         try {
             await fetchAndCacheExchangeRates();
         } catch (error) {
-            console.warn('[ExchangeRates] Init failed, using fallback rates:', error);
+            console.warn('[ExchangeRates] Init failed:', error);
         }
     };
     
@@ -9419,61 +9409,6 @@ function formatCurrency(amount, currency = 'USD') {
     return `${symbol}${formattedAmount}`;
 }
 
-// Cache for exchange rates
-let exchangeRatesCache = null;
-let exchangeRatesCacheTime = null;
-const CACHE_DURATION = 3600000; // 1 hour
-
-/**
- * Fetch current exchange rates from API
- * @returns {Object} Exchange rates with USD as base
- */
-async function fetchExchangeRates() {
-    try {
-        // Check cache first
-        if (exchangeRatesCache && exchangeRatesCacheTime && 
-            (Date.now() - exchangeRatesCacheTime < CACHE_DURATION)) {
-            return exchangeRatesCache;
-        }
-
-        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch exchange rates');
-        }
-
-        const data = await response.json();
-        exchangeRatesCache = data.rates;
-        exchangeRatesCacheTime = Date.now();
-        
-        return exchangeRatesCache;
-
-    } catch (error) {
-        console.error('Error fetching exchange rates:', error);
-        // Fallback rates (approximate, updated Dec 2024)
-        return {
-            USD: 1,
-            EUR: 0.92,
-            GBP: 0.79,
-            MXN: 17.5,
-            COP: 4100,
-            BRL: 4.95,
-            CAD: 1.36,
-            AUD: 1.52,
-            JPY: 149,
-            CNY: 7.24,
-            INR: 83.2,
-            CHF: 0.88
-        };
-    }
-}
-
-/**
- * Convert amount from one currency to USD
- * @param {number} amount - Amount to convert
- * @param {string} fromCurrency - Source currency code
- * @returns {Promise<number>} Amount in USD
- */
 /**
  * Update currency symbol in the form
  */
