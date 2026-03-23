@@ -9294,7 +9294,10 @@ const EXCHANGE_RATES_TO_USD_FALLBACK = {
     'JPY': 0.0067,
     'CNY': 0.14,
     'INR': 0.012,
-    'CHF': 1.17
+    'CHF': 1.17,
+    'PEN': 0.27,       // 1 PEN = ~0.27 USD
+    'ARS': 0.001,      // 1 ARS = ~0.001 USD
+    'CLP': 0.0011      // 1 CLP = ~0.0011 USD
 };
 
 // Active exchange rates (updated from API/Firebase or fallback)
@@ -9499,7 +9502,7 @@ function showExchangeRateInfo() {
     const isEs = lang === 'es';
     
     // Build rate display for common currencies
-    const displayCurrencies = ['USD', 'EUR', 'GBP', 'MXN', 'COP', 'BRL', 'CAD', 'JPY'];
+    const displayCurrencies = ['USD', 'EUR', 'GBP', 'MXN', 'COP', 'PEN', 'BRL', 'ARS', 'CLP', 'CAD', 'JPY'];
     let ratesHtml = '';
     displayCurrencies.forEach(curr => {
         const rateToUSD = EXCHANGE_RATES_TO_USD[curr];
