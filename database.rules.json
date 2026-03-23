@@ -47,7 +47,7 @@
             },
             
             "amount": {
-              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000000000000"
+              ".validate": "newData.isNumber() && newData.val() != 0 && newData.val() >= -1000000000000 && newData.val() <= 1000000000000"
             },
             
             "notes": {
