@@ -186,9 +186,9 @@ const Validators = {
         const amount = parseFloat(expenseInfo.amount);
         if (isNaN(amount)) {
             errors.push("Monto inválido");
-        } else if (amount <= 0) {
-            errors.push("El monto debe ser mayor a cero");
-        } else if (amount > 1000000000000) {
+        } else if (amount === 0) {
+            errors.push("El monto no puede ser cero");
+        } else if (Math.abs(amount) > 1000000000000) {
             errors.push("El monto es demasiado alto (máximo 1,000,000,000,000)");
         }
         
