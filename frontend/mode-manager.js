@@ -881,6 +881,7 @@ class ModeManager {
 
             // Expose detected currency so Smart Settlements can use it
             this.detectedCurrency = groupCurrency;
+            this.isMultiCurrency = currencies.size > 1;
             
             // Calculate net balances
             const balances = {};

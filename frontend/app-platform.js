@@ -6040,6 +6040,16 @@ async function loadSimpleModeBalances() {
             totalExpensesEl.textContent = totalText;
             totalExpensesEl.title = currencies.length > 1 ? 
                 'Converted to USD using current exchange rates' : '';
+            
+            // Show exchange rate info button
+            const existingBtn = totalExpensesEl.parentNode.querySelector('.exchange-rate-info-btn');
+            if (!existingBtn) {
+                const infoBtn = document.createElement('button');
+                infoBtn.className = 'exchange-rate-info-btn';
+                infoBtn.onclick = (e) => { e.stopPropagation(); showExchangeRateInfo(); };
+                infoBtn.innerHTML = '?';
+                totalExpensesEl.parentNode.appendChild(infoBtn);
+            }
         }
         
         // For per share (not per member - considers shares)
@@ -6357,6 +6367,12 @@ async function loadSmartSettlements() {
         const totalAmount = settlements.reduce((sum, s) => sum + s.amount, 0);
         document.getElementById('settlementsCount').textContent = settlements.length;
         document.getElementById('settlementsTotal').textContent = `${currencySymbol}${totalAmount.toFixed(2)} ${currency}`;
+        
+        // Show exchange rate info button
+        const rateInfoBtn = document.getElementById('settlementsRateInfoBtn');
+        if (rateInfoBtn) {
+            rateInfoBtn.style.display = 'flex';
+        }
         
         // Get translated "pays" label
         const paysLabel = t('app.groups.balances.settlementsPays') || 'pays';
@@ -9283,6 +9299,7 @@ const EXCHANGE_RATES_TO_USD_FALLBACK = {
 
 // Active exchange rates (updated from API/Firebase or fallback)
 let EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK };
+let EXCHANGE_RATES_LAST_UPDATED = null; // Timestamp of last rate update
 
 /**
  * Fetch and cache exchange rates from API
@@ -9301,11 +9318,12 @@ async function fetchAndCacheExchangeRates() {
         // Checking for exchange rate updates
         const cached = await window.FirebaseConfig.readDb('system/exchangeRates');
         const now = Date.now();
-        const ONE_DAY = 24 * 60 * 60 * 1000;
+        const TWELVE_HOURS = 12 * 60 * 60 * 1000;
         
-        // If cache is fresh (< 24h), use it
-        if (cached && cached.lastUpdated && (now - cached.lastUpdated) < ONE_DAY) {
+        // If cache is fresh (< 12h), use it
+        if (cached && cached.lastUpdated && (now - cached.lastUpdated) < TWELVE_HOURS) {
             EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK, ...cached.rates };
+            EXCHANGE_RATES_LAST_UPDATED = cached.lastUpdated;
             return cached.rates;
         }
         
@@ -9338,6 +9356,7 @@ async function fetchAndCacheExchangeRates() {
         
         // Update local rates
         EXCHANGE_RATES_TO_USD = { ...EXCHANGE_RATES_TO_USD_FALLBACK, ...ratesToUSD };
+        EXCHANGE_RATES_LAST_UPDATED = now;
         return ratesToUSD;
         
     } catch (error) {
@@ -9471,6 +9490,86 @@ function updateCurrencySymbol() {
 function getCurrencySymbol(currency) {
     return CURRENCY_SYMBOLS[currency] || '$';
 }
+
+/**
+ * Show exchange rate info popup for non-technical users
+ */
+function showExchangeRateInfo() {
+    const lang = typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : 'en';
+    const isEs = lang === 'es';
+    
+    // Build rate display for common currencies
+    const displayCurrencies = ['USD', 'EUR', 'GBP', 'MXN', 'COP', 'BRL', 'CAD', 'JPY'];
+    let ratesHtml = '';
+    displayCurrencies.forEach(curr => {
+        const rateToUSD = EXCHANGE_RATES_TO_USD[curr];
+        if (rateToUSD && curr !== 'USD') {
+            // Show how much 1 unit of this currency is in USD
+            const rateFromUSD = 1 / rateToUSD; // e.g. 1 USD = 17.24 MXN
+            const symbol = getCurrencySymbol(curr);
+            ratesHtml += `
+                <div class="rate-row">
+                    <span class="rate-currency">${symbol} ${curr}</span>
+                    <span class="rate-value">1 USD = ${rateFromUSD < 10 ? rateFromUSD.toFixed(4) : rateFromUSD.toFixed(2)} ${curr}</span>
+                </div>`;
+        }
+    });
+    
+    // Format last updated time
+    let lastUpdatedText = '';
+    if (EXCHANGE_RATES_LAST_UPDATED) {
+        const updatedDate = new Date(EXCHANGE_RATES_LAST_UPDATED);
+        const now = new Date();
+        const hoursAgo = Math.floor((now - updatedDate) / (1000 * 60 * 60));
+        const minsAgo = Math.floor((now - updatedDate) / (1000 * 60));
+        if (minsAgo < 60) {
+            lastUpdatedText = isEs ? `Hace ${minsAgo} min` : `${minsAgo} min ago`;
+        } else {
+            lastUpdatedText = isEs ? `Hace ${hoursAgo}h` : `${hoursAgo}h ago`;
+        }
+    } else {
+        lastUpdatedText = isEs ? 'Tasas aproximadas' : 'Approximate rates';
+    }
+
+    const title = isEs ? 'Tasas de Cambio' : 'Exchange Rates';
+    const explanation = isEs 
+        ? 'Cuando un grupo tiene gastos en diferentes monedas, convertimos los montos a una moneda com\u00FAn para calcular los balances correctamente. Las tasas se actualizan autom\u00E1ticamente cada 12 horas.'
+        : 'When a group has expenses in different currencies, we convert amounts to a common currency to calculate balances correctly. Rates update automatically every 12 hours.';
+    const sourceText = isEs ? 'Fuente' : 'Source';
+    const closeText = isEs ? 'Entendido' : 'Got it';
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.id = 'exchangeRateInfoModal';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 420px; animation: slideUp 0.3s ease-out;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>\uD83D\uDCB1 ${title}</h3>
+                <button class="close-btn" onclick="document.getElementById('exchangeRateInfoModal').remove()" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 1.25rem;">
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem;">
+                    ${explanation}
+                </p>
+                <div class="exchange-rates-list" style="background: var(--bg-tertiary, rgba(139,92,246,0.05)); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1rem;">
+                    ${ratesHtml}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-tertiary, #888);">
+                    <span>\u23F1 ${lastUpdatedText}</span>
+                    <span>${sourceText}: exchangerate-api.com</span>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 0.75rem 1.25rem;">
+                <button class="btn btn-primary" onclick="document.getElementById('exchangeRateInfoModal').remove()" style="width: 100%;">
+                    ${closeText}
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+window.showExchangeRateInfo = showExchangeRateInfo;
 
 // ============================================
 // EXPENSE SUBMISSION
