@@ -6349,8 +6349,8 @@ async function loadSmartSettlements() {
         document.getElementById('settlementsList').style.display = 'block';
         document.getElementById('markAllSettledBtn').style.display = 'inline-flex';
         
-        // Update stats with proper currency - always show currency code
-        const currency = currentFund.settings?.currency || 'USD';
+        // Use the actual currency detected from expenses (not group settings which may be unset)
+        const currency = window.modeManager?.detectedCurrency || currentFund.settings?.currency || 'USD';
         const currencySymbol = getCurrencySymbol(currency);
         const totalAmount = settlements.reduce((sum, s) => sum + s.amount, 0);
         document.getElementById('settlementsCount').textContent = settlements.length;
@@ -6389,7 +6389,7 @@ async function loadSmartSettlements() {
                             </div>
                             <div class="settlement-details">
                                 <div class="settlement-arrow">→</div>
-                                <div class="settlement-amount">$${settlement.amount.toFixed(2)}</div>
+                                <div class="settlement-amount">${currencySymbol}${settlement.amount.toFixed(2)}</div>
                             </div>
                             <div class="settlement-to">
                                 <div class="settlement-avatar ${isCreditor ? 'is-me' : ''}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">${toName.charAt(0).toUpperCase()}</div>
@@ -6582,7 +6582,7 @@ async function shareSettlement(index) {
     const toName = toMember?.name || toMember?.email || 'Unknown';
     const groupName = currentFund?.fundName || 'Ant Pool';
     
-    const currency = currentFund?.settings?.currency || 'USD';
+    const currency = window.modeManager?.detectedCurrency || currentFund?.settings?.currency || 'USD';
     const currencySymbol = getCurrencySymbol(currency);
     
     // Create share text
@@ -16842,12 +16842,12 @@ async function shareSettlements() {
 async function buildBalancesShareText() {
     const groupName = currentFund.name || currentFund.fundName || 'My Group';
     const lang = getCurrentLanguage() || 'en';
-    const currency = currentFund.settings?.currency || 'USD';
-    const symbol = getCurrencySymbol(currency);
 
     window.modeManager.currentGroupId = currentFund.fundId;
     window.modeManager.groupData = currentFund;
     const memberBalances = await window.modeManager.calculateSimpleBalances();
+    const currency = window.modeManager?.detectedCurrency || currentFund.settings?.currency || 'USD';
+    const symbol = getCurrencySymbol(currency);
     if (!memberBalances || memberBalances.length === 0) return null;
 
     // Calculate total expenses
@@ -16894,12 +16894,12 @@ async function buildBalancesShareText() {
 async function buildSettlementsShareText() {
     const groupName = currentFund.name || currentFund.fundName || 'My Group';
     const lang = getCurrentLanguage() || 'en';
-    const currency = currentFund.settings?.currency || 'USD';
-    const symbol = getCurrencySymbol(currency);
 
     window.modeManager.currentGroupId = currentFund.fundId;
     window.modeManager.groupData = currentFund;
     const memberBalances = await window.modeManager.calculateSimpleBalances();
+    const currency = window.modeManager?.detectedCurrency || currentFund.settings?.currency || 'USD';
+    const symbol = getCurrencySymbol(currency);
     if (!memberBalances || memberBalances.length === 0) return null;
 
     const settlements = simplifyDebts(memberBalances);

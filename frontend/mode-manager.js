@@ -878,6 +878,9 @@ class ModeManager {
             const currencies = new Set(expenses.map(e => e.currency || 'USD'));
             const useSingleCurrency = currencies.size === 1;
             const groupCurrency = useSingleCurrency ? Array.from(currencies)[0] : 'USD';
+
+            // Expose detected currency so Smart Settlements can use it
+            this.detectedCurrency = groupCurrency;
             
             // Calculate net balances
             const balances = {};
