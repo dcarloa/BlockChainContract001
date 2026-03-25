@@ -21,6 +21,7 @@
 // ============================================
 let isDemoMode = window.__DEMO_MODE_REQUESTED__ || false;
 let originalTabsHTML = null; // Store original tabs to restore when switching views
+let originalTabPanesHTML = {}; // Store original tab pane content to restore on exit
 
 // ============================================
 // DEMO DATA - Sample Simple Mode group (NOT blockchain)
@@ -399,22 +400,24 @@ function exitDemoMode() {
         card.remove();
     });
     
-    // Clear ALL demo content from group view containers
-    // This is critical - otherwise real groups will show demo data
-    const containersToClean = [
-        'historyList',      // Expense history
-        'historyTab',       // History tab (used by Personal Colony demo)
-        'membersTab',       // Members list  
-        'balancesTab',      // Balances
-        'inviteTab',        // Invite section
-        'mascotTab'         // Mascot section
-    ];
+    // Restore original tab pane HTML if demo replaced it (prevents destroying structural elements)
+    // This is critical - tab panes contain headers, empty states, filters, etc. that load functions depend on
+    Object.entries(originalTabPanesHTML).forEach(([id, html]) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+    });
+    originalTabPanesHTML = {};
     
-    containersToClean.forEach(id => {
-        const container = document.getElementById(id);
-        if (container) {
-            container.innerHTML = '';
-        }
+    // Clear only CONTENT containers (not full tab panes, which would destroy structural HTML)
+    ['historyList', 'membersList', 'balancesList'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
+    
+    // Invite and mascot tabs are fully dynamic - safe to clear
+    ['inviteTab', 'mascotTab'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
     });
     
     // Also clear any demo items by class
@@ -1239,8 +1242,11 @@ function populateDemoPersonalColonyDetail() {
         `;
     }
     
-    // Use historyTab container for our demo content (it's always present)
+    // Save original historyTab content before Personal Colony demo replaces it
     const contentContainer = document.getElementById('historyTab') || document.querySelector('.tab-pane');
+    if (contentContainer && !originalTabPanesHTML['historyTab']) {
+        originalTabPanesHTML['historyTab'] = contentContainer.innerHTML;
+    }
     if (contentContainer) {
         contentContainer.classList.add('active');
         contentContainer.id = 'historyTab'; // Ensure it has the ID
@@ -1794,6 +1800,11 @@ function renderDemoBalances() {
                               document.querySelector('.balances-list');
     
     if (!balancesContainer) return;
+    
+    // Save original balancesTab content before demo replaces it
+    if (balancesContainer.id === 'balancesTab' && !originalTabPanesHTML['balancesTab']) {
+        originalTabPanesHTML['balancesTab'] = balancesContainer.innerHTML;
+    }
     
     const group = DEMO_GROUP_DATA;
     const members = Object.entries(group.members);

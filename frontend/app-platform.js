@@ -212,8 +212,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                     console.error('Error ensuring personal colony:', err);
                 });
                 
-                // Load user funds
-                loadUserFunds();
+                // NOTE: loadUserFunds() is NOT called here — it's awaited below at the main init flow
+                // to avoid a race condition where two concurrent calls would run simultaneously
                 
                 // Initialize Firebase Messaging
                 if (typeof initializeMessaging === 'function') {
