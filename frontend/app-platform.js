@@ -3553,7 +3553,7 @@ async function signInWithGoogleOnly() {
             window.dispatchEvent(new CustomEvent('signupComplete', { detail: { method: 'google_signup' } }));
             console.log('📊 Analytics: google_signup (NEW user)');
             try {
-                const utmRaw = sessionStorage.getItem('antpool_utm') || new URLSearchParams(window.location.search).toString();
+                const utmRaw = localStorage.getItem('antpool_utm') || sessionStorage.getItem('antpool_utm') || new URLSearchParams(window.location.search).toString();
                 const utmData = utmRaw ? (utmRaw.startsWith('{') ? JSON.parse(utmRaw) : {}) : {};
                 await window.FirebaseConfig.updateDb(`users/${user.uid}`, {
                     createdAt: Date.now(),

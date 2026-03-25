@@ -3100,6 +3100,17 @@ Simple, fast, and free.</p>
     <script src="app-platform.js?v=5.77"></script>
     
     <script>
+        // Capture UTM params if user lands on app.html directly (e.g., shared link)
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+            var utmData = {};
+            utmKeys.forEach(function(k) { if (params.get(k)) utmData[k] = params.get(k); });
+            if (Object.keys(utmData).length > 0) {
+                localStorage.setItem('antpool_utm', JSON.stringify(utmData));
+            }
+        })();
+
         // Mark that user has used the app (for redirect from landing page)
         localStorage.setItem('antpool_has_used_app', 'true');
         

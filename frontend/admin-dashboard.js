@@ -73,7 +73,8 @@ async function initDashboard() {
         loadColonyMetrics(),
         loadFunnelMetrics(),
         loadRecentGroups(),
-        loadUserAcquisitionSources()
+        loadUserAcquisitionSources(),
+        loadCampaignPerformance()
     ]);
 
     initCharts(userData);
@@ -338,6 +339,178 @@ async function loadUserAcquisitionSources() {
     } catch (error) {
         console.error('Error loading acquisition sources:', error);
     }
+}
+
+// ===== CAMPAIGN PERFORMANCE =====
+async function loadCampaignPerformance() {
+    try {
+        const snap = await database.ref('users').once('value');
+        const users = snap.val() || {};
+        const groups = cachedGroups;
+
+        // Build per-source metrics
+        const sourceData = {}; // { source: { total, withGroup, withExpense, users: [] } }
+
+        Object.entries(users).forEach(([uid, u]) => {
+            const src = u.signupSource || 'direct';
+            if (!sourceData[src]) sourceData[src] = { total: 0, withGroup: 0, withExpense: 0, medium: u.signupMedium || 'none', campaign: u.signupCampaign || 'none', users: [] };
+            sourceData[src].total++;
+            sourceData[src].users.push({ uid, ...u });
+
+            // Check group membership
+            if (u.groups) {
+                const sharedGroups = Object.keys(u.groups).filter(gid => !gid.startsWith('grp_personal_'));
+                if (sharedGroups.length > 0) {
+                    sourceData[src].withGroup++;
+
+                    // Check if user has any expenses
+                    let hasExpense = false;
+                    sharedGroups.forEach(gid => {
+                        const group = groups[gid];
+                        if (group && group.expenses) {
+                            Object.values(group.expenses).forEach(exp => {
+                                if (exp.paidBy === uid || exp.createdBy === uid) hasExpense = true;
+                            });
+                        }
+                    });
+                    if (hasExpense) sourceData[src].withExpense++;
+                }
+            }
+        });
+
+        // Summary cards
+        const igData = sourceData['instagram'] || { total: 0, withGroup: 0, withExpense: 0 };
+        const directData = sourceData['direct'] || { total: 0, withGroup: 0, withExpense: 0 };
+
+        document.getElementById('igSignups').textContent = igData.total;
+        document.getElementById('directSignups').textContent = directData.total;
+
+        // Campaign conversion: all non-direct sources signup->expense rate
+        const campaignTotal = Object.entries(sourceData)
+            .filter(([src]) => src !== 'direct' && src !== 'unknown')
+            .reduce((s, [, d]) => s + d.total, 0);
+        const campaignExpenses = Object.entries(sourceData)
+            .filter(([src]) => src !== 'direct' && src !== 'unknown')
+            .reduce((s, [, d]) => s + d.withExpense, 0);
+        const convRate = campaignTotal > 0 ? Math.round((campaignExpenses / campaignTotal) * 100) : 0;
+        document.getElementById('campaignConvRate').textContent = convRate + '%';
+
+        // Cost efficiency: active rate (joined group) for campaign users
+        const campaignActiveGroups = Object.entries(sourceData)
+            .filter(([src]) => src !== 'direct' && src !== 'unknown')
+            .reduce((s, [, d]) => s + d.withGroup, 0);
+        const activeRate = campaignTotal > 0 ? Math.round((campaignActiveGroups / campaignTotal) * 100) : 0;
+        document.getElementById('campaignCostNote').textContent = activeRate + '%';
+        document.getElementById('campaignCostSub').textContent = `${campaignActiveGroups}/${campaignTotal} campaign users joined a group`;
+
+        // Funnel table by source
+        const tbody = document.getElementById('campaignFunnelTable');
+        if (tbody) {
+            tbody.innerHTML = '';
+            const sorted = Object.entries(sourceData).sort((a, b) => b[1].total - a[1].total);
+
+            const sourceIcons = {
+                instagram: '📸', google: '🔍', facebook: '📘', twitter: '🐦',
+                direct: '🔗', unknown: '❓', email: '📧', referral: '👥'
+            };
+
+            sorted.forEach(([src, data]) => {
+                const groupRate = data.total > 0 ? Math.round((data.withGroup / data.total) * 100) : 0;
+                const expenseRate = data.total > 0 ? Math.round((data.withExpense / data.total) * 100) : 0;
+                const barClass = expenseRate >= 50 ? 'good' : (expenseRate >= 20 ? 'medium' : 'low');
+                const icon = sourceIcons[src] || '🌐';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${icon} ${escapeHtml(src)}</strong><br><span style="font-size:0.7rem;color:var(--text-secondary);">${escapeHtml(data.medium)}/${escapeHtml(data.campaign)}</span></td>
+                    <td><strong>${data.total}</strong></td>
+                    <td>${data.withGroup} <span style="color:var(--text-secondary);font-size:0.75rem;">(${groupRate}%)</span></td>
+                    <td>${data.withExpense} <span style="color:var(--text-secondary);font-size:0.75rem;">(${expenseRate}%)</span></td>
+                    <td>
+                        <div class="conversion-bar">
+                            <div class="conversion-bar-bg"><div class="conversion-bar-fill ${barClass}" style="width:${expenseRate}%;"></div></div>
+                            <span style="font-weight:600;font-size:0.8rem;min-width:3ch;">${expenseRate}%</span>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:#94a3b8;">No signup data yet</td></tr>';
+            }
+        }
+
+        // Campaign timeline chart (14d signups by source)
+        createCampaignTimelineChart(users);
+    } catch (error) {
+        console.error('Error loading campaign performance:', error);
+    }
+}
+
+function createCampaignTimelineChart(users) {
+    try {
+        const days = 14;
+        const labels = [];
+        const campaignDaily = [];
+        const directDaily = [];
+        const userList = Object.values(users);
+
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            date.setHours(0, 0, 0, 0);
+            const dayStart = date.getTime();
+            const dayEnd = dayStart + 86400000;
+
+            labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+            let campaign = 0, direct = 0;
+            userList.forEach(u => {
+                if (u.createdAt >= dayStart && u.createdAt < dayEnd) {
+                    const src = u.signupSource || 'direct';
+                    if (src === 'direct' || src === 'unknown') direct++;
+                    else campaign++;
+                }
+            });
+            campaignDaily.push(campaign);
+            directDaily.push(direct);
+        }
+
+        const ctx = document.getElementById('campaignTimelineChart');
+        if (!ctx) return;
+        charts.campaignTimeline = new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Campaign (IG, etc)',
+                        data: campaignDaily,
+                        backgroundColor: 'rgba(236, 72, 153, 0.7)',
+                        borderRadius: 4,
+                        stack: 'signups'
+                    },
+                    {
+                        label: 'Direct / Organic',
+                        data: directDaily,
+                        backgroundColor: 'rgba(139, 92, 246, 0.5)',
+                        borderRadius: 4,
+                        stack: 'signups'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } },
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }
+                }
+            }
+        });
+    } catch (error) { console.error('Campaign chart error:', error); }
 }
 
 // ===== RECENT GROUPS TABLE =====

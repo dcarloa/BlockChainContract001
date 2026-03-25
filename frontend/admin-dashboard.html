@@ -108,10 +108,33 @@
 
         /* Two-col layout for tables */
         .tables-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+
+        /* Campaign Performance */
+        .campaign-highlight { background: linear-gradient(135deg, rgba(236,72,153,0.1), rgba(139,92,246,0.1)); border: 1px solid rgba(236,72,153,0.2); }
+        .campaign-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .campaign-card { background: var(--card); border-radius: 14px; padding: 1.25rem; border-left: 3px solid #ec4899; }
+        .campaign-card .metric-value { font-size: 1.6rem; }
+        .campaign-source-row { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .campaign-source-row:last-child { border-bottom: none; }
+        .source-icon { font-size: 1.3rem; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(102,126,234,0.1); flex-shrink: 0; }
+        .source-details { flex: 1; }
+        .source-name { font-weight: 600; font-size: 0.9rem; }
+        .source-meta { font-size: 0.75rem; color: var(--text-secondary); }
+        .source-stats { text-align: right; }
+        .source-count { font-weight: 700; font-size: 1.1rem; }
+        .source-pct { font-size: 0.75rem; color: var(--text-secondary); }
+        .conversion-bar { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem; }
+        .conversion-bar-bg { flex: 1; background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; }
+        .conversion-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+        .conversion-bar-fill.good { background: linear-gradient(90deg, #10b981, #059669); }
+        .conversion-bar-fill.medium { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .conversion-bar-fill.low { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
         @media (max-width: 900px) {
             .tables-grid { grid-template-columns: 1fr; }
             .charts-grid { grid-template-columns: 1fr; }
             .metrics-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .campaign-grid { grid-template-columns: 1fr 1fr; }
             .funnel-step { flex-direction: column; align-items: stretch; }
             .funnel-label { min-width: unset; }
             .funnel-stats { text-align: left; }
@@ -236,6 +259,61 @@
                 </div>
             </div>
 
+            <!-- ===== CAMPAIGN PERFORMANCE ===== -->
+            <h2 class="section-title">📣 Campaign Performance</h2>
+            <div class="campaign-grid">
+                <div class="campaign-card">
+                    <span class="metric-icon">📸</span>
+                    <div class="metric-label">Instagram Signups</div>
+                    <div class="metric-value" id="igSignups">-</div>
+                    <div class="metric-sub">From paid ads</div>
+                </div>
+                <div class="campaign-card" style="border-left-color:#8b5cf6;">
+                    <span class="metric-icon">🔗</span>
+                    <div class="metric-label">Direct / Organic</div>
+                    <div class="metric-value" id="directSignups">-</div>
+                    <div class="metric-sub">No campaign tag</div>
+                </div>
+                <div class="campaign-card" style="border-left-color:#10b981;">
+                    <span class="metric-icon">🎯</span>
+                    <div class="metric-label">Campaign Conversion</div>
+                    <div class="metric-value" id="campaignConvRate">-</div>
+                    <div class="metric-sub">Signup → First Expense</div>
+                </div>
+                <div class="campaign-card" style="border-left-color:#f59e0b;">
+                    <span class="metric-icon">💰</span>
+                    <div class="metric-label">Cost Efficiency</div>
+                    <div class="metric-value" id="campaignCostNote">-</div>
+                    <div class="metric-sub" id="campaignCostSub">Campaign users with activity</div>
+                </div>
+            </div>
+
+            <div class="tables-grid">
+                <div class="data-table campaign-highlight">
+                    <h3>📊 Acquisition Funnel by Source</h3>
+                    <p style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:1rem;">Conversion at each stage, broken down by signup source</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Signups</th>
+                                <th>Joined Group</th>
+                                <th>Added Expense</th>
+                                <th>Conv. Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="campaignFunnelTable">
+                            <tr><td colspan="5" style="text-align:center;padding:1.5rem;color:#94a3b8;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="data-table">
+                    <h3>📅 Campaign Timeline</h3>
+                    <p style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:1rem;">Signups per day from campaigns (last 14 days)</p>
+                    <div class="chart-container" style="height:220px;"><canvas id="campaignTimelineChart"></canvas></div>
+                </div>
+            </div>
+
             <!-- ===== CHARTS ===== -->
             <h2 class="section-title">📈 Growth & Activity</h2>
             <div class="charts-grid">
@@ -297,7 +375,7 @@
                             <tr><td colspan="3" style="text-align:center;padding:2rem;">Loading...</td></tr>
                         </tbody>
                     </table>
-                    <p style="margin-top:1rem;font-size:0.75rem;color:var(--text-secondary);">💡 UTM tracking is now active. Share your ad link as:<br><code style="background:var(--border);padding:0.2rem 0.4rem;border-radius:4px;font-size:0.7rem;">antpool.cloud?utm_source=instagram&utm_medium=paid&utm_campaign=reel_mar2026</code></p>
+                    <p style=\"margin-top:1rem;font-size:0.75rem;color:var(--text-secondary);\">💡 Active ad link:<br><code style=\"background:var(--border);padding:0.2rem 0.4rem;border-radius:4px;font-size:0.7rem;\">antpool.cloud?lang=es&utm_source=instagram&utm_medium=paid&utm_campaign=ig_ad_mar2026</code></p>
                 </div>
             </div>
         </div>
