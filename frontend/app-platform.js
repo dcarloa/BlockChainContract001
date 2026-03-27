@@ -2702,7 +2702,11 @@ function backToDashboard() {
             for (const expense of expenses) {
                 if (expense.status === 'approved' || !expense.status) {
                     const currency = expense.currency || 'USD';
-                    balanceByCurrency[currency] = (balanceByCurrency[currency] || 0) + Math.abs(expense.amount || 0);
+                    const amt = parseFloat(expense.amount) || 0;
+                    // Negative amounts are payments received — only count positive as spent
+                    if (amt > 0) {
+                        balanceByCurrency[currency] = (balanceByCurrency[currency] || 0) + amt;
+                    }
                 }
             }
             const currencies = Object.keys(balanceByCurrency);
@@ -4370,17 +4374,19 @@ async function calculateTotalSpent(groupData) {
     for (const expense of Object.values(groupData.expenses)) {
         if (expense.status === 'approved' || !expense.status) { // Include all in Simple Mode
             const currency = expense.currency || 'USD';
-            const amount = Math.abs(expense.amount || 0);
+            const amount = parseFloat(expense.amount) || 0;
             
-            // Track by currency
-            if (!currencyBreakdown[currency]) {
-                currencyBreakdown[currency] = 0;
+            // Negative amounts are payments received — only count positive as spent
+            if (amount > 0) {
+                if (!currencyBreakdown[currency]) {
+                    currencyBreakdown[currency] = 0;
+                }
+                currencyBreakdown[currency] += amount;
+                
+                // Convert to USD for total
+                const amountUSD = await convertToUSD(amount, currency);
+                totalUSD += amountUSD;
             }
-            currencyBreakdown[currency] += amount;
-            
-            // Convert to USD for total
-            const amountUSD = await convertToUSD(amount, currency);
-            totalUSD += amountUSD;
         }
     }
     
@@ -4653,8 +4659,11 @@ async function loadPersonalBudget(groupData) {
             const timestamp = expense.recordedAt || expense.timestamp || 0;
             if (timestamp >= startOfMonth) {
                 const category = (expense.category || 'other').toLowerCase();
-                const amount = Math.abs(parseFloat(expense.amount) || 0);
-                categorySpending[category] = (categorySpending[category] || 0) + amount;
+                const amount = parseFloat(expense.amount) || 0;
+                // Negative amounts are payments received — only count positive as spending
+                if (amount > 0) {
+                    categorySpending[category] = (categorySpending[category] || 0) + amount;
+                }
             }
         });
     }
@@ -5980,16 +5989,19 @@ async function loadSimpleModeBalances() {
             // Second pass: convert all to USD
             for (const expense of Object.values(groupData.expenses)) {
                 const currency = expense.currency || 'USD';
-                const amount = Math.abs(expense.amount || 0);
+                const amount = parseFloat(expense.amount) || 0;
                 
-                if (!currencyTotals[currency]) {
-                    currencyTotals[currency] = 0;
+                // Negative amounts are payments received — only count positive as expenses
+                if (amount > 0) {
+                    if (!currencyTotals[currency]) {
+                        currencyTotals[currency] = 0;
+                    }
+                    currencyTotals[currency] += amount;
+                    
+                    // Convert to USD for totals
+                    const amountUSD = await convertToUSD(amount, currency);
+                    totalExpensesUSD += amountUSD;
                 }
-                currencyTotals[currency] += amount;
-                
-                // Convert to USD for totals
-                const amountUSD = await convertToUSD(amount, currency);
-                totalExpensesUSD += amountUSD;
                 expenseCount++;
             }
         }
@@ -6755,8 +6767,9 @@ async function loadExpenseTimeline(startDate = null, endDate = null) {
                 const isFirstOfDate = index === 0;
                 const currency = expense.currency || 'USD';
                 const symbol = getCurrencySymbol(currency);
-                const amount = Math.abs(expense.amount || 0);
-                const isNegative = (expense.amount || 0) < 0;
+                const rawAmount = parseFloat(expense.amount) || 0;
+                const isNegative = rawAmount < 0;
+                const amount = Math.abs(rawAmount);
                 
                 // Get payer names
                 let paidByText = 'Unknown';
