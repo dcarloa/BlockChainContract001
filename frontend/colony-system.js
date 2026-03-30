@@ -225,6 +225,7 @@ function showWeeklyChestBanner(groupId, chest) {
     banner.id = 'weeklyChestBanner';
     banner.className = 'weekly-chest-banner';
     banner.innerHTML = `
+        <button class="chest-banner-close" onclick="this.parentElement.remove()" aria-label="Close">&times;</button>
         <div class="chest-banner-content">
             <span class="chest-icon">${isWelcomeChest ? '🎁' : '📦'}</span>
             <div class="chest-text">
