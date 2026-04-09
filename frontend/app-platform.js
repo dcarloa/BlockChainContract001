@@ -6053,14 +6053,18 @@ async function loadSimpleModeBalances() {
             totalExpensesEl.title = currencies.length > 1 ? 
                 'Converted to USD using current exchange rates' : '';
             
-            // Show exchange rate info button
+            // Show exchange rate info button only when multiple currencies
             const existingBtn = totalExpensesEl.parentNode.querySelector('.exchange-rate-info-btn');
-            if (!existingBtn) {
-                const infoBtn = document.createElement('button');
-                infoBtn.className = 'exchange-rate-info-btn';
-                infoBtn.onclick = (e) => { e.stopPropagation(); showExchangeRateInfo(); };
-                infoBtn.innerHTML = '?';
-                totalExpensesEl.parentNode.appendChild(infoBtn);
+            if (currencies.length > 1) {
+                if (!existingBtn) {
+                    const infoBtn = document.createElement('button');
+                    infoBtn.className = 'exchange-rate-info-btn';
+                    infoBtn.onclick = (e) => { e.stopPropagation(); showExchangeRateInfo(); };
+                    infoBtn.innerHTML = '💱';
+                    totalExpensesEl.parentNode.appendChild(infoBtn);
+                }
+            } else if (existingBtn) {
+                existingBtn.remove();
             }
         }
         

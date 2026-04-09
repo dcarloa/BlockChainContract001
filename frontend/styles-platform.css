@@ -13736,28 +13736,25 @@ body.light-mode .link-event-field {
 
 /* Exchange Rate Info Button */
 .exchange-rate-info-btn {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1.5px solid rgba(139, 92, 246, 0.4);
-  border-radius: 50%;
+  background: none;
+  border: none;
   color: #a78bfa;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-left: 0.5rem;
+  margin-left: 0.35rem;
+  padding: 0;
+  vertical-align: middle;
+  opacity: 0.7;
   flex-shrink: 0;
 }
 
 .exchange-rate-info-btn:hover {
-  background: rgba(139, 92, 246, 0.3);
-  border-color: #a78bfa;
-  transform: scale(1.1);
+  opacity: 1;
+  transform: scale(1.15);
 }
 
 .settlements-stats .exchange-rate-info-btn {
@@ -13800,12 +13797,6 @@ body.light-mode .link-event-field {
 /* Stat card with info button */
 .stat-content {
   position: relative;
-}
-
-.stat-content .exchange-rate-info-btn {
-  position: absolute;
-  top: -2px;
-  right: -28px;
 }
 
 .stat-badge {
