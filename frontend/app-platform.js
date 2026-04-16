@@ -2,6 +2,24 @@
 // Este archivo gestiona la interfaz principal con múltiples fondos
 
 // ============================================
+// DOUBLE-SUBMIT GUARD
+// ============================================
+const _submitting = new Set();
+/**
+ * Prevent double-submit on async actions.
+ * Returns true if the action is already in progress (caller should return early).
+ * Call submitGuardRelease(key) in finally{} to unlock.
+ */
+function submitGuardLock(key) {
+    if (_submitting.has(key)) return true;
+    _submitting.add(key);
+    return false;
+}
+function submitGuardRelease(key) {
+    _submitting.delete(key);
+}
+
+// ============================================
 // FEATURE FLAGS
 // ============================================
 window.COLONY_FEATURE_ENABLED = true; // Set to false to disable Colony system
@@ -3052,6 +3070,7 @@ function closeCreateFundModal() {
 
 async function createFund(event) {
     event.preventDefault();
+    if (submitGuardLock('createFund')) return;
     
     try {
         const fundName = document.getElementById('fundName').value.trim();
@@ -3119,6 +3138,8 @@ async function createFund(event) {
         hideLoading();
         console.error("Error creating fund:", error);
         showToast("Error creating fund: " + error.message, "error");
+    } finally {
+        submitGuardRelease('createFund');
     }
 }
 
@@ -6536,6 +6557,7 @@ async function markAllSettled() {
  * Mark a single settlement as done (one-tap)
  */
 async function markSettlementDone(index) {
+    if (submitGuardLock(`settlement-${index}`)) return;
     try {
         if (currentFund && !currentFund.isActive) {
             showToast("⏸️ " + (t('app.quickSettlements.groupPaused') || "Group is paused"), "error");
@@ -6600,6 +6622,8 @@ async function markSettlementDone(index) {
         if (settlementEl) {
             settlementEl.classList.remove('settlement-completing');
         }
+    } finally {
+        submitGuardRelease(`settlement-${index}`);
     }
 }
 
@@ -8323,6 +8347,7 @@ async function showDeleteRequests(expenseId) {
  * Delete an expense (only creator can do this)
  */
 async function deleteExpense(expenseId) {
+    if (submitGuardLock(`deleteExpense-${expenseId}`)) return;
     try {
         const user = firebase.auth().currentUser;
         if (!user) {
@@ -8396,6 +8421,8 @@ async function deleteExpense(expenseId) {
     } catch (error) {
         console.error('Error deleting expense:', error);
         showToast('Error deleting expense', 'error');
+    } finally {
+        submitGuardRelease(`deleteExpense-${expenseId}`);
     }
 }
 
@@ -9532,6 +9559,7 @@ window.showExchangeRateInfo = showExchangeRateInfo;
 
 async function handleExpenseSubmission(event) {
     event.preventDefault();
+    if (submitGuardLock('addExpense')) return;
 
     const form = event.target;
     const formData = new FormData(form);
@@ -9685,6 +9713,8 @@ async function handleExpenseSubmission(event) {
     } catch (error) {
         console.error('Error adding expense:', error);
         showToast(`Error adding expense: ${error.message}`, 'error');
+    } finally {
+        submitGuardRelease('addExpense');
     }
 }
 
@@ -15163,6 +15193,7 @@ function toggleFabSharedOptions() {
  * Quick add expense from FAB
  */
 async function quickAddExpense() {
+    if (submitGuardLock('quickAddExpense')) return;
     try {
         const amount = parseFloat(document.getElementById('fabAmount')?.value);
         const currency = document.getElementById('fabCurrency')?.value || 'EUR';
@@ -15258,6 +15289,8 @@ async function quickAddExpense() {
         hideLoading();
         console.error('Error adding quick expense:', error);
         showToast(t('errors.expenseAdd') || 'Error adding expense', 'error');
+    } finally {
+        submitGuardRelease('quickAddExpense');
     }
 }
 
@@ -18041,7 +18074,9 @@ function closeEventModal() {
  * Save event (create or update)
  */
 async function saveEvent() {
+    if (submitGuardLock('saveEvent')) return;
     if (!currentFund) {
+        submitGuardRelease('saveEvent');
         showToast('No group selected. Please select a group first.', 'error');
         return;
     }
@@ -18132,6 +18167,8 @@ async function saveEvent() {
     } catch (error) {
         console.error('[Itinerary] Error saving event:', error);
         showToast('Error saving event', 'error');
+    } finally {
+        submitGuardRelease('saveEvent');
     }
 }
 
