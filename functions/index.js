@@ -123,6 +123,72 @@ exports.sendPushNotification = functions.database
     });
 
 /**
+ * Cloud Function: Validate expense amount on creation
+ * Ensures amount is a valid number and hasn't been corrupted during client-side processing.
+ * Runs server-side as a safety net — does not block the user.
+ */
+exports.validateExpenseAmount = functions.database
+    .ref('/groups/{groupId}/expenses/{expenseId}')
+    .onCreate(async (snapshot, context) => {
+        const { groupId, expenseId } = context.params;
+        const expense = snapshot.val();
+
+        if (!expense || expense.amount === undefined) return null;
+
+        const amount = expense.amount;
+        let corrected = false;
+        let newAmount = amount;
+
+        // Check 1: amount must be a finite number
+        if (typeof amount !== 'number' || !Number.isFinite(amount)) {
+            console.error(`🚨 [validateExpense] Invalid amount type in ${groupId}/${expenseId}:`, amount);
+            // Can't auto-fix a non-number — flag it
+            await admin.database()
+                .ref(`groups/${groupId}/expenses/${expenseId}/_validation`)
+                .set({ error: 'invalid_type', originalValue: String(amount), flaggedAt: Date.now() });
+            return null;
+        }
+
+        // Check 2: amount should not have floating point artifacts (e.g. 9.999999999 instead of 10)
+        const rounded = Math.round(amount * 100) / 100;
+        if (rounded !== amount) {
+            newAmount = rounded;
+            corrected = true;
+            console.warn(`⚠️ [validateExpense] Floating point correction in ${groupId}/${expenseId}: ${amount} → ${rounded}`);
+        }
+
+        // Check 3: for integer-ish amounts, check if it's suspiciously close to a round number
+        // e.g. 999 when user likely meant 1000, or 1399 when they meant 1400
+        // Only flag, don't auto-correct (we can't be sure of user intent)
+        const absAmount = Math.abs(newAmount);
+        if (absAmount > 0 && absAmount % 1 === 0) {
+            const nextRound = Math.ceil(absAmount / 100) * 100;
+            const prevRound = Math.floor(absAmount / 100) * 100;
+            if (nextRound - absAmount === 1 || absAmount - prevRound === 1) {
+                console.warn(`⚠️ [validateExpense] Suspicious amount in ${groupId}/${expenseId}: ${amount} (close to ${nextRound - absAmount === 1 ? nextRound : prevRound})`);
+                await admin.database()
+                    .ref(`groups/${groupId}/expenses/${expenseId}/_validation`)
+                    .set({ 
+                        warning: 'suspicious_rounding', 
+                        amount: amount,
+                        nearestRound: nextRound - absAmount === 1 ? nextRound : prevRound,
+                        flaggedAt: Date.now()
+                    });
+            }
+        }
+
+        // Apply floating-point correction if needed
+        if (corrected) {
+            await admin.database()
+                .ref(`groups/${groupId}/expenses/${expenseId}/amount`)
+                .set(newAmount);
+            console.log(`✅ [validateExpense] Auto-corrected amount in ${groupId}/${expenseId}: ${amount} → ${newAmount}`);
+        }
+
+        return null;
+    });
+
+/**
  * Cloud Function: Clean up old notifications (keep last 100 per user)
  * Runs daily at midnight
  */
