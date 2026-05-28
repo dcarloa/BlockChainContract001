@@ -458,6 +458,26 @@ function exitDemoMode() {
         dashboardSection.classList.add('active');
         dashboardSection.style.display = 'block';
     }
+
+    // Always show demo financial summary (desktop + mobile)
+    const skeleton = document.getElementById('financialSummarySkeleton');
+    const content = document.getElementById('financialSummaryContent');
+    if (skeleton) skeleton.style.display = 'none';
+    if (content) content.style.display = 'block';
+
+    // Populate financial summary with demo values
+    const totalOwedToYou = document.getElementById('totalOwedToYou');
+    const totalYouOwe = document.getElementById('totalYouOwe');
+    const owedToYouGroups = document.getElementById('owedToYouGroups');
+    const youOweGroups = document.getElementById('youOweGroups');
+    const financialDetails = document.getElementById('financialDetails');
+    const allSettledMessage = document.getElementById('allSettledMessage');
+    if (totalOwedToYou) totalOwedToYou.textContent = '$71.67';
+    if (totalYouOwe) totalYouOwe.textContent = '$40.00';
+    if (owedToYouGroups) owedToYouGroups.textContent = '1 group';
+    if (youOweGroups) youOweGroups.textContent = '1 group';
+    if (financialDetails) financialDetails.style.display = 'none';
+    if (allSettledMessage) allSettledMessage.style.display = 'none';
     
     // Clear demo data from window
     window.demoGroupData = null;
@@ -884,24 +904,6 @@ function loadDemoData() {
         // Ensure groupsSection is hidden (home should be active on first load)
         const groupsSectionEl = document.getElementById('groupsSection');
         if (groupsSectionEl) groupsSectionEl.style.display = 'none';
-        // Hide Financial Summary skeleton and show content with demo data
-        const skeleton = document.getElementById('financialSummarySkeleton');
-        const content = document.getElementById('financialSummaryContent');
-        if (skeleton) skeleton.style.display = 'none';
-        if (content) content.style.display = 'block';
-        // Populate financial summary with demo values
-        const totalOwedToYou = document.getElementById('totalOwedToYou');
-        const totalYouOwe = document.getElementById('totalYouOwe');
-        const owedToYouGroups = document.getElementById('owedToYouGroups');
-        const youOweGroups = document.getElementById('youOweGroups');
-        const financialDetails = document.getElementById('financialDetails');
-        const allSettledMessage = document.getElementById('allSettledMessage');
-        if (totalOwedToYou) totalOwedToYou.textContent = '$71.67';
-        if (totalYouOwe) totalYouOwe.textContent = '$40.00';
-        if (owedToYouGroups) owedToYouGroups.textContent = '1 group';
-        if (youOweGroups) youOweGroups.textContent = '1 group';
-        if (financialDetails) financialDetails.style.display = 'none';
-        if (allSettledMessage) allSettledMessage.style.display = 'none';
         // Update greeting for demo user
         if (typeof updateMobileGreeting === 'function') {
             updateMobileGreeting();
