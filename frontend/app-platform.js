@@ -4286,8 +4286,8 @@ async function loadSimpleModeDetailView() {
         await loadRecurringExpenses();
         await loadBudgetStatus();
         
-        // Start recurring expenses processing timer
-        startRecurringExpensesTimer();
+        // Recurring expenses are processed server-side to keep schedules stable
+        stopRecurringExpensesTimer();
         
         // Show quick actions
         const quickActions = document.getElementById('simpleQuickActions');

@@ -405,30 +405,51 @@ class ModeManager {
     /**
      * Calculate next due date for recurring expense
      */
-    calculateNextDue(frequency, dayOfMonth, dayOfWeek) {
-        const now = new Date();
-        const next = new Date();
-        
-        switch(frequency) {
-            case 'daily':
-                next.setDate(now.getDate() + 1);
-                break;
-            case 'weekly':
-                const currentDay = now.getDay(); // 0=Sunday, 6=Saturday
-                const targetDay = dayOfWeek === 7 ? 0 : dayOfWeek; // Convert to JS format
+    calculateNextDue(frequency, dayOfMonth, dayOfWeek, fromTimestamp = Date.now()) {
+        const base = new Date(fromTimestamp);
+
+        switch (frequency) {
+            case 'daily': {
+                const next = new Date(base);
+                next.setDate(next.getDate() + 1);
+                return next.getTime();
+            }
+            case 'weekly': {
+                const next = new Date(base);
+                const currentDay = next.getDay(); // 0=Sunday, 6=Saturday
+                const targetDay = dayOfWeek === 7 ? 0 : (dayOfWeek || 1); // UI uses 1-7
                 const daysUntilNext = (targetDay - currentDay + 7) % 7 || 7;
-                next.setDate(now.getDate() + daysUntilNext);
-                break;
-            case 'monthly':
-                next.setMonth(now.getMonth() + 1);
-                next.setDate(dayOfMonth);
-                if (next < now) {
-                    next.setMonth(next.getMonth() + 1);
+                next.setDate(next.getDate() + daysUntilNext);
+                return next.getTime();
+            }
+            case 'monthly': {
+                const targetDay = Math.max(1, Math.min(dayOfMonth || 1, 31));
+                const year = base.getFullYear();
+                const month = base.getMonth();
+
+                const buildMonthlyDate = (targetYear, targetMonth) => {
+                    const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+                    const clampedDay = Math.min(targetDay, daysInMonth);
+                    return new Date(
+                        targetYear,
+                        targetMonth,
+                        clampedDay,
+                        base.getHours(),
+                        base.getMinutes(),
+                        base.getSeconds(),
+                        base.getMilliseconds()
+                    );
+                };
+
+                let next = buildMonthlyDate(year, month);
+                if (next <= base) {
+                    next = buildMonthlyDate(year, month + 1);
                 }
-                break;
+                return next.getTime();
+            }
+            default:
+                return base.getTime();
         }
-        
-        return next.getTime();
     }
     
     /**
@@ -496,53 +517,61 @@ class ModeManager {
                 if (rec.nextDue <= now && rec.isActive) {
                     
                     try {
-                        // Create the actual expense
-                        const expenseId = await this.addSimpleExpense({
-                            description: `${rec.description} (Recurring)`,
-                            amount: rec.amount,
-                            currency: rec.currency,
-                            category: rec.category,
-                            paidBy: rec.paidBy,
-                            paidByName: rec.paidByName,
-                            splitBetween: rec.splitBetween,
-                            notes: `Auto-generated from recurring expense on ${new Date().toLocaleDateString()}`
-                        });
-                        
-                        // Calculate next due date
-                        const nextDue = this.calculateNextDue(
-                            rec.frequency,
-                            rec.dayOfMonth,
-                            rec.dayOfWeek
-                        );
-                        
-                        // Update recurring expense record
+                        let nextDue = rec.nextDue || now;
+                        let createdForRecurring = 0;
+
+                        while (nextDue <= now && createdForRecurring < 24) {
+                            const dueDate = new Date(nextDue);
+
+                            // Create the actual expense for the scheduled due date
+                            const expenseId = await this.addSimpleExpense({
+                                description: `${rec.description} (Recurring)`,
+                                amount: rec.amount,
+                                currency: rec.currency,
+                                category: rec.category,
+                                paidBy: rec.paidBy,
+                                paidByName: rec.paidByName,
+                                splitBetween: rec.splitBetween,
+                                notes: `Auto-generated from recurring expense scheduled for ${dueDate.toLocaleDateString()}`,
+                                date: dueDate.toISOString().split('T')[0]
+                            });
+
+                            nextDue = this.calculateNextDue(
+                                rec.frequency,
+                                rec.dayOfMonth,
+                                rec.dayOfWeek,
+                                nextDue
+                            );
+
+                            createdCount++;
+                            createdForRecurring++;
+
+                            // Notify group members about auto-created expense
+                            try {
+                                const groupData = await window.FirebaseConfig.readDb(`groups/${this.currentGroupId}`);
+                                const message = `Recurring expense created: ${rec.description} - ${rec.currency} ${rec.amount}`;
+
+                                if (typeof notifyGroupMembers === 'function') {
+                                    await notifyGroupMembers(
+                                        this.currentGroupId,
+                                        'recurring_expense_created',
+                                        message,
+                                        {
+                                            groupName: groupData?.name,
+                                            expenseId: expenseId,
+                                            recurringId: rec.id
+                                        }
+                                    );
+                                }
+                            } catch (notifError) {
+                                console.error('❌ Failed to send notification:', notifError);
+                            }
+                        }
+
                         await this.updateRecurringExpense(rec.id, {
-                            lastCreated: now,
+                            lastCreated: createdForRecurring > 0 ? now : rec.lastCreated || null,
                             nextDue: nextDue
                         });
-                        
-                        createdCount++;
-                        
-                        // Notify group members about auto-created expense
-                        try {
-                            const groupData = await window.FirebaseConfig.readDb(`groups/${this.currentGroupId}`);
-                            const message = `Recurring expense created: ${rec.description} - ${rec.currency} ${rec.amount}`;
-                            
-                            if (typeof notifyGroupMembers === 'function') {
-                                await notifyGroupMembers(
-                                    this.currentGroupId,
-                                    'recurring_expense_created',
-                                    message,
-                                    {
-                                        groupName: groupData?.name,
-                                        expenseId: expenseId,
-                                        recurringId: rec.id
-                                    }
-                                );
-                            }
-                        } catch (notifError) {
-                            console.error('❌ Failed to send notification:', notifError);
-                        }
                         
                     } catch (expenseError) {
                         console.error('❌ Failed to create expense from recurring:', expenseError);

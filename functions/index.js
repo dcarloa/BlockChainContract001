@@ -3,6 +3,123 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
+function calculateNextRecurringDue(frequency, dayOfMonth, dayOfWeek, fromTimestamp = Date.now()) {
+    const base = new Date(fromTimestamp);
+
+    switch (frequency) {
+        case 'daily': {
+            const next = new Date(base);
+            next.setDate(next.getDate() + 1);
+            return next.getTime();
+        }
+        case 'weekly': {
+            const next = new Date(base);
+            const currentDay = next.getDay();
+            const targetDay = dayOfWeek === 7 ? 0 : (dayOfWeek || 1);
+            const daysUntilNext = (targetDay - currentDay + 7) % 7 || 7;
+            next.setDate(next.getDate() + daysUntilNext);
+            return next.getTime();
+        }
+        case 'monthly': {
+            const targetDay = Math.max(1, Math.min(dayOfMonth || 1, 31));
+            const year = base.getFullYear();
+            const month = base.getMonth();
+
+            const buildMonthlyDate = (targetYear, targetMonth) => {
+                const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+                const clampedDay = Math.min(targetDay, daysInMonth);
+                return new Date(
+                    targetYear,
+                    targetMonth,
+                    clampedDay,
+                    base.getHours(),
+                    base.getMinutes(),
+                    base.getSeconds(),
+                    base.getMilliseconds()
+                );
+            };
+
+            let next = buildMonthlyDate(year, month);
+            if (next <= base) {
+                next = buildMonthlyDate(year, month + 1);
+            }
+            return next.getTime();
+        }
+        default:
+            return base.getTime();
+    }
+}
+
+async function processRecurringExpensesForAllGroups() {
+    const db = admin.database();
+    const groupsSnapshot = await db.ref('groups').once('value');
+    const groups = groupsSnapshot.val() || {};
+    const now = Date.now();
+
+    let groupsScanned = 0;
+    let recurringTemplatesProcessed = 0;
+    let expensesCreated = 0;
+
+    for (const [groupId, groupData] of Object.entries(groups)) {
+        if (!groupData || !groupData.recurringExpenses) {
+            continue;
+        }
+
+        groupsScanned++;
+
+        for (const [recurringId, rec] of Object.entries(groupData.recurringExpenses)) {
+            if (!rec || !rec.isActive) {
+                continue;
+            }
+
+            recurringTemplatesProcessed++;
+
+            let nextDue = typeof rec.nextDue === 'number'
+                ? rec.nextDue
+                : calculateNextRecurringDue(rec.frequency, rec.dayOfMonth, rec.dayOfWeek, rec.createdAt || now);
+            let createdForRecurring = 0;
+
+            while (nextDue <= now && createdForRecurring < 24) {
+                const dueDate = new Date(nextDue);
+                const expenseRef = db.ref(`groups/${groupId}/expenses`).push();
+                const expenseId = expenseRef.key;
+
+                await expenseRef.set({
+                    id: expenseId,
+                    description: `${rec.description} (Recurring)`,
+                    amount: rec.amount,
+                    paidBy: rec.paidBy,
+                    paidByName: rec.paidByName,
+                    splitBetween: rec.splitBetween,
+                    timestamp: now,
+                    createdAt: now,
+                    date: dueDate.toISOString().split('T')[0],
+                    currency: rec.currency || 'USD',
+                    status: 'approved',
+                    category: rec.category || 'recurring',
+                    receipt: null,
+                    notes: `Auto-generated from recurring expense scheduled for ${dueDate.toLocaleDateString('en-US')}`
+                });
+
+                expensesCreated++;
+                createdForRecurring++;
+                nextDue = calculateNextRecurringDue(rec.frequency, rec.dayOfMonth, rec.dayOfWeek, nextDue);
+            }
+
+            await db.ref(`groups/${groupId}/recurringExpenses/${recurringId}`).update({
+                lastCreated: createdForRecurring > 0 ? now : rec.lastCreated || null,
+                nextDue
+            });
+
+            if (createdForRecurring >= 24 && nextDue <= now) {
+                console.warn(`⚠️ Recurring expense ${recurringId} in group ${groupId} still overdue after catch-up limit`);
+            }
+        }
+    }
+
+    return { groupsScanned, recurringTemplatesProcessed, expensesCreated };
+}
+
 /**
  * Cloud Function: Send push notification when a new notification is created
  * Triggers on new entries in /notifications/{userId}/{notificationId}
@@ -235,6 +352,41 @@ exports.cleanupOldNotifications = functions.pubsub
             return null;
         }
     });
+
+/**
+ * Cloud Function: Process recurring expenses server-side every hour
+ * Keeps schedules stable even when nobody has the app open.
+ */
+exports.processRecurringExpenses = functions.pubsub
+    .schedule('every 60 minutes')
+    .timeZone('America/Mexico_City')
+    .onRun(async () => {
+        try {
+            const result = await processRecurringExpensesForAllGroups();
+            console.log('✅ Recurring expenses processed:', result);
+            return result;
+        } catch (error) {
+            console.error('❌ Error processing recurring expenses:', error);
+            throw error;
+        }
+    });
+
+/**
+ * Cloud Function: Manually trigger recurring expense processing (for testing/admin)
+ */
+exports.processRecurringExpensesManual = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+
+    try {
+        const result = await processRecurringExpensesForAllGroups();
+        return { success: true, ...result };
+    } catch (error) {
+        console.error('❌ Error in manual recurring processing:', error);
+        throw new functions.https.HttpsError('internal', error.message);
+    }
+});
 
 /**
  * Cloud Function: Handle Stripe webhooks for subscription management
